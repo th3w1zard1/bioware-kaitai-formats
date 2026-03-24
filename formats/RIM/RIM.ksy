@@ -19,11 +19,11 @@ doc: |
   - Standard RIM: Basic module template files
   - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
   
-  Binary Format:
-  - Header (20 bytes): File type, version, resource count, offset to resource table
-  - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
-  - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
-  - Resource Data (variable size): Raw binary data for each resource
+  Binary Format (KotOR / PyKotor):
+  - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+  - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+  - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+  - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
   
   References:
   - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
@@ -35,11 +35,21 @@ doc: |
 seq:
   - id: header
     type: rim_header
-    doc: RIM file header (20 bytes)
+    doc: RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
   
-  - id: extended_header
-    type: rim_extended_header
-    doc: Extended header padding (100 bytes, total header = 120 bytes)
+  - id: gap_before_key_table_implicit
+    size: 96
+    if: header.offset_to_resource_table == 0
+    doc: |
+      When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+      After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
+  
+  - id: gap_before_key_table_explicit
+    size: header.offset_to_resource_table - 24
+    if: header.offset_to_resource_table != 0
+    doc: |
+      When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+      Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
   
   - id: resource_entry_table
     type: resource_entry_table
@@ -83,29 +93,20 @@ types:
       - id: offset_to_resource_table
         type: u4
         doc: |
-          Byte offset to the resource entry table from the beginning of the file.
-          Typically 120 (right after header + extended header) if resources are present.
-          Points to the start of the resource_entry_table.
+          Byte offset to the key / resource entry table from the beginning of the file.
+          0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+          When non-zero, this offset is used directly (commonly 120).
+      
+      - id: offset_to_resources
+        type: u4
+        doc: |
+          Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+          taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
     
     instances:
       has_resources:
         value: resource_count > 0
         doc: Whether the RIM file contains any resources
-  
-  rim_extended_header:
-    seq:
-      - id: reserved_padding
-        size: 100
-        type: str
-        encoding: ASCII
-        doc: |
-          Reserved padding bytes (typically all zeros).
-          Total header size is 120 bytes:
-          header (20) + extended_header (100) = 120 bytes
-          
-          In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
-          may contain an IsExtension flag, but this is not consistently used.
-    
   
   resource_entry_table:
     seq:

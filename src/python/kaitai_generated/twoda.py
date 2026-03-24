@@ -33,10 +33,11 @@ class Twoda(KaitaiStruct):
     - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
     - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
     """
-    def __init__(self, _io, _parent=None, _root=None):
+    def __init__(self, column_count, _io, _parent=None, _root=None):
         super(Twoda, self).__init__(_io)
         self._parent = _parent
         self._root = _root or self
+        self.column_count = column_count
         self._read()
 
     def _read(self):
@@ -44,7 +45,10 @@ class Twoda(KaitaiStruct):
         self.column_headers_raw = (self._io.read_bytes_term(0, False, True, True)).decode(u"ASCII")
         self.row_count = self._io.read_u4le()
         self.row_labels_section = Twoda.RowLabelsSection(self._io, self, self._root)
-        self.cell_offsets_array = Twoda.CellOffsetsArray(self._io, self, self._root)
+        self.cell_offsets = []
+        for i in range(self.row_count * self.column_count):
+            self.cell_offsets.append(self._io.read_u2le())
+
         self.len_cell_values_section = self._io.read_u2le()
         self._raw_cell_values_section = self._io.read_bytes(self.len_cell_values_section)
         _io__raw_cell_values_section = KaitaiStream(BytesIO(self._raw_cell_values_section))
@@ -55,33 +59,10 @@ class Twoda(KaitaiStruct):
         pass
         self.header._fetch_instances()
         self.row_labels_section._fetch_instances()
-        self.cell_offsets_array._fetch_instances()
-        self.cell_values_section._fetch_instances()
-
-    class CellOffsetsArray(KaitaiStruct):
-        def __init__(self, _io, _parent=None, _root=None):
-            super(Twoda.CellOffsetsArray, self).__init__(_io)
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.offsets = []
-            i = 0
-            while True:
-                _ = self._io.read_u2le()
-                self.offsets.append(_)
-                if self._io.pos() >= self._io.size() - 2:
-                    break
-                i += 1
-
-
-        def _fetch_instances(self):
+        for i in range(len(self.cell_offsets)):
             pass
-            for i in range(len(self.offsets)):
-                pass
 
-
+        self.cell_values_section._fetch_instances()
 
     class CellValuesSection(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):

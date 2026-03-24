@@ -33,6 +33,15 @@ doc: |
   - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
   - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
 
+params:
+  - id: column_count
+    type: u4
+    doc: |
+      Number of tab-separated column headers in the file (excluding the trailing null terminator).
+      Kaitai expressions cannot derive this from the header blob, so callers must pre-scan the
+      column header section (same rule as PyKotor: count tab characters between the newline after
+      V2.b and the first 0x00) and pass it into the parser.
+
 seq:
   - id: header
     type: twoda_header
@@ -57,12 +66,14 @@ seq:
     type: row_labels_section
     doc: Row labels section - tab-separated row labels (one per row)
   
-  - id: cell_offsets_array
-    type: cell_offsets_array
+  - id: cell_offsets
+    type: u2
+    repeat: expr
+    repeat-expr: row_count * column_count
     doc: |
-      Array of cell value offsets (uint16 per cell).
-      Total entries = row_count * column_count (where column_count = number of tab-separated parts in column_headers_raw).
-      Each offset points to a null-terminated string in the cell values section.
+      Array of cell value offsets (uint16 per cell). There are exactly row_count * column_count
+      entries, in row-major order. Each offset is relative to the start of the cell values blob
+      and points to a null-terminated string.
   
   - id: len_cell_values_section
     type: u2
@@ -76,7 +87,7 @@ seq:
     size: len_cell_values_section
     doc: |
       Cell values data section containing all unique cell value strings.
-      Each string is null-terminated. Offsets from cell_offsets_array point into this section.
+      Each string is null-terminated. Offsets from cell_offsets point into this section.
       The section starts immediately after len_cell_values_section field and has size = len_cell_values_section bytes.
 
 types:
@@ -140,29 +151,6 @@ types:
           Row labels uniquely identify each row in the table.
           Often numeric (e.g., "0", "1", "2") but can be any string identifier.
 
-  cell_offsets_array:
-    seq:
-      - id: offsets
-        type: u2
-        repeat: until
-        repeat-until: _io.pos >= _io.size - 2
-        doc: |
-          Array of cell value offsets (uint16, little-endian).
-          Each offset points to a null-terminated string in the cell_values_section.
-          Offsets are relative to the start of cell_values_section.
-          
-          Reading continues until we reach 2 bytes before end of file (where len_cell_values_section field is).
-          Then len_cell_values_section is read, followed by cell_values_section.
-          
-          The actual count is: row_count * column_count
-          where column_count = number of tab-separated parts in column_headers_raw.
-          
-          Cell access pattern:
-          - Cell at row i, column j = offsets[i * column_count + j]
-          - Value = read string at cell_values_section start + offsets[i * column_count + j]
-          
-          Duplicate cell values share the same offset (string deduplication).
-
   cell_values_section:
     seq:
       - id: raw_data
@@ -172,5 +160,5 @@ types:
         doc: |
           Raw cell values data as a single string.
           Contains all null-terminated cell value strings concatenated together.
-          Individual strings can be extracted using offsets from cell_offsets_array.
+          Individual strings can be extracted using offsets from cell_offsets.
           Note: To read a specific cell value, seek to (cell_values_section start + offset) and read a null-terminated string.

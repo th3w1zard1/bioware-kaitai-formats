@@ -12,11 +12,11 @@ doc: |
   Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
 
   Binary Format:
-  - Header (12 bytes): File type signature, version, and offset to sounds array
-  - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
-  - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+  - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+  - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
 
-  Total file size: 136 bytes (12 + 112 + 12)
+  Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+  of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
 
   Sound Slots (in order):
   0-5: Battle Cry 1-6
@@ -65,13 +65,8 @@ seq:
     type: u4
     doc: |
       Byte offset to the sounds array from the beginning of the file.
-      Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
-      This field exists for format consistency, though it's always the same value.
-    valid: 12
-
-  - id: padding
-    type: padding
-    doc: Reserved padding bytes (12 bytes of 0xFFFFFFFF)
+      KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+      field is a real offset; readers must seek here instead of assuming 12.
 
 instances:
   sounds:
@@ -127,16 +122,3 @@ types:
         doc: |
           True if this entry represents "no sound" (0xFFFFFFFF).
           False if this entry contains a valid StrRef value.
-
-  padding:
-    seq:
-      - id: padding_bytes
-        type: u4
-        repeat: expr
-        repeat-expr: 3
-        doc: |
-          Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
-          Total size: 12 bytes (3 * 4 bytes).
-          These bytes are unused but must be present for format compatibility.
-          Each padding byte should be 0xFFFFFFFF (4294967295).
-
