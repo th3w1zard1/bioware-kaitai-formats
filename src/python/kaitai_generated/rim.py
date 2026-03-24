@@ -19,11 +19,11 @@ class Rim(KaitaiStruct):
     - Standard RIM: Basic module template files
     - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
     
-    Binary Format:
-    - Header (20 bytes): File type, version, resource count, offset to resource table
-    - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
-    - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
-    - Resource Data (variable size): Raw binary data for each resource
+    Binary Format (KotOR / PyKotor):
+    - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+    - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+    - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+    - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
     
     References:
     - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
@@ -343,7 +343,14 @@ class Rim(KaitaiStruct):
 
     def _read(self):
         self.header = Rim.RimHeader(self._io, self, self._root)
-        self.extended_header = Rim.RimExtendedHeader(self._io, self, self._root)
+        if self.header.offset_to_resource_table == 0:
+            pass
+            self.gap_before_key_table_implicit = self._io.read_bytes(96)
+
+        if self.header.offset_to_resource_table != 0:
+            pass
+            self.gap_before_key_table_explicit = self._io.read_bytes(self.header.offset_to_resource_table - 24)
+
         if self.header.resource_count > 0:
             pass
             self.resource_entry_table = Rim.ResourceEntryTable(self._io, self, self._root)
@@ -353,7 +360,12 @@ class Rim(KaitaiStruct):
     def _fetch_instances(self):
         pass
         self.header._fetch_instances()
-        self.extended_header._fetch_instances()
+        if self.header.offset_to_resource_table == 0:
+            pass
+
+        if self.header.offset_to_resource_table != 0:
+            pass
+
         if self.header.resource_count > 0:
             pass
             self.resource_entry_table._fetch_instances()
@@ -422,21 +434,6 @@ class Rim(KaitaiStruct):
 
 
 
-    class RimExtendedHeader(KaitaiStruct):
-        def __init__(self, _io, _parent=None, _root=None):
-            super(Rim.RimExtendedHeader, self).__init__(_io)
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.reserved_padding = (self._io.read_bytes(100)).decode(u"ASCII")
-
-
-        def _fetch_instances(self):
-            pass
-
-
     class RimHeader(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
             super(Rim.RimHeader, self).__init__(_io)
@@ -454,6 +451,7 @@ class Rim(KaitaiStruct):
             self.reserved = self._io.read_u4le()
             self.resource_count = self._io.read_u4le()
             self.offset_to_resource_table = self._io.read_u4le()
+            self.offset_to_resources = self._io.read_u4le()
 
 
         def _fetch_instances(self):

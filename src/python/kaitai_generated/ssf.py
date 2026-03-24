@@ -13,11 +13,11 @@ class Ssf(KaitaiStruct):
     Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
     
     Binary Format:
-    - Header (12 bytes): File type signature, version, and offset to sounds array
-    - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
-    - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+    - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+    - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
     
-    Total file size: 136 bytes (12 + 112 + 12)
+    Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+    of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
     
     Sound Slots (in order):
     0-5: Battle Cry 1-6
@@ -57,39 +57,14 @@ class Ssf(KaitaiStruct):
         if not self.file_version == u"V1.1":
             raise kaitaistruct.ValidationNotEqualError(u"V1.1", self.file_version, self._io, u"/seq/1")
         self.sounds_offset = self._io.read_u4le()
-        if not self.sounds_offset == 12:
-            raise kaitaistruct.ValidationNotEqualError(12, self.sounds_offset, self._io, u"/seq/2")
-        self.padding = Ssf.Padding(self._io, self, self._root)
 
 
     def _fetch_instances(self):
         pass
-        self.padding._fetch_instances()
         _ = self.sounds
         if hasattr(self, '_m_sounds'):
             pass
             self._m_sounds._fetch_instances()
-
-
-    class Padding(KaitaiStruct):
-        def __init__(self, _io, _parent=None, _root=None):
-            super(Ssf.Padding, self).__init__(_io)
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.padding_bytes = []
-            for i in range(3):
-                self.padding_bytes.append(self._io.read_u4le())
-
-
-
-        def _fetch_instances(self):
-            pass
-            for i in range(len(self.padding_bytes)):
-                pass
-
 
 
     class SoundArray(KaitaiStruct):
