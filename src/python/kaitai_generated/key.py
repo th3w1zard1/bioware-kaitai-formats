@@ -383,12 +383,12 @@ class Key(KaitaiStruct):
 
         @property
         def filename(self):
-            """BIF filename (read from filename table at specified offset)."""
+            """BIF filename string at the absolute filename_offset in the KEY file."""
             if hasattr(self, '_m_filename'):
                 return self._m_filename
 
             _pos = self._io.pos()
-            self._io.seek((self._root.file_table_offset + self._root.bif_count * 12) + self.filename_offset)
+            self._io.seek(self.filename_offset)
             self._m_filename = (self._io.read_bytes(self.filename_size)).decode(u"ASCII")
             self._io.seek(_pos)
             return getattr(self, '_m_filename', None)

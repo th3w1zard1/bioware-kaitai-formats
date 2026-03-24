@@ -97,7 +97,10 @@ types:
       
       - id: filename_offset
         type: u4
-        doc: Byte offset into the filename table where this BIF's filename is stored.
+        doc: |
+          Absolute byte offset from the start of the KEY file where this BIF's filename is stored
+          (same as PyKotor KEYBinaryReader: seek(filename_offset), then read filename_size bytes).
+          This is not relative to the file table or to the end of the BIF entry array.
       
       - id: filename_size
         type: u2
@@ -112,11 +115,11 @@ types:
 
     instances:
       filename:
-        pos: _root.file_table_offset + (_root.bif_count * 12) + filename_offset
+        pos: filename_offset
         type: str
         encoding: ASCII
         size: filename_size
-        doc: BIF filename (read from filename table at specified offset).
+        doc: BIF filename string at the absolute filename_offset in the KEY file.
   
   filename_table:
     seq:
