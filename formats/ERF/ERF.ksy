@@ -9,6 +9,10 @@ meta:
     - mod
     - sav
   xref:
+    ghidra_odyssey_k1:
+      note: |
+        Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CERFHeader is 160 bytes with the same field order as erf_header
+        (file_type, version, language_count, localized_string_size, entry_count, three offsets, build_year, build_day, description_str_ref, 116-byte reserved tail).
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/
     reone: https://github.com/seedhartha/reone/tree/master/src/libs/resource/format/erfreader.cpp
     xoreos: https://github.com/xoreos/xoreos/tree/master/src/aurora/erffile.cpp
