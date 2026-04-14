@@ -4,6 +4,8 @@ meta:
   license: MIT
   endian: le
   xref:
+    ghidra_odyssey_k1:
+      note: "TSLPatcher enums are community tooling metadata, not parsed from swkotor.exe game assets."
     pykotor_ref: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/tslpatcher/
 doc: |
   Shared enums and small helper types used by TSLPatcher-style tooling.
