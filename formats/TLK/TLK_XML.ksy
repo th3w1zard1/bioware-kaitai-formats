@@ -6,6 +6,8 @@ meta:
   file-extension: tlk.xml
   encoding: UTF-8
   xref:
+    ghidra_odyssey_k1:
+      note: "Tooling/XML interchange for TLK; k1_win_gog_swkotor.exe reads binary .tlk (see TLK.ksy)."
     pykotor_library_tlk_binary: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/tlk.py
     pykotor_library_tlk_xml: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk_xml.py
     reone: https://github.com/seedhartha/reone/tree/master/src/libs/resource/format/tlkreader.cpp
