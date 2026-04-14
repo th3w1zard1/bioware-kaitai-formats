@@ -9,8 +9,16 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: |
-        Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: GFFHeaderInfo (56B) matches gff_header field order;
-        GFFStructData and GFFFieldData (12B each) match struct_entry and field_entry (engine CResGFFStruct / CResGFFField).
+        Odyssey Ghidra program `/K1/k1_win_gog_swkotor.exe` (KotOR1 GOG): exported datatypes
+        `GFFHeaderInfo` (56 bytes), `GFFStructData` (12 bytes), `GFFFieldData` (12 bytes) match this `.ksy`
+        byte-for-byte for the on-disk tables. Runtime accessors on `CResGFF` (e.g. `GetField` at image base
+        `0x00410990`, `ReadFieldBYTE` at `0x00411a60`, `ReadFieldINT` at `0x00411c90`) index `GFFFieldData`
+        records using a 12-byte stride (`LEA` with `index*12` in the `GetField` disassembly). High-level
+        game loaders call `ReadField*` with `CResGFF*` + `CResStruct*` (e.g. `CStatusSummary::LoadFromGFF`
+        at `0x006c8490`, overload `KOTOR_AUTOSAVE_PARAMS::LoadFromGFF` at `0x006c9de0`). These paths read
+        typed fields after the resource has been parsed into engine structures; the wire layout is still
+        the `GFFHeaderInfo` + table model below. Cross-check field-type IDs with `GFFFieldTypes` in the same
+        Ghidra project and with community docs (PyKotor wiki) where the EXE uses opaque switches.
     kotor_js: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/GFFObject.ts
     kotor_net: https://github.com/KotOR-Community-Patches/Kotor.NET/tree/master/Kotor.NET/Formats/KotorGFF/
     kotor_net2: https://github.com/NickHugi/Kotor.NET/tree/master/Kotor.NET/Formats/KotorGFF/  # - .NET GFF reader/writer
@@ -135,6 +143,8 @@ types:
         doc: |
           File type signature (FourCC). Examples: "GFF ", "UTC ", "UTI ", "DLG ", "ARE ", etc.
           Must match a valid GFFContent enum value.
+          Source: Odyssey Ghidra `/K1/k1_win_gog_swkotor.exe` datatype `GFFHeaderInfo.file_type` @ +0x0 (char[4]).
+          See also: pykotor_wiki_gff_format (content FourCC vs container).
 
       - id: file_version
         type: str
@@ -144,54 +154,79 @@ types:
           File format version. Must be "V3.2" for KotOR games.
           Later BioWare games use "V3.3", "V4.0", or "V4.1".
           Valid values: "V3.2" (KotOR), "V3.3", "V4.0", "V4.1" (other BioWare games)
+          Source: Ghidra `GFFHeaderInfo.file_version` @ +0x4 (char[4]) on same program path as meta.xref.
 
       - id: struct_offset
         type: u4
-        doc: Byte offset to struct array from beginning of file
+        doc: |
+          Byte offset to struct array from beginning of file.
+          Source: Ghidra `GFFHeaderInfo.struct_offset` @ +0x8 (ulong).
 
       - id: struct_count
         type: u4
-        doc: Number of struct entries in struct array
+        doc: |
+          Number of struct entries in struct array.
+          Source: Ghidra `GFFHeaderInfo.struct_count` @ +0xC (ulong).
 
       - id: field_offset
         type: u4
-        doc: Byte offset to field array from beginning of file
+        doc: |
+          Byte offset to field array from beginning of file.
+          Source: Ghidra `GFFHeaderInfo.field_offset` @ +0x10 (ulong).
 
       - id: field_count
         type: u4
-        doc: Number of field entries in field array
+        doc: |
+          Number of field entries in field array.
+          Source: Ghidra `GFFHeaderInfo.field_count` @ +0x14 (ulong).
 
       - id: label_offset
         type: u4
-        doc: Byte offset to label array from beginning of file
+        doc: |
+          Byte offset to label array from beginning of file.
+          Source: Ghidra `GFFHeaderInfo.label_offset` @ +0x18 (ulong).
 
       - id: label_count
         type: u4
-        doc: Number of labels in label array
+        doc: |
+          Number of labels in label array.
+          Source: Ghidra `GFFHeaderInfo.label_count` @ +0x1C (ulong).
 
       - id: field_data_offset
         type: u4
-        doc: Byte offset to field data section from beginning of file
+        doc: |
+          Byte offset to field data section from beginning of file.
+          Source: Ghidra `GFFHeaderInfo.field_data_offset` @ +0x20 (ulong).
 
       - id: field_data_count
         type: u4
-        doc: Size of field data section in bytes
+        doc: |
+          Size of field data section in bytes.
+          Source: Ghidra `GFFHeaderInfo.field_data_count` @ +0x24 (ulong).
 
       - id: field_indices_offset
         type: u4
-        doc: Byte offset to field indices array from beginning of file
+        doc: |
+          Byte offset to field indices array from beginning of file.
+          Source: Ghidra `GFFHeaderInfo.field_indices_offset` @ +0x28 (ulong).
 
       - id: field_indices_count
         type: u4
-        doc: Number of field indices (total count across all structs with multiple fields)
+        doc: |
+          Number of field indices (total count across all structs with multiple fields).
+          Source: Ghidra `GFFHeaderInfo.field_indices_count` @ +0x2C (ulong).
 
       - id: list_indices_offset
         type: u4
-        doc: Byte offset to list indices array from beginning of file
+        doc: |
+          Byte offset to list indices array from beginning of file.
+          Source: Ghidra `GFFHeaderInfo.list_indices_offset` @ +0x30 (ulong).
 
       - id: list_indices_count
         type: u4
-        doc: Number of list indices entries
+        doc: |
+          Number of list indices entries.
+          Source: Ghidra `GFFHeaderInfo.list_indices_count` @ +0x34 (ulong).
 
   label_array:
     seq:
@@ -225,7 +260,8 @@ types:
       - id: struct_id
         type: u4
         doc: |
-          Structure type identifier (GFFStructData.id in k1_win_gog_swkotor.exe / Odyssey Ghidra).
+          Structure type identifier.
+          Source: Odyssey Ghidra `/K1/k1_win_gog_swkotor.exe` `GFFStructData.id` @ +0x0 (ulong).
           0xFFFFFFFF is the conventional "generic" / unset id in KotOR data; other values are schema-specific.
 
       - id: data_or_offset
@@ -233,6 +269,7 @@ types:
         doc: |
           Field index (if field_count == 1) or byte offset to field indices array (if field_count > 1).
           If field_count == 0, this value is unused.
+          Source: Ghidra `GFFStructData.data_or_data_offset` @ +0x4 (matches engine naming; same 4-byte slot as here).
 
       - id: field_count
         type: u4
@@ -241,6 +278,7 @@ types:
           - 0: No fields
           - 1: Single field, data_or_offset contains the field index directly
           - >1: Multiple fields, data_or_offset contains byte offset into field_indices_array
+          Source: Ghidra `GFFStructData.field_count` @ +0x8 (ulong).
     instances:
       has_single_field:
         value: field_count == 1
@@ -276,10 +314,15 @@ types:
           - 6-7, 9-13, 16-17: Complex types (offset to field_data in data_or_offset)
           - 14: Struct (struct index in data_or_offset)
           - 15: List (offset to list_indices_array in data_or_offset)
+          Source: Odyssey Ghidra `GFFFieldData.field_type` @ +0x0, typed `GFFFieldTypes` in the same program.
+          Runtime: `CResGFF::GetField` @ `0x00410990` indexes the field table with 12-byte stride; `ReadFieldBYTE`
+          @ `0x00411a60` / `ReadFieldINT` @ `0x00411c90` dispatch on resolved field records after lookup.
 
       - id: label_index
         type: u4
-        doc: Index into label_array for field name
+        doc: |
+          Index into label_array for field name.
+          Source: Ghidra `GFFFieldData.label_index` @ +0x4 (ulong).
 
       - id: data_or_offset
         type: u4
@@ -289,6 +332,9 @@ types:
           - Complex types (6-7, 9-13, 16-17): Byte offset into field_data section (relative to field_data_offset)
           - Struct (14): Struct index (index into struct_array)
           - List (15): Byte offset into list_indices_array (relative to list_indices_offset)
+          Source: Ghidra `GFFFieldData.data_or_data_offset` @ +0x8. Kaitai `resolved_field` reads narrow
+          integers from this same 12-byte record at file offset `field_offset + index*12 + 8` for inline types
+          (matches how `ReadField*` consumers use the resolved field payload width).
     instances:
       is_simple_type:
         value: |

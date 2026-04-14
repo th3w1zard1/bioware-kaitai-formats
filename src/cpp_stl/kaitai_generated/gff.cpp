@@ -21,6 +21,7 @@ std::set<gff_t::gff_field_type_t> gff_t::_build_values_gff_field_type_t() {
     _t.insert(gff_t::GFF_FIELD_TYPE_LIST);
     _t.insert(gff_t::GFF_FIELD_TYPE_VECTOR4);
     _t.insert(gff_t::GFF_FIELD_TYPE_VECTOR3);
+    _t.insert(gff_t::GFF_FIELD_TYPE_STR_REF);
     return _t;
 }
 const std::set<gff_t::gff_field_type_t> gff_t::_values_gff_field_type_t = gff_t::_build_values_gff_field_type_t();
@@ -225,7 +226,7 @@ bool gff_t::field_entry_t::is_simple_type() {
     if (f_is_simple_type)
         return m_is_simple_type;
     f_is_simple_type = true;
-    m_is_simple_type =  ((field_type() == gff_t::GFF_FIELD_TYPE_UINT8) || (field_type() == gff_t::GFF_FIELD_TYPE_INT8) || (field_type() == gff_t::GFF_FIELD_TYPE_UINT16) || (field_type() == gff_t::GFF_FIELD_TYPE_INT16) || (field_type() == gff_t::GFF_FIELD_TYPE_UINT32) || (field_type() == gff_t::GFF_FIELD_TYPE_INT32) || (field_type() == gff_t::GFF_FIELD_TYPE_SINGLE)) ;
+    m_is_simple_type =  ((field_type() == gff_t::GFF_FIELD_TYPE_UINT8) || (field_type() == gff_t::GFF_FIELD_TYPE_INT8) || (field_type() == gff_t::GFF_FIELD_TYPE_UINT16) || (field_type() == gff_t::GFF_FIELD_TYPE_INT16) || (field_type() == gff_t::GFF_FIELD_TYPE_UINT32) || (field_type() == gff_t::GFF_FIELD_TYPE_INT32) || (field_type() == gff_t::GFF_FIELD_TYPE_SINGLE) || (field_type() == gff_t::GFF_FIELD_TYPE_STR_REF)) ;
     return m_is_simple_type;
 }
 
@@ -492,6 +493,7 @@ gff_t::resolved_field_t::resolved_field_t(uint32_t p_field_index, kaitai::kstrea
     f_value_localized_string = false;
     f_value_resref = false;
     f_value_single = false;
+    f_value_str_ref = false;
     f_value_string = false;
     f_value_struct = false;
     f_value_uint16 = false;
@@ -566,6 +568,8 @@ void gff_t::resolved_field_t::_clean_up() {
         }
     }
     if (f_value_single && !n_value_single) {
+    }
+    if (f_value_str_ref && !n_value_str_ref) {
     }
     if (f_value_string && !n_value_string) {
         if (m_value_string) {
@@ -791,6 +795,21 @@ float gff_t::resolved_field_t::value_single() {
         m__io->seek(_pos);
     }
     return m_value_single;
+}
+
+uint32_t gff_t::resolved_field_t::value_str_ref() {
+    if (f_value_str_ref)
+        return m_value_str_ref;
+    f_value_str_ref = true;
+    n_value_str_ref = true;
+    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_STR_REF) {
+        n_value_str_ref = false;
+        std::streampos _pos = m__io->pos();
+        m__io->seek(field_entry_pos() + 8);
+        m_value_str_ref = m__io->read_u4le();
+        m__io->seek(_pos);
+    }
+    return m_value_str_ref;
 }
 
 bioware_common_t::bioware_cexo_string_t* gff_t::resolved_field_t::value_string() {
@@ -1073,7 +1092,7 @@ gff_t::struct_entry_t::struct_entry_t(kaitai::kstream* p__io, kaitai::kstruct* p
 }
 
 void gff_t::struct_entry_t::_read() {
-    m_struct_id = m__io->read_s4le();
+    m_struct_id = m__io->read_u4le();
     m_data_or_offset = m__io->read_u4le();
     m_field_count = m__io->read_u4le();
 }

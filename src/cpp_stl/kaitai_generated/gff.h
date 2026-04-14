@@ -28,19 +28,22 @@ class gff_t;
  * - File Header (56 bytes): File type signature (FourCC), version, counts, and offsets to all
  *   data tables (structs, fields, labels, field_data, field_indices, list_indices)
  * - Label Array: Array of 16-byte null-padded field name labels
- * - Struct Array: Array of struct entries (12 bytes each) - struct_id, data_or_offset, field_count
+ * - Struct Array: Array of struct entries (12 bytes each) - struct_id (uint32; 0xFFFFFFFF = generic per engine), data_or_offset, field_count
  * - Field Array: Array of field entries (12 bytes each) - field_type, label_index, data_or_offset
  * - Field Data: Storage area for complex field types (strings, binary, vectors, etc.)
  * - Field Indices Array: Array of field index arrays (used when structs have multiple fields)
  * - List Indices Array: Array of list entry structures (count + struct indices)
  * 
  * Field Types:
- * - Simple types (0-5, 8): Stored inline in data_or_offset (uint8, int8, uint16, int16, uint32,
- *   int32, float)
+ * - Simple types (0-5, 8, 18): Stored inline in data_or_offset (uint8, int8, uint16, int16, uint32,
+ *   int32, float, str_ref as TLK StrRef / uint32)
  * - Complex types (6-7, 9-13, 16-17): Offset to field_data section (uint64, int64, double, string,
  *   resref, localized_string, binary, vector4, vector3)
  * - Struct (14): Struct index stored inline (nested struct)
  * - List (15): Offset to list_indices_array (list of structs)
+ * 
+ * StrRef (18) is a distinct field type from Int (5): same 4-byte inline width, indexes dialog.tlk
+ * (see PyKotor wiki GFF-File-Format.md — GFF Data Types).
  * 
  * Struct Access Pattern:
  * 1. Root struct is always at struct_array index 0
@@ -99,7 +102,8 @@ public:
         GFF_FIELD_TYPE_STRUCT = 14,
         GFF_FIELD_TYPE_LIST = 15,
         GFF_FIELD_TYPE_VECTOR4 = 16,
-        GFF_FIELD_TYPE_VECTOR3 = 17
+        GFF_FIELD_TYPE_VECTOR3 = 17,
+        GFF_FIELD_TYPE_STR_REF = 18
     };
     static bool _is_defined_gff_field_type_t(gff_field_type_t v);
 
@@ -302,24 +306,31 @@ public:
 
         /**
          * Field data type (see gff_field_type enum):
-         * - 0-5, 8: Simple types (stored inline in data_or_offset)
+         * - 0-5, 8, 18: Simple types (stored inline in data_or_offset)
          * - 6-7, 9-13, 16-17: Complex types (offset to field_data in data_or_offset)
          * - 14: Struct (struct index in data_or_offset)
          * - 15: List (offset to list_indices_array in data_or_offset)
+         * Source: Odyssey Ghidra `GFFFieldData.field_type` @ +0x0, typed `GFFFieldTypes` in the same program.
+         * Runtime: `CResGFF::GetField` @ `0x00410990` indexes the field table with 12-byte stride; `ReadFieldBYTE`
+         * @ `0x00411a60` / `ReadFieldINT` @ `0x00411c90` dispatch on resolved field records after lookup.
          */
         gff_field_type_t field_type() const { return m_field_type; }
 
         /**
-         * Index into label_array for field name
+         * Index into label_array for field name.
+         * Source: Ghidra `GFFFieldData.label_index` @ +0x4 (ulong).
          */
         uint32_t label_index() const { return m_label_index; }
 
         /**
          * Inline data (simple types) or offset/index (complex types):
-         * - Simple types (0-5, 8): Value stored directly (1-4 bytes, sign/zero extended to 4 bytes)
+         * - Simple types (0-5, 8, 18): Value stored directly (1-4 bytes, sign/zero extended to 4 bytes)
          * - Complex types (6-7, 9-13, 16-17): Byte offset into field_data section (relative to field_data_offset)
          * - Struct (14): Struct index (index into struct_array)
          * - List (15): Byte offset into list_indices_array (relative to list_indices_offset)
+         * Source: Ghidra `GFFFieldData.data_or_data_offset` @ +0x8. Kaitai `resolved_field` reads narrow
+         * integers from this same 12-byte record at file offset `field_offset + index*12 + 8` for inline types
+         * (matches how `ReadField*` consumers use the resolved field payload width).
          */
         uint32_t data_or_offset() const { return m_data_or_offset; }
         gff_t* _root() const { return m__root; }
@@ -392,6 +403,8 @@ public:
         /**
          * File type signature (FourCC). Examples: "GFF ", "UTC ", "UTI ", "DLG ", "ARE ", etc.
          * Must match a valid GFFContent enum value.
+         * Source: Odyssey Ghidra `/K1/k1_win_gog_swkotor.exe` datatype `GFFHeaderInfo.file_type` @ +0x0 (char[4]).
+         * See also: pykotor_wiki_gff_format (content FourCC vs container).
          */
         std::string file_type() const { return m_file_type; }
 
@@ -399,66 +412,79 @@ public:
          * File format version. Must be "V3.2" for KotOR games.
          * Later BioWare games use "V3.3", "V4.0", or "V4.1".
          * Valid values: "V3.2" (KotOR), "V3.3", "V4.0", "V4.1" (other BioWare games)
+         * Source: Ghidra `GFFHeaderInfo.file_version` @ +0x4 (char[4]) on same program path as meta.xref.
          */
         std::string file_version() const { return m_file_version; }
 
         /**
-         * Byte offset to struct array from beginning of file
+         * Byte offset to struct array from beginning of file.
+         * Source: Ghidra `GFFHeaderInfo.struct_offset` @ +0x8 (ulong).
          */
         uint32_t struct_offset() const { return m_struct_offset; }
 
         /**
-         * Number of struct entries in struct array
+         * Number of struct entries in struct array.
+         * Source: Ghidra `GFFHeaderInfo.struct_count` @ +0xC (ulong).
          */
         uint32_t struct_count() const { return m_struct_count; }
 
         /**
-         * Byte offset to field array from beginning of file
+         * Byte offset to field array from beginning of file.
+         * Source: Ghidra `GFFHeaderInfo.field_offset` @ +0x10 (ulong).
          */
         uint32_t field_offset() const { return m_field_offset; }
 
         /**
-         * Number of field entries in field array
+         * Number of field entries in field array.
+         * Source: Ghidra `GFFHeaderInfo.field_count` @ +0x14 (ulong).
          */
         uint32_t field_count() const { return m_field_count; }
 
         /**
-         * Byte offset to label array from beginning of file
+         * Byte offset to label array from beginning of file.
+         * Source: Ghidra `GFFHeaderInfo.label_offset` @ +0x18 (ulong).
          */
         uint32_t label_offset() const { return m_label_offset; }
 
         /**
-         * Number of labels in label array
+         * Number of labels in label array.
+         * Source: Ghidra `GFFHeaderInfo.label_count` @ +0x1C (ulong).
          */
         uint32_t label_count() const { return m_label_count; }
 
         /**
-         * Byte offset to field data section from beginning of file
+         * Byte offset to field data section from beginning of file.
+         * Source: Ghidra `GFFHeaderInfo.field_data_offset` @ +0x20 (ulong).
          */
         uint32_t field_data_offset() const { return m_field_data_offset; }
 
         /**
-         * Size of field data section in bytes
+         * Size of field data section in bytes.
+         * Source: Ghidra `GFFHeaderInfo.field_data_count` @ +0x24 (ulong).
          */
         uint32_t field_data_count() const { return m_field_data_count; }
 
         /**
-         * Byte offset to field indices array from beginning of file
+         * Byte offset to field indices array from beginning of file.
+         * Source: Ghidra `GFFHeaderInfo.field_indices_offset` @ +0x28 (ulong).
          */
         uint32_t field_indices_offset() const { return m_field_indices_offset; }
 
         /**
-         * Number of field indices (total count across all structs with multiple fields)
+         * Number of field indices (total count across all structs with multiple fields).
+         * Source: Ghidra `GFFHeaderInfo.field_indices_count` @ +0x2C (ulong).
          */
         uint32_t field_indices_count() const { return m_field_indices_count; }
 
         /**
-         * Byte offset to list indices array from beginning of file
+         * Byte offset to list indices array from beginning of file.
+         * Source: Ghidra `GFFHeaderInfo.list_indices_offset` @ +0x30 (ulong).
          */
         uint32_t list_indices_offset() const { return m_list_indices_offset; }
 
         /**
-         * Number of list indices entries
+         * Number of list indices entries.
+         * Source: Ghidra `GFFHeaderInfo.list_indices_count` @ +0x34 (ulong).
          */
         uint32_t list_indices_count() const { return m_list_indices_count; }
         gff_t* _root() const { return m__root; }
@@ -622,7 +648,8 @@ public:
 
     /**
      * A decoded field: includes resolved label string and decoded typed value.
-     * Exactly one `value_*` instance (or one of `value_struct` / `list_*`) will be non-null.
+     * Exactly one `value_*` instance (or one of `value_struct` / `list_*`) will be active for a
+     * valid field_type; includes `value_str_ref` for TLK StrRef (type 18).
      */
 
     class resolved_field_t : public kaitai::kstruct {
@@ -821,6 +848,24 @@ public:
 
     public:
         float value_single();
+
+    private:
+        bool f_value_str_ref;
+        uint32_t m_value_str_ref;
+        bool n_value_str_ref;
+
+    public:
+        bool _is_null_value_str_ref() { value_str_ref(); return n_value_str_ref; };
+
+    private:
+
+    public:
+
+        /**
+         * TLK string reference stored inline (type ID 18). Same width as int32; 0xFFFFFFFF means
+         * no string / not set in many game files (see TLK StrRef conventions).
+         */
+        uint32_t value_str_ref();
 
     private:
         bool f_value_string;
@@ -1139,7 +1184,7 @@ public:
         uint32_t single_field_index();
 
     private:
-        int32_t m_struct_id;
+        uint32_t m_struct_id;
         uint32_t m_data_or_offset;
         uint32_t m_field_count;
         gff_t* m__root;
@@ -1148,14 +1193,16 @@ public:
     public:
 
         /**
-         * Structure type identifier. Often 0xFFFFFFFF (-1) for generic structs.
-         * Used to identify struct types in schema-aware parsers.
+         * Structure type identifier.
+         * Source: Odyssey Ghidra `/K1/k1_win_gog_swkotor.exe` `GFFStructData.id` @ +0x0 (ulong).
+         * 0xFFFFFFFF is the conventional "generic" / unset id in KotOR data; other values are schema-specific.
          */
-        int32_t struct_id() const { return m_struct_id; }
+        uint32_t struct_id() const { return m_struct_id; }
 
         /**
          * Field index (if field_count == 1) or byte offset to field indices array (if field_count > 1).
          * If field_count == 0, this value is unused.
+         * Source: Ghidra `GFFStructData.data_or_data_offset` @ +0x4 (matches engine naming; same 4-byte slot as here).
          */
         uint32_t data_or_offset() const { return m_data_or_offset; }
 
@@ -1164,6 +1211,7 @@ public:
          * - 0: No fields
          * - 1: Single field, data_or_offset contains the field index directly
          * - >1: Multiple fields, data_or_offset contains byte offset into field_indices_array
+         * Source: Ghidra `GFFStructData.field_count` @ +0x8 (ulong).
          */
         uint32_t field_count() const { return m_field_count; }
         gff_t* _root() const { return m__root; }
