@@ -1,6 +1,6 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-using System.Collections.Generic;
+
 
 namespace Kaitai
 {
@@ -30,6 +30,7 @@ namespace Kaitai
         {
             m_parent = p__parent;
             m_root = p__root ?? this;
+            f_lenBytecode = false;
             _read();
         }
         private void _read()
@@ -50,102 +51,30 @@ namespace Kaitai
                 throw new ValidationNotEqualError(66, _sizeMarker, m_io, "/seq/2");
             }
             _fileSize = m_io.ReadU4be();
-            _instructions = new List<Instruction>();
-            {
-                var i = 0;
-                Instruction M_;
-                do {
-                    M_ = new Instruction(m_io, this, m_root);
-                    _instructions.Add(M_);
-                    i++;
-                } while (!(M_Io.Pos >= FileSize));
-            }
+            _bytecode = m_io.ReadBytes(LenBytecode);
         }
+        private bool f_lenBytecode;
+        private int _lenBytecode;
 
         /// <summary>
-        /// NWScript bytecode instruction.
-        /// Format: &lt;opcode: uint8&gt; &lt;qualifier: uint8&gt; &lt;arguments: variable&gt;
-        /// 
-        /// Instruction size varies by opcode:
-        /// - Base: 2 bytes (opcode + qualifier)
-        /// - Arguments: 0 to variable bytes depending on instruction type
-        /// 
-        /// Common instruction types:
-        /// - Constants: CONSTI (6B), CONSTF (6B), CONSTS (2+N B), CONSTO (6B)
-        /// - Stack ops: CPDOWNSP, CPTOPSP, MOVSP (variable size)
-        /// - Arithmetic: ADDxx, SUBxx, MULxx, DIVxx (2B)
-        /// - Control flow: JMP, JSR, JZ, JNZ (6B), RETN (2B)
-        /// - Function calls: ACTION (5B)
-        /// - And many more (see NCS format documentation)
+        /// Byte length of bytecode (total file size minus 13-byte header).
         /// </summary>
-        public partial class Instruction : KaitaiStruct
+        public int LenBytecode
         {
-            public static Instruction FromFile(string fileName)
+            get
             {
-                return new Instruction(new KaitaiStream(fileName));
+                if (f_lenBytecode)
+                    return _lenBytecode;
+                f_lenBytecode = true;
+                _lenBytecode = (int) ((FileSize >= 13 ? FileSize - 13 : 0));
+                return _lenBytecode;
             }
-
-            public Instruction(KaitaiStream p__io, Ncs p__parent = null, Ncs p__root = null) : base(p__io)
-            {
-                m_parent = p__parent;
-                m_root = p__root;
-                _read();
-            }
-            private void _read()
-            {
-                _opcode = m_io.ReadU1();
-                _qualifier = m_io.ReadU1();
-                _arguments = new List<byte>();
-                {
-                    var i = 0;
-                    byte M_;
-                    do {
-                        M_ = m_io.ReadU1();
-                        _arguments.Add(M_);
-                        i++;
-                    } while (!(M_Io.Pos >= M_Io.Size));
-                }
-            }
-            private byte _opcode;
-            private byte _qualifier;
-            private List<byte> _arguments;
-            private Ncs m_root;
-            private Ncs m_parent;
-
-            /// <summary>
-            /// Instruction opcode (0x01-0x2D, excluding 0x42 which is reserved for size marker).
-            /// Determines the instruction type and argument format.
-            /// </summary>
-            public byte Opcode { get { return _opcode; } }
-
-            /// <summary>
-            /// Qualifier byte that refines the instruction to specific operand types.
-            /// Examples: 0x03=Int, 0x04=Float, 0x05=String, 0x06=Object, 0x24=Structure
-            /// </summary>
-            public byte Qualifier { get { return _qualifier; } }
-
-            /// <summary>
-            /// Instruction arguments (variable size).
-            /// Format depends on opcode:
-            /// - No args: None (total 2B)
-            /// - Int/Float/Object: 4 bytes (total 6B)
-            /// - String: 2B length + data (total 2+N B)
-            /// - Jump: 4B signed offset (total 6B)
-            /// - Stack copy: 4B offset + 2B size (total 8B)
-            /// - ACTION: 2B routine + 1B argCount (total 5B)
-            /// - DESTRUCT: 2B size + 2B offset + 2B sizeNoDestroy (total 8B)
-            /// - STORE_STATE: 4B size + 4B sizeLocals (total 10B)
-            /// - And others (see documentation)
-            /// </summary>
-            public List<byte> Arguments { get { return _arguments; } }
-            public Ncs M_Root { get { return m_root; } }
-            public Ncs M_Parent { get { return m_parent; } }
         }
         private string _fileType;
         private string _fileVersion;
         private byte _sizeMarker;
         private uint _fileSize;
-        private List<Instruction> _instructions;
+        private byte[] _bytecode;
         private Ncs m_root;
         private KaitaiStruct m_parent;
 
@@ -173,11 +102,10 @@ namespace Kaitai
         public uint FileSize { get { return _fileSize; } }
 
         /// <summary>
-        /// Stream of bytecode instructions.
-        /// Execution begins at offset 13 (0x0D) after the header.
-        /// Instructions continue until end of file.
+        /// Raw NWScript bytecode from offset 13 through file_size (variable-length instructions).
+        /// Per-instruction layout is opcode-specific; PyKotor decodes this stream in io_ncs.
         /// </summary>
-        public List<Instruction> Instructions { get { return _instructions; } }
+        public byte[] Bytecode { get { return _bytecode; } }
         public Ncs M_Root { get { return m_root; } }
         public KaitaiStruct M_Parent { get { return m_parent; } }
     }
