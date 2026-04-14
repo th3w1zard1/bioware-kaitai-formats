@@ -5,6 +5,8 @@ meta:
   endian: le
   file-extension: ltr
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CResLTR present; binary LTR wire format per PyKotor wiki."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ltr/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/ltrreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp
