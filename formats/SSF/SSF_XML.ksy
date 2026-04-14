@@ -6,6 +6,8 @@ meta:
   file-extension: ssf.xml
   encoding: UTF-8
   xref:
+    ghidra_odyssey_k1:
+      note: "Tooling/XML interchange for SSF; game loads binary SSF (see SSF.ksy)."
     pykotor_library_ssf_binary: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf.py
     pykotor_library_ssf_xml: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf_xml.py
     reone: https://github.com/seedhartha/reone/tree/master/src/libs/resource/parser/ssf.cpp
