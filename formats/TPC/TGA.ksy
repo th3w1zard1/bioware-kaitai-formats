@@ -7,6 +7,8 @@ meta:
     - tga
     - targa
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: TGA sources often converted to TPC for in-game use."
     pykotor_wiki_tpc: https://github.com/OldRepublicDevs/PyKotor/wiki/TPC-File-Format.md
 doc: |
   TGA (Targa) is an uncompressed raster image format used in KotOR for textures.
