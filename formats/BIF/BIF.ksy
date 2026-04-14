@@ -5,6 +5,8 @@ meta:
   endian: le
   file-extension: bif
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe loads BIF archives alongside KEY; BIFF V1 on-disk layout matches Aurora tooling (PyKotor/reone/xoreos)."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/bifreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp
