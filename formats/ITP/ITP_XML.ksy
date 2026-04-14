@@ -6,6 +6,8 @@ meta:
   file-extension: itp.xml
   encoding: UTF-8
   xref:
+    ghidra_odyssey_k1:
+      note: "Tooling/XML for ITP (GFF family); binary GFF rules in GFF.ksy match k1_win_gog_swkotor.exe."
     pykotor_library_itp_binary: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/itp/itp.py
     pykotor_library_itp_xml: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
     reone: https://github.com/seedhartha/reone/tree/master/src/libs/resource/parser/gff/itp.cpp
