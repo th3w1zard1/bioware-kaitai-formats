@@ -5,6 +5,8 @@ meta:
   endian: le
   file-extension: dds
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: DDS payloads embedded or standalone per DirectX / PyKotor wiki."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md
 doc: |
   DDS (DirectDraw Surface) files appear in two variants in KotOR:
