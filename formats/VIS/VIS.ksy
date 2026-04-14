@@ -6,6 +6,8 @@ meta:
   file-extension: vis
   encoding: ASCII
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CResVIS present; ASCII VIS wire format as in this definition."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/visreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/visfile.cpp
