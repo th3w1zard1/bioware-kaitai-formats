@@ -7,6 +7,8 @@ meta:
   license: MIT
   title: BioWare MDL (Model) Binary Format
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: MDL mesh resources loaded by Aurora renderer; layout per PyKotor MDL-MDX wiki."
     pykotor_mdlops: https://github.com/th3w1zard1/MDLOpsM.pm
     pykotor_wiki_mdl: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md
 doc: |
