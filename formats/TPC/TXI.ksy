@@ -6,6 +6,8 @@ meta:
   file-extension: txi
   encoding: ASCII
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: TXI ASCII sidecars parsed with TPC textures (PyKotor wiki)."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/
     pykotor_wiki_txi: https://github.com/OldRepublicDevs/PyKotor/wiki/TXI-File-Format.md
 doc: |
