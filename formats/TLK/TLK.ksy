@@ -6,6 +6,10 @@ meta:
   file-extension:
     - tlk
   xref:
+    ghidra_odyssey_k1:
+      note: |
+        Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: runtime talk tables use CSWTlkTable/CTlkTable (in-memory);
+        on-disk TLK V3.0 wire format remains as defined in this file (20-byte header + entries per wiki).
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/tlkreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp
