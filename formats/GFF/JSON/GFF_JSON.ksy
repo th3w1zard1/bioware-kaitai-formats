@@ -6,6 +6,8 @@ meta:
   file-extension: gff.json
   encoding: UTF-8
   xref:
+    ghidra_odyssey_k1:
+      note: "Tooling/JSON interchange for GFF; not the binary parser path in k1_win_gog_swkotor.exe."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/
     pykotor_wiki_gff_format: https://github.com/OldRepublicDevs/PyKotor/wiki/GFF-File-Format.md
 doc: |
