@@ -5,6 +5,8 @@ meta:
   endian: be
   file-extension: ncs
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: same NCS VM bytecode as NCS.ksy; this file is a reduced schema."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
     pykotor_wiki_ncs: https://github.com/OldRepublicDevs/PyKotor/wiki/NCS-File-Format.md
 
