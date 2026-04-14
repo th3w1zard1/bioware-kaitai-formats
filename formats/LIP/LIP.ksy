@@ -5,6 +5,8 @@ meta:
   endian: le
   file-extension: lip
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: LIP resources parsed for lip-sync; binary layout per PyKotor/reone."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/lipreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/lipfile.cpp
