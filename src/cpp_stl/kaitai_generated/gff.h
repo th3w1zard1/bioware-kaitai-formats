@@ -39,7 +39,7 @@ class gff_t;
  * - Field Array: Array of field entries (12 bytes each) - field_type, label_index, data_or_offset
  * - Field Data: Storage area for complex field types (strings, binary, vectors, etc.)
  * - Field Indices Array: Array of field index arrays (used when structs have multiple fields)
- * - List Indices Array: Array of list entry structures (count + struct indices)
+ * - List Indices Arena: Byte blob (size = `list_indices_count`) containing packed list nodes (count + struct indices)
  * 
  * Field Types:
  * - Simple types (0-5, 8, 18): Stored inline in data_or_offset (uint8, int8, uint16, int16, uint32,
@@ -508,8 +508,10 @@ public:
         uint32_t list_indices_offset() const { return m_list_indices_offset; }
 
         /**
-         * Number of list indices entries.
+         * Size in bytes of the list-indices arena (same semantics as `field_data_count`: byte length, not a node count).
+         * This `.ksy` reads it as `list_indices_array.raw_data` (`size: list_indices_count`).
          * Source: Ghidra `GFFHeaderInfo.list_indices_count` @ +0x34 (ulong).
+         * Community: PyKotor wiki GFF header (list indices section size).
          */
         uint32_t list_indices_count() const { return m_list_indices_count; }
         gff_t* _root() const { return m__root; }
