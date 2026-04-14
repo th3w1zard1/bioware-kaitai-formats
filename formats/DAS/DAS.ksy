@@ -64,26 +64,26 @@ seq:
       Save creation timestamp as Windows FILETIME (int64).
       Convert using DateTime.FromFileTime().
   
-  - id: screenshot_length
+  - id: num_screenshot_data
     type: s4
     doc: Length of screenshot data in bytes (0 if no screenshot)
   
   - id: screenshot_data
     type: u1
     repeat: expr
-    repeat-expr: screenshot_length
-    if: screenshot_length > 0
+    repeat-expr: num_screenshot_data
+    if: num_screenshot_data > 0
     doc: Screenshot image data (typically TGA or DDS format)
   
-  - id: portrait_length
+  - id: num_portrait_data
     type: s4
     doc: Length of portrait data in bytes (0 if no portrait)
   
   - id: portrait_data
     type: u1
     repeat: expr
-    repeat-expr: portrait_length
-    if: portrait_length > 0
+    repeat-expr: num_portrait_data
+    if: num_portrait_data > 0
     doc: Portrait image data (typically TGA or DDS format)
   
   - id: player_name
