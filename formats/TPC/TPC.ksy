@@ -6,6 +6,8 @@ meta:
   file-extension:
     - tpc
   xref:
+    ghidra_odyssey_k1:
+      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: TPC textures loaded via Aurora stack; 128-byte header + payload per PyKotor."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/tpcreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp
