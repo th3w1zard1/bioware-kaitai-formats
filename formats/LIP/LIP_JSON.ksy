@@ -6,6 +6,8 @@ meta:
   file-extension: lip.json
   encoding: UTF-8
   xref:
+    ghidra_odyssey_k1:
+      note: "Tooling/JSON interchange for LIP; game loads binary LIP (see LIP.ksy)."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/
     pykotor_wiki_lip: https://github.com/OldRepublicDevs/PyKotor/wiki/LIP-File-Format.md
 doc: |
