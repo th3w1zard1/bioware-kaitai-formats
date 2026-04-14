@@ -6,6 +6,8 @@ meta:
   file-extension: gff.xml
   encoding: UTF-8
   xref:
+    ghidra_odyssey_k1:
+      note: "Tooling/XML interchange for GFF; not the binary parser path in k1_win_gog_swkotor.exe."
     pykotor: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
     xoreos_tools: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp
 doc: |
