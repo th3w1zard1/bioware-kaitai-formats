@@ -5,6 +5,8 @@ meta:
   endian: le
   file-extension: das
   xref:
+    ghidra_odyssey_k1:
+      note: "Dragon Age: Origins save format (daorigins.exe in Odyssey), not KotOR k1_win_gog_swkotor.exe."
     runtime: src/Andastra/Runtime/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs
 doc: |
   DAS (Dragon Age: Origins Save) files are binary save game files used by the Eclipse Engine
