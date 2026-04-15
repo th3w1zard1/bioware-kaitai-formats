@@ -9,12 +9,15 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (plaintext / tooling; submodule section 0).
       Binary bytecode wire: `formats/NSS/NCS.ksy`.
-    ghidra_odyssey_k1:
+    ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe--NSS is tooling/source text compiled to NCS outside this binary wire spec.
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
     pykotor_wiki_nss: https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
     xoreos_tools_ncsfile: https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137
+    xoreos_types_kfiletype_nss_ncs: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L85-L86
     reone_nsswriter_save: https://github.com/modawan/reone/blob/master/src/libs/tools/script/format/nsswriter.cpp#L33-L45
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    xoreos_docs_torlack_ncs_html: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html
 doc: |
   NSS (NWScript Source) files contain human-readable NWScript source code
   that compiles to NCS bytecode. NWScript is the scripting language used
@@ -31,12 +34,15 @@ doc: |
   - Comments: // for single-line, /* */ for multi-line
   - Preprocessor directives: #include, #define, etc.
   
-  Authoritative links: `meta.doc-ref` (PyKotor wiki, xoreos-tools `NCSFile`, reone `NssWriter`).
+  Authoritative links: `meta.doc-ref` (PyKotor wiki, xoreos `types.h` `kFileTypeNSS`, xoreos-tools `NCSFile`, reone `NssWriter`).
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format PyKotor wiki — NSS"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L85-L86 xoreos — `kFileTypeNSS` / `kFileTypeNCS` (Aurora `FileType` IDs; NSS plaintext, NCS bytecode)"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137 xoreos-tools — `NCSFile`"
   - "https://github.com/modawan/reone/blob/master/src/libs/tools/script/format/nsswriter.cpp#L33-L45 reone — `NssWriter::save`"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html xoreos-docs — Torlack NCS (bytecode companion to plaintext NSS)"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree"
 
 seq:
   - id: bom

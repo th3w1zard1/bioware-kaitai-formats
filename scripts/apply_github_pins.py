@@ -12,6 +12,7 @@ Run from repo root::
     python scripts/apply_github_pins.py --dry-run
     python scripts/apply_github_pins.py --emit-inventory  # print unique github.com owners/repos seen
 """
+
 from __future__ import annotations
 
 import argparse

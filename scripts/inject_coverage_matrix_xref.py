@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Insert meta.xref.repo_coverage_matrix into formats/**/*.ksy if missing."""
+
 from __future__ import annotations
 
 import pathlib

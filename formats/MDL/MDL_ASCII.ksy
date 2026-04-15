@@ -10,14 +10,15 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: "ASCII MDL is mod-tool interchange text, not loaded directly by k1_win_gog_swkotor.exe binary MDL parser."
+    ghidra_odyssey_k1: "ASCII MDL is mod-tool interchange text, not loaded directly by k1_win_gog_swkotor.exe binary MDL parser."
     pykotor_mdlops: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L3916-L4698
     pykotor_wiki_mdl: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
     xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
     bioware_mdl_common_wire_enums: |
       Binary MDL/MDX wire enums: `formats/Common/bioware_mdl_common.ksy` (`model_classification`, `node_type_value`, `controller_type`).
       ASCII keyword integers in MDLOps are a **tooling** namespace; compare wiki binary section + Torlack binmdl for semantics.
+    xoreos_model_kotor_h_parser_context: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79
+    xoreos_types_kfiletype_mdl_mdx: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L81-L88
 doc: |
   MDL ASCII format is a human-readable ASCII text representation of MDL (Model) binary files.
   Used by modding tools for easier editing than binary MDL format.
@@ -35,6 +36,8 @@ doc: |
   and `formats/Common/bioware_mdl_common.ksy` (canonical enum tables; this ASCII spec does not duplicate them as local `enums:`).
 
 doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79 xoreos — `Model_KotOR::ParserContext` (binary KotOR MDL reader state; contrast with this plaintext ASCII wire)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L81-L88 xoreos — `kFileTypeMDL` / `kFileTypeMDX` (`FileType` IDs)"
   - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#ascii-mdl-format PyKotor wiki — ASCII MDL"
   - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#binary-mdl-format PyKotor wiki — binary MDL (wire vs ASCII)"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl"

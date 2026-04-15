@@ -11,8 +11,7 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: walkmesh resources (.wok/.dwk/.pwk) loaded for pathfinding; binary BWM per PyKotor wiki."
+    ghidra_odyssey_k1: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: walkmesh resources (.wok/.dwk/.pwk) loaded for pathfinding; binary BWM per PyKotor wiki."
     pykotor_bwm_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/
     pykotor_io_bwm_kaitai: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L56-L110
     pykotor_io_bwm_reader: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L187-L253
@@ -25,7 +24,13 @@ meta:
     kotor_js_odyssey_walkmesh_binary: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts#L301-L395
     kotor_js_odyssey_walkmesh_header: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts#L490-L516
     wiki: https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
+    xoreos_tools_no_walkmesh_cli: |
+      `xoreos-tools` ships no dedicated BWM/`.wok` decode CLI (see `README.md` tool list); walkmesh bytes are consumed in-engine
+      (`walkmeshloader.cpp`) and in PyKotor/reone/KotOR.js (`meta.xref` above).
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
 doc-ref:
+  - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no BWM-specific tool)"
   - "https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm PyKotor wiki — BWM"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L56-L110 PyKotor — Kaitai-backed BWM struct load"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L187-L253 PyKotor — BWMBinaryReader.load"
@@ -36,6 +41,8 @@ doc-ref:
   - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/bwmreader.cpp#L94-L171 reone — BwmReader (AABB / adjacency tables)"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts#L301-L395 KotOR.js — readBinary"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts#L490-L516 KotOR.js — header / version constants"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree (no dedicated BWM / walkmesh Torlack page; use engine + PyKotor xrefs above)"
+
 doc: |
   BWM (Binary WalkMesh) files define walkable surfaces for pathfinding and collision detection
   in Knights of the Old Republic (KotOR) games. BWM files are stored on disk with different

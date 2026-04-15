@@ -10,10 +10,9 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: |
-        Dragon Age **G2DA** wire (not KotOR `k1_win_gog_swkotor.exe`). For Eclipse / DA engine binaries checked out in Odyssey,
-        use **`user-agdec-http`** per `AGENTS.md` when correlating `GDAFile` / `GFF4File` consumption — same MCP id as other specs.
+    ghidra_odyssey_k1: |
+      Dragon Age **G2DA** wire (not KotOR `k1_win_gog_swkotor.exe`). For Eclipse / DA engine binaries checked out in Odyssey,
+      use **`user-agdec-http`** per `AGENTS.md` when correlating `GDAFile` / `GFF4File` consumption — same MCP id as other specs.
     xoreos_gdafile_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/gdafile.cpp#L275-L305
     github_xoreos_gdafile_add: https://github.com/xoreos/xoreos/blob/master/src/aurora/gdafile.cpp#L307
     xoreos_gff4_ctor_type: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L87-L93

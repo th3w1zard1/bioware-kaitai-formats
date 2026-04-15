@@ -12,7 +12,7 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
+    ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe--MDL mesh resources loaded by Aurora renderer; layout per PyKotor MDL-MDX wiki.
     mdl_model_header_unknown_fields_policy: |
       Several `model_header` u1/u4 slots and `offset_to_super_root` semantics still carry `TODO: VERIFY` in field `doc:` text.
@@ -27,11 +27,13 @@ meta:
     pykotor_mdlops_upstream_mirror: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L4698
     xoreos_model_kotor_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267
     xoreos_model_kotor_parser_context: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L123-L140
+    xoreos_model_kotor_h_parser_context: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79
     xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
     xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
     reone_mdlmdxreader_load: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118
     kotor_js_mdl_loader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/MDLLoader.ts
     kotor_js_odyssey_model_constructor: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModel.ts#L56-L170
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
 doc: |
   BioWare MDL Model Format
 
@@ -54,6 +56,8 @@ doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format PyKotor wiki — MDL/MDX"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408 PyKotor — MDLBinaryReader (binary MDL/MDX)"
   - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267 xoreos — Model_KotOR::load"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79 xoreos — `Model_KotOR::ParserContext` (MDL/MDX stream pointers + cached header fields consumed during binary load)"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no MDL/MDX-specific tool)"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl (controller / Aurora background)"
   - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118 reone — MdlMdxReader::load"
@@ -99,13 +103,18 @@ instances:
     pos: data_start + model_header.offset_to_animations
     doc: Animation header offsets (relative to data_start)
 
+  # Per Kaitai Struct user guide § sparse offset tables: `pos` on a repeated *instance*
+  # is not applied per element the way we need here; the Python backend hoists a single
+  # seek using `_index` / `i` *before* the repeat loop (broken). Use a parametric wrapper
+  # that receives `_index` and reads `animation_header` at `animation_offsets[anim_index]`.
   animations:
-    type: animation_header
+    type: mdl_animation_entry(_index)
     repeat: expr
     repeat-expr: model_header.animation_count
     if: model_header.animation_count > 0
-    pos: data_start + animation_offsets[_index]
-    doc: Animation headers (resolved via animation_offsets)
+    doc: |
+      Animation headers (via offset table). Each list element is `mdl_animation_entry`;
+      the parsed header is `element.header` (same wire layout as `animation_header`).
 
   root_node:
     type: node
@@ -127,16 +136,16 @@ types:
         doc: Size of MDX file in bytes
 
   geometry_header:
-    doc: Geometry header (80 bytes) - Located at offset 12
+    doc: Geometry header is 80 (0x50) bytes long, located at offset 12 (0xC)
     seq:
       - id: function_pointer_0
         type: u4
         doc: |
           Game engine version identifier:
-          - KOTOR 1 PC: 4273776 (0x413750)
-          - KOTOR 2 PC: 4285200 (0x416610)
-          - KOTOR 1 Xbox: 4254992 (0x40EE90)
-          - KOTOR 2 Xbox: 4285872 (0x416950)
+          - KOTOR 1 PC: 4273776 (0x413670)
+          - KOTOR 2 PC: 4285200 (0x416310)
+          - KOTOR 1 Xbox: 4254992 (0x40ED10)
+          - KOTOR 2 Xbox: 4285872 (0x4165B0)
       - id: function_pointer_1
         type: u4
         doc: Function pointer to ASCII model parser
@@ -145,13 +154,13 @@ types:
         size: 32
         encoding: ASCII
         terminator: 0
-        doc: Model name (null-terminated string, max 32 bytes)
+        doc: Model name, null-terminated string, max 32 (0x20) bytes
       - id: root_node_offset
         type: u4
-        doc: Offset to root node structure (relative to MDL data start, offset 12)
+        doc: Offset to root node structure, relative to MDL data start, offset 12 (0xC) bytes
       - id: node_count
         type: u4
-        doc: Total number of nodes in model hierarchy
+        doc: Total number of nodes in model hierarchy, unsigned 32-bit integer
       - id: unknown_array_1
         type: array_definition
         doc: Unknown array definition (offset, count, count duplicate)
@@ -303,6 +312,18 @@ types:
         repeat: eos
         encoding: ASCII
         terminator: 0
+
+  mdl_animation_entry:
+    doc: |
+      One animation slot: reads `animation_header` at `data_start + animation_offsets[anim_index]`.
+      Wraps the header so repeated root instances can use parametric types (user guide).
+    params:
+      - id: anim_index
+        type: u4
+    instances:
+      header:
+        type: animation_header
+        pos: _root.data_start + _root.animation_offsets[anim_index]
 
   animation_header:
     doc: Animation header (136 bytes = 80 byte geometry header + 56 byte animation header)

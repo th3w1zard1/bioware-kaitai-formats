@@ -500,9 +500,7 @@ if __name__ == "__main__":
         # Generate reader/writer
         io_file = output_dir / f"io_{self.spec.id}{self.lang_config['file_ext']}"
         io_content = (
-            self.generate_binary_reader()
-            + "\n\n"
-            + self.generate_binary_writer()
+            self.generate_binary_reader() + "\n\n" + self.generate_binary_writer()
         )
         io_file.write_text(io_content)
 
@@ -536,7 +534,8 @@ def generate_for_all_languages():
         for f in formats_dir.rglob("*.ksy")
         if not f.stem.endswith("_XML")
         and not f.stem.endswith("_JSON")
-        and f.name not in [
+        and f.name
+        not in [
             "DA2S.ksy",
             "DAS.ksy",
             "LYT.ksy",

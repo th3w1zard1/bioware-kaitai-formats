@@ -9,10 +9,9 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: |
-        Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: parsed tables use C2DA/CRes2DA in-memory layouts after load;
-        on-disk .2da text/binary hybrid format here matches PyKotor (not the C++ struct layout).
+    ghidra_odyssey_k1: |
+      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: parsed tables use C2DA/CRes2DA in-memory layouts after load;
+      on-disk .2da text/binary hybrid format here matches PyKotor (not the C++ struct layout).
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/
     github_openkotor_pykotor_io_twoda: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py`:

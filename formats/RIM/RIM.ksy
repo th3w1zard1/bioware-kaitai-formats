@@ -10,8 +10,7 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: RIM module templates are loaded through the same Aurora resource stack as ERF (implicit 120-byte header+padding behavior is KotOR-specific; keep aligned with PyKotor)."
+    ghidra_odyssey_k1: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: RIM module templates are loaded through the same Aurora resource stack as ERF (implicit 120-byte header+padding behavior is KotOR-specific; keep aligned with PyKotor)."
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/rim/
     github_openkotor_pykotor_io_rim: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/rim/io_rim.py`:
@@ -19,7 +18,7 @@ meta:
     reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/rimreader.cpp
     github_modawan_reone_rimreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/rimreader.cpp`: **`RimReader::load`** **26–34**; **`readResource`** **46–58**.
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp#L35-L91
+    xoreos_rimfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp#L35-L91
     github_xoreos_rimfile: |
       https://github.com/xoreos/xoreos — `src/aurora/rimfile.cpp`: **`kRIMID`** / **`kVersion1`** **35–36**; **`RIMFile::load`** **49–75**; **`readResList`** **77–91** (`FileType` read at **85**).
     github_xoreos_tools_unrim: https://github.com/xoreos/xoreos-tools/blob/master/src/unrim.cpp#L55-L85

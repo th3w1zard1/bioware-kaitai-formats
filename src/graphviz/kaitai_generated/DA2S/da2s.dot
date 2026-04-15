@@ -1,0 +1,56 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__da2s {
+		label="Da2s";
+		graph[style=dotted];
+
+		da2s__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="signature_pos">0</TD><TD PORT="signature_size">4</TD><TD>str(ASCII)</TD><TD PORT="signature_type">signature</TD></TR>
+			<TR><TD COLSPAN="4" PORT="signature__valid">must be equal to &quot;DA2S&quot;</TD></TR>
+			<TR><TD PORT="version_pos">4</TD><TD PORT="version_size">4</TD><TD>s4le</TD><TD PORT="version_type">version</TD></TR>
+			<TR><TD COLSPAN="4" PORT="version__valid">must be equal to 1</TD></TR>
+			<TR><TD PORT="save_name_pos">8</TD><TD PORT="save_name_size">...</TD><TD>LengthPrefixedString</TD><TD PORT="save_name_type">save_name</TD></TR>
+			<TR><TD PORT="module_name_pos">...</TD><TD PORT="module_name_size">...</TD><TD>LengthPrefixedString</TD><TD PORT="module_name_type">module_name</TD></TR>
+			<TR><TD PORT="area_name_pos">...</TD><TD PORT="area_name_size">...</TD><TD>LengthPrefixedString</TD><TD PORT="area_name_type">area_name</TD></TR>
+			<TR><TD PORT="time_played_seconds_pos">...</TD><TD PORT="time_played_seconds_size">4</TD><TD>s4le</TD><TD PORT="time_played_seconds_type">time_played_seconds</TD></TR>
+			<TR><TD PORT="timestamp_filetime_pos">...</TD><TD PORT="timestamp_filetime_size">8</TD><TD>s8le</TD><TD PORT="timestamp_filetime_type">timestamp_filetime</TD></TR>
+			<TR><TD PORT="num_screenshot_data_pos">...</TD><TD PORT="num_screenshot_data_size">4</TD><TD>s4le</TD><TD PORT="num_screenshot_data_type">num_screenshot_data</TD></TR>
+			<TR><TD PORT="screenshot_data_pos">...</TD><TD PORT="screenshot_data_size">1</TD><TD>u1</TD><TD PORT="screenshot_data_type">screenshot_data</TD></TR>
+			<TR><TD COLSPAN="4" PORT="screenshot_data__repeat">repeat num_screenshot_data times</TD></TR>
+			<TR><TD COLSPAN="4" PORT="screenshot_data__if">if num_screenshot_data &gt; 0</TD></TR>
+			<TR><TD PORT="num_portrait_data_pos">...</TD><TD PORT="num_portrait_data_size">4</TD><TD>s4le</TD><TD PORT="num_portrait_data_type">num_portrait_data</TD></TR>
+			<TR><TD PORT="portrait_data_pos">...</TD><TD PORT="portrait_data_size">1</TD><TD>u1</TD><TD PORT="portrait_data_type">portrait_data</TD></TR>
+			<TR><TD COLSPAN="4" PORT="portrait_data__repeat">repeat num_portrait_data times</TD></TR>
+			<TR><TD COLSPAN="4" PORT="portrait_data__if">if num_portrait_data &gt; 0</TD></TR>
+			<TR><TD PORT="player_name_pos">...</TD><TD PORT="player_name_size">...</TD><TD>LengthPrefixedString</TD><TD PORT="player_name_type">player_name</TD></TR>
+			<TR><TD PORT="party_member_count_pos">...</TD><TD PORT="party_member_count_size">4</TD><TD>s4le</TD><TD PORT="party_member_count_type">party_member_count</TD></TR>
+			<TR><TD PORT="player_level_pos">...</TD><TD PORT="player_level_size">4</TD><TD>s4le</TD><TD PORT="player_level_type">player_level</TD></TR>
+		</TABLE>>];
+		subgraph cluster__length_prefixed_string {
+			label="Da2s::LengthPrefixedString";
+			graph[style=dotted];
+
+			length_prefixed_string__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="length_pos">0</TD><TD PORT="length_size">4</TD><TD>s4le</TD><TD PORT="length_type">length</TD></TR>
+				<TR><TD PORT="value_pos">4</TD><TD PORT="value_size">length</TD><TD>str(UTF-8)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+			length_prefixed_string__inst__value_trimmed [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>value_trimmed</TD><TD>value</TD></TR>
+			</TABLE>>];
+		}
+	}
+	da2s__seq:save_name_type -> length_prefixed_string__seq [style=bold];
+	da2s__seq:module_name_type -> length_prefixed_string__seq [style=bold];
+	da2s__seq:area_name_type -> length_prefixed_string__seq [style=bold];
+	da2s__seq:num_screenshot_data_type -> da2s__seq:screenshot_data__repeat [color="#404040"];
+	da2s__seq:num_screenshot_data_type -> da2s__seq:screenshot_data__if [color="#404040"];
+	da2s__seq:num_portrait_data_type -> da2s__seq:portrait_data__repeat [color="#404040"];
+	da2s__seq:num_portrait_data_type -> da2s__seq:portrait_data__if [color="#404040"];
+	da2s__seq:player_name_type -> length_prefixed_string__seq [style=bold];
+	length_prefixed_string__seq:length_type -> length_prefixed_string__seq:value_size [color="#404040"];
+	length_prefixed_string__seq:value_type -> length_prefixed_string__inst__value_trimmed [color="#404040"];
+}

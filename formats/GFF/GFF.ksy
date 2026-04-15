@@ -11,11 +11,10 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: |
-        GFF arenas are consumed by many Aurora `CRes*` / template paths; game-specific Ghidra anchors belong on the owning
-        template or capsule spec when you add them. For KotOR PC, use **`user-agdec-http`** (`sync-project`, `checkout-program`,
-        `/K1/k1_win_gog_swkotor.exe`, …) per `AGENTS.md` — same Odyssey workflow as `formats/TPC/DDS.ksy` `ghidra_mcp_odyssey_program_paths`.
+    ghidra_odyssey_k1: |
+      GFF arenas are consumed by many Aurora `CRes*` / template paths; game-specific Ghidra anchors belong on the owning
+      template or capsule spec when you add them. For KotOR PC, use **`user-agdec-http`** (`sync-project`, `checkout-program`,
+      `/K1/k1_win_gog_swkotor.exe`, …) per `AGENTS.md` — same Odyssey workflow as `formats/TPC/DDS.ksy` `ghidra_mcp_odyssey_program_paths`.
     # Flat scalar map (ksy schema): line-anchored authorities. Long reading lists live here (+ optional `doc-ref`), not in `meta.doc`.
     wiki_gff: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
     wiki_gff_file_header: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#file-header

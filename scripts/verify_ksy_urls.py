@@ -23,7 +23,8 @@ Optional: ``--fail-on-master-blob`` fails if any ``https://github.com/…/blob/m
 
 **Always-on (``.ksy`` only):** detects ``meta.xref`` lines like ``some_key: >`` whose next non-blank line
 begins with ``note:`` — YAML parses that as a **single folded string** (the text ``note:`` is not a nested
-key). Fails the run until fixed (use ``some_key:`` then indented ``note: |`` / ``note: "..."``).
+key). Fails the run until fixed: use a **scalar** xref value, e.g. ``some_key: |`` (block text below) or
+``some_key: "one line"`` — not a nested ``note:`` map (also invalid for ``meta.xref`` in ``ksy_schema.json``).
 
 GitHub wiki caveat: HEAD/GET may return 200 for a missing wiki page (UI falls back to Home
 or an empty editor). Do not treat HTTP status alone as proof that a /wiki/... slug exists;
@@ -35,6 +36,7 @@ Optional: ``--check-openkotor-wiki-titles`` GETs each unique
 and fails when the HTML ``<title>`` is the wiki hub *Home* (missing slug). Normalize
 ``OldRepublicDevs/…/wiki/*.md`` links first via ``scripts/normalize_pykotor_wiki_urls.py``.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -339,7 +341,7 @@ def check_ksy_meta_xref_folded_scalar_note_pitfall(
     """Return 1 if any ``*.ksy`` has ``key: >`` under ``meta`` … ``xref`` followed by a ``note:`` line.
 
     YAML treats ``>`` as starting a folded block scalar; the following ``note:`` line becomes **string
-    content**, not a mapping entry (regression fixed historically on ``formats/MDL/MDL.ksy``).
+    content**, not a mapping entry. Prefer ``key: |`` or ``key: "..."`` (``meta.xref`` must stay scalar-valued).
     """
     issues: list[str] = []
     for path in iter_source_files(roots, include_markdown):
@@ -376,8 +378,8 @@ def check_ksy_meta_xref_folded_scalar_note_pitfall(
                 key = mfold.group(2)
                 issues.append(
                     f"{path}:{i + 1}: `meta.xref` uses `{key}: >` then `note:` on line {j + 1}; "
-                    "YAML folds that into one string. Use `"
-                    f"{key}:` then indented `note: |` (or `note: \"...\"`) with **no** `>`."
+                    f'YAML folds that into one string. Fix: `{key}: |` + indented prose, or `{key}: "..."` '
+                    "(xref values must be scalars; no nested `note:` map)."
                 )
     label = ", ".join(str(r.resolve()) for r in roots)
     print(
@@ -445,7 +447,9 @@ def main() -> int:
         action="store_true",
         help="Perform HTTP HEAD checks (slow; some hosts block HEAD)",
     )
-    p.add_argument("--timeout", type=float, default=12.0, help="Per-URL timeout seconds")
+    p.add_argument(
+        "--timeout", type=float, default=12.0, help="Per-URL timeout seconds"
+    )
     p.add_argument(
         "--user-agent",
         default="bioware-kaitai-formats-url-check/1.4 (+https://github.com/)",
@@ -497,7 +501,9 @@ def main() -> int:
     args = p.parse_args()
 
     roots = [args.root, *args.also]
-    fold_pitfall_rc = check_ksy_meta_xref_folded_scalar_note_pitfall(roots, args.include_markdown)
+    fold_pitfall_rc = check_ksy_meta_xref_folded_scalar_note_pitfall(
+        roots, args.include_markdown
+    )
     pinned_range_rc = 0
     if args.check_github_blob_line_ranges:
         pinned_range_rc = check_github_blob_line_ranges(

@@ -1,0 +1,55 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__plt {
+		label="Plt";
+		graph[style=dotted];
+
+		plt__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">24</TD><TD>PltHeader</TD><TD PORT="header_type">header</TD></TR>
+			<TR><TD PORT="pixel_data_pos">24</TD><TD PORT="pixel_data_size">...</TD><TD>PixelDataSection</TD><TD PORT="pixel_data_type">pixel_data</TD></TR>
+		</TABLE>>];
+		subgraph cluster__pixel_data_section {
+			label="Plt::PixelDataSection";
+			graph[style=dotted];
+
+			pixel_data_section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="pixels_pos">0</TD><TD PORT="pixels_size">2</TD><TD>PltPixel</TD><TD PORT="pixels_type">pixels</TD></TR>
+				<TR><TD COLSPAN="4" PORT="pixels__repeat">repeat _root.header.width * _root.header.height times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__plt_header {
+			label="Plt::PltHeader";
+			graph[style=dotted];
+
+			plt_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="signature_pos">0</TD><TD PORT="signature_size">4</TD><TD>str(ASCII)</TD><TD PORT="signature_type">signature</TD></TR>
+				<TR><TD COLSPAN="4" PORT="signature__valid">must be equal to &quot;PLT &quot;</TD></TR>
+				<TR><TD PORT="version_pos">4</TD><TD PORT="version_size">4</TD><TD>str(ASCII)</TD><TD PORT="version_type">version</TD></TR>
+				<TR><TD COLSPAN="4" PORT="version__valid">must be equal to &quot;V1  &quot;</TD></TR>
+				<TR><TD PORT="unknown1_pos">8</TD><TD PORT="unknown1_size">4</TD><TD>u4le</TD><TD PORT="unknown1_type">unknown1</TD></TR>
+				<TR><TD PORT="unknown2_pos">12</TD><TD PORT="unknown2_size">4</TD><TD>u4le</TD><TD PORT="unknown2_type">unknown2</TD></TR>
+				<TR><TD PORT="width_pos">16</TD><TD PORT="width_size">4</TD><TD>u4le</TD><TD PORT="width_type">width</TD></TR>
+				<TR><TD PORT="height_pos">20</TD><TD PORT="height_size">4</TD><TD>u4le</TD><TD PORT="height_type">height</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__plt_pixel {
+			label="Plt::PltPixel";
+			graph[style=dotted];
+
+			plt_pixel__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="color_index_pos">0</TD><TD PORT="color_index_size">1</TD><TD>u1</TD><TD PORT="color_index_type">color_index</TD></TR>
+				<TR><TD PORT="palette_group_index_pos">1</TD><TD PORT="palette_group_index_size">1</TD><TD>u1</TD><TD PORT="palette_group_index_type">palette_group_index</TD></TR>
+			</TABLE>>];
+		}
+	}
+	plt__seq:header_type -> plt_header__seq [style=bold];
+	plt__seq:pixel_data_type -> pixel_data_section__seq [style=bold];
+	pixel_data_section__seq:pixels_type -> plt_pixel__seq [style=bold];
+	plt_header__seq:width_type -> pixel_data_section__seq:pixels__repeat [color="#404040"];
+	plt_header__seq:height_type -> pixel_data_section__seq:pixels__repeat [color="#404040"];
+}

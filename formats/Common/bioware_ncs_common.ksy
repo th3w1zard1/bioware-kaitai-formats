@@ -7,8 +7,7 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: "Shared NCS opcode/qualifier enums — VM/Ghidra context on `formats/NSS/NCS.ksy`; `user-agdec-http` per AGENTS.md."
+    ghidra_odyssey_k1: "Shared NCS opcode/qualifier enums — VM/Ghidra context on `formats/NSS/NCS.ksy`; `user-agdec-http` per AGENTS.md."
     pykotor_ncs_data_bytecode: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L115
     pykotor_ncs_data_qualifier: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L118-L140
     pykotor_wiki_ncs: https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format

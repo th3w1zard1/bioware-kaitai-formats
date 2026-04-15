@@ -1,0 +1,410 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__bwm {
+		label="Bwm";
+		graph[style=dotted];
+
+		bwm__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">8</TD><TD>BwmHeader</TD><TD PORT="header_type">header</TD></TR>
+			<TR><TD PORT="walkmesh_properties_pos">8</TD><TD PORT="walkmesh_properties_size">64</TD><TD>WalkmeshProperties</TD><TD PORT="walkmesh_properties_type">walkmesh_properties</TD></TR>
+			<TR><TD PORT="data_table_offsets_pos">72</TD><TD PORT="data_table_offsets_size">64</TD><TD>DataTableOffsets</TD><TD PORT="data_table_offsets_type">data_table_offsets</TD></TR>
+		</TABLE>>];
+		bwm__inst__aabb_nodes [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="aabb_nodes_pos">_root.data_table_offsets.aabb_offset</TD><TD PORT="aabb_nodes_size">...</TD><TD>AabbNodesArray</TD><TD PORT="aabb_nodes_type">aabb_nodes</TD></TR>
+			<TR><TD COLSPAN="4" PORT="aabb_nodes__if">if  ((_root.walkmesh_properties.walkmesh_type == 1) &amp;&amp; (_root.data_table_offsets.aabb_count &gt; 0)) </TD></TR>
+		</TABLE>>];
+		bwm__inst__adjacencies [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="adjacencies_pos">_root.data_table_offsets.adjacency_offset</TD><TD PORT="adjacencies_size">...</TD><TD>AdjacenciesArray</TD><TD PORT="adjacencies_type">adjacencies</TD></TR>
+			<TR><TD COLSPAN="4" PORT="adjacencies__if">if  ((_root.walkmesh_properties.walkmesh_type == 1) &amp;&amp; (_root.data_table_offsets.adjacency_count &gt; 0)) </TD></TR>
+		</TABLE>>];
+		bwm__inst__edges [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="edges_pos">_root.data_table_offsets.edge_offset</TD><TD PORT="edges_size">...</TD><TD>EdgesArray</TD><TD PORT="edges_type">edges</TD></TR>
+			<TR><TD COLSPAN="4" PORT="edges__if">if  ((_root.walkmesh_properties.walkmesh_type == 1) &amp;&amp; (_root.data_table_offsets.edge_count &gt; 0)) </TD></TR>
+		</TABLE>>];
+		bwm__inst__face_indices [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="face_indices_pos">_root.data_table_offsets.face_indices_offset</TD><TD PORT="face_indices_size">...</TD><TD>FaceIndicesArray</TD><TD PORT="face_indices_type">face_indices</TD></TR>
+			<TR><TD COLSPAN="4" PORT="face_indices__if">if _root.data_table_offsets.face_count &gt; 0</TD></TR>
+		</TABLE>>];
+		bwm__inst__materials [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="materials_pos">_root.data_table_offsets.materials_offset</TD><TD PORT="materials_size">...</TD><TD>MaterialsArray</TD><TD PORT="materials_type">materials</TD></TR>
+			<TR><TD COLSPAN="4" PORT="materials__if">if _root.data_table_offsets.face_count &gt; 0</TD></TR>
+		</TABLE>>];
+		bwm__inst__normals [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="normals_pos">_root.data_table_offsets.normals_offset</TD><TD PORT="normals_size">...</TD><TD>NormalsArray</TD><TD PORT="normals_type">normals</TD></TR>
+			<TR><TD COLSPAN="4" PORT="normals__if">if  ((_root.walkmesh_properties.walkmesh_type == 1) &amp;&amp; (_root.data_table_offsets.face_count &gt; 0)) </TD></TR>
+		</TABLE>>];
+		bwm__inst__perimeters [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="perimeters_pos">_root.data_table_offsets.perimeter_offset</TD><TD PORT="perimeters_size">...</TD><TD>PerimetersArray</TD><TD PORT="perimeters_type">perimeters</TD></TR>
+			<TR><TD COLSPAN="4" PORT="perimeters__if">if  ((_root.walkmesh_properties.walkmesh_type == 1) &amp;&amp; (_root.data_table_offsets.perimeter_count &gt; 0)) </TD></TR>
+		</TABLE>>];
+		bwm__inst__planar_distances [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="planar_distances_pos">_root.data_table_offsets.distances_offset</TD><TD PORT="planar_distances_size">...</TD><TD>PlanarDistancesArray</TD><TD PORT="planar_distances_type">planar_distances</TD></TR>
+			<TR><TD COLSPAN="4" PORT="planar_distances__if">if  ((_root.walkmesh_properties.walkmesh_type == 1) &amp;&amp; (_root.data_table_offsets.face_count &gt; 0)) </TD></TR>
+		</TABLE>>];
+		bwm__inst__vertices [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="vertices_pos">_root.data_table_offsets.vertex_offset</TD><TD PORT="vertices_size">...</TD><TD>VerticesArray</TD><TD PORT="vertices_type">vertices</TD></TR>
+			<TR><TD COLSPAN="4" PORT="vertices__if">if _root.data_table_offsets.vertex_count &gt; 0</TD></TR>
+		</TABLE>>];
+		subgraph cluster__aabb_node {
+			label="Bwm::AabbNode";
+			graph[style=dotted];
+
+			aabb_node__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="bounds_min_pos">0</TD><TD PORT="bounds_min_size">12</TD><TD>Vec3f</TD><TD PORT="bounds_min_type">bounds_min</TD></TR>
+				<TR><TD PORT="bounds_max_pos">12</TD><TD PORT="bounds_max_size">12</TD><TD>Vec3f</TD><TD PORT="bounds_max_type">bounds_max</TD></TR>
+				<TR><TD PORT="face_index_pos">24</TD><TD PORT="face_index_size">4</TD><TD>s4le</TD><TD PORT="face_index_type">face_index</TD></TR>
+				<TR><TD PORT="unknown_pos">28</TD><TD PORT="unknown_size">4</TD><TD>u4le</TD><TD PORT="unknown_type">unknown</TD></TR>
+				<TR><TD PORT="most_significant_plane_pos">32</TD><TD PORT="most_significant_plane_size">4</TD><TD>u4le</TD><TD PORT="most_significant_plane_type">most_significant_plane</TD></TR>
+				<TR><TD PORT="left_child_index_pos">36</TD><TD PORT="left_child_index_size">4</TD><TD>u4le</TD><TD PORT="left_child_index_type">left_child_index</TD></TR>
+				<TR><TD PORT="right_child_index_pos">40</TD><TD PORT="right_child_index_size">4</TD><TD>u4le</TD><TD PORT="right_child_index_type">right_child_index</TD></TR>
+			</TABLE>>];
+			aabb_node__inst__has_left_child [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>has_left_child</TD><TD>left_child_index != 4294967295</TD></TR>
+			</TABLE>>];
+			aabb_node__inst__has_right_child [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>has_right_child</TD><TD>right_child_index != 4294967295</TD></TR>
+			</TABLE>>];
+			aabb_node__inst__is_internal_node [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_internal_node</TD><TD>face_index == -1</TD></TR>
+			</TABLE>>];
+			aabb_node__inst__is_leaf_node [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_leaf_node</TD><TD>face_index != -1</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__aabb_nodes_array {
+			label="Bwm::AabbNodesArray";
+			graph[style=dotted];
+
+			aabb_nodes_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="nodes_pos">0</TD><TD PORT="nodes_size">44</TD><TD>AabbNode</TD><TD PORT="nodes_type">nodes</TD></TR>
+				<TR><TD COLSPAN="4" PORT="nodes__repeat">repeat _root.data_table_offsets.aabb_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__adjacencies_array {
+			label="Bwm::AdjacenciesArray";
+			graph[style=dotted];
+
+			adjacencies_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="adjacencies_pos">0</TD><TD PORT="adjacencies_size">12</TD><TD>AdjacencyTriplet</TD><TD PORT="adjacencies_type">adjacencies</TD></TR>
+				<TR><TD COLSPAN="4" PORT="adjacencies__repeat">repeat _root.data_table_offsets.adjacency_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__adjacency_triplet {
+			label="Bwm::AdjacencyTriplet";
+			graph[style=dotted];
+
+			adjacency_triplet__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="edge_0_adjacency_pos">0</TD><TD PORT="edge_0_adjacency_size">4</TD><TD>s4le</TD><TD PORT="edge_0_adjacency_type">edge_0_adjacency</TD></TR>
+				<TR><TD PORT="edge_1_adjacency_pos">4</TD><TD PORT="edge_1_adjacency_size">4</TD><TD>s4le</TD><TD PORT="edge_1_adjacency_type">edge_1_adjacency</TD></TR>
+				<TR><TD PORT="edge_2_adjacency_pos">8</TD><TD PORT="edge_2_adjacency_size">4</TD><TD>s4le</TD><TD PORT="edge_2_adjacency_type">edge_2_adjacency</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_0_face_index [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_0_face_index</TD><TD>(edge_0_adjacency != -1 ? edge_0_adjacency / 3 : -1)</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_0_has_neighbor [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_0_has_neighbor</TD><TD>edge_0_adjacency != -1</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_0_local_edge [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_0_local_edge</TD><TD>(edge_0_adjacency != -1 ? edge_0_adjacency % 3 : -1)</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_1_face_index [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_1_face_index</TD><TD>(edge_1_adjacency != -1 ? edge_1_adjacency / 3 : -1)</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_1_has_neighbor [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_1_has_neighbor</TD><TD>edge_1_adjacency != -1</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_1_local_edge [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_1_local_edge</TD><TD>(edge_1_adjacency != -1 ? edge_1_adjacency % 3 : -1)</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_2_face_index [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_2_face_index</TD><TD>(edge_2_adjacency != -1 ? edge_2_adjacency / 3 : -1)</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_2_has_neighbor [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_2_has_neighbor</TD><TD>edge_2_adjacency != -1</TD></TR>
+			</TABLE>>];
+			adjacency_triplet__inst__edge_2_local_edge [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>edge_2_local_edge</TD><TD>(edge_2_adjacency != -1 ? edge_2_adjacency % 3 : -1)</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bwm_header {
+			label="Bwm::BwmHeader";
+			graph[style=dotted];
+
+			bwm_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="magic_pos">0</TD><TD PORT="magic_size">4</TD><TD>str(ASCII)</TD><TD PORT="magic_type">magic</TD></TR>
+				<TR><TD PORT="version_pos">4</TD><TD PORT="version_size">4</TD><TD>str(ASCII)</TD><TD PORT="version_type">version</TD></TR>
+			</TABLE>>];
+			bwm_header__inst__is_valid_bwm [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_valid_bwm</TD><TD> ((magic == &quot;BWM &quot;) &amp;&amp; (version == &quot;V1.0&quot;)) </TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__data_table_offsets {
+			label="Bwm::DataTableOffsets";
+			graph[style=dotted];
+
+			data_table_offsets__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="vertex_count_pos">0</TD><TD PORT="vertex_count_size">4</TD><TD>u4le</TD><TD PORT="vertex_count_type">vertex_count</TD></TR>
+				<TR><TD PORT="vertex_offset_pos">4</TD><TD PORT="vertex_offset_size">4</TD><TD>u4le</TD><TD PORT="vertex_offset_type">vertex_offset</TD></TR>
+				<TR><TD PORT="face_count_pos">8</TD><TD PORT="face_count_size">4</TD><TD>u4le</TD><TD PORT="face_count_type">face_count</TD></TR>
+				<TR><TD PORT="face_indices_offset_pos">12</TD><TD PORT="face_indices_offset_size">4</TD><TD>u4le</TD><TD PORT="face_indices_offset_type">face_indices_offset</TD></TR>
+				<TR><TD PORT="materials_offset_pos">16</TD><TD PORT="materials_offset_size">4</TD><TD>u4le</TD><TD PORT="materials_offset_type">materials_offset</TD></TR>
+				<TR><TD PORT="normals_offset_pos">20</TD><TD PORT="normals_offset_size">4</TD><TD>u4le</TD><TD PORT="normals_offset_type">normals_offset</TD></TR>
+				<TR><TD PORT="distances_offset_pos">24</TD><TD PORT="distances_offset_size">4</TD><TD>u4le</TD><TD PORT="distances_offset_type">distances_offset</TD></TR>
+				<TR><TD PORT="aabb_count_pos">28</TD><TD PORT="aabb_count_size">4</TD><TD>u4le</TD><TD PORT="aabb_count_type">aabb_count</TD></TR>
+				<TR><TD PORT="aabb_offset_pos">32</TD><TD PORT="aabb_offset_size">4</TD><TD>u4le</TD><TD PORT="aabb_offset_type">aabb_offset</TD></TR>
+				<TR><TD PORT="unknown_pos">36</TD><TD PORT="unknown_size">4</TD><TD>u4le</TD><TD PORT="unknown_type">unknown</TD></TR>
+				<TR><TD PORT="adjacency_count_pos">40</TD><TD PORT="adjacency_count_size">4</TD><TD>u4le</TD><TD PORT="adjacency_count_type">adjacency_count</TD></TR>
+				<TR><TD PORT="adjacency_offset_pos">44</TD><TD PORT="adjacency_offset_size">4</TD><TD>u4le</TD><TD PORT="adjacency_offset_type">adjacency_offset</TD></TR>
+				<TR><TD PORT="edge_count_pos">48</TD><TD PORT="edge_count_size">4</TD><TD>u4le</TD><TD PORT="edge_count_type">edge_count</TD></TR>
+				<TR><TD PORT="edge_offset_pos">52</TD><TD PORT="edge_offset_size">4</TD><TD>u4le</TD><TD PORT="edge_offset_type">edge_offset</TD></TR>
+				<TR><TD PORT="perimeter_count_pos">56</TD><TD PORT="perimeter_count_size">4</TD><TD>u4le</TD><TD PORT="perimeter_count_type">perimeter_count</TD></TR>
+				<TR><TD PORT="perimeter_offset_pos">60</TD><TD PORT="perimeter_offset_size">4</TD><TD>u4le</TD><TD PORT="perimeter_offset_type">perimeter_offset</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__edge_entry {
+			label="Bwm::EdgeEntry";
+			graph[style=dotted];
+
+			edge_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="edge_index_pos">0</TD><TD PORT="edge_index_size">4</TD><TD>u4le</TD><TD PORT="edge_index_type">edge_index</TD></TR>
+				<TR><TD PORT="transition_pos">4</TD><TD PORT="transition_size">4</TD><TD>s4le</TD><TD PORT="transition_type">transition</TD></TR>
+			</TABLE>>];
+			edge_entry__inst__face_index [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>face_index</TD><TD>edge_index / 3</TD></TR>
+			</TABLE>>];
+			edge_entry__inst__has_transition [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>has_transition</TD><TD>transition != -1</TD></TR>
+			</TABLE>>];
+			edge_entry__inst__local_edge_index [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>local_edge_index</TD><TD>edge_index % 3</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__edges_array {
+			label="Bwm::EdgesArray";
+			graph[style=dotted];
+
+			edges_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="edges_pos">0</TD><TD PORT="edges_size">8</TD><TD>EdgeEntry</TD><TD PORT="edges_type">edges</TD></TR>
+				<TR><TD COLSPAN="4" PORT="edges__repeat">repeat _root.data_table_offsets.edge_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__face_indices {
+			label="Bwm::FaceIndices";
+			graph[style=dotted];
+
+			face_indices__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="v1_index_pos">0</TD><TD PORT="v1_index_size">4</TD><TD>u4le</TD><TD PORT="v1_index_type">v1_index</TD></TR>
+				<TR><TD PORT="v2_index_pos">4</TD><TD PORT="v2_index_size">4</TD><TD>u4le</TD><TD PORT="v2_index_type">v2_index</TD></TR>
+				<TR><TD PORT="v3_index_pos">8</TD><TD PORT="v3_index_size">4</TD><TD>u4le</TD><TD PORT="v3_index_type">v3_index</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__face_indices_array {
+			label="Bwm::FaceIndicesArray";
+			graph[style=dotted];
+
+			face_indices_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="faces_pos">0</TD><TD PORT="faces_size">12</TD><TD>FaceIndices</TD><TD PORT="faces_type">faces</TD></TR>
+				<TR><TD COLSPAN="4" PORT="faces__repeat">repeat _root.data_table_offsets.face_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__materials_array {
+			label="Bwm::MaterialsArray";
+			graph[style=dotted];
+
+			materials_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="materials_pos">0</TD><TD PORT="materials_size">4</TD><TD>u4le</TD><TD PORT="materials_type">materials</TD></TR>
+				<TR><TD COLSPAN="4" PORT="materials__repeat">repeat _root.data_table_offsets.face_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__normals_array {
+			label="Bwm::NormalsArray";
+			graph[style=dotted];
+
+			normals_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="normals_pos">0</TD><TD PORT="normals_size">12</TD><TD>Vec3f</TD><TD PORT="normals_type">normals</TD></TR>
+				<TR><TD COLSPAN="4" PORT="normals__repeat">repeat _root.data_table_offsets.face_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__perimeters_array {
+			label="Bwm::PerimetersArray";
+			graph[style=dotted];
+
+			perimeters_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="perimeters_pos">0</TD><TD PORT="perimeters_size">4</TD><TD>u4le</TD><TD PORT="perimeters_type">perimeters</TD></TR>
+				<TR><TD COLSPAN="4" PORT="perimeters__repeat">repeat _root.data_table_offsets.perimeter_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__planar_distances_array {
+			label="Bwm::PlanarDistancesArray";
+			graph[style=dotted];
+
+			planar_distances_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="distances_pos">0</TD><TD PORT="distances_size">4</TD><TD>f4le</TD><TD PORT="distances_type">distances</TD></TR>
+				<TR><TD COLSPAN="4" PORT="distances__repeat">repeat _root.data_table_offsets.face_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__vec3f {
+			label="Bwm::Vec3f";
+			graph[style=dotted];
+
+			vec3f__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="x_pos">0</TD><TD PORT="x_size">4</TD><TD>f4le</TD><TD PORT="x_type">x</TD></TR>
+				<TR><TD PORT="y_pos">4</TD><TD PORT="y_size">4</TD><TD>f4le</TD><TD PORT="y_type">y</TD></TR>
+				<TR><TD PORT="z_pos">8</TD><TD PORT="z_size">4</TD><TD>f4le</TD><TD PORT="z_type">z</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__vertices_array {
+			label="Bwm::VerticesArray";
+			graph[style=dotted];
+
+			vertices_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="vertices_pos">0</TD><TD PORT="vertices_size">12</TD><TD>Vec3f</TD><TD PORT="vertices_type">vertices</TD></TR>
+				<TR><TD COLSPAN="4" PORT="vertices__repeat">repeat _root.data_table_offsets.vertex_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__walkmesh_properties {
+			label="Bwm::WalkmeshProperties";
+			graph[style=dotted];
+
+			walkmesh_properties__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="walkmesh_type_pos">0</TD><TD PORT="walkmesh_type_size">4</TD><TD>u4le</TD><TD PORT="walkmesh_type_type">walkmesh_type</TD></TR>
+				<TR><TD PORT="relative_use_position_1_pos">4</TD><TD PORT="relative_use_position_1_size">12</TD><TD>Vec3f</TD><TD PORT="relative_use_position_1_type">relative_use_position_1</TD></TR>
+				<TR><TD PORT="relative_use_position_2_pos">16</TD><TD PORT="relative_use_position_2_size">12</TD><TD>Vec3f</TD><TD PORT="relative_use_position_2_type">relative_use_position_2</TD></TR>
+				<TR><TD PORT="absolute_use_position_1_pos">28</TD><TD PORT="absolute_use_position_1_size">12</TD><TD>Vec3f</TD><TD PORT="absolute_use_position_1_type">absolute_use_position_1</TD></TR>
+				<TR><TD PORT="absolute_use_position_2_pos">40</TD><TD PORT="absolute_use_position_2_size">12</TD><TD>Vec3f</TD><TD PORT="absolute_use_position_2_type">absolute_use_position_2</TD></TR>
+				<TR><TD PORT="position_pos">52</TD><TD PORT="position_size">12</TD><TD>Vec3f</TD><TD PORT="position_type">position</TD></TR>
+			</TABLE>>];
+			walkmesh_properties__inst__is_area_walkmesh [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_area_walkmesh</TD><TD>walkmesh_type == 1</TD></TR>
+			</TABLE>>];
+			walkmesh_properties__inst__is_placeable_or_door [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_placeable_or_door</TD><TD>walkmesh_type == 0</TD></TR>
+			</TABLE>>];
+		}
+	}
+	bwm__seq:header_type -> bwm_header__seq [style=bold];
+	bwm__seq:walkmesh_properties_type -> walkmesh_properties__seq [style=bold];
+	bwm__seq:data_table_offsets_type -> data_table_offsets__seq [style=bold];
+	data_table_offsets__seq:aabb_offset_type -> bwm__inst__aabb_nodes:aabb_nodes_pos [color="#404040"];
+	bwm__inst__aabb_nodes:aabb_nodes_type -> aabb_nodes_array__seq [style=bold];
+	walkmesh_properties__seq:walkmesh_type_type -> bwm__inst__aabb_nodes:aabb_nodes__if [color="#404040"];
+	data_table_offsets__seq:aabb_count_type -> bwm__inst__aabb_nodes:aabb_nodes__if [color="#404040"];
+	data_table_offsets__seq:adjacency_offset_type -> bwm__inst__adjacencies:adjacencies_pos [color="#404040"];
+	bwm__inst__adjacencies:adjacencies_type -> adjacencies_array__seq [style=bold];
+	walkmesh_properties__seq:walkmesh_type_type -> bwm__inst__adjacencies:adjacencies__if [color="#404040"];
+	data_table_offsets__seq:adjacency_count_type -> bwm__inst__adjacencies:adjacencies__if [color="#404040"];
+	data_table_offsets__seq:edge_offset_type -> bwm__inst__edges:edges_pos [color="#404040"];
+	bwm__inst__edges:edges_type -> edges_array__seq [style=bold];
+	walkmesh_properties__seq:walkmesh_type_type -> bwm__inst__edges:edges__if [color="#404040"];
+	data_table_offsets__seq:edge_count_type -> bwm__inst__edges:edges__if [color="#404040"];
+	data_table_offsets__seq:face_indices_offset_type -> bwm__inst__face_indices:face_indices_pos [color="#404040"];
+	bwm__inst__face_indices:face_indices_type -> face_indices_array__seq [style=bold];
+	data_table_offsets__seq:face_count_type -> bwm__inst__face_indices:face_indices__if [color="#404040"];
+	data_table_offsets__seq:materials_offset_type -> bwm__inst__materials:materials_pos [color="#404040"];
+	bwm__inst__materials:materials_type -> materials_array__seq [style=bold];
+	data_table_offsets__seq:face_count_type -> bwm__inst__materials:materials__if [color="#404040"];
+	data_table_offsets__seq:normals_offset_type -> bwm__inst__normals:normals_pos [color="#404040"];
+	bwm__inst__normals:normals_type -> normals_array__seq [style=bold];
+	walkmesh_properties__seq:walkmesh_type_type -> bwm__inst__normals:normals__if [color="#404040"];
+	data_table_offsets__seq:face_count_type -> bwm__inst__normals:normals__if [color="#404040"];
+	data_table_offsets__seq:perimeter_offset_type -> bwm__inst__perimeters:perimeters_pos [color="#404040"];
+	bwm__inst__perimeters:perimeters_type -> perimeters_array__seq [style=bold];
+	walkmesh_properties__seq:walkmesh_type_type -> bwm__inst__perimeters:perimeters__if [color="#404040"];
+	data_table_offsets__seq:perimeter_count_type -> bwm__inst__perimeters:perimeters__if [color="#404040"];
+	data_table_offsets__seq:distances_offset_type -> bwm__inst__planar_distances:planar_distances_pos [color="#404040"];
+	bwm__inst__planar_distances:planar_distances_type -> planar_distances_array__seq [style=bold];
+	walkmesh_properties__seq:walkmesh_type_type -> bwm__inst__planar_distances:planar_distances__if [color="#404040"];
+	data_table_offsets__seq:face_count_type -> bwm__inst__planar_distances:planar_distances__if [color="#404040"];
+	data_table_offsets__seq:vertex_offset_type -> bwm__inst__vertices:vertices_pos [color="#404040"];
+	bwm__inst__vertices:vertices_type -> vertices_array__seq [style=bold];
+	data_table_offsets__seq:vertex_count_type -> bwm__inst__vertices:vertices__if [color="#404040"];
+	aabb_node__seq:bounds_min_type -> vec3f__seq [style=bold];
+	aabb_node__seq:bounds_max_type -> vec3f__seq [style=bold];
+	aabb_node__seq:left_child_index_type -> aabb_node__inst__has_left_child [color="#404040"];
+	aabb_node__seq:right_child_index_type -> aabb_node__inst__has_right_child [color="#404040"];
+	aabb_node__seq:face_index_type -> aabb_node__inst__is_internal_node [color="#404040"];
+	aabb_node__seq:face_index_type -> aabb_node__inst__is_leaf_node [color="#404040"];
+	aabb_nodes_array__seq:nodes_type -> aabb_node__seq [style=bold];
+	data_table_offsets__seq:aabb_count_type -> aabb_nodes_array__seq:nodes__repeat [color="#404040"];
+	adjacencies_array__seq:adjacencies_type -> adjacency_triplet__seq [style=bold];
+	data_table_offsets__seq:adjacency_count_type -> adjacencies_array__seq:adjacencies__repeat [color="#404040"];
+	adjacency_triplet__seq:edge_0_adjacency_type -> adjacency_triplet__inst__edge_0_face_index [color="#404040"];
+	adjacency_triplet__seq:edge_0_adjacency_type -> adjacency_triplet__inst__edge_0_has_neighbor [color="#404040"];
+	adjacency_triplet__seq:edge_0_adjacency_type -> adjacency_triplet__inst__edge_0_local_edge [color="#404040"];
+	adjacency_triplet__seq:edge_1_adjacency_type -> adjacency_triplet__inst__edge_1_face_index [color="#404040"];
+	adjacency_triplet__seq:edge_1_adjacency_type -> adjacency_triplet__inst__edge_1_has_neighbor [color="#404040"];
+	adjacency_triplet__seq:edge_1_adjacency_type -> adjacency_triplet__inst__edge_1_local_edge [color="#404040"];
+	adjacency_triplet__seq:edge_2_adjacency_type -> adjacency_triplet__inst__edge_2_face_index [color="#404040"];
+	adjacency_triplet__seq:edge_2_adjacency_type -> adjacency_triplet__inst__edge_2_has_neighbor [color="#404040"];
+	adjacency_triplet__seq:edge_2_adjacency_type -> adjacency_triplet__inst__edge_2_local_edge [color="#404040"];
+	bwm_header__seq:magic_type -> bwm_header__inst__is_valid_bwm [color="#404040"];
+	bwm_header__seq:version_type -> bwm_header__inst__is_valid_bwm [color="#404040"];
+	edge_entry__seq:edge_index_type -> edge_entry__inst__face_index [color="#404040"];
+	edge_entry__seq:transition_type -> edge_entry__inst__has_transition [color="#404040"];
+	edge_entry__seq:edge_index_type -> edge_entry__inst__local_edge_index [color="#404040"];
+	edges_array__seq:edges_type -> edge_entry__seq [style=bold];
+	data_table_offsets__seq:edge_count_type -> edges_array__seq:edges__repeat [color="#404040"];
+	face_indices_array__seq:faces_type -> face_indices__seq [style=bold];
+	data_table_offsets__seq:face_count_type -> face_indices_array__seq:faces__repeat [color="#404040"];
+	data_table_offsets__seq:face_count_type -> materials_array__seq:materials__repeat [color="#404040"];
+	normals_array__seq:normals_type -> vec3f__seq [style=bold];
+	data_table_offsets__seq:face_count_type -> normals_array__seq:normals__repeat [color="#404040"];
+	data_table_offsets__seq:perimeter_count_type -> perimeters_array__seq:perimeters__repeat [color="#404040"];
+	data_table_offsets__seq:face_count_type -> planar_distances_array__seq:distances__repeat [color="#404040"];
+	vertices_array__seq:vertices_type -> vec3f__seq [style=bold];
+	data_table_offsets__seq:vertex_count_type -> vertices_array__seq:vertices__repeat [color="#404040"];
+	walkmesh_properties__seq:relative_use_position_1_type -> vec3f__seq [style=bold];
+	walkmesh_properties__seq:relative_use_position_2_type -> vec3f__seq [style=bold];
+	walkmesh_properties__seq:absolute_use_position_1_type -> vec3f__seq [style=bold];
+	walkmesh_properties__seq:absolute_use_position_2_type -> vec3f__seq [style=bold];
+	walkmesh_properties__seq:position_type -> vec3f__seq [style=bold];
+	walkmesh_properties__seq:walkmesh_type_type -> walkmesh_properties__inst__is_area_walkmesh [color="#404040"];
+	walkmesh_properties__seq:walkmesh_type_type -> walkmesh_properties__inst__is_placeable_or_door [color="#404040"];
+}

@@ -8,6 +8,7 @@ Run from repo root; then::
 
   python scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges --also docs/XOREOS_FORMAT_COVERAGE.md
 """
+
 from __future__ import annotations
 
 import sys

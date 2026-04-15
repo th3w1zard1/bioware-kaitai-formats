@@ -18,7 +18,7 @@ meta:
       https://github.com/OpenKotOR/PyKotor — `bif_data.py`: **`BIFType.BZF`** and mobile / LZMA notes **34–37**, **`BIFType`** enum **59–71**.
     pykotor_wiki_bif_file_format: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif
     pykotor_wiki_bif_bzf: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bzf-compression
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/bzffile.cpp#L41-L83
+    xoreos_bzffile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/bzffile.cpp#L41-L83
     github_xoreos_bzffile_note: |
       https://github.com/xoreos/xoreos — `bzffile.cpp`: **`BZFFile::load`** **55–83**; **`readVarResTable`** **85+**.
       Upstream names the checked tag **`kBZFID`** but defines it as **`MKTAG('B','I','F','F')`** **41** — this targets the **inner BIFF** layout after decompression/tooling glue, while **this `.ksy`** models the **outer** `BZF ` + `V1.0` + LZMA blob per PyKotor wiki.

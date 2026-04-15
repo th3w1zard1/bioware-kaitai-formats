@@ -92,7 +92,7 @@ kaitai-struct-compiler -t csharp --dotnet-namespace <namespace> -d ./src/csharp 
 - **CRITICAL**: After ANY `.ksy` file change, always lint and fix all problems by referencing `include/ksy_schema.json`
 - The schema file defines the complete Kaitai Struct specification and must be used to validate syntax
 - Fix all validation errors, schema violations, and linting issues before committing
-- Under `meta.xref`, never use `some_key: >` with the next non-blank line starting `note:` — YAML treats that as one folded string; `python scripts/verify_ksy_urls.py` fails the repo if it appears
+- `meta.xref` values must be scalars (or arrays of scalars) per `include/ksy_schema.json` — do not nest YAML mappings under xref keys. Avoid `some_key: >` with the next non-blank line starting `note:` (folded-scalar footgun); `python scripts/verify_ksy_urls.py` fails if that pattern appears
 
 ## 5. Generated Code Location
 

@@ -22,7 +22,7 @@ meta:
     github_openkotor_pykotor_wav_obfuscation: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py`: MP3-in-WAV / SFX / VO helpers (see wiki + `WAV.ksy` `is_mp3_in_wav` instance).
     reone: https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
+    xoreos_wave_cpp: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
     xoreos_types_kfiletype_wav: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L62
     xoreos_sound_make_audio_stream: https://github.com/xoreos/xoreos/blob/master/src/sound/sound.cpp#L256-L340
     xoreos_wave_make_wav_stream: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
@@ -35,6 +35,7 @@ meta:
     reone_wavreader: https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp#L30-L56
     github_kobaltblu_kotor_js_audiofile: |
       https://github.com/KobaltBlu/KotOR.js — `src/audio/AudioFile.ts`: **`fakeHeaderTest`** **10**; **`ArrayMatch`** → **470**-byte strip **`slice(470, …)`** **117–120**; MP3-in-WAV **`riffSize == 50`** **114+** / branch **134+**; **`readWavHeader`** / **`fmt`** **214+**.
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
 doc: |
   **KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
   MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
@@ -52,6 +53,7 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/sound/sound.cpp#L256-L340 xoreos — `SoundManager::makeAudioStream` KotOR WAVE quirks"
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L62 xoreos — `kFileTypeWAV` (numeric id)"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/audio/AudioFile.ts#L10-L145 KotOR.js — `AudioFile` (prefix + MP3-in-WAV)"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree (no dedicated WAV PDF; discoverability anchor)"
 
 seq:
   - id: riff_header

@@ -7,16 +7,18 @@
 
 Idempotent — safe to re-run after hand-edits.
 """
+
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 FORMATS = REPO / "formats"
 
-_WIKI_MD = re.compile(r"(https://github\.com/OpenKotOR/PyKotor/wiki/[^#\s\)\>\"'`]+)\.md")
+_WIKI_MD = re.compile(
+    r"(https://github\.com/OpenKotOR/PyKotor/wiki/[^#\s\)\>\"'`]+)\.md"
+)
 
 _REMAP = (
     (

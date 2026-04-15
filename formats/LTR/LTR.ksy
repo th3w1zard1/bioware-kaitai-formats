@@ -17,7 +17,7 @@ meta:
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/ltr/io_ltr.py`:
       **`LTRBinaryReader`** **44–131** (`load` **70–131**, KotOR path hard-requires **`letter_count == 28`** **104–108**); **`LTRBinaryWriter`** **134+** (`write` from **143**).
     reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L168
+    xoreos_ltrfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L168
     xoreos_types_kfiletype_ltr: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101
     xoreos_ltr_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168
     xoreos_ltr_read_letter_set: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L133
@@ -25,6 +25,7 @@ meta:
     kaitai_user_guide_enums: https://doc.kaitai.io/user_guide.html
     pykotor_wiki_ltr: https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format
     reone_ltrreader: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp#L27-L74
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
 doc: |
   **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
   `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
@@ -38,6 +39,7 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168 xoreos — `LTRFile::load`"
   - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp#L27-L74 reone — `LtrReader::load` + `readLetterSet`"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LTRObject.ts#L51-L122 KotOR.js — `LTRObject.readBuffer`"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree (no dedicated LTR Torlack page; use `ltrfile.cpp` + PyKotor)"
 
 seq:
   - id: file_type

@@ -1,0 +1,52 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__bioware_tslpatcher_common {
+		label="BiowareTslpatcherCommon";
+		graph[style=dotted];
+
+		bioware_tslpatcher_common__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+		</TABLE>>];
+		subgraph cluster__bioware_diff_format_str {
+			label="BiowareTslpatcherCommon::BiowareDiffFormatStr";
+			graph[style=dotted];
+
+			bioware_diff_format_str__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>str(term=0, ASCII)</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__valid">must be any of &quot;default&quot;, &quot;unified&quot;, &quot;context&quot;, &quot;side_by_side&quot;</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_diff_resource_type_str {
+			label="BiowareTslpatcherCommon::BiowareDiffResourceTypeStr";
+			graph[style=dotted];
+
+			bioware_diff_resource_type_str__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>str(term=0, ASCII)</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__valid">must be any of &quot;gff&quot;, &quot;2da&quot;, &quot;tlk&quot;, &quot;lip&quot;, &quot;bytes&quot;</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_diff_type_str {
+			label="BiowareTslpatcherCommon::BiowareDiffTypeStr";
+			graph[style=dotted];
+
+			bioware_diff_type_str__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>str(term=0, ASCII)</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__valid">must be any of &quot;identical&quot;, &quot;modified&quot;, &quot;added&quot;, &quot;removed&quot;, &quot;error&quot;</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_ncs_token_type_str {
+			label="BiowareTslpatcherCommon::BiowareNcsTokenTypeStr";
+			graph[style=dotted];
+
+			bioware_ncs_token_type_str__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>str(term=0, ASCII)</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__valid">must be any of &quot;strref&quot;, &quot;strref32&quot;, &quot;2damemory&quot;, &quot;2damemory32&quot;, &quot;uint32&quot;, &quot;uint16&quot;, &quot;uint8&quot;</TD></TR>
+			</TABLE>>];
+		}
+	}
+}

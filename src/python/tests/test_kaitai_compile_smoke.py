@@ -3,12 +3,12 @@
 Requires ``kaitai-struct-compiler`` or ``ksc`` on ``PATH``, or ``KAITAI_STRUCT_COMPILER`` pointing
 to the compiler executable (same resolution rules as ``scripts/KscResolve.ps1``).
 """
+
 from __future__ import annotations
 
 import os
 import shutil
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 
@@ -43,7 +43,10 @@ def _all_ksy_files() -> list[Path]:
     return sorted((REPO_ROOT / "formats").rglob("*.ksy"))
 
 
-@pytest.mark.skipif(not KSC, reason="kaitai-struct-compiler / ksc not found (set PATH or KAITAI_STRUCT_COMPILER)")
+@pytest.mark.skipif(
+    not KSC,
+    reason="kaitai-struct-compiler / ksc not found (set PATH or KAITAI_STRUCT_COMPILER)",
+)
 def test_every_ksy_compiles_to_python() -> None:
     ksy_files = _all_ksy_files()
     assert ksy_files, "expected formats/**/*.ksy under repo root"
@@ -61,7 +64,9 @@ def test_every_ksy_compiles_to_python() -> None:
             )
             if proc.returncode != 0:
                 msg = (proc.stderr or proc.stdout or "").strip()
-                failures.append(f"{ksy.relative_to(REPO_ROOT)}: exit {proc.returncode}\n{msg}")
+                failures.append(
+                    f"{ksy.relative_to(REPO_ROOT)}: exit {proc.returncode}\n{msg}"
+                )
 
     if failures:
         pytest.fail(

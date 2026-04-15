@@ -1,0 +1,75 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__twoda {
+		label="Twoda";
+		graph[style=dotted];
+
+		twoda__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">9</TD><TD>TwodaHeader</TD><TD PORT="header_type">header</TD></TR>
+			<TR><TD PORT="column_headers_raw_pos">9</TD><TD PORT="column_headers_raw_size">...</TD><TD>str(term=0, ASCII)</TD><TD PORT="column_headers_raw_type">column_headers_raw</TD></TR>
+			<TR><TD PORT="row_count_pos">...</TD><TD PORT="row_count_size">4</TD><TD>u4le</TD><TD PORT="row_count_type">row_count</TD></TR>
+			<TR><TD PORT="row_labels_section_pos">...</TD><TD PORT="row_labels_section_size">...</TD><TD>RowLabelsSection</TD><TD PORT="row_labels_section_type">row_labels_section</TD></TR>
+			<TR><TD PORT="cell_offsets_pos">...</TD><TD PORT="cell_offsets_size">2</TD><TD>u2le</TD><TD PORT="cell_offsets_type">cell_offsets</TD></TR>
+			<TR><TD COLSPAN="4" PORT="cell_offsets__repeat">repeat row_count * column_count times</TD></TR>
+			<TR><TD PORT="len_cell_values_section_pos">...</TD><TD PORT="len_cell_values_section_size">2</TD><TD>u2le</TD><TD PORT="len_cell_values_section_type">len_cell_values_section</TD></TR>
+			<TR><TD PORT="cell_values_section_pos">...</TD><TD PORT="cell_values_section_size">len_cell_values_section</TD><TD>CellValuesSection</TD><TD PORT="cell_values_section_type">cell_values_section</TD></TR>
+		</TABLE>>];
+		subgraph cluster__cell_values_section {
+			label="Twoda::CellValuesSection";
+			graph[style=dotted];
+
+			cell_values_section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="raw_data_pos">0</TD><TD PORT="raw_data_size">_root.len_cell_values_section</TD><TD>str(ASCII)</TD><TD PORT="raw_data_type">raw_data</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__row_label_entry {
+			label="Twoda::RowLabelEntry";
+			graph[style=dotted];
+
+			row_label_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="label_value_pos">0</TD><TD PORT="label_value_size">...</TD><TD>str(term=9, ignore EOS, ASCII)</TD><TD PORT="label_value_type">label_value</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__row_labels_section {
+			label="Twoda::RowLabelsSection";
+			graph[style=dotted];
+
+			row_labels_section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="labels_pos">0</TD><TD PORT="labels_size">...</TD><TD>RowLabelEntry</TD><TD PORT="labels_type">labels</TD></TR>
+				<TR><TD COLSPAN="4" PORT="labels__repeat">repeat _root.row_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__twoda_header {
+			label="Twoda::TwodaHeader";
+			graph[style=dotted];
+
+			twoda_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="magic_pos">0</TD><TD PORT="magic_size">4</TD><TD>str(ASCII)</TD><TD PORT="magic_type">magic</TD></TR>
+				<TR><TD PORT="version_pos">4</TD><TD PORT="version_size">4</TD><TD>str(ASCII)</TD><TD PORT="version_type">version</TD></TR>
+				<TR><TD PORT="newline_pos">8</TD><TD PORT="newline_size">1</TD><TD>u1</TD><TD PORT="newline_type">newline</TD></TR>
+			</TABLE>>];
+			twoda_header__inst__is_valid_twoda [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_valid_twoda</TD><TD> ((magic == &quot;2DA &quot;) &amp;&amp; (version == &quot;V2.b&quot;) &amp;&amp; (newline == 10)) </TD></TR>
+			</TABLE>>];
+		}
+	}
+	twoda__seq:header_type -> twoda_header__seq [style=bold];
+	twoda__seq:row_labels_section_type -> row_labels_section__seq [style=bold];
+	twoda__seq:row_count_type -> twoda__seq:cell_offsets__repeat [color="#404040"];
+	twoda__params:column_count_type -> twoda__seq:cell_offsets__repeat [color="#404040"];
+	twoda__seq:len_cell_values_section_type -> twoda__seq:cell_values_section_size [color="#404040"];
+	twoda__seq:cell_values_section_type -> cell_values_section__seq [style=bold];
+	twoda__seq:len_cell_values_section_type -> cell_values_section__seq:raw_data_size [color="#404040"];
+	row_labels_section__seq:labels_type -> row_label_entry__seq [style=bold];
+	twoda__seq:row_count_type -> row_labels_section__seq:labels__repeat [color="#404040"];
+	twoda_header__seq:magic_type -> twoda_header__inst__is_valid_twoda [color="#404040"];
+	twoda_header__seq:version_type -> twoda_header__inst__is_valid_twoda [color="#404040"];
+	twoda_header__seq:newline_type -> twoda_header__inst__is_valid_twoda [color="#404040"];
+}

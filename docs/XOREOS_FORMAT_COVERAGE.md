@@ -7,6 +7,8 @@ This document is the **maintainer index** for mapping **BioWare-family binary wi
 - **`Aurora::ResourceType`** — Small **media-class** enum (`kResourceImage`, `kResourceVideo`, …, `kResourceMAX`). **Not** the KEY/BIF/ERF numeric **restype** column. Mirrored in Kaitai as `xoreos_resource_category` in [`formats/Common/bioware_type_ids.ksy`](../formats/Common/bioware_type_ids.ksy).
 - **`Aurora::FileType`** — Large **`kFileType*`** numeric ID table used in archives. Mirrored as `xoreos_file_type_id` in the same file. **Coverage gaps** and per-extension `.ksy` work target **this** enum (plus PyKotor tooling IDs in `bioware_resource_type_id`).
 
+**`xoreos-docs` minimum in-tree:** Every `formats/**/*.ksy` includes at least one `https://github.com/xoreos/xoreos-docs/…` URL in `meta.xref` or `doc-ref` (BioWare PDF, Torlack HTML, `specs/bioware` tree, or an explicit maintainer note when no format-specific asset exists). Quick audit: the substring `github.com/xoreos/xoreos-docs` appears in each `.ksy`.
+
 **Inventory:** run [`scripts/report_filetype_ksy_coverage.py`](../scripts/report_filetype_ksy_coverage.py) against [`formats/coverage/filetype_coverage.yaml`](../formats/coverage/filetype_coverage.yaml) to list `MISSING` / `DRIFT` rows (see script `--help`).
 
 ## 0. Local upstream trees (required for “no omissions” greps)
@@ -55,7 +57,9 @@ Columns:
 | `formats/ERF/ERF.ksy` | `src/aurora/erffile.cpp` | — | — | `resource/formats/erf/` | `erfreader.cpp` | ERF / HAK / MOD family |
 | `formats/GDA/GDA.ksy` | `src/aurora/gdafile.cpp`, `gff4file.cpp` | — | — | GDA / 2DA tooling | — | GFF4 `G2DA` |
 | `formats/GFF/GFF.ksy` | `gff3file.cpp`, `gff4file.cpp`, template `*file.cpp` | XML tools under `src/xml/` | — | `resource/formats/gff/` | `gffreader.cpp` | Large surface area |
+| `formats/GFF/Generics/<STEM>/<STEM>.ksy` | same as `GFF.ksy` (GFF3 on disk) | — | — | `resource/formats/gff/` | `gffreader.cpp` | Per-template **capsule** (ARE, UTC, DLG, …); wire = `GFF.ksy` |
 | `formats/LIP/LIP.ksy` | (lip sync consumed via engine paths; `types.h` `kFileTypeLIP`) | — | — | `resource/formats/lip/` | `lipreader.cpp` | Binary LIP wire |
+| `formats/LIP/BIP.ksy` | `types.h` (`kFileTypeBIP`); compare `LIP.ksy` | — | — | `resource/formats/lip/` | `lipreader.cpp` | **Placeholder** opaque blob until BIP layout is verified |
 | `formats/LTR/LTR.ksy` | `src/aurora/ltrfile.cpp` | — | — | — | — | Letter combos |
 | `formats/MDL/MDL.ksy` | `mdlfile.cpp`, `model_kotor.cpp` | — | Torlack **binmdl** | wiki + MDLOps | — | Binary MDL |
 | `formats/MDL/MDL_ASCII.ksy` | `types.h` + `model_kotor.h` (binary contrast anchors in `meta.xref`) | — | Torlack **ascii** | wiki | — | **Plaintext** MDL — policy: tooling / not binary wire |
@@ -70,16 +74,17 @@ Columns:
 | `formats/TPC/DDS.ksy` | `src/graphics/images/dds.cpp` | `src/images/dds.cpp` | — | `resource/formats/tpc/io_dds.py` | `TpcReader` / `CRes*` (Ghidra) | DDS + BioWare variant |
 | `formats/TPC/TGA.ksy` | `src/graphics/images/tga.cpp` | `src/images/tga.cpp` | — | `tpc/tga.py`, `io_tga.py` | `tgareader.cpp` | Truevision TGA |
 | `formats/TPC/TPC.ksy` | `src/graphics/images/tpc.cpp` | — | — | `resource/formats/tpc/` | `tpcreader.cpp` | KotOR native texture |
-| `formats/TPC/TXI.ksy` | — (ASCII sidecar) | — | — | TXI modules | `txireader.cpp` | **Plaintext** — policy |
+| `formats/TPC/TXB.ksy` | `tpc.cpp` (texture family); `types.h` `kFileTypeTXB` | `src/images/tpc.cpp` (same `TPC::load` / `readHeader` stack as `TPC.ksy`) | — | `resource/formats/tpc/` | `tpcreader.cpp` | TPC-shaped header + tail (`TODO: VERIFY` divergences) |
+| `formats/TPC/TXB2.ksy` | same; `types.h` `kFileTypeTXB2` | `src/images/tpc.cpp` (same as TXB) | — | `resource/formats/tpc/` | `tpcreader.cpp` | Same capsule pattern as TXB |
+| `formats/TPC/TXI.ksy` | — (ASCII sidecar) | `src/images/tpc.cpp` (`readHeader` stack; embedded TXI via runtime `TPC::readTXI`) | — | TXI modules | `txireader.cpp` | **Plaintext** — policy |
 | `formats/TLK/TLK.ksy` | `src/aurora/talktable.cpp` | — | — | `resource/formats/tlk/` | `tlkreader.cpp` | TLK v3/v4 |
 | `formats/TwoDA/TwoDA.ksy` | `src/aurora/twodafile.cpp` | `convert2da.cpp` (2DA/GDA/CSV interchange) | [`2DA_Format.pdf`](https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/2DA_Format.pdf) | `resource/formats/twoda/` | — | Binary `.2da` wire |
 | `formats/WAV/WAV.ksy` | `src/sound/decoders/wave.cpp`, `src/sound/sound.cpp` | — | — | `resource/formats/wav/` | `wavreader.cpp` | RIFF + KotOR SFX prefix notes in `.ksy` |
 
 ## 2. `FileType` / resources in xoreos **without** a dedicated first-class `.ksy` in this repo
 
-Many Aurora types exist in `src/aurora/types.h` and various `*file.cpp` loaders. The following are **examples** of formats commonly shipped in KotOR modules that may still be **plaintext**, **GFF-shaped**, or **policy-excluded** from Kaitai in this repository — track them here until a binary `.ksy` exists or scope explicitly excludes them:
+Many Aurora types exist in `src/aurora/types.h` and various `*file.cpp` loaders. The following are **examples** of formats commonly shipped in KotOR modules that may still be **plaintext**, **GFF-shaped**, **placeholder** (opaque blob until verified), or **policy-excluded** from Kaitai in this repository — track them here when there is no first-class structured wire spec yet (or scope excludes it):
 
-- **`kFileTypeTXB` / `kFileTypeTXB2` / `kFileTypeBIP`** — texture / lipsync-adjacent IDs in `src/aurora/types.h`; wire often overlaps **`TPC.ksy`** / **`LIP.ksy`** until a dedicated capsule spec is added.
 - **LYT, VIS** (ASCII tooling) — engine resources; often **not** modeled as standalone binary `.ksy` per `AGENTS.md`. **ITP** on-disk is GFF3-shaped (`GFF.ksy`); **ITP XML** interchange is `formats/ITP/ITP_XML.ksy` (plaintext policy).
 - **NSS** — source text; **NCS** is the bytecode `.ksy`.
 - **TXI** — ASCII sidecar (see `TPC/TXI.ksy` note).

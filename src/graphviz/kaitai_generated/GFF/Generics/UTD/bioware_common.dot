@@ -1,0 +1,121 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__bioware_common {
+		label="BiowareCommon";
+		graph[style=dotted];
+
+		bioware_common__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+		</TABLE>>];
+		subgraph cluster__bioware_binary_data {
+			label="BiowareCommon::BiowareBinaryData";
+			graph[style=dotted];
+
+			bioware_binary_data__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="len_value_pos">0</TD><TD PORT="len_value_size">4</TD><TD>u4le</TD><TD PORT="len_value_type">len_value</TD></TR>
+				<TR><TD PORT="value_pos">4</TD><TD PORT="value_size">len_value</TD><TD></TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_cexo_string {
+			label="BiowareCommon::BiowareCexoString";
+			graph[style=dotted];
+
+			bioware_cexo_string__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="len_string_pos">0</TD><TD PORT="len_string_size">4</TD><TD>u4le</TD><TD PORT="len_string_type">len_string</TD></TR>
+				<TR><TD PORT="value_pos">4</TD><TD PORT="value_size">len_string</TD><TD>str(UTF-8)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_locstring {
+			label="BiowareCommon::BiowareLocstring";
+			graph[style=dotted];
+
+			bioware_locstring__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="total_size_pos">0</TD><TD PORT="total_size_size">4</TD><TD>u4le</TD><TD PORT="total_size_type">total_size</TD></TR>
+				<TR><TD PORT="string_ref_pos">4</TD><TD PORT="string_ref_size">4</TD><TD>u4le</TD><TD PORT="string_ref_type">string_ref</TD></TR>
+				<TR><TD PORT="num_substrings_pos">8</TD><TD PORT="num_substrings_size">4</TD><TD>u4le</TD><TD PORT="num_substrings_type">num_substrings</TD></TR>
+				<TR><TD PORT="substrings_pos">12</TD><TD PORT="substrings_size">...</TD><TD>Substring</TD><TD PORT="substrings_type">substrings</TD></TR>
+				<TR><TD COLSPAN="4" PORT="substrings__repeat">repeat num_substrings times</TD></TR>
+			</TABLE>>];
+			bioware_locstring__inst__has_strref [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>has_strref</TD><TD>string_ref != 4294967295</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_resref {
+			label="BiowareCommon::BiowareResref";
+			graph[style=dotted];
+
+			bioware_resref__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="len_resref_pos">0</TD><TD PORT="len_resref_size">1</TD><TD>u1</TD><TD PORT="len_resref_type">len_resref</TD></TR>
+				<TR><TD COLSPAN="4" PORT="len_resref__valid">must be at most 16</TD></TR>
+				<TR><TD PORT="value_pos">1</TD><TD PORT="value_size">len_resref</TD><TD>str(ASCII)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_vector3 {
+			label="BiowareCommon::BiowareVector3";
+			graph[style=dotted];
+
+			bioware_vector3__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="x_pos">0</TD><TD PORT="x_size">4</TD><TD>f4le</TD><TD PORT="x_type">x</TD></TR>
+				<TR><TD PORT="y_pos">4</TD><TD PORT="y_size">4</TD><TD>f4le</TD><TD PORT="y_type">y</TD></TR>
+				<TR><TD PORT="z_pos">8</TD><TD PORT="z_size">4</TD><TD>f4le</TD><TD PORT="z_type">z</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__bioware_vector4 {
+			label="BiowareCommon::BiowareVector4";
+			graph[style=dotted];
+
+			bioware_vector4__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="x_pos">0</TD><TD PORT="x_size">4</TD><TD>f4le</TD><TD PORT="x_type">x</TD></TR>
+				<TR><TD PORT="y_pos">4</TD><TD PORT="y_size">4</TD><TD>f4le</TD><TD PORT="y_type">y</TD></TR>
+				<TR><TD PORT="z_pos">8</TD><TD PORT="z_size">4</TD><TD>f4le</TD><TD PORT="z_type">z</TD></TR>
+				<TR><TD PORT="w_pos">12</TD><TD PORT="w_size">4</TD><TD>f4le</TD><TD PORT="w_type">w</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__substring {
+			label="BiowareCommon::Substring";
+			graph[style=dotted];
+
+			substring__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="substring_id_pos">0</TD><TD PORT="substring_id_size">4</TD><TD>u4le</TD><TD PORT="substring_id_type">substring_id</TD></TR>
+				<TR><TD PORT="len_text_pos">4</TD><TD PORT="len_text_size">4</TD><TD>u4le</TD><TD PORT="len_text_type">len_text</TD></TR>
+				<TR><TD PORT="text_pos">8</TD><TD PORT="text_size">len_text</TD><TD>str(UTF-8)</TD><TD PORT="text_type">text</TD></TR>
+			</TABLE>>];
+			substring__inst__gender [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>gender</TD><TD>Kaitai::Struct::Stream::resolve_enum(BiowareCommon::BIOWARE_GENDER_ID, gender_raw)</TD></TR>
+			</TABLE>>];
+			substring__inst__gender_raw [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>gender_raw</TD><TD>substring_id &amp; 255</TD></TR>
+			</TABLE>>];
+			substring__inst__language [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>language</TD><TD>Kaitai::Struct::Stream::resolve_enum(BiowareCommon::BIOWARE_LANGUAGE_ID, language_raw)</TD></TR>
+			</TABLE>>];
+			substring__inst__language_raw [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>language_raw</TD><TD>substring_id &gt;&gt; 8 &amp; 255</TD></TR>
+			</TABLE>>];
+		}
+	}
+	bioware_binary_data__seq:len_value_type -> bioware_binary_data__seq:value_size [color="#404040"];
+	bioware_cexo_string__seq:len_string_type -> bioware_cexo_string__seq:value_size [color="#404040"];
+	bioware_locstring__seq:substrings_type -> substring__seq [style=bold];
+	bioware_locstring__seq:num_substrings_type -> bioware_locstring__seq:substrings__repeat [color="#404040"];
+	bioware_locstring__seq:string_ref_type -> bioware_locstring__inst__has_strref [color="#404040"];
+	bioware_resref__seq:len_resref_type -> bioware_resref__seq:value_size [color="#404040"];
+	substring__seq:len_text_type -> substring__seq:text_size [color="#404040"];
+	substring__inst__gender_raw:gender_raw_type -> substring__inst__gender [color="#404040"];
+	substring__seq:substring_id_type -> substring__inst__gender_raw [color="#404040"];
+	substring__inst__language_raw:language_raw_type -> substring__inst__language [color="#404040"];
+	substring__seq:substring_id_type -> substring__inst__language_raw [color="#404040"];
+}

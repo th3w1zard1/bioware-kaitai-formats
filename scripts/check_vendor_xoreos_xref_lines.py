@@ -10,6 +10,7 @@ Scan roots (default): ``formats/**/*.ksy`` and optionally ``docs/XOREOS_FORMAT_C
 
 Exit code: 0 if no issues; 1 if any band is out of range or a referenced file is missing locally.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -113,7 +114,9 @@ def main() -> int:
                 continue
 
             if not local.is_file():
-                issues.append(f"{fp}: missing file for xref: {local} (from {m.group(0)!r})")
+                issues.append(
+                    f"{fp}: missing file for xref: {local} (from {m.group(0)!r})"
+                )
                 continue
 
             nlines = sum(1 for _ in local.open("rb"))

@@ -34,7 +34,7 @@ meta:
     kotor_js_tpcloader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/TPCLoader.ts
     github_kobaltblu_kotor_js_tpcobject: |
       https://github.com/KobaltBlu/KotOR.js — `src/resource/TPCObject.ts`: **`TPCObject`** **25+**; **`readHeader`** **290–380** (wire layout; pairs with this `.ksy` header).
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66
+    xoreos_tpc_cpp: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66
     xoreos_types_kfiletype_tpc: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L183
     xoreos_tpc_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66
     xoreos_tpc_read_header: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L68-L252
@@ -43,6 +43,8 @@ meta:
     xoreos_tools_tpc_cpp_load: https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L51-L68
     xoreos_tools_tpc_cpp_read_header: https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L77-L224
     pykotor_wiki_tpc: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
 doc: |
   **TPC** (KotOR native texture): 128-byte header (`pixel_encoding` etc. via `bioware_common`) + opaque tail
   (mips / cube faces / optional **TXI** suffix). Per-mip byte sizes are format-specific — see PyKotor `io_tpc.py`
@@ -58,6 +60,8 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L362 xoreos — `TPC::load` through `readTXI` entrypoints"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L51-L68 xoreos-tools — `TPC::load`"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L77-L224 xoreos-tools — `TPC::readHeader`"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (texture pipeline context)"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TPCObject.ts#L290-L380 KotOR.js — `TPCObject.readHeader`"
 
 seq:

@@ -15,6 +15,7 @@ meta:
     xoreos_language_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/language.h#L46-L73
     xoreos_talktable_tlk_language_field: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L57-L92
     reone: https://github.com/modawan/reone/blob/master/include/reone/resource/types.h
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
 doc: |
   Shared enums and "common objects" used across the BioWare ecosystem that also appear
   in BioWare/Odyssey binary formats (notably TLK and GFF LocalizedStrings).
@@ -40,6 +41,7 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L57-L92 xoreos — `TalkTable_TLK::load` (TLK header + language id field)"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h#L28-L33 xoreos-tools — `byte` / `uint` typedefs"
   - "https://github.com/modawan/reone/blob/master/include/reone/resource/types.h reone — resource type / engine constants"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree (discoverability)"
 
 types:
   # LocalizedString (CExoLocString) - Used in GFF field data section

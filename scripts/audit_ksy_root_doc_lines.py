@@ -3,6 +3,7 @@
 
 Use after doc-hygiene passes to find oversized `meta.doc` blocks that blow up generated parser docstrings.
 """
+
 from __future__ import annotations
 
 import re
@@ -30,7 +31,11 @@ def root_doc_line_count(lines: list[str]) -> tuple[int, int | None, int | None]:
                 n += 1
                 j += 1
             return n, i + 1, j + 1
-        if stripped.startswith("doc:") and not line.startswith(" ") and "|" not in stripped:
+        if (
+            stripped.startswith("doc:")
+            and not line.startswith(" ")
+            and "|" not in stripped
+        ):
             return 1, i + 1, i + 2
     return 0, None, None
 

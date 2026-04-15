@@ -1,0 +1,96 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__tlk {
+		label="Tlk";
+		graph[style=dotted];
+
+		tlk__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">20</TD><TD>TlkHeader</TD><TD PORT="header_type">header</TD></TR>
+			<TR><TD PORT="string_data_table_pos">20</TD><TD PORT="string_data_table_size">...</TD><TD>StringDataTable</TD><TD PORT="string_data_table_type">string_data_table</TD></TR>
+		</TABLE>>];
+		subgraph cluster__string_data_entry {
+			label="Tlk::StringDataEntry";
+			graph[style=dotted];
+
+			string_data_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="flags_pos">0</TD><TD PORT="flags_size">4</TD><TD>u4le</TD><TD PORT="flags_type">flags</TD></TR>
+				<TR><TD PORT="sound_resref_pos">4</TD><TD PORT="sound_resref_size">16</TD><TD>str(ASCII)</TD><TD PORT="sound_resref_type">sound_resref</TD></TR>
+				<TR><TD PORT="volume_variance_pos">20</TD><TD PORT="volume_variance_size">4</TD><TD>u4le</TD><TD PORT="volume_variance_type">volume_variance</TD></TR>
+				<TR><TD PORT="pitch_variance_pos">24</TD><TD PORT="pitch_variance_size">4</TD><TD>u4le</TD><TD PORT="pitch_variance_type">pitch_variance</TD></TR>
+				<TR><TD PORT="text_offset_pos">28</TD><TD PORT="text_offset_size">4</TD><TD>u4le</TD><TD PORT="text_offset_type">text_offset</TD></TR>
+				<TR><TD PORT="text_length_pos">32</TD><TD PORT="text_length_size">4</TD><TD>u4le</TD><TD PORT="text_length_type">text_length</TD></TR>
+				<TR><TD PORT="sound_length_pos">36</TD><TD PORT="sound_length_size">4</TD><TD>f4le</TD><TD PORT="sound_length_type">sound_length</TD></TR>
+			</TABLE>>];
+			string_data_entry__inst__entry_size [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>entry_size</TD><TD>40</TD></TR>
+			</TABLE>>];
+			string_data_entry__inst__sound_length_present [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>sound_length_present</TD><TD>flags &amp; 4 != 0</TD></TR>
+			</TABLE>>];
+			string_data_entry__inst__sound_present [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>sound_present</TD><TD>flags &amp; 2 != 0</TD></TR>
+			</TABLE>>];
+			string_data_entry__inst__text_data [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="text_data_pos">text_file_offset</TD><TD PORT="text_data_size">text_length</TD><TD>str(ASCII)</TD><TD PORT="text_data_type">text_data</TD></TR>
+			</TABLE>>];
+			string_data_entry__inst__text_file_offset [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>text_file_offset</TD><TD>_root.header.entries_offset + text_offset</TD></TR>
+			</TABLE>>];
+			string_data_entry__inst__text_present [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>text_present</TD><TD>flags &amp; 1 != 0</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__string_data_table {
+			label="Tlk::StringDataTable";
+			graph[style=dotted];
+
+			string_data_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">40</TD><TD>StringDataEntry</TD><TD PORT="entries_type">entries</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.header.string_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__tlk_header {
+			label="Tlk::TlkHeader";
+			graph[style=dotted];
+
+			tlk_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="file_type_pos">0</TD><TD PORT="file_type_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_type_type">file_type</TD></TR>
+				<TR><TD PORT="file_version_pos">4</TD><TD PORT="file_version_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_version_type">file_version</TD></TR>
+				<TR><TD PORT="language_id_pos">8</TD><TD PORT="language_id_size">4</TD><TD>u4le</TD><TD PORT="language_id_type">language_id</TD></TR>
+				<TR><TD PORT="string_count_pos">12</TD><TD PORT="string_count_size">4</TD><TD>u4le</TD><TD PORT="string_count_type">string_count</TD></TR>
+				<TR><TD PORT="entries_offset_pos">16</TD><TD PORT="entries_offset_size">4</TD><TD>u4le</TD><TD PORT="entries_offset_type">entries_offset</TD></TR>
+			</TABLE>>];
+			tlk_header__inst__expected_entries_offset [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>expected_entries_offset</TD><TD>20 + string_count * 40</TD></TR>
+			</TABLE>>];
+			tlk_header__inst__header_size [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>header_size</TD><TD>20</TD></TR>
+			</TABLE>>];
+		}
+	}
+	tlk__seq:header_type -> tlk_header__seq [style=bold];
+	tlk__seq:string_data_table_type -> string_data_table__seq [style=bold];
+	string_data_entry__seq:flags_type -> string_data_entry__inst__sound_length_present [color="#404040"];
+	string_data_entry__seq:flags_type -> string_data_entry__inst__sound_present [color="#404040"];
+	string_data_entry__inst__text_file_offset:text_file_offset_type -> string_data_entry__inst__text_data:text_data_pos [color="#404040"];
+	string_data_entry__seq:text_length_type -> string_data_entry__inst__text_data:text_data_size [color="#404040"];
+	tlk_header__seq:entries_offset_type -> string_data_entry__inst__text_file_offset [color="#404040"];
+	string_data_entry__seq:text_offset_type -> string_data_entry__inst__text_file_offset [color="#404040"];
+	string_data_entry__seq:flags_type -> string_data_entry__inst__text_present [color="#404040"];
+	string_data_table__seq:entries_type -> string_data_entry__seq [style=bold];
+	tlk_header__seq:string_count_type -> string_data_table__seq:entries__repeat [color="#404040"];
+	tlk_header__seq:string_count_type -> tlk_header__inst__expected_entries_offset [color="#404040"];
+}

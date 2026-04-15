@@ -23,7 +23,7 @@ meta:
     reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/keyreader.cpp
     github_modawan_reone_keyreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/keyreader.cpp`: **`KeyReader::load`** **26–35**; **`readFileEntry`** **48–59**; **`readKeyEntry`** **70+** (packed resource id split).
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
+    xoreos_keyfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
     xoreos_types_kfiletype_key: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L209
     xoreos_key_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
     xoreos_key_read_bif_list: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L90-L117

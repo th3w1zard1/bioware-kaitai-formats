@@ -22,7 +22,7 @@ meta:
     reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/bifreader.cpp
     github_modawan_reone_bifreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/bifreader.cpp`: **`BifReader::load`** **`BIFFV1  `** check **26–29**; **`loadHeader`** **32–38**; **`readResourceEntry`** **50–63**.
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L97
+    xoreos_biffile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L97
     xoreos_types_kfiletype_bif: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L208
     xoreos_bif_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L82
     xoreos_bif_read_var_res_table: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L84-L97

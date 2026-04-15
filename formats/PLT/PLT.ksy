@@ -8,13 +8,12 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: PLT type exists in Aurora tables but KotOR does not ship NWN-style PLT body usage (see doc)."
+    ghidra_odyssey_k1: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: PLT type exists in Aurora tables but KotOR does not ship NWN-style PLT body usage (see doc)."
     pykotor_wiki_plt: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy
     github_openkotor_pykotor_resource_type_plt: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/type.py`: **`ResourceType.PLT`** **374–380** (NWN-era type id **6**; KotOR does not ship PLT bodies — see `doc`).
     xoreos_docs_plt: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp#L102-L145
+    xoreos_pltfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp#L102-L145
     github_xoreos_pltfile: |
       https://github.com/xoreos/xoreos — `src/graphics/aurora/pltfile.cpp`: **`PLTFile::load`** **102–145**; **`PLTFile::build`** **147+** (palette expansion / surface build).
     github_xoreos_types_kfiletype_plt: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L63

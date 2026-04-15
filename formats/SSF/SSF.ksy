@@ -8,8 +8,7 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
       KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1:
-      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: SSF voice sets are loaded as Aurora resources; wire layout matches PyKotor wiki."
+    ghidra_odyssey_k1: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: SSF voice sets are loaded as Aurora resources; wire layout matches PyKotor wiki."
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/
     pykotor_wiki_ssf: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf
     github_openkotor_pykotor_io_ssf: |
@@ -28,6 +27,7 @@ meta:
     xoreos_tools_ssfcreator_create: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfcreator.cpp#L38-L74
     github_modawan_reone_ssf: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp
     reone_ssfreader_load: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp#L26-L32
+    xoreos_docs_ssf_format_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/SSF_Format.pdf
 doc: |
   SSF (Sound Set File) files store sound string references (StrRefs) for character voice sets.
   Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
@@ -59,7 +59,7 @@ doc: |
   26: Rejoined Party
   27: Poisoned
 
-  Authoritative implementations: `meta.xref` and `doc-ref` (PyKotor `io_ssf`, xoreos `ssffile.cpp`, xoreos-tools `ssf2xml` / `xml2ssf`, reone `SsfReader`).
+  Authoritative implementations: `meta.xref` and `doc-ref` (PyKotor `io_ssf`, xoreos `ssffile.cpp`, xoreos-tools `ssf2xml` / `xml2ssf`, xoreos-docs `SSF_Format.pdf`, reone `SsfReader`).
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf PyKotor wiki — SSF"
@@ -71,6 +71,7 @@ doc-ref:
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml2ssf.cpp#L54-L75 xoreos-tools — `xml2ssf` CLI (`main`)"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfdumper.cpp#L133-L167 xoreos-tools — `SSFDumper::dump` (XML mapping for `ssf2xml`)"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfcreator.cpp#L38-L74 xoreos-tools — `SSFCreator::create` (XML mapping for `xml2ssf`)"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/SSF_Format.pdf xoreos-docs — SSF_Format.pdf"
   - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp#L26-L32 reone — `SsfReader::load`"
 
 seq:

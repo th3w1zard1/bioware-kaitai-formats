@@ -23,6 +23,8 @@ meta:
       Maintainer matrix row for this spec (explicit **not** xoreos Aurora): `docs/XOREOS_FORMAT_COVERAGE.md` — `formats/PCC/PCC.ksy` → Runtime/Tools/Docs **not** xoreos KotOR stack.
     pykotor_upstream_note_pcc: |
       `OpenKotOR/PyKotor` `master` has **no** `formats/pcc/` (or similarly named) package under `Libraries/PyKotor/src/pykotor/resource/formats/` — treat **ME3Tweaks LegendaryExplorer** wiki + UEE-derived tooling as the primary wire narrative for this spec.
+    xoreos_aurora_types_filetype_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
 doc: |
   **PCC** (Mass Effect–era Unreal package): BioWare variant of UE packages — `file_header`, name/import/export
   tables, then export blobs. May be zlib/LZO chunked (`bioware_pcc_compression_codec` in `bioware_common`).
@@ -30,9 +32,11 @@ doc: |
   **Not KotOR:** no `k1_win_gog_swkotor.exe` grounding — follow LegendaryExplorer wiki + `meta.xref`.
 
 doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60 xoreos — `FileType` enum start (Aurora/BioWare family IDs; **PCC/Unreal packages are not in this table** — included only as canonical upstream anchor for “what this repo’s xoreos stack is”)"
   - "https://github.com/ME3Tweaks/LegendaryExplorer/wiki/PCC-File-Format ME3Tweaks — PCC file format"
   - "https://github.com/ME3Tweaks/LegendaryExplorer/wiki/Package-Handling ME3Tweaks — Package handling (export/import tables, UE3-era BioWare packages)"
   - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/docs/XOREOS_FORMAT_COVERAGE.md In-tree — coverage matrix (PCC is out-of-xoreos Aurora scope; see table)"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree (KotOR-era PDFs; PCC is Mass Effect / UE3 — use LegendaryExplorer wiki as wire authority)"
 
 seq:
   - id: header

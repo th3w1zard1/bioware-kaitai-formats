@@ -1,0 +1,57 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__tga {
+		label="Tga";
+		graph[style=dotted];
+
+		tga__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="id_length_pos">0</TD><TD PORT="id_length_size">1</TD><TD>u1</TD><TD PORT="id_length_type">id_length</TD></TR>
+			<TR><TD PORT="color_map_type_pos">1</TD><TD PORT="color_map_type_size">1</TD><TD>u1→TgaCommon::TgaColorMapType</TD><TD PORT="color_map_type_type">color_map_type</TD></TR>
+			<TR><TD PORT="image_type_pos">2</TD><TD PORT="image_type_size">1</TD><TD>u1→TgaCommon::TgaImageType</TD><TD PORT="image_type_type">image_type</TD></TR>
+			<TR><TD PORT="color_map_spec_pos">3</TD><TD PORT="color_map_spec_size">5</TD><TD>ColorMapSpecification</TD><TD PORT="color_map_spec_type">color_map_spec</TD></TR>
+			<TR><TD COLSPAN="4" PORT="color_map_spec__if">if color_map_type == :tga_color_map_type_present</TD></TR>
+			<TR><TD PORT="image_spec_pos">8</TD><TD PORT="image_spec_size">10</TD><TD>ImageSpecification</TD><TD PORT="image_spec_type">image_spec</TD></TR>
+			<TR><TD PORT="image_id_pos">18</TD><TD PORT="image_id_size">id_length</TD><TD>str(ASCII)</TD><TD PORT="image_id_type">image_id</TD></TR>
+			<TR><TD COLSPAN="4" PORT="image_id__if">if id_length &gt; 0</TD></TR>
+			<TR><TD PORT="color_map_data_pos">...</TD><TD PORT="color_map_data_size">1</TD><TD>u1</TD><TD PORT="color_map_data_type">color_map_data</TD></TR>
+			<TR><TD COLSPAN="4" PORT="color_map_data__repeat">repeat color_map_spec.length times</TD></TR>
+			<TR><TD COLSPAN="4" PORT="color_map_data__if">if color_map_type == :tga_color_map_type_present</TD></TR>
+			<TR><TD PORT="image_data_pos">...</TD><TD PORT="image_data_size">1</TD><TD>u1</TD><TD PORT="image_data_type">image_data</TD></TR>
+			<TR><TD COLSPAN="4" PORT="image_data__repeat">repeat to end of stream</TD></TR>
+		</TABLE>>];
+		subgraph cluster__color_map_specification {
+			label="Tga::ColorMapSpecification";
+			graph[style=dotted];
+
+			color_map_specification__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="first_entry_index_pos">0</TD><TD PORT="first_entry_index_size">2</TD><TD>u2le</TD><TD PORT="first_entry_index_type">first_entry_index</TD></TR>
+				<TR><TD PORT="length_pos">2</TD><TD PORT="length_size">2</TD><TD>u2le</TD><TD PORT="length_type">length</TD></TR>
+				<TR><TD PORT="entry_size_pos">4</TD><TD PORT="entry_size_size">1</TD><TD>u1</TD><TD PORT="entry_size_type">entry_size</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__image_specification {
+			label="Tga::ImageSpecification";
+			graph[style=dotted];
+
+			image_specification__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="x_origin_pos">0</TD><TD PORT="x_origin_size">2</TD><TD>u2le</TD><TD PORT="x_origin_type">x_origin</TD></TR>
+				<TR><TD PORT="y_origin_pos">2</TD><TD PORT="y_origin_size">2</TD><TD>u2le</TD><TD PORT="y_origin_type">y_origin</TD></TR>
+				<TR><TD PORT="width_pos">4</TD><TD PORT="width_size">2</TD><TD>u2le</TD><TD PORT="width_type">width</TD></TR>
+				<TR><TD PORT="height_pos">6</TD><TD PORT="height_size">2</TD><TD>u2le</TD><TD PORT="height_type">height</TD></TR>
+				<TR><TD PORT="pixel_depth_pos">8</TD><TD PORT="pixel_depth_size">1</TD><TD>u1</TD><TD PORT="pixel_depth_type">pixel_depth</TD></TR>
+				<TR><TD PORT="image_descriptor_pos">9</TD><TD PORT="image_descriptor_size">1</TD><TD>u1</TD><TD PORT="image_descriptor_type">image_descriptor</TD></TR>
+			</TABLE>>];
+		}
+	}
+	tga__seq:color_map_spec_type -> color_map_specification__seq [style=bold];
+	tga__seq:color_map_type_type -> tga__seq:color_map_spec__if [color="#404040"];
+	tga__seq:image_spec_type -> image_specification__seq [style=bold];
+	tga__seq:id_length_type -> tga__seq:image_id_size [color="#404040"];
+	tga__seq:id_length_type -> tga__seq:image_id__if [color="#404040"];
+	color_map_specification__seq:length_type -> tga__seq:color_map_data__repeat [color="#404040"];
+	tga__seq:color_map_type_type -> tga__seq:color_map_data__if [color="#404040"];
+}

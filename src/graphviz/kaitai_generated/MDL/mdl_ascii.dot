@@ -1,0 +1,293 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__mdl_ascii {
+		label="MdlAscii";
+		graph[style=dotted];
+
+		mdl_ascii__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="lines_pos">0</TD><TD PORT="lines_size">...</TD><TD>AsciiLine</TD><TD PORT="lines_type">lines</TD></TR>
+			<TR><TD COLSPAN="4" PORT="lines__repeat">repeat to end of stream</TD></TR>
+		</TABLE>>];
+		subgraph cluster__animation_section {
+			label="MdlAscii::AnimationSection";
+			graph[style=dotted];
+
+			animation_section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="newanim_pos">0</TD><TD PORT="newanim_size">...</TD><TD>LineText</TD><TD PORT="newanim_type">newanim</TD></TR>
+				<TR><TD PORT="doneanim_pos">...</TD><TD PORT="doneanim_size">...</TD><TD>LineText</TD><TD PORT="doneanim_type">doneanim</TD></TR>
+				<TR><TD PORT="length_pos">...</TD><TD PORT="length_size">...</TD><TD>LineText</TD><TD PORT="length_type">length</TD></TR>
+				<TR><TD PORT="transtime_pos">...</TD><TD PORT="transtime_size">...</TD><TD>LineText</TD><TD PORT="transtime_type">transtime</TD></TR>
+				<TR><TD PORT="animroot_pos">...</TD><TD PORT="animroot_size">...</TD><TD>LineText</TD><TD PORT="animroot_type">animroot</TD></TR>
+				<TR><TD PORT="event_pos">...</TD><TD PORT="event_size">...</TD><TD>LineText</TD><TD PORT="event_type">event</TD></TR>
+				<TR><TD PORT="eventlist_pos">...</TD><TD PORT="eventlist_size">...</TD><TD>LineText</TD><TD PORT="eventlist_type">eventlist</TD></TR>
+				<TR><TD PORT="endlist_pos">...</TD><TD PORT="endlist_size">...</TD><TD>LineText</TD><TD PORT="endlist_type">endlist</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__ascii_line {
+			label="MdlAscii::AsciiLine";
+			graph[style=dotted];
+
+			ascii_line__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="content_pos">0</TD><TD PORT="content_size">...</TD><TD>str(term=10, ignore EOS, UTF-8)</TD><TD PORT="content_type">content</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__controller_bezier {
+			label="MdlAscii::ControllerBezier";
+			graph[style=dotted];
+
+			controller_bezier__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="controller_name_pos">0</TD><TD PORT="controller_name_size">...</TD><TD>LineText</TD><TD PORT="controller_name_type">controller_name</TD></TR>
+				<TR><TD PORT="keyframes_pos">...</TD><TD PORT="keyframes_size">...</TD><TD>ControllerBezierKeyframe</TD><TD PORT="keyframes_type">keyframes</TD></TR>
+				<TR><TD COLSPAN="4" PORT="keyframes__repeat">repeat to end of stream</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__controller_bezier_keyframe {
+			label="MdlAscii::ControllerBezierKeyframe";
+			graph[style=dotted];
+
+			controller_bezier_keyframe__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="time_pos">0</TD><TD PORT="time_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="time_type">time</TD></TR>
+				<TR><TD PORT="value_data_pos">...</TD><TD PORT="value_data_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="value_data_type">value_data</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__controller_keyed {
+			label="MdlAscii::ControllerKeyed";
+			graph[style=dotted];
+
+			controller_keyed__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="controller_name_pos">0</TD><TD PORT="controller_name_size">...</TD><TD>LineText</TD><TD PORT="controller_name_type">controller_name</TD></TR>
+				<TR><TD PORT="keyframes_pos">...</TD><TD PORT="keyframes_size">...</TD><TD>ControllerKeyframe</TD><TD PORT="keyframes_type">keyframes</TD></TR>
+				<TR><TD COLSPAN="4" PORT="keyframes__repeat">repeat to end of stream</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__controller_keyframe {
+			label="MdlAscii::ControllerKeyframe";
+			graph[style=dotted];
+
+			controller_keyframe__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="time_pos">0</TD><TD PORT="time_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="time_type">time</TD></TR>
+				<TR><TD PORT="values_pos">...</TD><TD PORT="values_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="values_type">values</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__controller_single {
+			label="MdlAscii::ControllerSingle";
+			graph[style=dotted];
+
+			controller_single__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="controller_name_pos">0</TD><TD PORT="controller_name_size">...</TD><TD>LineText</TD><TD PORT="controller_name_type">controller_name</TD></TR>
+				<TR><TD PORT="values_pos">...</TD><TD PORT="values_size">...</TD><TD>LineText</TD><TD PORT="values_type">values</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__danglymesh_properties {
+			label="MdlAscii::DanglymeshProperties";
+			graph[style=dotted];
+
+			danglymesh_properties__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="displacement_pos">0</TD><TD PORT="displacement_size">...</TD><TD>LineText</TD><TD PORT="displacement_type">displacement</TD></TR>
+				<TR><TD PORT="tightness_pos">...</TD><TD PORT="tightness_size">...</TD><TD>LineText</TD><TD PORT="tightness_type">tightness</TD></TR>
+				<TR><TD PORT="period_pos">...</TD><TD PORT="period_size">...</TD><TD>LineText</TD><TD PORT="period_type">period</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__data_arrays {
+			label="MdlAscii::DataArrays";
+			graph[style=dotted];
+
+			data_arrays__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="verts_pos">0</TD><TD PORT="verts_size">...</TD><TD>LineText</TD><TD PORT="verts_type">verts</TD></TR>
+				<TR><TD PORT="faces_pos">...</TD><TD PORT="faces_size">...</TD><TD>LineText</TD><TD PORT="faces_type">faces</TD></TR>
+				<TR><TD PORT="tverts_pos">...</TD><TD PORT="tverts_size">...</TD><TD>LineText</TD><TD PORT="tverts_type">tverts</TD></TR>
+				<TR><TD PORT="tverts1_pos">...</TD><TD PORT="tverts1_size">...</TD><TD>LineText</TD><TD PORT="tverts1_type">tverts1</TD></TR>
+				<TR><TD PORT="lightmaptverts_pos">...</TD><TD PORT="lightmaptverts_size">...</TD><TD>LineText</TD><TD PORT="lightmaptverts_type">lightmaptverts</TD></TR>
+				<TR><TD PORT="tverts2_pos">...</TD><TD PORT="tverts2_size">...</TD><TD>LineText</TD><TD PORT="tverts2_type">tverts2</TD></TR>
+				<TR><TD PORT="tverts3_pos">...</TD><TD PORT="tverts3_size">...</TD><TD>LineText</TD><TD PORT="tverts3_type">tverts3</TD></TR>
+				<TR><TD PORT="texindices1_pos">...</TD><TD PORT="texindices1_size">...</TD><TD>LineText</TD><TD PORT="texindices1_type">texindices1</TD></TR>
+				<TR><TD PORT="texindices2_pos">...</TD><TD PORT="texindices2_size">...</TD><TD>LineText</TD><TD PORT="texindices2_type">texindices2</TD></TR>
+				<TR><TD PORT="texindices3_pos">...</TD><TD PORT="texindices3_size">...</TD><TD>LineText</TD><TD PORT="texindices3_type">texindices3</TD></TR>
+				<TR><TD PORT="colors_pos">...</TD><TD PORT="colors_size">...</TD><TD>LineText</TD><TD PORT="colors_type">colors</TD></TR>
+				<TR><TD PORT="colorindices_pos">...</TD><TD PORT="colorindices_size">...</TD><TD>LineText</TD><TD PORT="colorindices_type">colorindices</TD></TR>
+				<TR><TD PORT="weights_pos">...</TD><TD PORT="weights_size">...</TD><TD>LineText</TD><TD PORT="weights_type">weights</TD></TR>
+				<TR><TD PORT="constraints_pos">...</TD><TD PORT="constraints_size">...</TD><TD>LineText</TD><TD PORT="constraints_type">constraints</TD></TR>
+				<TR><TD PORT="aabb_pos">...</TD><TD PORT="aabb_size">...</TD><TD>LineText</TD><TD PORT="aabb_type">aabb</TD></TR>
+				<TR><TD PORT="saber_verts_pos">...</TD><TD PORT="saber_verts_size">...</TD><TD>LineText</TD><TD PORT="saber_verts_type">saber_verts</TD></TR>
+				<TR><TD PORT="saber_norms_pos">...</TD><TD PORT="saber_norms_size">...</TD><TD>LineText</TD><TD PORT="saber_norms_type">saber_norms</TD></TR>
+				<TR><TD PORT="name_pos">...</TD><TD PORT="name_size">...</TD><TD>LineText</TD><TD PORT="name_type">name</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__emitter_flags {
+			label="MdlAscii::EmitterFlags";
+			graph[style=dotted];
+
+			emitter_flags__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="p2p_pos">0</TD><TD PORT="p2p_size">...</TD><TD>LineText</TD><TD PORT="p2p_type">p2p</TD></TR>
+				<TR><TD PORT="p2p_sel_pos">...</TD><TD PORT="p2p_sel_size">...</TD><TD>LineText</TD><TD PORT="p2p_sel_type">p2p_sel</TD></TR>
+				<TR><TD PORT="affected_by_wind_pos">...</TD><TD PORT="affected_by_wind_size">...</TD><TD>LineText</TD><TD PORT="affected_by_wind_type">affected_by_wind</TD></TR>
+				<TR><TD PORT="m_is_tinted_pos">...</TD><TD PORT="m_is_tinted_size">...</TD><TD>LineText</TD><TD PORT="m_is_tinted_type">m_is_tinted</TD></TR>
+				<TR><TD PORT="bounce_pos">...</TD><TD PORT="bounce_size">...</TD><TD>LineText</TD><TD PORT="bounce_type">bounce</TD></TR>
+				<TR><TD PORT="random_pos">...</TD><TD PORT="random_size">...</TD><TD>LineText</TD><TD PORT="random_type">random</TD></TR>
+				<TR><TD PORT="inherit_pos">...</TD><TD PORT="inherit_size">...</TD><TD>LineText</TD><TD PORT="inherit_type">inherit</TD></TR>
+				<TR><TD PORT="inheritvel_pos">...</TD><TD PORT="inheritvel_size">...</TD><TD>LineText</TD><TD PORT="inheritvel_type">inheritvel</TD></TR>
+				<TR><TD PORT="inherit_local_pos">...</TD><TD PORT="inherit_local_size">...</TD><TD>LineText</TD><TD PORT="inherit_local_type">inherit_local</TD></TR>
+				<TR><TD PORT="splat_pos">...</TD><TD PORT="splat_size">...</TD><TD>LineText</TD><TD PORT="splat_type">splat</TD></TR>
+				<TR><TD PORT="inherit_part_pos">...</TD><TD PORT="inherit_part_size">...</TD><TD>LineText</TD><TD PORT="inherit_part_type">inherit_part</TD></TR>
+				<TR><TD PORT="depth_texture_pos">...</TD><TD PORT="depth_texture_size">...</TD><TD>LineText</TD><TD PORT="depth_texture_type">depth_texture</TD></TR>
+				<TR><TD PORT="emitterflag13_pos">...</TD><TD PORT="emitterflag13_size">...</TD><TD>LineText</TD><TD PORT="emitterflag13_type">emitterflag13</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__emitter_properties {
+			label="MdlAscii::EmitterProperties";
+			graph[style=dotted];
+
+			emitter_properties__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="deadspace_pos">0</TD><TD PORT="deadspace_size">...</TD><TD>LineText</TD><TD PORT="deadspace_type">deadspace</TD></TR>
+				<TR><TD PORT="blast_radius_pos">...</TD><TD PORT="blast_radius_size">...</TD><TD>LineText</TD><TD PORT="blast_radius_type">blast_radius</TD></TR>
+				<TR><TD PORT="blast_length_pos">...</TD><TD PORT="blast_length_size">...</TD><TD>LineText</TD><TD PORT="blast_length_type">blast_length</TD></TR>
+				<TR><TD PORT="num_branches_pos">...</TD><TD PORT="num_branches_size">...</TD><TD>LineText</TD><TD PORT="num_branches_type">num_branches</TD></TR>
+				<TR><TD PORT="controlptsmoothing_pos">...</TD><TD PORT="controlptsmoothing_size">...</TD><TD>LineText</TD><TD PORT="controlptsmoothing_type">controlptsmoothing</TD></TR>
+				<TR><TD PORT="xgrid_pos">...</TD><TD PORT="xgrid_size">...</TD><TD>LineText</TD><TD PORT="xgrid_type">xgrid</TD></TR>
+				<TR><TD PORT="ygrid_pos">...</TD><TD PORT="ygrid_size">...</TD><TD>LineText</TD><TD PORT="ygrid_type">ygrid</TD></TR>
+				<TR><TD PORT="spawntype_pos">...</TD><TD PORT="spawntype_size">...</TD><TD>LineText</TD><TD PORT="spawntype_type">spawntype</TD></TR>
+				<TR><TD PORT="update_pos">...</TD><TD PORT="update_size">...</TD><TD>LineText</TD><TD PORT="update_type">update</TD></TR>
+				<TR><TD PORT="render_pos">...</TD><TD PORT="render_size">...</TD><TD>LineText</TD><TD PORT="render_type">render</TD></TR>
+				<TR><TD PORT="blend_pos">...</TD><TD PORT="blend_size">...</TD><TD>LineText</TD><TD PORT="blend_type">blend</TD></TR>
+				<TR><TD PORT="texture_pos">...</TD><TD PORT="texture_size">...</TD><TD>LineText</TD><TD PORT="texture_type">texture</TD></TR>
+				<TR><TD PORT="chunkname_pos">...</TD><TD PORT="chunkname_size">...</TD><TD>LineText</TD><TD PORT="chunkname_type">chunkname</TD></TR>
+				<TR><TD PORT="twosidedtex_pos">...</TD><TD PORT="twosidedtex_size">...</TD><TD>LineText</TD><TD PORT="twosidedtex_type">twosidedtex</TD></TR>
+				<TR><TD PORT="loop_pos">...</TD><TD PORT="loop_size">...</TD><TD>LineText</TD><TD PORT="loop_type">loop</TD></TR>
+				<TR><TD PORT="renderorder_pos">...</TD><TD PORT="renderorder_size">...</TD><TD>LineText</TD><TD PORT="renderorder_type">renderorder</TD></TR>
+				<TR><TD PORT="m_b_frame_blending_pos">...</TD><TD PORT="m_b_frame_blending_size">...</TD><TD>LineText</TD><TD PORT="m_b_frame_blending_type">m_b_frame_blending</TD></TR>
+				<TR><TD PORT="m_s_depth_texture_name_pos">...</TD><TD PORT="m_s_depth_texture_name_size">...</TD><TD>LineText</TD><TD PORT="m_s_depth_texture_name_type">m_s_depth_texture_name</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__light_properties {
+			label="MdlAscii::LightProperties";
+			graph[style=dotted];
+
+			light_properties__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="flareradius_pos">0</TD><TD PORT="flareradius_size">...</TD><TD>LineText</TD><TD PORT="flareradius_type">flareradius</TD></TR>
+				<TR><TD PORT="flarepositions_pos">...</TD><TD PORT="flarepositions_size">...</TD><TD>LineText</TD><TD PORT="flarepositions_type">flarepositions</TD></TR>
+				<TR><TD PORT="flaresizes_pos">...</TD><TD PORT="flaresizes_size">...</TD><TD>LineText</TD><TD PORT="flaresizes_type">flaresizes</TD></TR>
+				<TR><TD PORT="flarecolorshifts_pos">...</TD><TD PORT="flarecolorshifts_size">...</TD><TD>LineText</TD><TD PORT="flarecolorshifts_type">flarecolorshifts</TD></TR>
+				<TR><TD PORT="texturenames_pos">...</TD><TD PORT="texturenames_size">...</TD><TD>LineText</TD><TD PORT="texturenames_type">texturenames</TD></TR>
+				<TR><TD PORT="ambientonly_pos">...</TD><TD PORT="ambientonly_size">...</TD><TD>LineText</TD><TD PORT="ambientonly_type">ambientonly</TD></TR>
+				<TR><TD PORT="ndynamictype_pos">...</TD><TD PORT="ndynamictype_size">...</TD><TD>LineText</TD><TD PORT="ndynamictype_type">ndynamictype</TD></TR>
+				<TR><TD PORT="affectdynamic_pos">...</TD><TD PORT="affectdynamic_size">...</TD><TD>LineText</TD><TD PORT="affectdynamic_type">affectdynamic</TD></TR>
+				<TR><TD PORT="flare_pos">...</TD><TD PORT="flare_size">...</TD><TD>LineText</TD><TD PORT="flare_type">flare</TD></TR>
+				<TR><TD PORT="lightpriority_pos">...</TD><TD PORT="lightpriority_size">...</TD><TD>LineText</TD><TD PORT="lightpriority_type">lightpriority</TD></TR>
+				<TR><TD PORT="fadinglight_pos">...</TD><TD PORT="fadinglight_size">...</TD><TD>LineText</TD><TD PORT="fadinglight_type">fadinglight</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__line_text {
+			label="MdlAscii::LineText";
+			graph[style=dotted];
+
+			line_text__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>str(term=10, ignore EOS, UTF-8)</TD><TD PORT="value_type">value</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__reference_properties {
+			label="MdlAscii::ReferenceProperties";
+			graph[style=dotted];
+
+			reference_properties__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="refmodel_pos">0</TD><TD PORT="refmodel_size">...</TD><TD>LineText</TD><TD PORT="refmodel_type">refmodel</TD></TR>
+				<TR><TD PORT="reattachable_pos">...</TD><TD PORT="reattachable_size">...</TD><TD>LineText</TD><TD PORT="reattachable_type">reattachable</TD></TR>
+			</TABLE>>];
+		}
+	}
+	mdl_ascii__seq:lines_type -> ascii_line__seq [style=bold];
+	animation_section__seq:newanim_type -> line_text__seq [style=bold];
+	animation_section__seq:doneanim_type -> line_text__seq [style=bold];
+	animation_section__seq:length_type -> line_text__seq [style=bold];
+	animation_section__seq:transtime_type -> line_text__seq [style=bold];
+	animation_section__seq:animroot_type -> line_text__seq [style=bold];
+	animation_section__seq:event_type -> line_text__seq [style=bold];
+	animation_section__seq:eventlist_type -> line_text__seq [style=bold];
+	animation_section__seq:endlist_type -> line_text__seq [style=bold];
+	controller_bezier__seq:controller_name_type -> line_text__seq [style=bold];
+	controller_bezier__seq:keyframes_type -> controller_bezier_keyframe__seq [style=bold];
+	controller_keyed__seq:controller_name_type -> line_text__seq [style=bold];
+	controller_keyed__seq:keyframes_type -> controller_keyframe__seq [style=bold];
+	controller_single__seq:controller_name_type -> line_text__seq [style=bold];
+	controller_single__seq:values_type -> line_text__seq [style=bold];
+	danglymesh_properties__seq:displacement_type -> line_text__seq [style=bold];
+	danglymesh_properties__seq:tightness_type -> line_text__seq [style=bold];
+	danglymesh_properties__seq:period_type -> line_text__seq [style=bold];
+	data_arrays__seq:verts_type -> line_text__seq [style=bold];
+	data_arrays__seq:faces_type -> line_text__seq [style=bold];
+	data_arrays__seq:tverts_type -> line_text__seq [style=bold];
+	data_arrays__seq:tverts1_type -> line_text__seq [style=bold];
+	data_arrays__seq:lightmaptverts_type -> line_text__seq [style=bold];
+	data_arrays__seq:tverts2_type -> line_text__seq [style=bold];
+	data_arrays__seq:tverts3_type -> line_text__seq [style=bold];
+	data_arrays__seq:texindices1_type -> line_text__seq [style=bold];
+	data_arrays__seq:texindices2_type -> line_text__seq [style=bold];
+	data_arrays__seq:texindices3_type -> line_text__seq [style=bold];
+	data_arrays__seq:colors_type -> line_text__seq [style=bold];
+	data_arrays__seq:colorindices_type -> line_text__seq [style=bold];
+	data_arrays__seq:weights_type -> line_text__seq [style=bold];
+	data_arrays__seq:constraints_type -> line_text__seq [style=bold];
+	data_arrays__seq:aabb_type -> line_text__seq [style=bold];
+	data_arrays__seq:saber_verts_type -> line_text__seq [style=bold];
+	data_arrays__seq:saber_norms_type -> line_text__seq [style=bold];
+	data_arrays__seq:name_type -> line_text__seq [style=bold];
+	emitter_flags__seq:p2p_type -> line_text__seq [style=bold];
+	emitter_flags__seq:p2p_sel_type -> line_text__seq [style=bold];
+	emitter_flags__seq:affected_by_wind_type -> line_text__seq [style=bold];
+	emitter_flags__seq:m_is_tinted_type -> line_text__seq [style=bold];
+	emitter_flags__seq:bounce_type -> line_text__seq [style=bold];
+	emitter_flags__seq:random_type -> line_text__seq [style=bold];
+	emitter_flags__seq:inherit_type -> line_text__seq [style=bold];
+	emitter_flags__seq:inheritvel_type -> line_text__seq [style=bold];
+	emitter_flags__seq:inherit_local_type -> line_text__seq [style=bold];
+	emitter_flags__seq:splat_type -> line_text__seq [style=bold];
+	emitter_flags__seq:inherit_part_type -> line_text__seq [style=bold];
+	emitter_flags__seq:depth_texture_type -> line_text__seq [style=bold];
+	emitter_flags__seq:emitterflag13_type -> line_text__seq [style=bold];
+	emitter_properties__seq:deadspace_type -> line_text__seq [style=bold];
+	emitter_properties__seq:blast_radius_type -> line_text__seq [style=bold];
+	emitter_properties__seq:blast_length_type -> line_text__seq [style=bold];
+	emitter_properties__seq:num_branches_type -> line_text__seq [style=bold];
+	emitter_properties__seq:controlptsmoothing_type -> line_text__seq [style=bold];
+	emitter_properties__seq:xgrid_type -> line_text__seq [style=bold];
+	emitter_properties__seq:ygrid_type -> line_text__seq [style=bold];
+	emitter_properties__seq:spawntype_type -> line_text__seq [style=bold];
+	emitter_properties__seq:update_type -> line_text__seq [style=bold];
+	emitter_properties__seq:render_type -> line_text__seq [style=bold];
+	emitter_properties__seq:blend_type -> line_text__seq [style=bold];
+	emitter_properties__seq:texture_type -> line_text__seq [style=bold];
+	emitter_properties__seq:chunkname_type -> line_text__seq [style=bold];
+	emitter_properties__seq:twosidedtex_type -> line_text__seq [style=bold];
+	emitter_properties__seq:loop_type -> line_text__seq [style=bold];
+	emitter_properties__seq:renderorder_type -> line_text__seq [style=bold];
+	emitter_properties__seq:m_b_frame_blending_type -> line_text__seq [style=bold];
+	emitter_properties__seq:m_s_depth_texture_name_type -> line_text__seq [style=bold];
+	light_properties__seq:flareradius_type -> line_text__seq [style=bold];
+	light_properties__seq:flarepositions_type -> line_text__seq [style=bold];
+	light_properties__seq:flaresizes_type -> line_text__seq [style=bold];
+	light_properties__seq:flarecolorshifts_type -> line_text__seq [style=bold];
+	light_properties__seq:texturenames_type -> line_text__seq [style=bold];
+	light_properties__seq:ambientonly_type -> line_text__seq [style=bold];
+	light_properties__seq:ndynamictype_type -> line_text__seq [style=bold];
+	light_properties__seq:affectdynamic_type -> line_text__seq [style=bold];
+	light_properties__seq:flare_type -> line_text__seq [style=bold];
+	light_properties__seq:lightpriority_type -> line_text__seq [style=bold];
+	light_properties__seq:fadinglight_type -> line_text__seq [style=bold];
+	reference_properties__seq:refmodel_type -> line_text__seq [style=bold];
+	reference_properties__seq:reattachable_type -> line_text__seq [style=bold];
+}

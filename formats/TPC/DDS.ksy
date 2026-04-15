@@ -79,6 +79,8 @@ meta:
     xoreos_dds_read_bioware_header: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210
     bioware_common_dds_variant_bpp: |
       `bioware_dds_header.bytes_per_pixel`: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
 doc: |
   **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
   (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
@@ -92,6 +94,8 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L55-L67 xoreos — `dds.cpp` load entry"
   - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210 xoreos — BioWare headerless / Microsoft DDS branches"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/dds.cpp#L69-L158 xoreos-tools — `dds.cpp` (image tooling)"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree (texture-adjacent PDFs)"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (engine texture pipeline context)"
   - "https://github.com/lachjames/NorthernLights lachjames/NorthernLights — upstream Unity Aurora sample (fork: `th3w1zard1/NorthernLights` in `meta.xref`)"
   - "https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L57 reone — `ResourceType::Dds` (type id; TPC path in `tpcreader.cpp`)"
 

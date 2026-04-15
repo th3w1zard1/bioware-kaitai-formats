@@ -1,0 +1,22 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__bioware_extract_common {
+		label="BiowareExtractCommon";
+		graph[style=dotted];
+
+		bioware_extract_common__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+		</TABLE>>];
+		subgraph cluster__bioware_texture_pack_name_str {
+			label="BiowareExtractCommon::BiowareTexturePackNameStr";
+			graph[style=dotted];
+
+			bioware_texture_pack_name_str__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_pos">0</TD><TD PORT="value_size">...</TD><TD>str(term=0, ASCII)</TD><TD PORT="value_type">value</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value__valid">must be any of &quot;swpc_tex_tpa.erf&quot;, &quot;swpc_tex_tpb.erf&quot;, &quot;swpc_tex_tpc.erf&quot;, &quot;swpc_tex_gui.erf&quot;</TD></TR>
+			</TABLE>>];
+		}
+	}
+}

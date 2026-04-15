@@ -13,6 +13,8 @@ meta:
       Local `vendor/xoreos`, `vendor/xoreos-tools`, and `vendor/xoreos-docs` may be **empty** until `git submodule update --init`
       (see `docs/XOREOS_FORMAT_COVERAGE.md` section 0). Until populated, rely on GitHub `blob/master/...#L` anchors in `meta.xref` / `doc-ref`
       and `scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges` for drift checks — not on-disk greps alone.
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     xoreos_types: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L443
     # Line anchors verified against upstream xoreos `master` (re-check if upstream moves).
     xoreos_types_file_type_comment: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55
@@ -66,6 +68,8 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L432-L443 xoreos — `enum Platform`"
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L316-L317 xoreos — `FXR` / `FXT` duplicate numeric key"
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612 xoreos — `ResourceManager::addTypeAlias`"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — README tool inventory (which CLIs touch which formats)"
+  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py PyKotor — `ResourceType` + tooling-only extensions"
 
 enums:

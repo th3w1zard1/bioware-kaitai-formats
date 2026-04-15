@@ -1,0 +1,25 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__nss {
+		label="Nss";
+		graph[style=dotted];
+
+		nss__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="bom_pos">0</TD><TD PORT="bom_size">2</TD><TD>u2le</TD><TD PORT="bom_type">bom</TD></TR>
+			<TR><TD COLSPAN="4" PORT="bom__valid">must be any of 65279, 0</TD></TR>
+			<TR><TD COLSPAN="4" PORT="bom__if">if _io.pos == 0</TD></TR>
+			<TR><TD PORT="source_code_pos">2</TD><TD PORT="source_code_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="source_code_type">source_code</TD></TR>
+		</TABLE>>];
+		subgraph cluster__nss_source {
+			label="Nss::NssSource";
+			graph[style=dotted];
+
+			nss_source__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="content_pos">0</TD><TD PORT="content_size">⇲</TD><TD>str(UTF-8)</TD><TD PORT="content_type">content</TD></TR>
+			</TABLE>>];
+		}
+	}
+}

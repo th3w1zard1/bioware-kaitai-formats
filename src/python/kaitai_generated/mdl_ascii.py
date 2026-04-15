@@ -2,23 +2,27 @@
 # type: ignore
 
 import kaitaistruct
-from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+from kaitaistruct import KaitaiStruct
 from enum import IntEnum
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, "API_VERSION", (0, 9)) < (0, 11):
+    raise Exception(
+        "Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s"
+        % (kaitaistruct.__version__)
+    )
+
 
 class MdlAscii(KaitaiStruct):
     """MDL ASCII format is a human-readable ASCII text representation of MDL (Model) binary files.
     Used by modding tools for easier editing than binary MDL format.
-    
+
     The ASCII format represents the model structure using plain text with keyword-based syntax.
     Lines are parsed sequentially, with keywords indicating sections, nodes, properties, and data arrays.
-    
+
     Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - ASCII MDL Format section
     Reference: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:3916-4698 - readasciimdl function implementation
-    
+
     .. seealso::
        Source - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#ascii-mdl-format
     """
@@ -110,6 +114,7 @@ class MdlAscii(KaitaiStruct):
         danglymesh = 289
         aabb = 545
         lightsaber = 2081
+
     def __init__(self, _io, _parent=None, _root=None):
         super(MdlAscii, self).__init__(_io)
         self._parent = _parent
@@ -123,17 +128,15 @@ class MdlAscii(KaitaiStruct):
             self.lines.append(MdlAscii.AsciiLine(self._io, self, self._root))
             i += 1
 
-
-
     def _fetch_instances(self):
         pass
         for i in range(len(self.lines)):
             pass
             self.lines[i]._fetch_instances()
 
-
     class AnimationSection(KaitaiStruct):
         """Animation section keywords."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.AnimationSection, self).__init__(_io)
             self._parent = _parent
@@ -150,7 +153,6 @@ class MdlAscii(KaitaiStruct):
             self.eventlist = MdlAscii.LineText(self._io, self, self._root)
             self.endlist = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.newanim._fetch_instances()
@@ -162,9 +164,9 @@ class MdlAscii(KaitaiStruct):
             self.eventlist._fetch_instances()
             self.endlist._fetch_instances()
 
-
     class AsciiLine(KaitaiStruct):
         """Single line in ASCII MDL file."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.AsciiLine, self).__init__(_io)
             self._parent = _parent
@@ -172,15 +174,16 @@ class MdlAscii(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.content = (self._io.read_bytes_term(10, False, True, False)).decode(u"UTF-8")
-
+            self.content = (self._io.read_bytes_term(10, False, True, False)).decode(
+                "UTF-8"
+            )
 
         def _fetch_instances(self):
             pass
 
-
     class ControllerBezier(KaitaiStruct):
         """Bezier (smooth animated) controller format."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.ControllerBezier, self).__init__(_io)
             self._parent = _parent
@@ -192,10 +195,10 @@ class MdlAscii(KaitaiStruct):
             self.keyframes = []
             i = 0
             while not self._io.is_eof():
-                self.keyframes.append(MdlAscii.ControllerBezierKeyframe(self._io, self, self._root))
+                self.keyframes.append(
+                    MdlAscii.ControllerBezierKeyframe(self._io, self, self._root)
+                )
                 i += 1
-
-
 
         def _fetch_instances(self):
             pass
@@ -204,10 +207,9 @@ class MdlAscii(KaitaiStruct):
                 pass
                 self.keyframes[i]._fetch_instances()
 
-
-
     class ControllerBezierKeyframe(KaitaiStruct):
         """Single keyframe in Bezier controller (stores value + in_tangent + out_tangent per column)."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.ControllerBezierKeyframe, self).__init__(_io)
             self._parent = _parent
@@ -215,16 +217,15 @@ class MdlAscii(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.time = (self._io.read_bytes_full()).decode(u"UTF-8")
-            self.value_data = (self._io.read_bytes_full()).decode(u"UTF-8")
-
+            self.time = (self._io.read_bytes_full()).decode("UTF-8")
+            self.value_data = (self._io.read_bytes_full()).decode("UTF-8")
 
         def _fetch_instances(self):
             pass
 
-
     class ControllerKeyed(KaitaiStruct):
         """Keyed (animated) controller format."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.ControllerKeyed, self).__init__(_io)
             self._parent = _parent
@@ -236,10 +237,10 @@ class MdlAscii(KaitaiStruct):
             self.keyframes = []
             i = 0
             while not self._io.is_eof():
-                self.keyframes.append(MdlAscii.ControllerKeyframe(self._io, self, self._root))
+                self.keyframes.append(
+                    MdlAscii.ControllerKeyframe(self._io, self, self._root)
+                )
                 i += 1
-
-
 
         def _fetch_instances(self):
             pass
@@ -248,10 +249,9 @@ class MdlAscii(KaitaiStruct):
                 pass
                 self.keyframes[i]._fetch_instances()
 
-
-
     class ControllerKeyframe(KaitaiStruct):
         """Single keyframe in keyed controller."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.ControllerKeyframe, self).__init__(_io)
             self._parent = _parent
@@ -259,16 +259,15 @@ class MdlAscii(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.time = (self._io.read_bytes_full()).decode(u"UTF-8")
-            self.values = (self._io.read_bytes_full()).decode(u"UTF-8")
-
+            self.time = (self._io.read_bytes_full()).decode("UTF-8")
+            self.values = (self._io.read_bytes_full()).decode("UTF-8")
 
         def _fetch_instances(self):
             pass
 
-
     class ControllerSingle(KaitaiStruct):
         """Single (constant) controller format."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.ControllerSingle, self).__init__(_io)
             self._parent = _parent
@@ -279,15 +278,14 @@ class MdlAscii(KaitaiStruct):
             self.controller_name = MdlAscii.LineText(self._io, self, self._root)
             self.values = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.controller_name._fetch_instances()
             self.values._fetch_instances()
 
-
     class DanglymeshProperties(KaitaiStruct):
         """Danglymesh node properties."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.DanglymeshProperties, self).__init__(_io)
             self._parent = _parent
@@ -299,16 +297,15 @@ class MdlAscii(KaitaiStruct):
             self.tightness = MdlAscii.LineText(self._io, self, self._root)
             self.period = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.displacement._fetch_instances()
             self.tightness._fetch_instances()
             self.period._fetch_instances()
 
-
     class DataArrays(KaitaiStruct):
         """Data array keywords."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.DataArrays, self).__init__(_io)
             self._parent = _parent
@@ -335,7 +332,6 @@ class MdlAscii(KaitaiStruct):
             self.saber_norms = MdlAscii.LineText(self._io, self, self._root)
             self.name = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.verts._fetch_instances()
@@ -357,9 +353,9 @@ class MdlAscii(KaitaiStruct):
             self.saber_norms._fetch_instances()
             self.name._fetch_instances()
 
-
     class EmitterFlags(KaitaiStruct):
         """Emitter behavior flags."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.EmitterFlags, self).__init__(_io)
             self._parent = _parent
@@ -381,7 +377,6 @@ class MdlAscii(KaitaiStruct):
             self.depth_texture = MdlAscii.LineText(self._io, self, self._root)
             self.emitterflag13 = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.p2p._fetch_instances()
@@ -398,9 +393,9 @@ class MdlAscii(KaitaiStruct):
             self.depth_texture._fetch_instances()
             self.emitterflag13._fetch_instances()
 
-
     class EmitterProperties(KaitaiStruct):
         """Emitter node properties."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.EmitterProperties, self).__init__(_io)
             self._parent = _parent
@@ -427,7 +422,6 @@ class MdlAscii(KaitaiStruct):
             self.m_b_frame_blending = MdlAscii.LineText(self._io, self, self._root)
             self.m_s_depth_texture_name = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.deadspace._fetch_instances()
@@ -449,9 +443,9 @@ class MdlAscii(KaitaiStruct):
             self.m_b_frame_blending._fetch_instances()
             self.m_s_depth_texture_name._fetch_instances()
 
-
     class LightProperties(KaitaiStruct):
         """Light node properties."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.LightProperties, self).__init__(_io)
             self._parent = _parent
@@ -471,7 +465,6 @@ class MdlAscii(KaitaiStruct):
             self.lightpriority = MdlAscii.LineText(self._io, self, self._root)
             self.fadinglight = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.flareradius._fetch_instances()
@@ -486,11 +479,11 @@ class MdlAscii(KaitaiStruct):
             self.lightpriority._fetch_instances()
             self.fadinglight._fetch_instances()
 
-
     class LineText(KaitaiStruct):
         """A single UTF-8 text line (without the trailing newline).
         Used to make doc-oriented keyword/type listings schema-valid for Kaitai.
         """
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.LineText, self).__init__(_io)
             self._parent = _parent
@@ -498,15 +491,16 @@ class MdlAscii(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.value = (self._io.read_bytes_term(10, False, True, False)).decode(u"UTF-8")
-
+            self.value = (self._io.read_bytes_term(10, False, True, False)).decode(
+                "UTF-8"
+            )
 
         def _fetch_instances(self):
             pass
 
-
     class ReferenceProperties(KaitaiStruct):
         """Reference node properties."""
+
         def __init__(self, _io, _parent=None, _root=None):
             super(MdlAscii.ReferenceProperties, self).__init__(_io)
             self._parent = _parent
@@ -517,11 +511,7 @@ class MdlAscii(KaitaiStruct):
             self.refmodel = MdlAscii.LineText(self._io, self, self._root)
             self.reattachable = MdlAscii.LineText(self._io, self, self._root)
 
-
         def _fetch_instances(self):
             pass
             self.refmodel._fetch_instances()
             self.reattachable._fetch_instances()
-
-
-

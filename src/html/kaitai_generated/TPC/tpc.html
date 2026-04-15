@@ -1,0 +1,125 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Tpc format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>Tpc format specification</h1>
+
+      
+<a name='type-tpc'></a>
+<h1>Type: Tpc</h1>
+
+<p>**TPC** (KotOR native texture): 128-byte header (`pixel_encoding` etc. via `bioware_common`) + opaque tail
+(mips / cube faces / optional **TXI** suffix). Per-mip byte sizes are format-specific — see PyKotor `io_tpc.py`
+(`meta.xref`).
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>header</td>
+<td><a href="#type-tpc-tpc_header">TpcHeader</a></td>
+<td>TPC file header (128 bytes total)</td>
+</tr>
+<tr>
+<td>128</td>
+<td>...</td>
+<td>body</td>
+<td></td>
+<td>Remaining file bytes after the header (texture data for all layers/mipmaps, then optional TXI).
+</td>
+</tr>
+</table>
+<a name='type-tpc-tpc_header'></a>
+<h2>Type: TpcHeader</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>data_size</td>
+<td>u4le</td>
+<td>Total compressed payload size. If non-zero, texture is compressed (DXT).
+If zero, texture is uncompressed and size is derived from format/width/height.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>alpha_test</td>
+<td>f4le</td>
+<td>Float threshold used by punch-through rendering.
+Commonly 0.0 or 0.5.
+</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>width</td>
+<td>u2le</td>
+<td>Texture width in pixels (uint16).
+Must be power-of-two for compressed formats.
+</td>
+</tr>
+<tr>
+<td>10</td>
+<td>...</td>
+<td>height</td>
+<td>u2le</td>
+<td>Texture height in pixels (uint16).
+For cube maps, this is 6x the face width.
+Must be power-of-two for compressed formats.
+</td>
+</tr>
+<tr>
+<td>12</td>
+<td>...</td>
+<td>pixel_encoding</td>
+<td>u1→BiowareCommon::BiowareTpcPixelFormatId</td>
+<td>Pixel encoding byte (`u1`). Canonical values: `formats/Common/bioware_common.ksy` →
+`bioware_tpc_pixel_format_id` (PyKotor wiki TPC header; xoreos `tpc.cpp` `readHeader`).
+</td>
+</tr>
+<tr>
+<td>13</td>
+<td>...</td>
+<td>mipmap_count</td>
+<td>u1</td>
+<td>Number of mip levels per layer (minimum 1).
+Each mip level is half the size of the previous level.
+</td>
+</tr>
+<tr>
+<td>14</td>
+<td>...</td>
+<td>reserved</td>
+<td>u1</td>
+<td>Reserved/padding bytes (0x72 = 114 bytes).
+KotOR stores platform hints here but all implementations skip them.
+</td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(is_compressed),List(types, tpc_header, instances, is_compressed),Compare(Name(identifier(data_size)),NotEq,IntNum(0)),None,Some(CalcBooleanType),DocSpec(Some(True if texture data is compressed (DXT format)),List()))
+value instance: ValueInstanceSpec(InstanceIdentifier(is_uncompressed),List(types, tpc_header, instances, is_uncompressed),Compare(Name(identifier(data_size)),Eq,IntNum(0)),None,Some(CalcBooleanType),DocSpec(Some(True if texture data is uncompressed (raw pixels)),List()))
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

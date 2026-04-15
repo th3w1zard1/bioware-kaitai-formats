@@ -2,22 +2,26 @@
 # type: ignore
 
 import kaitaistruct
-from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+from kaitaistruct import KaitaiStruct
 from enum import IntEnum
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, "API_VERSION", (0, 9)) < (0, 11):
+    raise Exception(
+        "Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s"
+        % (kaitaistruct.__version__)
+    )
+
 
 class BiowareNcsCommon(KaitaiStruct):
     """Shared **opcode** (`u1`) and **type qualifier** (`u1`) bytes for NWScript compiled scripts (`NCS`).
-    
+
     - `ncs_bytecode` mirrors PyKotor `NCSByteCode` (`ncs_data.py`). Value `0x1C` is unused on the wire
       (gap between `MOVSP` and `JMP` in Aurora bytecode tables).
     - `ncs_instruction_qualifier` mirrors PyKotor `NCSInstructionQualifier` for the second byte of each
       decoded instruction (`CONSTx`, `RSADDx`, `ADDxx`, … families dispatch on this value).
     - `ncs_program_size_marker` is the fixed header byte after `"V1.0"` in retail KotOR NCS blobs (`0x42`).
-    
+
     **Lowest-scope authority:** numeric tables live here; `formats/NSS/NCS*.ksy` cite this file instead of
     duplicating opcode lists.
     """
@@ -98,6 +102,7 @@ class BiowareNcsCommon(KaitaiStruct):
 
     class NcsProgramSizeMarker(IntEnum):
         program_size_prefix = 66
+
     def __init__(self, _io, _parent=None, _root=None):
         super(BiowareNcsCommon, self).__init__(_io)
         self._parent = _parent
@@ -107,8 +112,5 @@ class BiowareNcsCommon(KaitaiStruct):
     def _read(self):
         pass
 
-
     def _fetch_instances(self):
         pass
-
-
