@@ -8,8 +8,8 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: NSS is tooling/source text compiled to NCS outside this binary wire spec."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
-    pykotor_wiki_nss: https://github.com/OldRepublicDevs/PyKotor/wiki/NSS-File-Format.md
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
+    pykotor_wiki_nss: https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
 doc: |
   NSS (NWScript Source) files contain human-readable NWScript source code
   that compiles to NCS bytecode. NWScript is the scripting language used
@@ -27,7 +27,7 @@ doc: |
   - Preprocessor directives: #include, #define, etc.
   
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/NSS-File-Format.md
+  - https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
   - https://github.com/xoreos/xoreos-tools/tree/master/src/nwscript/ (NWScript compiler)
   - https://github.com/seedhartha/reone/blob/master/src/libs/script/ (Script execution engine)
 

@@ -13,7 +13,7 @@ class GffJson(KaitaiStruct):
     Provides easier editing and interoperability with modern tools than binary GFF format.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(GffJson, self).__init__(_io)

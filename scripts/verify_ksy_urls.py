@@ -21,6 +21,11 @@ GitHub wiki caveat: HEAD/GET may return 200 for a missing wiki page (UI falls ba
 or an empty editor). Do not treat HTTP status alone as proof that a /wiki/... slug exists;
 compare the rendered page title/anchors to the intended article (see OpenKotOR PyKotor wiki
 hub pages such as Container-Formats, Audio-and-Localization-Formats, Texture-Formats).
+
+Optional: ``--check-openkotor-wiki-titles`` GETs each unique
+``https://github.com/OpenKotOR/PyKotor/wiki/<slug>`` URL without a ``.md`` suffix (fragment stripped)
+and fails when the HTML ``<title>`` is the wiki hub *Home* (missing slug). Normalize
+``OldRepublicDevs/…/wiki/*.md`` links first via ``scripts/normalize_pykotor_wiki_urls.py``.
 """
 from __future__ import annotations
 
@@ -63,6 +68,10 @@ _FLOATING_GITHUB_MASTER_BLOB = re.compile(
 )
 _FLOATING_GITHUB_MASTER_TREE = re.compile(
     r"https://github\.com/[^/\s]+/[^/\s]+/tree/master/",
+)
+
+_OPK_WIKI_PAGE = re.compile(
+    r"https://github\.com/OpenKotOR/PyKotor/wiki/([^#\s\)>\]'\"`]+)"
 )
 
 
@@ -206,7 +215,64 @@ def check_xoreos_master_blob_line_ranges(
     for msg in issues[:200]:
         print(msg)
     if len(issues) > 200:
-        print(f"… {len(issues) - 200} more")
+        print(f"... {len(issues) - 200} more")
+    return 1 if issues else 0
+
+
+def _openkotor_wiki_title_is_home_fallback(html: str) -> bool:
+    m = re.search(r"<title>\s*([^<]+?)\s*</title>", html, flags=re.I | re.DOTALL)
+    if not m:
+        return False
+    title = m.group(1).strip().lower()
+    return title.startswith("home ·") and "pykotor" in title
+
+
+def check_openkotor_wiki_titles(
+    roots: list[Path],
+    include_markdown: bool,
+    timeout: float,
+    user_agent: str,
+) -> int:
+    bases: set[str] = set()
+    for u in collect_urls(roots, include_markdown):
+        u2 = u.rstrip("`").rstrip(").,;")
+        m = _OPK_WIKI_PAGE.match(u2)
+        if not m:
+            continue
+        slug = m.group(1).strip("/")
+        if not slug or slug.casefold() == "home" or slug.lower().endswith(".md"):
+            continue
+        base = u2.split("#", 1)[0].split("?", 1)[0]
+        bases.add(base)
+
+    issues: list[str] = []
+    checked = 0
+    for url in sorted(bases):
+        try:
+            req = urllib.request.Request(
+                url,
+                method="GET",
+                headers={"User-Agent": user_agent, "Accept": "text/html,*/*;q=0.8"},
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
+                chunk = resp.read(96_000).decode("utf-8", errors="replace")
+        except OSError as e:
+            issues.append(f"{url} ... fetch failed: {e!r}")
+            continue
+        checked += 1
+        if _openkotor_wiki_title_is_home_fallback(chunk):
+            issues.append(
+                f"{url} ... HTML <title> is wiki Home (missing slug?). "
+                "Example: SSF -> Audio-and-Localization-Formats#ssf."
+            )
+    print(
+        f"OpenKotOR wiki <title> check: {checked} unique page URL(s), {len(issues)} issue(s) "
+        f"under [{', '.join(str(r.resolve()) for r in roots)}]"
+    )
+    for msg in issues[:200]:
+        print(msg)
+    if len(issues) > 200:
+        print(f"... {len(issues) - 200} more")
     return 1 if issues else 0
 
 
@@ -327,6 +393,14 @@ def main() -> int:
         action="store_true",
         help="Fail if any `github.com/.../blob/master/` or `/tree/master/` URL appears in scanned sources.",
     )
+    p.add_argument(
+        "--check-openkotor-wiki-titles",
+        action="store_true",
+        help=(
+            "GET each unique OpenKotOR/PyKotor wiki page URL (slug without .md suffix) and fail when "
+            "<title> is the hub Home page."
+        ),
+    )
     args = p.parse_args()
 
     roots = [args.root, *args.also]
@@ -346,6 +420,12 @@ def main() -> int:
     if args.fail_on_master_blob:
         master_rc = check_fail_on_master_blob(roots, args.include_markdown)
 
+    opk_wiki_rc = 0
+    if args.check_openkotor_wiki_titles:
+        opk_wiki_rc = check_openkotor_wiki_titles(
+            roots, args.include_markdown, max(args.timeout, 20.0), args.user_agent
+        )
+
     urls = collect_urls(roots, args.include_markdown)
     label = ", ".join(str(r.resolve()) for r in roots)
     print(f"Found {len(urls)} unique https URLs under [{label}]")
@@ -356,18 +436,18 @@ def main() -> int:
         for path in iter_source_files(roots, args.include_markdown):
             text = path.read_text(encoding="utf-8", errors="replace")
             for m in _FLOATING_XOREOS_MASTER.finditer(text):
-                print(f"WARN floating xoreos master URL in {path}: {m.group(0)}…")
+                print(f"WARN floating xoreos master URL in {path}: {m.group(0)}...")
                 warned += 1
         if warned:
             print(
-                f"({warned} occurrence(s); set `XOREOS_PIN_SHA` is {pin_sha!r} — "
-                "prefer /blob/<sha>/… anchors for proof links.)"
+                f"({warned} occurrence(s); set `XOREOS_PIN_SHA` is {pin_sha!r} - "
+                "prefer /blob/<sha>/... anchors for proof links.)"
             )
 
     if not args.verify:
         for u in urls:
             print(u)
-        return max(pinned_range_rc, xoreos_master_rc, master_rc)
+        return max(pinned_range_rc, xoreos_master_rc, master_rc, opk_wiki_rc)
 
     ok = fail = skipped = 0
     allow = tuple(h.lower() for h in args.allow_fail_host)
@@ -383,7 +463,7 @@ def main() -> int:
             print(f"FAIL {u}\n      {detail}")
     print(f"OK={ok} FAIL={fail} SKIP={skipped} TOTAL={len(urls)}")
     verify_rc = 1 if fail else 0
-    return max(verify_rc, pinned_range_rc, xoreos_master_rc, master_rc)
+    return max(verify_rc, pinned_range_rc, xoreos_master_rc, master_rc, opk_wiki_rc)
 
 
 if __name__ == "__main__":

@@ -35,7 +35,7 @@ class Bwm(KaitaiStruct):
     - Perimeters Array: Array of edge indices (WOK only)
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/BWM-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm
     - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/bwmreader.cpp:27-171
     - https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp:73-248
     - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts:452-473

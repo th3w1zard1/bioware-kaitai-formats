@@ -4,11 +4,10 @@ meta:
   license: MIT
   endian: le
   xref:
-    ghidra_odyssey_k1:
-      note: |
-        Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: GFF field-data layouts here match engine consumption
-        (CExoLocString substrings, ResRef, CExoString-style length-prefixed strings in files).
-    pykotor_ref: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/
+    ghidra_odyssey_k1: |
+      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: GFF field-data layouts here match engine consumption
+      (CExoLocString substrings, ResRef, CExoString-style length-prefixed strings in files).
+    pykotor_ref: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/
     xoreos_tools: https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
     reone: https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
 doc: |
@@ -21,9 +20,9 @@ doc: |
   - The CExoLocString / LocalizedString binary layout
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
   - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
   - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
 
@@ -41,7 +40,7 @@ types:
       - id: string_ref
         type: u4
         doc: |
-          StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+          StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
 
       - id: num_substrings
         type: u4
@@ -322,3 +321,60 @@ enums:
     131072: hide
     262144: right_hand_2
     524288: left_hand_2
+
+  # PyKotor `LIPShape` / Preston Blair viseme indices (0–15) — `formats/LIP/LIP.ksy`
+  bioware_lip_viseme_id:
+    0: neutral
+    1: ee
+    2: eh
+    3: ah
+    4: oh
+    5: ooh
+    6: y
+    7: sts
+    8: fv
+    9: ng
+    10: th
+    11: mpb
+    12: td
+    13: sh
+    14: l
+    15: kg
+
+  # LTR header `letter_count`: NWN 26-letter vs KotOR 28 (`a-z` + `'` + `-`) — `formats/LTR/LTR.ksy`
+  bioware_ltr_alphabet_length:
+    26: neverwinter_nights
+    28: kotor
+
+  # LegendaryExplorer PCC wiki — `formats/PCC/PCC.ksy` (`package_type`, `compression_type`)
+  bioware_pcc_package_kind:
+    0: normal_package
+    1: patch_package
+
+  bioware_pcc_compression_codec:
+    0: none
+    1: zlib
+    2: lzo
+
+  # BioWare headerless DDS prefix (`bioware_dds_header.bytes_per_pixel`) — `formats/TPC/DDS.ksy`, PyKotor `io_dds.py`
+  bioware_dds_variant_bytes_per_pixel:
+    3: dxt1
+    4: dxt5
+
+  # TPC header byte — PyKotor wiki / xoreos `tpc.cpp` — `formats/TPC/TPC.ksy`
+  bioware_tpc_pixel_format_id:
+    1: greyscale
+    2: rgb_or_dxt1
+    4: rgba_or_dxt5
+    12: bgra_xbox_swizzle
+
+  # RIFF `WAVEFORMATEX.wFormatTag` — `formats/WAV/WAV.ksy`, Microsoft + KotOR usage
+  riff_wave_format_tag:
+    1: pcm
+    2: adpcm_ms
+    3: ieee_float
+    6: alaw
+    7: mulaw
+    17: dvi_ima_adpcm
+    85: mpeg_layer3
+    65534: wave_format_extensible

@@ -38,13 +38,6 @@ This repository provides Kaitai Struct (`.ksy`) format definitions for all major
 - **DA2S** - Dragon Age 2 saves
 - And many more...
 
-### Variant Formats
-
-Many formats have XML and JSON variants used in modern tools:
-
-- `*_XML.ksy` - XML serialization formats
-- `*_JSON.ksy` - JSON serialization formats
-
 ## Supported Languages
 
 Generated code lives under `src/<language>/kaitai_generated/`. **PyPI** carries stable Python wheels; other ecosystems are primarily **in-repo generators** (see `.github/workflows/*.yml` for optional publish steps — do not assume a registry URL exists until a release is published there).

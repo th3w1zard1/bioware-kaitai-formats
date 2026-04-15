@@ -11,16 +11,16 @@ meta:
     wiki_gff_binary:
       gff: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
     pykotor:
-      package: https://github.com/th3w1zard1/PyKotor/tree/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff
-      io_gff_xml_reader_class_load: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L37-L75
-      io_gff_xml_reader_load: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L61-L75
-      io_gff_xml_field_dispatch: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L87-L166
-      io_gff_xml_writer_write: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L179-L188
+      package: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff
+      io_gff_xml_reader_class_load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L37-L75
+      io_gff_xml_reader_load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L61-L75
+      io_gff_xml_field_dispatch: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L87-L166
+      io_gff_xml_writer_write: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L179-L188
     xoreos_tools:
-      gffdumper_kgff_types_table: https://github.com/th3w1zard1/xoreos-tools/blob/9ecd99facb6f3f9a1d4d96c5584add96a5f61800/src/xml/gffdumper.cpp#L36-L98
-      gffdumper_identify_gff: https://github.com/th3w1zard1/xoreos-tools/blob/9ecd99facb6f3f9a1d4d96c5584add96a5f61800/src/xml/gffdumper.cpp#L119-L161
-      gffdumper_identify_factory: https://github.com/th3w1zard1/xoreos-tools/blob/9ecd99facb6f3f9a1d4d96c5584add96a5f61800/src/xml/gffdumper.cpp#L163-L176
-      gffcreator_create: https://github.com/th3w1zard1/xoreos-tools/blob/9ecd99facb6f3f9a1d4d96c5584add96a5f61800/src/xml/gffcreator.cpp#L43-L60
+      gffdumper_kgff_types_table: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp#L36-L98
+      gffdumper_identify_gff: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp#L119-L161
+      gffdumper_identify_factory: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp#L163-L176
+      gffcreator_create: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffcreator.cpp#L43-L60
     legacy_k_gff_lucasforums_thread: https://www.lucasforumsarchive.com/thread/149407
     legacy_k_gff_deadly_stream_listing: https://deadlystream.com/files/file/719-k-gff/
     legacy_k_gff_deadly_stream_changelog: https://deadlystream.com/files/file/719-k-gff/?changelog=0
@@ -38,7 +38,7 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format PyKotor wiki — GFF (binary + tooling context)"
-  - "https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L37-L188 PyKotor — GFFXMLReader / Writer"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L37-L188 PyKotor — GFFXMLReader / Writer"
 
 seq:
   - id: xml_content
@@ -48,4 +48,4 @@ seq:
     doc: |
       XML document as UTF-8 text. Typical PyKotor/xoreos shape: `<gff3><struct id="…">…</struct></gff3>`.
       This `.ksy` stores the payload as an opaque string; use a real XML parser for validation.
-      PyKotor reader: [`GFFXMLReader.load` L61–L75](https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L61-L75); writer: [`GFFXMLWriter.write` L179–L188](https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L179-L188).
+      PyKotor reader: [`GFFXMLReader.load` L61–L75](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L61-L75); writer: [`GFFXMLWriter.write` L179–L188](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py#L179-L188).

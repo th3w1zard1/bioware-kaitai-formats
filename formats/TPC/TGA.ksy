@@ -12,10 +12,10 @@ meta:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: TGA sources often converted to TPC for in-game use.
     pykotor_wiki_tpc: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc
-    xoreos: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/graphics/images/tga.cpp
-    xoreos_types_kfiletype_tga: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L61
-    xoreos_tga_load: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/graphics/images/tga.cpp#L75-L87
-    xoreos_tga_read_header: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/graphics/images/tga.cpp#L89-L177
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp
+    xoreos_types_kfiletype_tga: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L61
+    xoreos_tga_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L75-L87
+    xoreos_tga_read_header: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L89-L177
     tga_common_enums: |
       Header `color_map_type` / `image_type`: `formats/Common/tga_common.ksy` → `tga_color_map_type`, `tga_image_type`.
 doc: |
@@ -26,7 +26,7 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc PyKotor wiki — textures (TPC/TGA pipeline)"
-  - "https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/graphics/images/tga.cpp#L89-L177 xoreos — TGA::readHeader"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L89-L177 xoreos — TGA::readHeader"
 
 seq:
   - id: id_length

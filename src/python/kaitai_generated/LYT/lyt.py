@@ -137,10 +137,10 @@ class Lyt(KaitaiStruct):
     xoreos extends the format with additional sections for Jade Engine compatibility.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/LYT-File-Format.md - Complete format documentation
+    - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#lyt - Complete format documentation
     - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/lytreader.cpp:37-77 - Room parsing implementation
     - https://github.com/xoreos/xoreos/blob/master/src/aurora/lytfile.cpp:98-200 - Complete parser with all sections
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:17-165 - PyKotor parser/writer
+    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:17-165 - PyKotor parser/writer
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Lyt, self).__init__(_io)
@@ -210,7 +210,7 @@ class Lyt(KaitaiStruct):
         
         Example: "M02ac_02h door_01 0 170.475 66.375 0.0 0.707107 0.0 0.0 -0.707107"
         
-        Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:97-113
+        Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:97-113
         """
         def __init__(self, _io, _parent=None, _root=None):
             super(Lyt.DoorhookEntryPykotor, self).__init__(_io)

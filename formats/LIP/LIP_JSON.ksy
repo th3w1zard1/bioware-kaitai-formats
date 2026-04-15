@@ -8,14 +8,14 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Tooling/JSON interchange for LIP; game loads binary LIP (see LIP.ksy)."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/
-    pykotor_wiki_lip: https://github.com/OldRepublicDevs/PyKotor/wiki/LIP-File-Format.md
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/
+    pykotor_wiki_lip: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip
 doc: |
   LIP JSON format is a human-readable JSON representation of LIP (Lipsync) binary files.
   Provides easier editing than binary LIP format.
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip_xml.py
+  - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip_xml.py
 
 seq:
   - id: json_content

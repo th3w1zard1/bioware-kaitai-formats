@@ -8,14 +8,14 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Tooling/JSON interchange for TLK; k1_win_gog_swkotor.exe reads binary .tlk (see TLK.ksy)."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
-    pykotor_wiki_tlk: https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
+    pykotor_wiki_tlk: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
 doc: |
   TLK JSON format is a human-readable JSON representation of TLK (Talk Table) binary files.
   Provides easier editing and translation than binary TLK format.
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk_xml.py
+  - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk_xml.py
 
 seq:
   - id: json_content

@@ -7,13 +7,13 @@ meta:
     ghidra_odyssey_k1:
       note: |
         Tooling-only enums (not read from swkotor.exe resources). Kept separate from Odyssey Ghidra wire layouts.
-    pykotor_ref: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+    pykotor_ref: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
     andastra_ref: https://github.com/OldRepublicDevs/Andastra/blob/master/src/andastra/parsing/extract/installation.cs
 doc: |
   Enums and small helper types used by installation/extraction tooling.
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+  - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
 
 types:
   bioware_texture_pack_name_str:

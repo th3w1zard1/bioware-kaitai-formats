@@ -7,7 +7,7 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: PLT type exists in Aurora tables but KotOR does not ship NWN-style PLT body usage (see doc)."
-    pykotor_wiki_plt: https://github.com/OldRepublicDevs/PyKotor/wiki/PLT-File-Format.md
+    pykotor_wiki_plt: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy
     xoreos_docs_plt: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp
 doc: |
@@ -41,7 +41,7 @@ doc: |
   6 = Leather 1, 7 = Leather 2, 8 = Tattoo 1, 9 = Tattoo 2
   
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/PLT-File-Format.md
+  - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy
   - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
   - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp
 

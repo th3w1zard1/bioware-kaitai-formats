@@ -26,7 +26,7 @@ class Rim(KaitaiStruct):
     - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
     - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
     - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
     - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -383,7 +383,7 @@ class Rim(KaitaiStruct):
             self.resource_type = KaitaiStream.resolve_enum(Rim.XoreosFileTypeId, self._io.read_u4le())
             self.resource_id = self._io.read_u4le()
             self.offset_to_data = self._io.read_u4le()
-            self.resource_size = self._io.read_u4le()
+            self.num_data = self._io.read_u4le()
 
 
         def _fetch_instances(self):
@@ -405,7 +405,7 @@ class Rim(KaitaiStruct):
             _pos = self._io.pos()
             self._io.seek(self.offset_to_data)
             self._m_data = []
-            for i in range(self.resource_size):
+            for i in range(self.num_data):
                 self._m_data.append(self._io.read_u1())
 
             self._io.seek(_pos)

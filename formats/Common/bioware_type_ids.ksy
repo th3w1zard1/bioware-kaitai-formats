@@ -6,18 +6,18 @@ meta:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: archive entries use ResourceType (see CKeyTableEntry.type);
       numeric IDs align with xoreos_file_type_id / PyKotor ResourceType tables in this file.
-    xoreos_types: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h
+    xoreos_types: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
     # Line anchors verified against upstream xoreos `master` (re-check if upstream moves).
-    xoreos_types_file_type_comment: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L34-L55
-    xoreos_types_file_type_enum: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L56-L394
-    xoreos_types_game_id_enum: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L396-L408
-    xoreos_types_resource_type_enum: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L410-L417
-    xoreos_types_archive_type_enum: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L419-L430
-    xoreos_types_platform_enum: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L432-L443
-    xoreos_resman_add_type_alias: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/resman.cpp#L610-L612
+    xoreos_types_file_type_comment: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55
+    xoreos_types_file_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394
+    xoreos_types_game_id_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
+    xoreos_types_resource_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L410-L417
+    xoreos_types_archive_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L419-L430
+    xoreos_types_platform_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L432-L443
+    xoreos_resman_add_type_alias: https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612
     # Upstream uses two enum identifiers for the same integer (FaceFX metadata).
-    xoreos_types_fxr_fxt_duplicate: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L316-L317
-    pykotor_types: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/type.py
+    xoreos_types_fxr_fxt_duplicate: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L316-L317
+    pykotor_types: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
 doc: |
   This file provides **exhaustive enum mappings** for resource/type identifiers used across
   BioWare-family games and their tooling ecosystems.
@@ -29,9 +29,9 @@ doc: |
   mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
 
   Why two enums?
-  - `xoreos_file_type_id` mirrors `https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h` (`enum FileType`) and is the
+  - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
     canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
-  - `bioware_resource_type_id` mirrors `https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+  - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
     and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
 
   Important notes:
@@ -42,8 +42,8 @@ doc: |
     while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
   
   References:
-  - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h
-  - https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/type.py
+  - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
 
 enums:
   xoreos_file_type_id:
@@ -516,7 +516,7 @@ enums:
     50028: lip_json
     50029: res_xml
 
-  # Aurora::GameID — https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L396-L408
+  # Aurora::GameID — https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
   xoreos_game_id:
     -1: unknown
     0: nwn

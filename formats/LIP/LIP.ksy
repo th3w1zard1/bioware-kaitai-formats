@@ -9,16 +9,16 @@ meta:
   xref:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: LIP resources parsed for lip-sync; binary layout per PyKotor/reone.
-    pykotor: https://github.com/th3w1zard1/PyKotor/tree/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/lip/
-    reone: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/graphics/format/lipreader.cpp
-    kotor_js: https://github.com/th3w1zard1/KotOR.js/blob/a9fc837cede88fc50bea7b675cda4f1f8e891264/src/resource/LIPObject.ts#L99-L125
-    kotor_net: https://github.com/th3w1zard1/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorLIP/LIP.cs
-    xoreos_types_kfiletype_lip: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L180
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/
+    reone: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp
+    kotor_js: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LIPObject.ts#L99-L125
+    kotor_net: https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorLIP/LIP.cs
+    xoreos_types_kfiletype_lip: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L180
     xoreos_upstream_note: |
       Upstream xoreos has no `lipfile.cpp`; LIP payloads are consumed via game render/audio paths.
       Use `kFileTypeLIP` in types.h for the numeric ID (3004) and community parsers (PyKotor/reone) for wire layout.
     pykotor_wiki_lip: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip
-    reone_lipreader_keyframes: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/graphics/format/lipreader.cpp#L27-L42
+    reone_lipreader_keyframes: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L42
 doc: |
   **LIP** (lip sync): sorted `(timestamp_f32, viseme_u8)` keyframes (`LIP ` / `V1.0`). Viseme ids 0–15 map through
   `bioware_lip_viseme_id` in `bioware_common.ksy`. Pair with a **WAV** of matching duration.
@@ -27,7 +27,7 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip PyKotor wiki — LIP"
-  - "https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/graphics/format/lipreader.cpp#L27-L42 reone — LIPReader"
+  - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L42 reone — LIPReader"
 
 seq:
   - id: file_type

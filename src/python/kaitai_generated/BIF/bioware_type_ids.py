@@ -10,24 +10,31 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class BiowareTypeIds(KaitaiStruct):
-    """Exhaustive **resource / archive type id** enums for BioWare-family tooling: engine-facing `xoreos_file_type_id`
-    (`types.h` `FileType`) vs PyKotor `bioware_resource_type_id` (`ResourceType`, includes toolset-only ids).
+    """This file provides **exhaustive enum mappings** for resource/type identifiers used across
+    BioWare-family games and their tooling ecosystems.
     
-    **Consumers:** KEY / RIM / BIF use `xoreos_file_type_id` without duplicating tables. TLK / ERF language ids and LIP
-    visemes stay in `bioware_common.ksy`. Extra xoreos-only slices (`xoreos_game_id`, `xoreos_archive_type`, …) mirror the
-    same header and are distinct from PyKotor’s archive `FileType` column.
+    **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+    type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+    `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+    Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+    mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
     
-    **Limits:** upstream duplicate names for one integer (e.g. `DFT`/`DTF`, `FXR`/`FXT`) → one Kaitai name per value
-    (`meta.xref.xoreos_types_fxr_fxt_duplicate`). Cross-ecosystem collisions (e.g. `25015`) stay split across the two enums.
+    Why two enums?
+    - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
+      canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
+    - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+      and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
     
-    Line anchors: `meta.xref`.
+    Important notes:
+    - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
+      `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
+      so this file keeps a single canonical name per value.
+    - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
+      while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
     
-    .. seealso::
-       xoreos — FileType table - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L56-L394
-    
-    
-    .. seealso::
-       PyKotor — ResourceType - https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/type.py
+    References:
+    - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
+    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
     """
 
     class BiowareResourceTypeId(IntEnum):

@@ -62,7 +62,7 @@ class Vis(KaitaiStruct):
     - Doorway Artifacts: Door rooms not mutually visible → walls clip during door animations
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/VIS-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#vis
     - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/visreader.cpp
     - https://github.com/xoreos/xoreos/blob/master/src/aurora/visfile.cpp
     - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/io_vis.py:14-87

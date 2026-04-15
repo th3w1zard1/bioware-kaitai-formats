@@ -25,7 +25,10 @@ This file is the **compact hand-off** for coding agents. **Full project rules** 
 ```text
 python scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges --also docs/XOREOS_FORMAT_COVERAGE.md
 python -m pytest src/python/tests/test_kaitai_compile_smoke.py
+python -m pytest src/tests/python tests/python src/python/tests -q
 ```
+
+(`src/python/bioware_kaitai_formats/` is a small import shim so PyKotor can resolve Kaitai emitters from `kaitai_generated/` without installing the PyPI wheel. `tests/conftest.py`, `src/tests/conftest.py`, and `src/python/conftest.py` prepend `src/python` for tests under those directories.)
 
 ## Learned preferences
 

@@ -9,8 +9,10 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
+
 # Add PyKotor to path (relative to tests/python/)
-sys.path.insert(0, "../../vendor/PyKotor/Libraries/PyKotor/src")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "vendor" / "PyKotor" / "Libraries" / "PyKotor" / "src"))
 
 try:
     from pykotor.common.misc import Game
@@ -20,8 +22,7 @@ try:
     from pykotor.resource.type import ResourceType
     from pykotor.tools.path import find_kotor_paths_from_default
 except ImportError as e:
-    print(f"Failed to import PyKotor: {e}")
-    sys.exit(1)
+    pytest.skip(f"PyKotor or its dependencies unavailable: {e}", allow_module_level=True)
 
 
 def find_test_models(
@@ -58,12 +59,12 @@ def find_test_models(
     return mdl_mdx_pairs
 
 
-def test_model(
+def check_model_with_mdlops(
     mdl_res: FileResource,
     mdx_res: FileResource,
     mdlops_exe: Path,
 ) -> tuple[bool, str]:
-    """Test a single model with MDLOps and compare with PyKotor output."""
+    """Run MDLOps + PyKotor on one MDL/MDX pair (helper for ``main()``; not a pytest case)."""
     with tempfile.TemporaryDirectory(prefix="mdl_test_") as td:
         td_path = Path(td)
         # Construct filenames from resname and extension
@@ -172,8 +173,8 @@ def test_model(
 
 
 def main():
-    # Path relative to tests/python/
-    mdlops_exe = Path("vendor/PyKotor/Libraries/PyKotor/src").resolve().parents[3].joinpath("MDLOps/mdlops.exe")
+    repo_root = Path(__file__).resolve().parents[2]
+    mdlops_exe = repo_root / "vendor" / "MDLOps" / "mdlops.exe"
     if not mdlops_exe.exists():
         print(f"MDLOps not found at {mdlops_exe}")
         return
@@ -194,7 +195,7 @@ def main():
         for mdl_res, mdx_res in random_models:
             model_name = f"{mdl_res.resname()}.{mdl_res.restype().extension}"
             print(f"\nTesting: {model_name}")
-            success, msg = test_model(mdl_res, mdx_res, mdlops_exe)
+            success, msg = check_model_with_mdlops(mdl_res, mdx_res, mdlops_exe)
             status = "✓ PASS" if success else f"✗ FAIL: {msg}"
             print(f"  {status}")
     else:
@@ -214,7 +215,7 @@ def main():
         for mdl_res, mdx_res in random_models:
             model_name = f"{mdl_res.resname()}.{mdl_res.restype().extension}"
             print(f"\nTesting: {model_name}")
-            success, msg = test_model(mdl_res, mdx_res, mdlops_exe)
+            success, msg = check_model_with_mdlops(mdl_res, mdx_res, mdlops_exe)
             status = "✓ PASS" if success else f"✗ FAIL: {msg}"
             print(f"  {status}")
     else:

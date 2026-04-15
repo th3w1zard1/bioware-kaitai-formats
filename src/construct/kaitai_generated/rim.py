@@ -310,8 +310,8 @@ rim__resource_entry = Struct(
 	'resource_type' / Enum(Int32ul, rim__xoreos_file_type_id),
 	'resource_id' / Int32ul,
 	'offset_to_data' / Int32ul,
-	'resource_size' / Int32ul,
-	'data' / Pointer(this.offset_to_data, Array(this.resource_size, Int8ub)),
+	'num_data' / Int32ul,
+	'data' / Pointer(this.offset_to_data, Array(this.num_data, Int8ub)),
 )
 
 rim__resource_entry_table = Struct(

@@ -21,7 +21,7 @@ class Wav(KaitaiStruct):
     
     
     .. seealso::
-       xoreos — wave decoder - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L38-L106
+       xoreos — wave decoder - https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Wav, self).__init__(_io)
@@ -198,7 +198,7 @@ class Wav(KaitaiStruct):
         @property
         def is_mp3_in_wav(self):
             """MP3-in-WAV format detected when RIFF size = 50
-            Reference: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
+            Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
             """
             if hasattr(self, '_m_is_mp3_in_wav'):
                 return self._m_is_mp3_in_wav

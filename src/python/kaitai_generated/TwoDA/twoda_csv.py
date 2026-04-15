@@ -15,7 +15,7 @@ class TwodaCsv(KaitaiStruct):
     Each row represents a data row, with the first row containing column headers.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(TwodaCsv, self).__init__(_io)

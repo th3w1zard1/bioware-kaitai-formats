@@ -25,7 +25,7 @@ class Nss(KaitaiStruct):
     - Preprocessor directives: #include, #define, etc.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/NSS-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
     - https://github.com/xoreos/xoreos-tools/tree/master/src/nwscript/ (NWScript compiler)
     - https://github.com/seedhartha/reone/blob/master/src/libs/script/ (Script execution engine)
     """

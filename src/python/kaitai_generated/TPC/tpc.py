@@ -19,7 +19,7 @@ class Tpc(KaitaiStruct):
     
     
     .. seealso::
-       xoreos — TPC::readHeader - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/graphics/images/tpc.cpp#L68-L252
+       xoreos — TPC::readHeader - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L68-L252
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Tpc, self).__init__(_io)

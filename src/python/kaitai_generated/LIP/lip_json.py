@@ -13,7 +13,7 @@ class LipJson(KaitaiStruct):
     Provides easier editing than binary LIP format.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip_xml.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip_xml.py
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(LipJson, self).__init__(_io)

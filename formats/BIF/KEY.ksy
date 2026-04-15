@@ -10,22 +10,22 @@ meta:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: runtime indexing uses CExoKeyTable / CKeyTableEntry (28B, ResRef + pointers + ResourceType);
       on-disk .key layout here remains the Aurora KEY V1 wire format (see PyKotor wiki).
-    pykotor: https://github.com/th3w1zard1/PyKotor/tree/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/key/
-    reone: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/keyreader.cpp
-    xoreos: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/keyfile.cpp
-    xoreos_types_kfiletype_key: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L209
-    xoreos_key_load: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/keyfile.cpp#L50-L88
-    xoreos_key_read_bif_list: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/keyfile.cpp#L90-L117
-    xoreos_key_read_res_list: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/keyfile.cpp#L119-L139
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/key/
+    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/keyreader.cpp
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp
+    xoreos_types_kfiletype_key: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L209
+    xoreos_key_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
+    xoreos_key_read_bif_list: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L90-L117
+    xoreos_key_read_res_list: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L119-L139
     pykotor_wiki_key: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#key
-    xoreos_docs_torlack_key: https://github.com/th3w1zard1/xoreos-docs/blob/c7f12b09788a331499ce15b1283b630b4feb5163/specs/torlack/key.html
+    xoreos_docs_torlack_key: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/key.html
 doc: |
   **KEY** (key table): Aurora master index — BIF catalog rows + `(ResRef, ResourceType) → resource_id` map.
   Resource types use `bioware_type_ids`.
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#key PyKotor wiki — KEY"
-  - "https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/keyfile.cpp#L50-L88 xoreos — KEY::load"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88 xoreos — KEY::load"
 
 seq:
   - id: file_type

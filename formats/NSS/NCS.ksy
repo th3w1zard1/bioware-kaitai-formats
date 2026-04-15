@@ -7,8 +7,8 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: NCS bytecode executed by NWScript VM; big-endian wire format per PyKotor wiki."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
-    pykotor_wiki_ncs: https://github.com/OldRepublicDevs/PyKotor/wiki/NCS-File-Format.md
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
+    pykotor_wiki_ncs: https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format
 doc: |
   NCS (NWScript Compiled) files contain compiled NWScript bytecode used in KotOR and TSL.
   Scripts run inside a stack-based virtual machine shared across Aurora engine games.
@@ -20,7 +20,7 @@ doc: |
   All multi-byte values in NCS files are stored in BIG-ENDIAN byte order (network byte order).
   
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/NCS-File-Format.md - Complete NCS format documentation
+  - https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format - Complete NCS format documentation
   - NSS.ksy - NWScript source code that compiles to NCS
 
 seq:

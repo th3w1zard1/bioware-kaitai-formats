@@ -20,7 +20,7 @@ class Mdx(KaitaiStruct):
     
     
     .. seealso::
-       xoreos — Model_KotOR MDX reads - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/graphics/aurora/model_kotor.cpp#L885-L917
+       xoreos — Model_KotOR MDX reads - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L885-L917
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Mdx, self).__init__(_io)

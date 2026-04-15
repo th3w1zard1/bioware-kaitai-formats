@@ -10,11 +10,11 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: walkmesh resources (.wok/.dwk/.pwk) loaded for pathfinding; binary BWM per PyKotor wiki."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/bwmreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp
     kotor_js: https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts
-    wiki: https://github.com/OldRepublicDevs/PyKotor/wiki/BWM-File-Format.md
+    wiki: https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm
 doc: |
   BWM (Binary WalkMesh) files define walkable surfaces for pathfinding and collision detection
   in Knights of the Old Republic (KotOR) games. BWM files are stored on disk with different
@@ -42,7 +42,7 @@ doc: |
   - Perimeters Array: Array of edge indices (WOK only)
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/BWM-File-Format.md
+  - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm
   - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/bwmreader.cpp:27-171
   - https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp:73-248
   - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts:452-473

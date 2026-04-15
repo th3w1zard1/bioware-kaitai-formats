@@ -160,8 +160,11 @@ def test_pykotor_can_read_mdlops_ascii_and_write_binary(
     # Import PyKotor from vendored source tree.
     sys.path.insert(0, str(_pykotor_src_dir()))
     try:
-        from pykotor.resource.formats.mdl import read_mdl, write_mdl
-        from pykotor.resource.type import ResourceType
+        try:
+            from pykotor.resource.formats.mdl import read_mdl, write_mdl
+            from pykotor.resource.type import ResourceType
+        except ImportError as e:
+            pytest.skip(f"PyKotor or its dependencies unavailable: {e}")
     finally:
         sys.path.pop(0)
 
@@ -250,8 +253,11 @@ def test_pykotor_can_read_binary_and_write_binary_mdlops_idempotent(
     # Import PyKotor from vendored source tree.
     sys.path.insert(0, str(_pykotor_src_dir()))
     try:
-        from pykotor.resource.formats.mdl import bytes_mdl, read_mdl, write_mdl
-        from pykotor.resource.type import ResourceType
+        try:
+            from pykotor.resource.formats.mdl import bytes_mdl, read_mdl, write_mdl
+            from pykotor.resource.type import ResourceType
+        except ImportError as e:
+            pytest.skip(f"PyKotor or its dependencies unavailable: {e}")
     finally:
         sys.path.pop(0)
 

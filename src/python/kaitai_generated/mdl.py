@@ -21,10 +21,10 @@ class Mdl(KaitaiStruct):
     
     Reference implementations:
     - https://github.com/th3w1zard1/MDLOpsM.pm
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
     
     .. seealso::
-       Source - https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md
+       Source - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
     """
 
     class ControllerType(IntEnum):

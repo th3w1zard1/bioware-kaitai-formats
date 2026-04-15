@@ -15,11 +15,11 @@ class ItpXml(KaitaiStruct):
     Each field has a label attribute and appropriate type element (byte, uint32, exostring, etc.).
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/itp/itp.py
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/itp/itp.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
     - https://github.com/seedhartha/reone/tree/master/src/libs/resource/parser/gff/itp.cpp
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/GFF-File-Format.md
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/ITP-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
+    - https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
     - https://github.com/xoreos/xoreos/tree/master/src/aurora/gff3file.cpp
     """
     def __init__(self, _io, _parent=None, _root=None):

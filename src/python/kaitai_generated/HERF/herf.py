@@ -9,13 +9,12 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Herf(KaitaiStruct):
-    """**HERF** (hashed ERF) stores resources keyed by DJB2 name hashes; an embedded **`erf.dict`**
-    resource maps hashes back to stems (`HERFFile::readDictionary`). The dictionary payload itself
-    is another HERF magic block (`readDictionary` re-validates `0x00F1A5C0`).
+    """**HERF** (hashed ERF): table of `(name_hash, size, offset)` entries after a fixed magic + count header.
+    Embedded **`erf.dict`** / **DICT** / **SMALL** handling lives in xoreos `HERFFile::readDictionary` / `readResList`
+    (`meta.xref`) — this spec models the **index table** only.
     
-    **DICT / SMALL:** `readResList` marks the resource whose offset/size match the discovered
-    dictionary slice as `kFileTypeDICT`; compressed payloads may involve `Small::decompress`
-    (`smallfile.cpp`) — not expanded in this skeleton.
+    .. seealso::
+       Source - https://github.com/xoreos/xoreos/blob/master/src/aurora/herffile.cpp
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Herf, self).__init__(_io)
@@ -25,8 +24,8 @@ class Herf(KaitaiStruct):
 
     def _read(self):
         self.magic = self._io.read_u4le()
-        if not self.magic == 15836608:
-            raise kaitaistruct.ValidationNotEqualError(15836608, self.magic, self._io, u"/seq/0")
+        if not self.magic == 15850432:
+            raise kaitaistruct.ValidationNotEqualError(15850432, self.magic, self._io, u"/seq/0")
         self.num_resources = self._io.read_u4le()
         self.resources = []
         for i in range(self.num_resources):

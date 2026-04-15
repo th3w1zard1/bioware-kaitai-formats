@@ -7,12 +7,12 @@ meta:
   xref:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: compressed BZF archives pair with BIF/KEY loading paths (same family as BIF).
-    pykotor: https://github.com/th3w1zard1/PyKotor/tree/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/bif/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/
     pykotor_wiki_bif_file_format: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif
     pykotor_wiki_bif_bzf: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bzf-compression
-    xoreos: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/bzffile.cpp
-    xoreos_types_kfiletype_bzf: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L368
-    xoreos_bzf_load: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/bzffile.cpp#L55-L83
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/bzffile.cpp
+    xoreos_types_kfiletype_bzf: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L368
+    xoreos_bzf_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/bzffile.cpp#L55-L83
 doc: |
   **BZF**: `BZF ` + `V1.0` header, then **LZMA** payload that expands to a normal **BIF** (`BIF.ksy`). Common on
   mobile KotOR ports.

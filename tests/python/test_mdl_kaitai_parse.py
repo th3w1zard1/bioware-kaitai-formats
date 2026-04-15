@@ -22,10 +22,9 @@ def _import_kaitai_module(name: str):
         sys.path.pop(0)
 
 
-def _mdl_fixture_paths() -> list[Path]:
-    root = _repo_root()
-    mdl_dir = (
-        root
+def _mdl_fixture_dir() -> Path:
+    return (
+        _repo_root()
         / "vendor"
         / "PyKotor"
         / "Libraries"
@@ -34,7 +33,19 @@ def _mdl_fixture_paths() -> list[Path]:
         / "test_files"
         / "mdl"
     )
-    return sorted(mdl_dir.glob("*.mdl"))
+
+
+def _mdl_fixture_paths() -> list[Path]:
+    return sorted(_mdl_fixture_dir().glob("*.mdl"))
+
+
+def _dewback_mdl_path() -> Path:
+    p = _mdl_fixture_dir() / "c_dewback.mdl"
+    if not p.is_file():
+        pytest.skip(
+            "Vendor PyKotor MDL fixture missing (e.g. `git submodule update --init vendor/PyKotor`)."
+        )
+    return p
 
 
 @pytest.mark.parametrize("path", _mdl_fixture_paths(), ids=lambda p: p.name)
@@ -53,18 +64,7 @@ def test_mdl_kaitai_parses_all_vendor_mdl_fixtures(path: Path) -> None:
 def test_mdl_kaitai_parses_dewback_binary() -> None:
     mdl = _import_kaitai_module("mdl")
 
-    root = _repo_root()
-    dewback_path = (
-        root
-        / "vendor"
-        / "PyKotor"
-        / "Libraries"
-        / "PyKotor"
-        / "tests"
-        / "test_files"
-        / "mdl"
-        / "c_dewback.mdl"
-    )
+    dewback_path = _dewback_mdl_path()
     data = dewback_path.read_bytes()
 
     parsed = mdl.Mdl(KaitaiStream(BytesIO(data)))
@@ -82,18 +82,7 @@ def test_mdl_kaitai_parses_dewback_binary() -> None:
 def test_mdl_kaitai_exposes_root_node() -> None:
     mdl = _import_kaitai_module("mdl")
 
-    root = _repo_root()
-    dewback_path = (
-        root
-        / "vendor"
-        / "PyKotor"
-        / "Libraries"
-        / "PyKotor"
-        / "tests"
-        / "test_files"
-        / "mdl"
-        / "c_dewback.mdl"
-    )
+    dewback_path = _dewback_mdl_path()
     data = dewback_path.read_bytes()
 
     parsed = mdl.Mdl(KaitaiStream(BytesIO(data)))

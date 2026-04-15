@@ -13,7 +13,7 @@ class TwodaJson(KaitaiStruct):
     Provides easier editing and interoperability with modern tools than binary TwoDA format.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(TwodaJson, self).__init__(_io)

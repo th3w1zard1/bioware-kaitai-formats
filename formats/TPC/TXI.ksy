@@ -8,8 +8,8 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: TXI ASCII sidecars parsed with TPC textures (PyKotor wiki)."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/
-    pykotor_wiki_txi: https://github.com/OldRepublicDevs/PyKotor/wiki/TXI-File-Format.md
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/
+    pykotor_wiki_txi: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#txi
 doc: |
   TXI (Texture Info) files are compact ASCII descriptors that attach metadata to TPC textures.
   They control mipmap usage, filtering, flipbook animation, environment mapping, font atlases,
@@ -48,9 +48,9 @@ doc: |
   - waterheight, waterwidth, xbox_downsample
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py - Complete parser
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py - Data structures
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/TXI-File-Format.md - Format documentation
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py - Complete parser
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py - Data structures
+  - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#txi - Format documentation
   - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/txireader.cpp - C++ reference implementation
 
 seq:

@@ -9,15 +9,15 @@ meta:
   xref:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CResLTR present; binary LTR wire format per PyKotor wiki.
-    pykotor: https://github.com/th3w1zard1/PyKotor/tree/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/ltr/
-    reone: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/ltrreader.cpp
-    xoreos: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/ltrfile.cpp
-    xoreos_types_kfiletype_ltr: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L101
-    xoreos_ltr_load: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/ltrfile.cpp#L135-L168
-    kotor_js: https://github.com/th3w1zard1/KotOR.js/blob/a9fc837cede88fc50bea7b675cda4f1f8e891264/src/resource/LTRObject.ts#L52-L121
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ltr/
+    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp
+    xoreos_types_kfiletype_ltr: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101
+    xoreos_ltr_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168
+    kotor_js: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LTRObject.ts#L52-L121
     kaitai_user_guide_enums: https://doc.kaitai.io/user_guide.html
     pykotor_wiki_ltr: https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format
-    reone_ltrreader: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/ltrreader.cpp#L27-L74
+    reone_ltrreader: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp#L27-L74
 doc: |
   **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
   `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
@@ -25,7 +25,7 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format PyKotor wiki — LTR"
-  - "https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/ltrfile.cpp#L135-L168 xoreos — LTR::load"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168 xoreos — LTR::load"
 
 seq:
   - id: file_type

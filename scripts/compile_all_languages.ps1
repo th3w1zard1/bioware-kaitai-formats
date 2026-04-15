@@ -3,6 +3,13 @@
 
 $ErrorActionPreference = "Continue"
 
+. "$PSScriptRoot/KscResolve.ps1"
+$script:kscExe = Get-ResolvedKscExecutable
+if (-not $script:kscExe) {
+    Write-Error "Could not find ksc or kaitai-struct-compiler. Add to PATH or set KAITAI_STRUCT_COMPILER."
+    exit 1
+}
+
 # All Kaitai Struct supported languages
 $languages = @(
     "construct",   # Construct (Python) codegen
@@ -43,7 +50,7 @@ foreach ($lang in $languages) {
     $failures = 0
     
     foreach ($file in $ksyFiles) {
-        $output = & kaitai-struct-compiler -t $lang -d $outputDir $file.FullName 2>&1
+        $output = & $script:kscExe -t $lang -d $outputDir $file.FullName 2>&1
         
         if ($LASTEXITCODE -eq 0) {
             $successes++

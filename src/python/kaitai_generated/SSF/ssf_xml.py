@@ -13,10 +13,10 @@ class SsfXml(KaitaiStruct):
     Provides easier editing than binary SSF format.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf.py
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf_xml.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf_xml.py
     - https://github.com/seedhartha/reone/tree/master/src/libs/resource/parser/ssf.cpp
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/SSF-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf
     - https://github.com/xoreos/xoreos/tree/master/src/aurora/ssffile.cpp
     """
     def __init__(self, _io, _parent=None, _root=None):

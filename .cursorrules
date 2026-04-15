@@ -72,13 +72,10 @@ kaitai-struct-compiler -t csharp --dotnet-namespace <namespace> -d ./src/csharp 
 **Naming Conventions**:
 
 - Base format: `FormatName.ksy` (e.g., `GFF.ksy`, `ERF.ksy`)
-- XML variants: `FormatName_XML.ksy` (e.g., `GFF_XML.ksy`, `ARE_XML.ksy`)
-- JSON variants: `FormatName_JSON.ksy` (e.g., `GFF_JSON.ksy`, `TLK_JSON.ksy`)
-- CSV variants: `FormatName_CSV.ksy` (e.g., `TwoDA_CSV.ksy`)
 
 **Directory Structure**:
 
-- Group related formats together (e.g., `formats/GFF/`, `formats/GFF/Generics/`, `formats/GFF/XML/`)
+- Group related formats together (e.g., `formats/GFF/`, `formats/GFF/Generics/`)
 - Game-specific generics go in `formats/GFF/Generics/` (e.g., `ARE/`, `DLG/`, `UTC/`)
 
 **Best Practices**:

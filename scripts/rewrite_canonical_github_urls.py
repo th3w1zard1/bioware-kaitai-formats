@@ -18,6 +18,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # (old_prefix, new_prefix) — old must be unique to the fork pin; replace every occurrence.
 REPLACEMENTS: list[tuple[str, str]] = [
     (
+        "https://github.com/OldRepublicDevs/PyKotor/blob/master/",
+        "https://github.com/OpenKotOR/PyKotor/blob/master/",
+    ),
+    (
+        "https://github.com/OldRepublicDevs/PyKotor/tree/master/",
+        "https://github.com/OpenKotOR/PyKotor/tree/master/",
+    ),
+    (
         "https://github.com/th3w1zard1/xoreos-tools/blob/9ecd99facb6f3f9a1d4d96c5584add96a5f61800",
         "https://github.com/xoreos/xoreos-tools/blob/master",
     ),

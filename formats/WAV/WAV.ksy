@@ -9,16 +9,16 @@ meta:
   xref:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: WAV/VOX resources use KotOR RIFF + optional 470-byte SFX prefix per PyKotor wiki.
-    pykotor: https://github.com/th3w1zard1/PyKotor/tree/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/wav/
-    reone: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/audio/format/wavreader.cpp
-    xoreos: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp
-    xoreos_types_kfiletype_wav: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L62
-    xoreos_sound_make_audio_stream: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/sound.cpp#L256-L340
-    xoreos_wave_make_wav_stream: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L38-L106
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/
+    reone: https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp
+    xoreos_types_kfiletype_wav: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L62
+    xoreos_sound_make_audio_stream: https://github.com/xoreos/xoreos/blob/master/src/sound/sound.cpp#L256-L340
+    xoreos_wave_make_wav_stream: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
     pykotor_wiki_wav: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
     bioware_common_riff_fmt: |
       `fmt ` chunk `audio_format` / `wFormatTag`: `formats/Common/bioware_common.ksy` → `riff_wave_format_tag`.
-    reone_wavreader: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/audio/format/wavreader.cpp#L30-L56
+    reone_wavreader: https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp#L30-L56
 doc: |
   **KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
   MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
@@ -28,7 +28,7 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav PyKotor wiki — WAV"
-  - "https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L38-L106 xoreos — wave decoder"
+  - "https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106 xoreos — wave decoder"
 
 seq:
   - id: riff_header
@@ -42,7 +42,7 @@ seq:
     doc: |
       RIFF chunks in sequence (fmt, fact, data, etc.)
       Parsed until end of file
-      Reference: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L46-L55
+      Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L46-L55
 
 types:
   riff_header:
@@ -73,7 +73,7 @@ types:
         value: riff_size == 50
         doc: |
           MP3-in-WAV format detected when RIFF size = 50
-          Reference: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
+          Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
 
   chunk:
     seq:
@@ -84,14 +84,14 @@ types:
         doc: |
           Chunk ID (4-character ASCII string)
           Common values: "fmt ", "data", "fact", "LIST", etc.
-          Reference: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L58-L72
+          Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L58-L72
 
       - id: size
         type: u4
         doc: |
           Chunk size in bytes (chunk data only, excluding ID and size fields)
           Chunks are word-aligned (even byte boundaries)
-          Reference: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L66
+          Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
 
       - id: body
         type:
@@ -160,7 +160,7 @@ types:
           For IMA ADPCM and other compressed formats, contains:
           - Extra format size (u2)
           - Format-specific data (e.g., ADPCM coefficients)
-          Reference: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L66
+          Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
 
     instances:
       is_pcm:
@@ -181,7 +181,7 @@ types:
         size: _parent.size
         doc: |
           Raw audio data (PCM samples or compressed audio)
-          Reference: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L79-L80
+          Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L79-L80
 
   fact_chunk_body:
     seq:
@@ -190,7 +190,7 @@ types:
         doc: |
           Sample count (number of samples in compressed audio)
           Used for compressed formats like ADPCM
-          Reference: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L234-L236 (`fact` chunk skip — sample count lives in chunk body)
+          Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L234-L236 (`fact` chunk skip — sample count lives in chunk body)
 
   unknown_chunk_body:
     seq:
@@ -198,7 +198,7 @@ types:
         size: _parent.size
         doc: |
           Unknown chunk body (skip for compatibility)
-          Reference: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/sound/decoders/wave.cpp#L53-L54
+          Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L53-L54
 
       - id: padding
         type: u1
@@ -206,4 +206,4 @@ types:
         doc: |
           Padding byte to align to word boundary (only if chunk size is odd)
           RIFF chunks must be aligned to 2-byte boundaries
-          Reference: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L243-L245 (unknown chunk skip + optional 1-byte word alignment)
+          Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L243-L245 (unknown chunk skip + optional 1-byte word alignment)

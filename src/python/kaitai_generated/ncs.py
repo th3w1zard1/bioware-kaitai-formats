@@ -19,7 +19,7 @@ class Ncs(KaitaiStruct):
     All multi-byte values in NCS files are stored in BIG-ENDIAN byte order (network byte order).
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/NCS-File-Format.md - Complete NCS format documentation
+    - https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format - Complete NCS format documentation
     - NSS.ksy - NWScript source code that compiles to NCS
     """
     def __init__(self, _io, _parent=None, _root=None):

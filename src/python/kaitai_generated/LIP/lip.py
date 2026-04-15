@@ -20,7 +20,7 @@ class Lip(KaitaiStruct):
     
     
     .. seealso::
-       reone — LIPReader - https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/graphics/format/lipreader.cpp#L27-L42
+       reone — LIPReader - https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L42
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Lip, self).__init__(_io)

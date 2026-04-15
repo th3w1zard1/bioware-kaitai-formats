@@ -19,7 +19,7 @@ class Ncs(KaitaiStruct):
     All multi-byte values in NCS files are stored in BIG-ENDIAN byte order (network byte order).
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/NCS-File-Format.md - Complete NCS format documentation
+    - https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format - Complete NCS format documentation
     - NSS.ksy - NWScript source code that compiles to NCS
     """
     def __init__(self, _io, _parent=None, _root=None):
@@ -39,19 +39,63 @@ class Ncs(KaitaiStruct):
         if not self.size_marker == 66:
             raise kaitaistruct.ValidationNotEqualError(66, self.size_marker, self._io, u"/seq/2")
         self.file_size = self._io.read_u4be()
-        self.bytecode = self._io.read_bytes(self.bytecode_size)
+        self.instructions = []
+        i = 0
+        while True:
+            _ = Ncs.Instruction(self._io, self, self._root)
+            self.instructions.append(_)
+            if self._io.pos() >= self.file_size:
+                break
+            i += 1
 
 
     def _fetch_instances(self):
         pass
+        for i in range(len(self.instructions)):
+            pass
+            self.instructions[i]._fetch_instances()
 
-    @property
-    def bytecode_size(self):
-        """Byte length of bytecode (total file size minus 13-byte header)."""
-        if hasattr(self, '_m_bytecode_size'):
-            return self._m_bytecode_size
 
-        self._m_bytecode_size = (self.file_size - 13 if self.file_size >= 13 else 0)
-        return getattr(self, '_m_bytecode_size', None)
+    class Instruction(KaitaiStruct):
+        """NWScript bytecode instruction.
+        Format: <opcode: uint8> <qualifier: uint8> <arguments: variable>
+        
+        Instruction size varies by opcode:
+        - Base: 2 bytes (opcode + qualifier)
+        - Arguments: 0 to variable bytes depending on instruction type
+        
+        Common instruction types:
+        - Constants: CONSTI (6B), CONSTF (6B), CONSTS (2+N B), CONSTO (6B)
+        - Stack ops: CPDOWNSP, CPTOPSP, MOVSP (variable size)
+        - Arithmetic: ADDxx, SUBxx, MULxx, DIVxx (2B)
+        - Control flow: JMP, JSR, JZ, JNZ (6B), RETN (2B)
+        - Function calls: ACTION (5B)
+        - And many more (see NCS format documentation)
+        """
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Ncs.Instruction, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.opcode = self._io.read_u1()
+            self.qualifier = self._io.read_u1()
+            self.arguments = []
+            i = 0
+            while True:
+                _ = self._io.read_u1()
+                self.arguments.append(_)
+                if self._io.pos() >= self._io.size():
+                    break
+                i += 1
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.arguments)):
+                pass
+
+
 
 

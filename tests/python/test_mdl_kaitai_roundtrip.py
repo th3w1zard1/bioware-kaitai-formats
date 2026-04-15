@@ -159,8 +159,11 @@ def test_kaitai_parses_pykotor_binary_written_from_mdlops_ascii(
     # Import PyKotor from vendored source tree.
     sys.path.insert(0, str(_pykotor_src_dir()))
     try:
-        from pykotor.resource.formats.mdl.mdl_auto import read_mdl, write_mdl
-        from pykotor.resource.type import ResourceType
+        try:
+            from pykotor.resource.formats.mdl.mdl_auto import read_mdl, write_mdl
+            from pykotor.resource.type import ResourceType
+        except ImportError as e:
+            pytest.skip(f"PyKotor or its dependencies unavailable: {e}")
     finally:
         sys.path.pop(0)
 

@@ -13,10 +13,10 @@ class TlkXml(KaitaiStruct):
     Provides easier editing and translation than binary TLK format.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/tlk.py
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk_xml.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/tlk.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk_xml.py
     - https://github.com/seedhartha/reone/tree/master/src/libs/resource/format/tlkreader.cpp
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
     - https://github.com/xoreos/xoreos/tree/master/src/aurora/talktable.cpp
     
     - ../GFF/GFF

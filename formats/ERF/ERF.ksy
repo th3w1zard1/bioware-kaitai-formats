@@ -13,12 +13,12 @@ meta:
       note: |
         Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CERFHeader is 160 bytes with the same field order as erf_header
         (file_type, version, language_count, localized_string_size, entry_count, three offsets, build_year, build_day, description_str_ref, 116-byte reserved tail).
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/
     reone: https://github.com/seedhartha/reone/tree/master/src/libs/resource/format/erfreader.cpp
     xoreos: https://github.com/xoreos/xoreos/tree/master/src/aurora/erffile.cpp
     kotor_net: https://github.com/NickHugi/Kotor.NET/tree/master/Formats/KotorERF/
-    pykotor_wiki: https://github.com/OldRepublicDevs/PyKotor/wiki/ERF-File-Format.md
-    bioware_aurora: https://github.com/OldRepublicDevs/PyKotor/wiki/Bioware-Aurora-ERF.md
+    pykotor_wiki: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf
+    bioware_aurora: https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf
 doc: |
   ERF (Encapsulated Resource File) files are self-contained archives used for modules, save games,
   texture packs, and hak paks. Unlike BIF files which require a KEY file for filename lookups,
@@ -45,7 +45,7 @@ doc: |
     - unused (u2): Padding/unused field (typically 0)
   - Resource List (8 bytes per entry): Resource offset and size. Each entry contains:
     - offset_to_data (u4): Byte offset to resource data from beginning of file
-    - resource_size (u4): Uncompressed size of resource data in bytes
+    - len_data (u4): Uncompressed size of resource data in bytes (Kaitai id for byte size of `data`)
   - Resource Data (variable size): Raw binary data for each resource, stored at offsets specified
     in resource_list
 
@@ -53,16 +53,16 @@ doc: |
   1. Read header to get entry_count and offsets
   2. Read key_list to map ResRefs to resource_ids
   3. Use resource_id to index into resource_list
-  4. Read resource data from offset_to_data with size resource_size
+  4. Read resource data from offset_to_data with byte length len_data
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/ERF-File-Format.md - Complete ERF format documentation
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/Bioware-Aurora-ERF.md - Official BioWare Aurora ERF specification
+  - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf - Complete ERF format documentation
+  - https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf - Official BioWare Aurora ERF specification
   - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/erfreader.cpp:24-106 - Complete C++ ERF reader implementation
   - https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp:44-229 - Generic Aurora ERF implementation (shared format)
   - https://github.com/NickHugi/Kotor.NET/blob/master/Formats/KotorERF/ERFBinaryStructure.cs:11-170 - .NET ERF reader/writer
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
 
 seq:
   - id: header
@@ -280,7 +280,7 @@ types:
           Byte offset to resource data from the beginning of the file.
           Points to the actual binary data for this resource.
 
-      - id: resource_size
+      - id: len_data
         type: u4
         doc: |
           Size of resource data in bytes.
@@ -289,7 +289,7 @@ types:
     instances:
       data:
         pos: offset_to_data
-        size: resource_size
+        size: len_data
         doc: Raw binary data for this resource
 
 enums:

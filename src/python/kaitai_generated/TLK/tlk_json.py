@@ -13,7 +13,7 @@ class TlkJson(KaitaiStruct):
     Provides easier editing and translation than binary TLK format.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk_xml.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk_xml.py
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(TlkJson, self).__init__(_io)

@@ -18,7 +18,7 @@ class Key(KaitaiStruct):
     
     
     .. seealso::
-       xoreos — KEY::load - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/keyfile.cpp#L50-L88
+       xoreos — KEY::load - https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Key, self).__init__(_io)

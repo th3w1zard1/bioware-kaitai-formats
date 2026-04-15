@@ -65,19 +65,18 @@ param(
 )
 
 begin {
+    . "$PSScriptRoot/KscResolve.ps1"
+
     # Set default output directory based on target language
     if (-not $OutputDirectory) {
         $OutputDirectory = "src/$TargetLanguage/kaitai_generated"
     }
 
-    # Validate that kaitai-struct-compiler is available
-    try {
-        $compilerCommand = Get-Command 'kaitai-struct-compiler' -ErrorAction Stop
-        Write-Verbose "Found Kaitai Struct compiler at: $($compilerCommand.Source)"
+    $script:kscExe = Get-ResolvedKscExecutable
+    if (-not $script:kscExe) {
+        throw "Could not find ksc or kaitai-struct-compiler. Add to PATH or set KAITAI_STRUCT_COMPILER."
     }
-    catch {
-        throw "kaitai-struct-compiler is not installed or not in PATH. Please install it first."
-    }
+    Write-Verbose "Using Kaitai Struct compiler at: $script:kscExe"
 
     # Resolve paths to absolute paths
     $formatsDir = Resolve-Path $FormatsDirectory
@@ -139,23 +138,31 @@ process {
 
             if ($PSCmdlet.ShouldProcess($relativePath, "Compile to $TargetLanguage")) {
                 try {
-                    # Execute compiler with error handling
-                    $process = Start-Process -FilePath 'kaitai-struct-compiler' `
-                                           -ArgumentList "-t", $TargetLanguage, "-d", $outputDir, $file.FullName `
-                                           -NoNewWindow `
-                                           -Wait `
-                                           -RedirectStandardOutput "$env:TEMP\ksc_stdout.txt" `
-                                           -RedirectStandardError "$env:TEMP\ksc_stderr.txt" `
-                                           -PassThru
+                    # Call the compiler directly. Avoid Start-Process + empty redirected streams:
+                    # ($null + $null).Trim() throws "You cannot call a method on a null-valued expression".
+                    $prevEap = $ErrorActionPreference
+                    $ErrorActionPreference = 'Continue'
+                    try {
+                        $allOutput = & $script:kscExe -t $TargetLanguage -d $outputDir $file.FullName 2>&1
+                    }
+                    finally {
+                        $ErrorActionPreference = $prevEap
+                    }
 
-                    $stdout = Get-Content "$env:TEMP\ksc_stdout.txt" -Raw -ErrorAction SilentlyContinue
-                    $stderr = Get-Content "$env:TEMP\ksc_stderr.txt" -Raw -ErrorAction SilentlyContinue
-                    $output = ($stdout + $stderr).Trim()
+                    # Native process exit code (set after external `&` invocation)
+                    $exitCode = $LASTEXITCODE
 
-                    # Clean up temp files
-                    Remove-Item "$env:TEMP\ksc_stdout.txt", "$env:TEMP\ksc_stderr.txt" -ErrorAction SilentlyContinue
+                    $output = if ($null -eq $allOutput) {
+                        ''
+                    }
+                    elseif ($allOutput -is [System.Array]) {
+                        (($allOutput | ForEach-Object { "$_" }) -join [Environment]::NewLine).Trim()
+                    }
+                    else {
+                        "$allOutput".Trim()
+                    }
 
-                    if ($process.ExitCode -eq 0) {
+                    if ($exitCode -eq 0) {
                         if ([string]::IsNullOrWhiteSpace($output)) {
                             Write-Host "OK" -ForegroundColor Green
                         }
@@ -171,9 +178,9 @@ process {
                         $script:failedFiles += [PSCustomObject]@{
                             File = $relativePath
                             Output = $output
-                            ExitCode = $process.ExitCode
+                            ExitCode = $exitCode
                         }
-                        Write-Verbose "Compiler failed for $relativePath with exit code $($process.ExitCode)"
+                        Write-Verbose "Compiler failed for $relativePath with exit code $exitCode"
                     }
                 }
                 catch {

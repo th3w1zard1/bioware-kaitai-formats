@@ -1,24 +1,52 @@
 #!/usr/bin/env python3
-"""Compile all .ksy files to Python and report results."""
+"""Compile all .ksy files to Python and report results.
+
+Emits into a **single** output directory (flat layout). The checked-in tree under
+``src/python/kaitai_generated/<Format>/`` is produced by ``scripts/generate_code.ps1``;
+do not run this script against that directory if you rely on subfolder imports.
+"""
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
+from shutil import which
 from typing import Dict, Tuple
 
-def compile_ksy(ksy_file: Path, output_dir: Path) -> Tuple[bool, str]:
+
+def _resolve_ksc() -> str:
+    env_path = os.environ.get("KAITAI_STRUCT_COMPILER")
+    if env_path:
+        p = Path(env_path)
+        if p.exists():
+            return str(p)
+    for candidate in ("kaitai-struct-compiler", "kaitai-struct-compiler.bat"):
+        found = which(candidate)
+        if found:
+            return found
+    common_win = Path(r"C:\Program Files (x86)\kaitai-struct-compiler\bin\kaitai-struct-compiler.bat")
+    if common_win.exists():
+        return str(common_win)
+    raise FileNotFoundError(
+        "Could not locate `kaitai-struct-compiler`. "
+        "Add it to PATH or set env var `KAITAI_STRUCT_COMPILER` to its full path."
+    )
+
+
+def compile_ksy(ksy_file: Path, output_dir: Path, *, cwd: Path) -> Tuple[bool, str]:
     """Compile a single .ksy file to Python.
     
     Returns:
         (success, output) tuple
     """
+    ksc = _resolve_ksc()
     cmd = [
-        "kaitai-struct-compiler",
+        ksc,
         "-t", "python",
         "-d", str(output_dir),
-        str(ksy_file)
+        str(ksy_file),
     ]
     
     try:
@@ -26,7 +54,8 @@ def compile_ksy(ksy_file: Path, output_dir: Path) -> Tuple[bool, str]:
             cmd,
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=30,
+            cwd=str(cwd),
         )
         output = result.stdout + result.stderr
         success = result.returncode == 0
@@ -36,8 +65,9 @@ def compile_ksy(ksy_file: Path, output_dir: Path) -> Tuple[bool, str]:
 
 def main():
     """Compile all .ksy files and report results."""
-    formats_dir = Path("formats")
-    output_dir = Path("src/python/kaitai_generated")
+    repo_root = Path(__file__).resolve().parent.parent
+    formats_dir = repo_root / "formats"
+    output_dir = repo_root / "src" / "python" / "kaitai_generated"
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Find all .ksy files
@@ -52,7 +82,7 @@ def main():
         rel_path = ksy_file.relative_to(formats_dir)
         print(f"Compiling: {rel_path}...", end=" ")
         
-        success, output = compile_ksy(ksy_file, output_dir)
+        success, output = compile_ksy(ksy_file, output_dir, cwd=repo_root)
         results[str(rel_path)] = (success, output)
         
         if success:

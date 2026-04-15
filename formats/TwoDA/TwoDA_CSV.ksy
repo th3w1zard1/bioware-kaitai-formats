@@ -8,8 +8,8 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Tooling/CSV interchange for TwoDA; game loads .2da wire format (see TwoDA.ksy)."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/
-    pykotor_wiki_twoda: https://github.com/OldRepublicDevs/PyKotor/wiki/TwoDA-File-Format.md
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/
+    pykotor_wiki_twoda: https://github.com/OpenKotOR/PyKotor/wiki/2DA-File-Format
 doc: |
   TwoDA CSV format is a human-readable CSV (Comma-Separated Values) representation of TwoDA files.
   Provides easier editing in spreadsheet applications than binary TwoDA format.
@@ -17,7 +17,7 @@ doc: |
   Each row represents a data row, with the first row containing column headers.
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+  - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
 
 seq:
   - id: csv_content

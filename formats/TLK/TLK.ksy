@@ -10,10 +10,10 @@ meta:
       note: |
         Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: runtime talk tables use CSWTlkTable/CTlkTable (in-memory);
         on-disk TLK V3.0 wire format remains as defined in this file (20-byte header + entries per wiki).
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/tlkreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp
-    pykotor_wiki_tlk: https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
+    pykotor_wiki_tlk: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
 doc: |
   TLK (Talk Table) files contain all text strings used in the game, both written and spoken.
   They enable easy localization by providing a lookup table from string reference numbers (StrRef)
@@ -32,7 +32,7 @@ doc: |
   the first entry, StrRef 1 to the second, etc. StrRef -1 indicates no string reference.
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
+  - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
   - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/tlkreader.cpp:31-84
   - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp:42-176
   - https://github.com/TSLPatcher/TSLPatcher/blob/master/lib/site/Bioware/TLK.pm:1-533

@@ -26,6 +26,36 @@ class BiowareCommon(KaitaiStruct):
     - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
     """
 
+    class BiowareBwmFaceMaterialId(IntEnum):
+        undefined = 0
+        dirt = 1
+        obscuring = 2
+        grass = 3
+        stone = 4
+        wood = 5
+        water = 6
+        nonwalk = 7
+        transparent = 8
+        carpet = 9
+        metal = 10
+        puddles = 11
+        swamp = 12
+        mud = 13
+        leaves = 14
+        lava = 15
+        bottomless_pit = 16
+        deep_water = 17
+        door = 18
+        snow_or_non_walk_grass = 19
+
+    class BiowareBwmWalkmeshKind(IntEnum):
+        placeable_or_door = 0
+        area_wok = 1
+
+    class BiowareDdsVariantBytesPerPixel(IntEnum):
+        dxt1 = 3
+        dxt5 = 4
+
     class BiowareEquipmentSlotFlag(IntEnum):
         invalid = 0
         head = 1
@@ -157,6 +187,40 @@ class BiowareCommon(KaitaiStruct):
         japanese = 131
         unknown = 2147483646
 
+    class BiowareLipVisemeId(IntEnum):
+        neutral = 0
+        ee = 1
+        eh = 2
+        ah = 3
+        oh = 4
+        ooh = 5
+        y = 6
+        sts = 7
+        fv = 8
+        ng = 9
+        th = 10
+        mpb = 11
+        td = 12
+        sh = 13
+        l = 14
+        kg = 15
+
+    class BiowareLtrAlphabetLength(IntEnum):
+        neverwinter_nights = 26
+        kotor = 28
+
+    class BiowareNwnPltPaletteGroupId(IntEnum):
+        skin = 0
+        hair = 1
+        metal1 = 2
+        metal2 = 3
+        cloth1 = 4
+        cloth2 = 5
+        leather1 = 6
+        leather2 = 7
+        tattoo1 = 8
+        tattoo2 = 9
+
     class BiowareObjectTypeId(IntEnum):
         invalid = 0
         creature = 1
@@ -170,6 +234,31 @@ class BiowareCommon(KaitaiStruct):
         area = 9
         sound = 10
         camera = 11
+
+    class BiowarePccCompressionCodec(IntEnum):
+        none = 0
+        zlib = 1
+        lzo = 2
+
+    class BiowarePccPackageKind(IntEnum):
+        normal_package = 0
+        patch_package = 1
+
+    class BiowareTpcPixelFormatId(IntEnum):
+        greyscale = 1
+        rgb_or_dxt1 = 2
+        rgba_or_dxt5 = 4
+        bgra_xbox_swizzle = 12
+
+    class RiffWaveFormatTag(IntEnum):
+        pcm = 1
+        adpcm_ms = 2
+        ieee_float = 3
+        alaw = 6
+        mulaw = 7
+        dvi_ima_adpcm = 17
+        mpeg_layer3 = 85
+        wave_format_extensible = 65534
     def __init__(self, _io, _parent=None, _root=None):
         super(BiowareCommon, self).__init__(_io)
         self._parent = _parent

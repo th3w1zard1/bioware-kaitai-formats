@@ -1,6 +1,13 @@
 # Simple compilation test script
 $ErrorActionPreference = "Continue"
 
+. "$PSScriptRoot/KscResolve.ps1"
+$kscExe = Get-ResolvedKscExecutable
+if (-not $kscExe) {
+    Write-Error "Could not find ksc or kaitai-struct-compiler. Add to PATH or set KAITAI_STRUCT_COMPILER."
+    exit 1
+}
+
 $outputDir = "src/python/kaitai_generated"
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
@@ -15,7 +22,7 @@ foreach ($file in $ksyFiles) {
     $relPath = $file.FullName.Replace("$PWD\formats\", "")
     Write-Host -NoNewline "Compiling $relPath... "
     
-    $output = & kaitai-struct-compiler -t python -d $outputDir $file.FullName 2>&1
+    $output = & $kscExe -t python -d $outputDir $file.FullName 2>&1
     
     if ($LASTEXITCODE -eq 0) {
         Write-Host "OK" -ForegroundColor Green

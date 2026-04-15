@@ -13,7 +13,7 @@ doc: |
   blocks (party/inventory/journal/etc.). **Not KotOR** — see `meta.xref` for Andastra serializer paths + `xoreos_game_id`.
 
 doc-ref:
-  - "https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L396-L408 xoreos — game id enum (Dragon Age 2 = 8)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408 xoreos — game id enum (Dragon Age 2 = 8)"
 
 seq:
   - id: signature

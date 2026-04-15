@@ -48,7 +48,7 @@ class Txi(KaitaiStruct):
     References:
     - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py - Complete parser
     - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py - Data structures
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/TXI-File-Format.md - Format documentation
+    - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#txi - Format documentation
     - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/txireader.cpp - C++ reference implementation
     """
     def __init__(self, _io, _parent=None, _root=None):

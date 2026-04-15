@@ -7,8 +7,8 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: SSF voice sets are loaded as Aurora resources; wire layout matches PyKotor wiki."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/
-    pykotor_wiki_ssf: https://github.com/OldRepublicDevs/PyKotor/wiki/SSF-File-Format.md
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/
+    pykotor_wiki_ssf: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf
 doc: |
   SSF (Sound Set File) files store sound string references (StrRefs) for character voice sets.
   Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
@@ -41,8 +41,8 @@ doc: |
   27: Poisoned
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
 
 seq:
   - id: file_type

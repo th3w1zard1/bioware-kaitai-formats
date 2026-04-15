@@ -17,13 +17,30 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "Generating $Language code from Kaitai Struct definitions..." -ForegroundColor Cyan
 
-# Check if kaitai-struct-compiler is available
+. "$PSScriptRoot/KscResolve.ps1"
+
+$kscExe = Get-ResolvedKscExecutable
+if (-not $kscExe) {
+    Write-Host "Installing Kaitai Struct compiler $KscVersion..." -ForegroundColor Yellow
+    pip install "kaitai-struct-compiler==$KscVersion"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to install kaitai-struct-compiler"
+        exit 1
+    }
+    $kscExe = Get-ResolvedKscExecutable
+}
+
+if (-not $kscExe) {
+    Write-Error "Could not locate ksc or kaitai-struct-compiler after install. Set KAITAI_STRUCT_COMPILER or add KSC to PATH."
+    exit 1
+}
+
 $kscInstalled = $false
 try {
-    $kscVersion = & kaitai-struct-compiler --version 2>&1
-    if ($LASTEXITCODE -eq 0 -and $kscVersion -match $KscVersion) {
+    $verOut = & $kscExe --version 2>&1
+    if ($LASTEXITCODE -eq 0 -and "$verOut" -match [regex]::Escape($KscVersion)) {
         $kscInstalled = $true
-        Write-Host "Kaitai Struct compiler $KscVersion is already installed" -ForegroundColor Green
+        Write-Host "Kaitai Struct compiler $KscVersion is already installed ($kscExe)" -ForegroundColor Green
     }
 } catch {
     $kscInstalled = $false
@@ -34,6 +51,11 @@ if (-not $kscInstalled) {
     pip install "kaitai-struct-compiler==$KscVersion"
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to install kaitai-struct-compiler"
+        exit 1
+    }
+    $kscExe = Get-ResolvedKscExecutable
+    if (-not $kscExe) {
+        Write-Error "Could not locate ksc or kaitai-struct-compiler after install."
         exit 1
     }
 }
@@ -74,7 +96,7 @@ foreach ($ksyFile in $ksyFiles) {
     Write-Host "  Processing: $relativePath" -ForegroundColor Gray
 
     try {
-        & kaitai-struct-compiler -t $Language -d $targetDir $ksyFile.FullName
+        & $kscExe -t $Language -d $targetDir $ksyFile.FullName
         if ($LASTEXITCODE -eq 0) {
             $successCount++
         } else {

@@ -9,13 +9,13 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CResLYT present; ASCII LYT wire format as in this definition."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/lytreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/lytfile.cpp
     kotor_js: https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LYTObject.ts
     kotor_unity: https://github.com/KotOR-Community-Patches/KotOR-Unity/blob/master/Assets/Scripts/FileObjects/LYTObject.cs
     kotor_net: https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorLYT/LYT.cs
-    pykotor_wiki_lyt: https://github.com/OldRepublicDevs/PyKotor/wiki/LYT-File-Format.md
+    pykotor_wiki_lyt: https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#lyt
 doc: |
   LYT (Layout) files define how area geometry is assembled from room models and where
   interactive elements (doors, tracks, obstacles, art placeables) are positioned.
@@ -145,10 +145,10 @@ doc: |
   xoreos extends the format with additional sections for Jade Engine compatibility.
 
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/LYT-File-Format.md - Complete format documentation
+  - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#lyt - Complete format documentation
   - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/lytreader.cpp:37-77 - Room parsing implementation
   - https://github.com/xoreos/xoreos/blob/master/src/aurora/lytfile.cpp:98-200 - Complete parser with all sections
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:17-165 - PyKotor parser/writer
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:17-165 - PyKotor parser/writer
 
 seq:
   - id: raw_content
@@ -161,7 +161,7 @@ seq:
       Application code should parse this line-by-line to extract structured data.
 
       Reference implementation:
-      https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py
+      https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py
 
 types:
   # Type definitions document the expected structure of each section
@@ -244,7 +244,7 @@ types:
 
       Example: "M02ac_02h door_01 0 170.475 66.375 0.0 0.707107 0.0 0.0 -0.707107"
 
-      Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:97-113
+      Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:97-113
 
   doorhook_entry_xoreos:
     doc: |

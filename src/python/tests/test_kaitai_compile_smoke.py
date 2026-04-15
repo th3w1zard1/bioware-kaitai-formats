@@ -38,43 +38,18 @@ def _resolve_ksc() -> str:
 EXPECTED_FAILURES: set[Path] = set()
 
 
-# Every ``formats/**/*.ksy`` in this repo — compile check guards PATH/KSC regressions.
-EXPECTED_PASSES = {
-    Path("formats/BIF/KEY.ksy"),
-    Path("formats/BIF/BIF.ksy"),
-    Path("formats/BIF/BZF.ksy"),
-    Path("formats/BWM/BWM.ksy"),
-    Path("formats/DA2S/DA2S.ksy"),
-    Path("formats/DAS/DAS.ksy"),
-    Path("formats/Common/bioware_common.ksy"),
-    Path("formats/Common/bioware_gff_common.ksy"),
-    Path("formats/Common/bioware_type_ids.ksy"),
-    Path("formats/Common/bioware_mdl_common.ksy"),
-    Path("formats/Common/bioware_ncs_common.ksy"),
-    Path("formats/Common/tga_common.ksy"),
-    Path("formats/ERF/ERF.ksy"),
-    Path("formats/GFF/GFF.ksy"),
-    Path("formats/GFF/XML/GFF_XML.ksy"),
-    Path("formats/GDA/GDA.ksy"),
-    Path("formats/HERF/HERF.ksy"),
-    Path("formats/LIP/LIP.ksy"),
-    Path("formats/LTR/LTR.ksy"),
-    Path("formats/PLT/PLT.ksy"),
-    Path("formats/MDL/MDL.ksy"),
-    Path("formats/MDL/MDX.ksy"),
-    Path("formats/NSS/NCS.ksy"),
-    Path("formats/NSS/NCS_minimal.ksy"),
-    Path("formats/PCC/PCC.ksy"),
-    Path("formats/RIM/RIM.ksy"),
-    Path("formats/SSF/SSF.ksy"),
-    Path("formats/TLK/TLK.ksy"),
-    Path("formats/TPC/DDS.ksy"),
-    Path("formats/TPC/TPC.ksy"),
-    Path("formats/TPC/TGA.ksy"),
-    Path("formats/TPC/TXB.ksy"),
-    Path("formats/TwoDA/TwoDA.ksy"),
-    Path("formats/WAV/WAV.ksy"),
-}
+def _discovered_format_ksy() -> set[Path]:
+    """All ``formats/**/*.ksy`` paths relative to the repo root (POSIX-style segments for stable sorting)."""
+    root = REPO_ROOT / "formats"
+    out: set[Path] = set()
+    for p in root.rglob("*.ksy"):
+        rel = p.relative_to(REPO_ROOT)
+        out.add(Path(rel.as_posix()))
+    return out
+
+
+# Every ``formats/**/*.ksy`` minus ``EXPECTED_FAILURES`` — avoids drift when new specs land.
+EXPECTED_PASSES = _discovered_format_ksy() - EXPECTED_FAILURES
 
 
 def _run_ksc(ksy_path: Path) -> subprocess.CompletedProcess[str]:

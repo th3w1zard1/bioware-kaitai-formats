@@ -9,21 +9,21 @@ meta:
   xref:
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe loads BIF archives alongside KEY; BIFF V1 on-disk layout matches Aurora tooling (PyKotor/reone/xoreos).
-    pykotor: https://github.com/th3w1zard1/PyKotor/tree/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/bif/
-    reone: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/bifreader.cpp
-    xoreos: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/biffile.cpp
-    xoreos_types_kfiletype_bif: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L208
-    xoreos_bif_load: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/biffile.cpp#L54-L82
-    xoreos_bif_read_var_res_table: https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/biffile.cpp#L84-L97
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/
+    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/bifreader.cpp
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp
+    xoreos_types_kfiletype_bif: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L208
+    xoreos_bif_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L82
+    xoreos_bif_read_var_res_table: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L84-L97
     pykotor_wiki_bif: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif
-    xoreos_docs_torlack_bif: https://github.com/th3w1zard1/xoreos-docs/blob/c7f12b09788a331499ce15b1283b630b4feb5163/specs/torlack/bif.html
+    xoreos_docs_torlack_bif: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/bif.html
 doc: |
   **BIF** (binary index file): Aurora archive of `(resource_id, type, offset, size)` rows; **ResRef** strings live in
   the paired **KEY** (`KEY.ksy`), not in the BIF.
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif PyKotor wiki — BIF"
-  - "https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/biffile.cpp#L54-L82 xoreos — BIFF::load"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L82 xoreos — BIFF::load"
 
 seq:
   - id: file_type

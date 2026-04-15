@@ -137,7 +137,7 @@ class Lyt(KaitaiStruct):
     xoreos extends the format with additional sections for Jade Engine compatibility.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/LYT-File-Format.md - Complete format documentation
+    - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#lyt - Complete format documentation
     - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/lytreader.cpp:37-77 - Room parsing implementation
     - https://github.com/xoreos/xoreos/blob/master/src/aurora/lytfile.cpp:98-200 - Complete parser with all sections
     - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lyt/io_lyt.py:17-165 - PyKotor parser/writer

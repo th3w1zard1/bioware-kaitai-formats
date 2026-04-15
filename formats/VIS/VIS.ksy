@@ -8,12 +8,12 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CResVIS present; ASCII VIS wire format as in this definition."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/visreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/visfile.cpp
     kotor_js: https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/VISObject.ts
     kotor_unity: https://github.com/KotOR-Community-Patches/KotOR-Unity/blob/master/Assets/Scripts/FileObjects/VISObject.cs
-    pykotor_wiki_vis: https://github.com/OldRepublicDevs/PyKotor/wiki/VIS-File-Format.md
+    pykotor_wiki_vis: https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#vis
 doc: |
   VIS (Visibility) files describe which module rooms can be seen from other rooms.
   They drive the engine's occlusion culling so that only geometry visible from the
@@ -68,11 +68,11 @@ doc: |
   - Doorway Artifacts: Door rooms not mutually visible → walls clip during door animations
   
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/VIS-File-Format.md
+  - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#vis
   - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/visreader.cpp
   - https://github.com/xoreos/xoreos/blob/master/src/aurora/visfile.cpp
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/io_vis.py:14-87
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/vis_data.py:52-294
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/io_vis.py:14-87
+  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/vis_data.py:52-294
 
 seq:
   - id: raw_content
@@ -96,4 +96,4 @@ seq:
       7. Store room names in lowercase for case-insensitive comparison
       
       See VISAsciiReader.cs for reference implementation matching
-      https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/io_vis.py:14-73.
+      https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/vis/io_vis.py:14-73.

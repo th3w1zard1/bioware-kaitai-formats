@@ -7,10 +7,10 @@ meta:
   xref:
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: RIM module templates are loaded through the same Aurora resource stack as ERF (implicit 120-byte header+padding behavior is KotOR-specific; keep aligned with PyKotor)."
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/rim/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/rim/
     reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp
     xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp
-    pykotor_wiki_rim: https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+    pykotor_wiki_rim: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
 doc: |
   RIM (Resource Information Manager) files are self-contained archives used for module templates.
   RIM files are similar to ERF files but are read-only from the game's perspective. The game
@@ -28,7 +28,7 @@ doc: |
   - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
   
   References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+  - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
   - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
   - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
   - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121

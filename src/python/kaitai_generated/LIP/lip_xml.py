@@ -13,10 +13,10 @@ class LipXml(KaitaiStruct):
     Provides easier editing than binary LIP format.
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/lip.py
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip_xml.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/lip.py
+    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip_xml.py
     - https://github.com/seedhartha/reone/tree/master/src/libs/graphics/format/lipreader.cpp
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/LIP-File-Format.md
+    - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip
     - https://github.com/xoreos/xoreos/tree/master/src/graphics/aurora/lipfile.cpp
     
     - ../GFF/GFF

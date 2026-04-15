@@ -9,13 +9,13 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Txb(KaitaiStruct):
-    """**TXB** stores mip-mapped pixel data plus an optional trailing **TXI** blob (text; not modeled
-    in Kaitai per repo policy). `readHeader` consumes a **128-byte** fixed layout (see `txb.cpp`);
-    `readData` then reads each mip level sequentially (sizes depend on encoding + dimensions).
+    """**TXB** / **TXB2**: fixed **128-byte** header (`readHeader` in `txb.cpp`) followed by mip stacks and an optional
+    trailing **TXI** text blob (not expanded here; see PyKotor wiki — `meta.xref`).
     
-    This `.ksy` captures the **128-byte header** and dumps the rest as opaque bytes (includes all
-    mip levels + optional TXI tail). **TODO:** split per-mip bodies using `mip_map_count` and
-    `getTXBDataSize` logic from xoreos when you need per-level offsets.
+    Per-mip byte sizes depend on encoding and dimensions (`readData`); this spec keeps the tail as one opaque buffer.
+    
+    .. seealso::
+       Source - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/txb.cpp
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Txb, self).__init__(_io)
