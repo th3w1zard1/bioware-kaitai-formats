@@ -2,6 +2,8 @@
 .SYNOPSIS
     Compiles all Kaitai Struct (.ksy) format definition files to target programming languages.
 
+    Windows + uv: use `uv run pwsh -NoProfile -File .\scripts\compile_all_ksy.ps1` (not `uv run .\scripts\compile_all_ksy.ps1` — Win32 error 193).
+
 .DESCRIPTION
     This script recursively finds all .ksy files in the formats directory and compiles them
     to the specified target language using the Kaitai Struct compiler. Output mirrors the
