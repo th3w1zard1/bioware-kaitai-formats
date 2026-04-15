@@ -15,7 +15,6 @@ meta:
     github_openkotor_pykotor_io_rim: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/rim/io_rim.py`:
       **`_load_rim_legacy`** **`RIM `** / **`V1.0`** + implicit **120**-byte key offset **39–62**; **`RIMBinaryReader.load`** **123–128**; **`RIMBinaryWriter.write`** **145+** (header + **96**-byte pad to **120**, then keyed resource layout — long method).
-    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/rimreader.cpp
     github_modawan_reone_rimreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/rimreader.cpp`: **`RimReader::load`** **26–34**; **`readResource`** **46–58**.
     xoreos_rimfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp#L35-L91
@@ -52,10 +51,10 @@ doc-ref:
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/rim.cpp#L43-L84 xoreos-tools — `rim` packer CLI (`main`)"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html xoreos-docs — Torlack mod.html (MOD/RIM family)"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/RIMObject.ts#L69-L93 KotOR.js — `RIMObject`"
-  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs NickHugi/Kotor.NET — `RIMBinaryStructure`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs#L23-L54 NickHugi/Kotor.NET — `RIMBinaryStructure.FileRoot` read/write"
   - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/rimreader.cpp#L26-L58 reone — `RimReader`"
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394 xoreos — `enum FileType` (numeric IDs in RIM/ERF/KEY tables)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py PyKotor — `ResourceType` (tooling superset)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` (tooling superset)"
 
 seq:
   - id: header

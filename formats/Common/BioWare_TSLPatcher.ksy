@@ -20,21 +20,17 @@ doc: |
   - Several upstream enums are string-valued (Python `Enum` of strings). Kaitai enums are numeric,
     so string-valued enums are modeled here as small string wrapper types with `valid` constraints.
 
-  References:
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/twoda.py
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/ncs.py
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/logger.py
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/diff/objects.py
+  Canonical upstream links: `meta.doc-ref` (line-anchored GitHub URLs; avoid duplicating bare URLs here).
 
 doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60 xoreos — `FileType` enum start (engine archive IDs; TSLPatcher enums here are community patch metadata, not read from `swkotor.exe`)"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/patcher.py#L43-L120 PyKotor — `ModInstaller` (apply / backup entry band)"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/memory.py#L1-L80 PyKotor — `memory` (patch address space / token helpers)"
   - "https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/tslpatcher/ PyKotor — `tslpatcher/` package"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/twoda.py PyKotor — TwoDA patch helpers"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/ncs.py PyKotor — NCS patch helpers"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/logger.py PyKotor — TSLPatcher logging"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/diff/objects.py PyKotor — diff resource objects"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/twoda.py#L1-L566 PyKotor — TwoDA patch helpers (full module band; large file)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/ncs.py#L1-L246 PyKotor — NCS patch helpers (full module band)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/logger.py#L1-L79 PyKotor — TSLPatcher logging (full module band)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/diff/objects.py#L1-L391 PyKotor — diff resource objects (full module band)"
   - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree (TSLPatcher metadata; no dedicated PDF)"
 
 types:

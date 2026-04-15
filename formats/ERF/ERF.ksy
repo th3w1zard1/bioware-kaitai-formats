@@ -24,7 +24,6 @@ meta:
     github_openkotor_pykotor_erf_data: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py`:
       **`ERFType`** (`ERF` / `MOD` / `SAV` / `HAK`) **91–107**; header field overview **14–22**; **`class ERF`** **123+**.
-    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/erfreader.cpp
     github_modawan_reone_erfreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/erfreader.cpp`: **`ErfReader::load`** **26–39**; **`checkSignature`** (`ERF V1.0` / `MOD V1.0`) **41–51**; **`readKeyEntry`** **62–72**; **`readResourceEntry`** **83–92**.
     xoreos_erffile: https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp#L50-L335
@@ -92,10 +91,10 @@ doc-ref:
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html xoreos-docs — Torlack mod.html"
   - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/erfreader.cpp#L26-L92 reone — `ErfReader`"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/ERFObject.ts#L70-L115 KotOR.js — `ERFObject`"
-  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorERF/ERFBinaryStructure.cs NickHugi/Kotor.NET — `ERFBinaryStructure`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorERF/ERFBinaryStructure.cs#L25-L66 NickHugi/Kotor.NET — `ERFBinaryStructure.FileRoot` read/write"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/ERF_Format.pdf xoreos-docs — ERF_Format.pdf"
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394 xoreos — `enum FileType` (numeric IDs in KEY/ERF/RIM tables)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py PyKotor — `ResourceType` (tooling superset; overlaps FileType for KotOR rows)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` (tooling superset; overlaps FileType for KotOR rows)"
 
 seq:
   - id: header

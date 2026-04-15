@@ -21,7 +21,6 @@ meta:
       **`_parse_riff_wave_from_kaitai`** **43–84**; **`WAVBinaryReader.load`** **118–158** (KotOR prefix / deobfuscation hooks **134–135**); legacy RIFF probe **175–187**.
     github_openkotor_pykotor_wav_obfuscation: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py`: MP3-in-WAV / SFX / VO helpers (see wiki + `WAV.ksy` `is_mp3_in_wav` instance).
-    reone: https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp
     xoreos_wave_cpp: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
     xoreos_types_kfiletype_wav: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L62
     xoreos_sound_make_audio_stream: https://github.com/xoreos/xoreos/blob/master/src/sound/sound.cpp#L256-L340

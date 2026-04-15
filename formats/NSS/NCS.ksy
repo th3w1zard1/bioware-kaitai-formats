@@ -14,7 +14,7 @@ meta:
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe--NCS bytecode executed by NWScript VM; big-endian wire format per PyKotor wiki.
     pykotor_ncs_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
     pykotor_io_ncs_load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/io_ncs.py#L60-L90
-    pykotor_ncs_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py
+    pykotor_ncs_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L140
     pykotor_wiki_ncs: https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format
     xoreos_ncsfile_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/nwscript/ncsfile.cpp#L333-L355
     xoreos_tools_ncsfile_load: https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137

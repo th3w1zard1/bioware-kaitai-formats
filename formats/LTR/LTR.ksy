@@ -16,7 +16,6 @@ meta:
     github_openkotor_pykotor_io_ltr: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/ltr/io_ltr.py`:
       **`LTRBinaryReader`** **44–131** (`load` **70–131**, KotOR path hard-requires **`letter_count == 28`** **104–108**); **`LTRBinaryWriter`** **134+** (`write` from **143**).
-    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp
     xoreos_ltrfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L168
     xoreos_types_kfiletype_ltr: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101
     xoreos_ltr_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168

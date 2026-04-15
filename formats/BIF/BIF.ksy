@@ -19,7 +19,6 @@ meta:
     github_openkotor_pykotor_bif_data: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/bif/bif_data.py`:
       **`BIFType`** **`BIFF`** / **`BZF `** **59–71**; LZMA / mobile **BZF** notes in module doc **34–37**.
-    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/bifreader.cpp
     github_modawan_reone_bifreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/bifreader.cpp`: **`BifReader::load`** **`BIFFV1  `** check **26–29**; **`loadHeader`** **32–38**; **`readResourceEntry`** **50–63**.
     xoreos_biffile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L97
@@ -30,7 +29,7 @@ meta:
     xoreos_docs_torlack_bif: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/bif.html
     github_xoreos_tools_unkeybif_bif_branch: https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L206-L209
     github_xoreos_docs_keybif_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf
-    github_kobaltblu_kotor_js_bif: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/BIFObject.ts
+    github_kobaltblu_kotor_js_bif: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/BIFObject.ts#L87-L123
 doc: |
   **BIF** (binary index file): Aurora archive of `(resource_id, type, offset, size)` rows; **ResRef** strings live in
   the paired **KEY** (`KEY.ksy`), not in the BIF.
@@ -43,7 +42,7 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L208 xoreos — `kFileTypeBIF`"
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L206-L209 xoreos-tools — `unkeybif` (non-`.bzf` → `BIFFile`)"
   - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/bifreader.cpp#L26-L63 reone — `BifReader`"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/BIFObject.ts KotOR.js — `BIFObject`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/BIFObject.ts#L87-L123 KotOR.js — `BIFObject.readFromDisk` (header + variable resource table)"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/bif.html xoreos-docs — Torlack bif.html"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf xoreos-docs — KeyBIF_Format.pdf"
 

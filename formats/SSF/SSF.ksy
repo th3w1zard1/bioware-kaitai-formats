@@ -25,7 +25,6 @@ meta:
     xoreos_tools_xml2ssf_main: https://github.com/xoreos/xoreos-tools/blob/master/src/xml2ssf.cpp#L54-L75
     xoreos_tools_ssfdumper_dump: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfdumper.cpp#L133-L167
     xoreos_tools_ssfcreator_create: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfcreator.cpp#L38-L74
-    github_modawan_reone_ssf: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp
     reone_ssfreader_load: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp#L26-L32
     xoreos_docs_ssf_format_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/SSF_Format.pdf
 doc: |

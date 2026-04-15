@@ -21,8 +21,8 @@ meta:
     xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
     xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
     reone_mdlmdxreader_read_mesh: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L197-L487
-    kotor_js_odyssey_model_node_mesh: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModelNodeMesh.ts
-    kotor_js_mdx_flags_enum: https://github.com/KobaltBlu/KotOR.js/blob/master/src/enums/odyssey/OdysseyModelMDXFlag.ts
+    kotor_js_odyssey_model_node_mesh: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModelNodeMesh.ts#L104-L281
+    kotor_js_mdx_flags_enum: https://github.com/KobaltBlu/KotOR.js/blob/master/src/enums/odyssey/OdysseyModelMDXFlag.ts#L14-L27
     xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
 doc: |
   **MDX** (model extension): interleaved vertex bytes for meshes declared in the paired **`MDL.ksy`** file.
@@ -44,7 +44,8 @@ doc-ref:
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL/MDX overview"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl (MDX-related controller / mesh background)"
   - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L197-L487 reone — MdlMdxReader::readMesh (MDX consumption)"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/enums/odyssey/OdysseyModelMDXFlag.ts KotOR.js — MDX stream flag enum"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModelNodeMesh.ts#L104-L281 KotOR.js — `OdysseyModelNodeMesh.readBinary` (MDL header + MDX interleaved vertex loop)"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/enums/odyssey/OdysseyModelMDXFlag.ts#L14-L27 KotOR.js — `OdysseyModelMDXFlag` enum"
 
 seq:
   - id: vertex_data

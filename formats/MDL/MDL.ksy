@@ -22,7 +22,7 @@ meta:
     pykotor_io_mdl_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
     pykotor_io_mdl_binary_reader: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408
     pykotor_io_mdl_kaitai_probe: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2332-L2338
-    pykotor_mdl_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/mdl_data.py
+    pykotor_mdl_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/mdl_data.py#L1283-L1322
     pykotor_vendor_mdlops: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407
     pykotor_mdlops_upstream_mirror: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L4698
     xoreos_model_kotor_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267
@@ -31,7 +31,7 @@ meta:
     xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
     xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
     reone_mdlmdxreader_load: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118
-    kotor_js_mdl_loader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/MDLLoader.ts
+    kotor_js_mdl_loader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/MDLLoader.ts#L66-L156
     kotor_js_odyssey_model_constructor: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModel.ts#L56-L170
     xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
 doc: |

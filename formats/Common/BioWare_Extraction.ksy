@@ -11,21 +11,19 @@ meta:
       Tooling-only enums (not read from swkotor.exe resources). Kept separate from Odyssey Ghidra wire layouts.
     pykotor_ref: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
     pykotor_installation_search_location: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py#L67-L122
-    andastra_ref: https://github.com/OldRepublicDevs/Andastra/blob/master/src/andastra/parsing/extract/installation.cs
+    kotor_net_installation_paths: https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Common/Installation.cs#L11-L79
     xoreos_aurora_types_filetype_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60
     xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
 doc: |
   Enums and small helper types used by installation/extraction tooling.
 
-  References:
-  - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+  Canonical links: `meta.doc-ref` and `meta.xref` (PyKotor `installation.py`; NickHugi `Installation.cs` for parallel .NET layout).
 
 doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60 xoreos — `FileType` enum start (Aurora resource type IDs; no dedicated extraction-layout parser — this `.ksy` is tooling-side)"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py#L67-L122 PyKotor — `SearchLocation` / `TexturePackNames` (maps to enums in this `.ksy`)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py PyKotor — installation / search helpers (full module)"
   - "https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/ PyKotor — `extract/` package"
-  - "https://github.com/OldRepublicDevs/Andastra/blob/master/src/andastra/parsing/extract/installation.cs Andastra — Eclipse extraction/installation model"
+  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Common/Installation.cs#L11-L79 NickHugi/Kotor.NET — `Installation` ctor (texture packs / capsules / folders)"
   - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree (tooling enums; no extraction-specific PDF)"
 
 types:

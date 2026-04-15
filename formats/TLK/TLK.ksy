@@ -19,7 +19,6 @@ meta:
     github_openkotor_pykotor_tlk_data: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tlk/tlk_data.py`:
       wire overview **14–31**; **`class TLK`** **47–79**; **`TLKEntry`** 40-byte row **302–333**; **`V4.0`** (Jade) noted **17–18**.
-    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/tlkreader.cpp
     github_modawan_reone_tlkreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/tlkreader.cpp`: **`StringFlags`** **27–31**; **`TlkReader::load`** **33–41**; **`loadStrings`** **43–67**.
     xoreos_talktable_factory_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp#L35-L69
@@ -31,7 +30,7 @@ meta:
     github_xoreos_types_kfiletype_tlk: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L87
     xoreos_tools_tlk2xml_main: https://github.com/xoreos/xoreos-tools/blob/master/src/tlk2xml.cpp#L56-L80
     xoreos_tools_xml2tlk_main: https://github.com/xoreos/xoreos-tools/blob/master/src/xml2tlk.cpp#L58-L85
-    kotor_net_tlk_binary: https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs
+    kotor_net_tlk_binary: https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52
     github_xoreos_docs_talktable_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/TalkTable_Format.pdf
     github_kobaltblu_kotor_js_tlk: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TLKObject.ts#L16-L77
     pykotor_wiki_tlk: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
@@ -65,7 +64,7 @@ doc-ref:
   - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml2tlk.cpp#L58-L85 xoreos-tools — `xml2tlk` CLI (`main`)"
   - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/tlkreader.cpp#L27-L67 reone — `TlkReader`"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TLKObject.ts#L16-L77 KotOR.js — `TLKObject`"
-  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs NickHugi/Kotor.NET — `TLKBinaryReader`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52 NickHugi/Kotor.NET — `TLKBinaryReader` (`Read` + constructors)"
   - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/TalkTable_Format.pdf xoreos-docs — TalkTable_Format.pdf"
 
 seq:

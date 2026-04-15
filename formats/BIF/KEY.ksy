@@ -20,7 +20,6 @@ meta:
     github_openkotor_pykotor_key_data: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/key/key_data.py`:
       **`FILE_TYPE` / `FILE_VERSION`** **228–229**; **`class KEY`** **219+**; **`BifEntry` / `KeyEntry`** models **60+** / **126+**.
-    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/keyreader.cpp
     github_modawan_reone_keyreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/keyreader.cpp`: **`KeyReader::load`** **26–35**; **`readFileEntry`** **48–59**; **`readKeyEntry`** **70+** (packed resource id split).
     xoreos_keyfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88

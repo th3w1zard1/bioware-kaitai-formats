@@ -26,7 +26,7 @@ meta:
     xoreos_resman_add_type_alias: https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612
     # Upstream uses two enum identifiers for the same integer (FaceFX metadata).
     xoreos_types_fxr_fxt_duplicate: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L316-L317
-    pykotor_types: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+    pykotor_types: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322
 doc: |
   This file provides **exhaustive enum mappings** for resource/type identifiers used across
   BioWare-family games and their tooling ecosystems.
@@ -45,7 +45,7 @@ doc: |
   Why two ID columns?
   - `xoreos_file_type_id` mirrors xoreos `enum FileType` in `src/aurora/types.h` (`meta.xref.xoreos_types_file_type_enum`; full header band: `meta.xref.xoreos_types`) and is the
     canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
-  - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+  - `bioware_resource_type_id` mirrors PyKotor `ResourceType` (`type.py#L123-L322`; see `meta.xref.pykotor_types`).
     and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
 
   Important notes:
@@ -55,9 +55,7 @@ doc: |
   - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
     while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
   
-  References:
-  - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L443 xoreos — `types.h` (FileType comment + enums through `Platform`)
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+  References: `meta.doc-ref` and `meta.xref` (xoreos `types.h` bands; PyKotor `ResourceType`).
 
 doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55 xoreos — `FileType` comment block"
@@ -70,7 +68,7 @@ doc-ref:
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612 xoreos — `ResourceManager::addTypeAlias`"
   - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — README tool inventory (which CLIs touch which formats)"
   - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py PyKotor — `ResourceType` + tooling-only extensions"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` members (engine + toolset-only ids)"
 
 enums:
   xoreos_file_type_id:

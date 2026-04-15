@@ -25,13 +25,12 @@ meta:
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py`:
       **`TPCTextureFormat`** **74+**; **`TPCMipmap`** **218+**; **`TPCLayer`** **414+**; **`class TPC`** **499+** (resource model + mip/layer helpers).
     github_openkotor_pykotor_resource_type_tpc: |
-      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/type.py`: **`ResourceType.TPC`** tuple **1040–1045** (`type_id` **3007**).
-    reone: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/tpcreader.cpp
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/type.py`:       **`ResourceType.TPC`** tuple **1040–1045** (`type_id` **3007**).
     github_modawan_reone_tpcreader: |
       https://github.com/modawan/reone — `src/libs/graphics/format/tpcreader.cpp`: **`TpcReader::load`** **29–62**;
       **`loadLayers`** **64–81**; **`loadFeatures`** (**TXI** tail via **`TxiReader`**) **83–96**; **`loadTexture`** **98–105**;
       **`getMipMapDataSize`** **112+**; **`getPixelFormat`** **136+**.
-    kotor_js_tpcloader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/TPCLoader.ts
+    kotor_js_tpcloader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/TPCLoader.ts#L26-L96
     github_kobaltblu_kotor_js_tpcobject: |
       https://github.com/KobaltBlu/KotOR.js — `src/resource/TPCObject.ts`: **`TPCObject`** **25+**; **`readHeader`** **290–380** (wire layout; pairs with this `.ksy` header).
     xoreos_tpc_cpp: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66

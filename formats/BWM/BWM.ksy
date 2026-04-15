@@ -16,8 +16,9 @@ meta:
     pykotor_io_bwm_kaitai: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L56-L110
     pykotor_io_bwm_reader: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L187-L253
     pykotor_bwm_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/bwm_data.py#L96-L120
-    reone_bwmreader_load: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/bwmreader.cpp#L27-L92
-    reone_bwmreader_tables: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/bwmreader.cpp#L94-L171
+    github_modawan_reone_bwmreader: |
+      https://github.com/modawan/reone — `src/libs/graphics/format/bwmreader.cpp`:
+      **`BwmReader::load`** **27–92**; **vertex / adjacency / AABB table reads** **94–171**.
     xoreos_walkmeshloader_load: https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp#L42-L113
     xoreos_walkmeshloader_append_tables: https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp#L119-L216
     xoreos_walkmeshloader_getaabb_stream: https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp#L218-L249

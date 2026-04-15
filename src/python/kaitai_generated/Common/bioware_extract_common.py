@@ -12,8 +12,7 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
 class BiowareExtractCommon(KaitaiStruct):
     """Enums and small helper types used by installation/extraction tooling.
     
-    References:
-    - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+    Canonical links: `meta.doc-ref` and `meta.xref` (PyKotor `installation.py`; NickHugi `Installation.cs` for parallel .NET layout).
     
     .. seealso::
        xoreos — `FileType` enum start (Aurora resource type IDs; no dedicated extraction-layout parser — this `.ksy` is tooling-side) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60
@@ -32,7 +31,7 @@ class BiowareExtractCommon(KaitaiStruct):
     
     
     .. seealso::
-       Andastra — Eclipse extraction/installation model - https://github.com/OldRepublicDevs/Andastra/blob/master/src/andastra/parsing/extract/installation.cs
+       NickHugi/Kotor.NET — `Installation` ctor (texture packs / capsules / folders) - https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Common/Installation.cs#L11-L79
     
     
     .. seealso::
