@@ -5,38 +5,79 @@ meta:
   endian: le
   file-extension: gff
   imports:
-    - ../common/bioware_common
+    - ../Common/bioware_common
+    - ../Common/bioware_gff_common
   xref:
-    # Canonical format write-up (sections: File Header, Label Array, Struct Array, Field Array, Field Data,
-    # Field Indices, List Indices, GFF Data Types). Per-field citations below use these URLs + anchors.
-    wiki:
-      gff: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
-      aurora_gff: https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#gff
-      tslpatcher_gfflist: https://github.com/OpenKotOR/PyKotor/wiki/TSLPatcher-GFF-Syntax#gfflist-syntax
-    pykotor:
-      package: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff
-      io_gff: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py
-      gff_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py
+    # Flat scalar map (ksy schema): line-anchored authorities; nested grouping lives in `meta.doc` prose.
+    wiki_gff: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
+    wiki_aurora_gff: https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#gff
+    wiki_tslpatcher_gfflist: https://github.com/OpenKotOR/PyKotor/wiki/TSLPatcher-GFFList-Syntax
+    wiki_strref_tlk: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#string-references-strref
+    wiki_audio_tlk: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
+    wiki_resource_resolution: https://github.com/OpenKotOR/PyKotor/wiki/Concepts#resource-resolution-order
+    pykotor_gff_package: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff
+    pykotor_io_gff: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py
+    pykotor_io_gff_json: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_json.py
+    pykotor_io_gff_xml: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
+    pykotor_gff_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py
+    xoreos_docs_torlack_itp_html: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    xoreos_gff3file_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp
+    # Header field order matches `GFF3File::Header::read()` (uint32 LE × 12).
+    xoreos_gff3_header_read: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63
+    xoreos_gff3_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L97-L108
+    xoreos_gff3_load_header: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L110-L181
+    xoreos_types_kfiletype_gff: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101-L103
+    xoreos_tools_gff3file_cpp: https://github.com/xoreos/xoreos-tools/blob/master/src/aurora/gff3file.cpp
+    xoreos_dlgfile_load_from_gff: https://github.com/xoreos/xoreos/blob/master/src/aurora/dlgfile.cpp#L169-L202
+    xoreos_ifofile_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/ifofile.cpp#L101-L139
+    xoreos_nfofile_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/nfofile.cpp#L72-L83
+    xoreos_talktable_gff_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_gff.cpp#L78-L99
+    reone_gffreader_cpp: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp
+    bioware_gff_common_field_types: |
+      Canonical `gff_field_type` wire tags + per-ID documentation: `formats/Common/BioWare_GFF_Common.ksy`.
+    legacy_k_gff_deadly_stream_listing: https://deadlystream.com/files/file/719-k-gff/
+    legacy_k_gff_lucasforums_archive_thread: https://www.lucasforumsarchive.com/thread/149407
 doc: |
   GFF (Generic File Format) is BioWare’s hierarchical binary container for structured game data (KotOR/TSL
   and other Aurora-family titles). **Normative community documentation:** OpenKotOR PyKotor wiki
   [GFF File Format](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format) (binary layout, field types,
   struct/field/list access). Related: [Bioware Aurora GFF](https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#gff),
-  [TSLPatcher GFFList](https://github.com/OpenKotOR/PyKotor/wiki/TSLPatcher-GFF-Syntax#gfflist-syntax).
+  [TSLPatcher GFFList](https://github.com/OpenKotOR/PyKotor/wiki/TSLPatcher-GFFList-Syntax).
 
   **PyKotor reference implementation:** [resource/formats/gff/](https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff)
   ([io_gff.py](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py),
   [gff_data.py](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py)).
 
   **EXE/Ghidra (KotOR1):** On-disk record names and image addresses are **not** repeated here — they are cited
-  on the specific `types` / `seq` / `enums` nodes they justify (e.g. `GFFHeaderInfo` field offsets under
-  `gff_header`, `CResGFF::GetField` @ `0x00410990` next to `field_entry`, `GFFFieldTypes` values under
-  `gff_field_type`). This file describes wire bytes; the game builds in-memory `CResGFF` views from them.
+  on the specific `types` / `seq` nodes they justify (e.g. `GFFHeaderInfo` field offsets under `gff_header`,
+  `CResGFF::GetField` @ `0x00410990` next to `field_entry`). Per-field-type prose lives in
+  `formats/Common/BioWare_GFF_Common.ksy` → `gff_field_type`. This file describes wire bytes; the game builds in-memory `CResGFF` views from them.
 
   Summary (see wiki [Binary Format](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#binary-format)):
   - 56-byte header → offsets/counts for label, struct, field, field-data, field-indices, and list-indices arenas
   - 12-byte struct rows and 12-byte field rows; field types and inline vs field-data storage per [GFF Data Types](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types)
   - Root struct index 0; single-field vs multi-field indexing: [Field Indices](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-indices-multiple-element-map--multimap), [List Indices](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices)
+
+  Bibliography (verify HTTP from your network; `HEAD` checks in CI may omit slow hosts):
+  1. OpenKotOR PyKotor wiki — [GFF File Format](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format) (primary on-disk description).
+  2. OpenKotOR PyKotor wiki — [Bioware Aurora Core Formats § GFF](https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#gff).
+  3. OpenKotOR PyKotor wiki — [TSLPatcher GFF syntax / GFFList](https://github.com/OpenKotOR/PyKotor/wiki/TSLPatcher-GFFList-Syntax).
+  4. OpenKotOR PyKotor — binary reader [`io_gff.py`](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py) (`GFFBinaryReader.load` L70–L112: FourCC/version L79–L88; header DWORDs L92–L106; labels L108–L111; struct recursion L116+; field batch L145+; field value dispatch L197–L272; list L275–L294).
+  5. OpenKotOR PyKotor — in-memory model [`gff_data.py`](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py) (`GFFFieldType` enum L347–L367; **no `StrRef=18` member** — wire type 18 is still documented on the wiki and in historical tools below).
+  6. Torlack / xoreos-docs — [ITP / GFF-family write-up (HTML)](https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html) (MultiMap / field-indices terminology echoed on the PyKotor wiki).
+  7. xoreos — [`gff3file.cpp`](https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp) (`GFF3File::Header::read` L50–L63: same twelve `uint32` fields after type/version; comments on V3.3 L42–L43; premium-module repair notes L111+); xoreos-tools — [`gff3file.cpp`](https://github.com/xoreos/xoreos-tools/blob/master/src/aurora/gff3file.cpp). Official-ish BioWare NWN-era dumps indexed under [xoreos-docs `specs/bioware`](https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware) (see file header comment L25–L27 in xoreos `gff3file.cpp`).
+  8. reone — [`gffreader.cpp`](https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp) (header/struct/field/list decode; lines cited on matching `instances` below).
+  9. LucasForums Archive — [K-GFF (GFF Editing Utility) thread](https://www.lucasforumsarchive.com/thread/149407) (tk102; VECTOR/ORIENTATION/StrRef field-type context for KotOR-era tooling).
+  10. Deadly Stream — [K-GFF 1.3 file listing](https://deadlystream.com/files/file/719-k-gff/) (distribution mirror for the same editor; automated `HEAD` from some networks may time out).
+  11. OpenKotOR PyKotor wiki — [StrRef / TLK](https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#string-references-strref) (dialogue string reference semantics adjacent to GFF type 18).
+  12. OpenKotOR PyKotor wiki — [Resource resolution order](https://github.com/OpenKotOR/PyKotor/wiki/Concepts#resource-resolution-order) (how GFF assets override from `Override/` / modules / `KEY` data).
+  13. LucasForums Archive — [K-GFF thread, post #1 (tk102, 2005-07-08)](https://www.lucasforumsarchive.com/thread/149407): KotOR/TSL **VECTOR** / **ORIENTATION** field support vs BioWare’s original **GFFEditor.exe**; warns **`.git` / `.ifo` corruption`** when those types are mishandled; **StrRef (field type 18)** added for *Jade Empire* modding from **v1.1.9**; **multi-substring `CExoLocString`** editing; **BINARY** fields via import/export for hex workflows; optional **TLK** integration; **v1.0.3** clipboard interchange as **XML** between editor instances.
+  14. Deadly Stream — [K-GFF 1.3 listing](https://deadlystream.com/files/file/719-k-gff/) (mirrors LucasForums changelog text; **v1.3.0** adds STRREF / CExoLocString **search-by-text** and TLK-selection UX notes). Automated `HEAD` may **time out** from some networks — retry from a browser or VPN.
+  15. OpenKotOR PyKotor — JSON interchange [`io_gff_json.py`](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_json.py) (`GFFJSONReader.load` L51–L75: `GffJson` / `json.loads` → `_parse_struct`).
+  16. OpenKotOR PyKotor — XML interchange [`io_gff_xml.py`](https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py) (`GFFXMLReader.load` L61–L75; `_load_field` tag dispatch L94–L166; `GFFXMLWriter.write` sets root tag `gff3` L181–L184).
+  17. xoreos-tools — [`gffdumper.cpp`](https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp) (`identifyGFF` / `GFFDumper::identify` L119–L175: V3.2/V3.3 vs V4.x routing; `kGFFTypes` table L33–L98 includes KotOR FourCCs such as `GIT ` / `IFO ` / `UTC ` / `DLG `).
+  18. **Ghidra / agdec-http:** when an Odyssey MCP server is available, cross-check `GFFHeaderInfo`, `GFFStructData`, `GFFFieldData`, and `GFFFieldTypes` on the loaded `k1_win_gog_swkotor.exe` image — this `.ksy` keeps **VMA** citations off `meta.doc` and on the specific `seq`/`enums` nodes they justify.
 
 seq:
   - id: header
@@ -54,6 +95,7 @@ instances:
       Label table: `header.label_count` entries ×16 bytes at `header.label_offset`.
       Ghidra: slots indexed by `GFFFieldData.label_index` (+0x4); header fields `label_offset` / `label_count` @ +0x18 / +0x1C.
       Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#label-array
+      PyKotor load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L108-L111 — reone `readLabel`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L151-L154
 
   struct_array:
     type: struct_array
@@ -62,6 +104,7 @@ instances:
     doc: |
       Struct table: `header.struct_count` × 12 B at `header.struct_offset`. Ghidra: `GFFStructData` rows.
       Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#struct-array
+      PyKotor `_load_struct`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L116-L143 — reone `readStruct`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L46-L64
 
   field_array:
     type: field_array
@@ -71,6 +114,7 @@ instances:
       Field dictionary: `header.field_count` × 12 B at `header.field_offset`. Ghidra: `GFFFieldData`.
       `CResGFF::GetField` @ `0x00410990` uses 12-byte stride on this table.
       Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-array
+      PyKotor `_load_field` / `_load_fields_batch`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L145-L195 — reone `readField`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L67-L148
 
   field_data:
     type: field_data
@@ -79,6 +123,7 @@ instances:
     doc: |
       Complex-type payload heap. Ghidra: `field_data_offset` @ +0x20, size `field_data_count` @ +0x24.
       Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-data
+      PyKotor seeks `field_data_offset + offset` for “complex” IDs: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L211-L213 — reone helpers from `_fieldDataOffset`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L160-L216
 
   field_indices_array:
     type: field_indices_array
@@ -88,6 +133,7 @@ instances:
       Flat `u4` stream (`field_indices_count` elements). Multi-field structs slice via `GFFStructData.data_or_data_offset`.
       Ghidra: `field_indices_offset` @ +0x28, `field_indices_count` @ +0x2C.
       Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-indices-multiple-element-map--multimap
+      PyKotor batch read: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L135-L139 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L156-L158 — Torlack MultiMap context: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html
 
   list_indices_array:
     type: list_indices_array
@@ -97,6 +143,7 @@ instances:
       Packed list nodes (`u4` count + `u4` struct indices). List fields store byte offsets from this arena base.
       Ghidra: `list_indices_offset` @ +0x30; `list_indices_count` @ +0x34 = span length in bytes (this `.ksy` `raw_data` size).
       Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices
+      PyKotor `_load_list`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L275-L294 — reone `readList`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L222
 
   root_struct_resolved:
     type: resolved_struct(0)
@@ -110,6 +157,12 @@ types:
     doc: |
       56-byte header: wiki [File Header](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#file-header) table.
       Ghidra `/K1/k1_win_gog_swkotor.exe`: datatype `GFFHeaderInfo` — each `seq` field below names the matching column + offset.
+
+      Sources (same DWORD order on disk):
+      - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L78-L106 (`file_type`/`file_version` L79–L80; offset/count pairs L92–L106)
+      - https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L41 (`load` skips 8-byte signature then reads the twelve `u32`s L30–L41)
+      - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63 (`GFF3File::Header::read` — Aurora GFF3 header DWORD layout)
+      - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html (Aurora/GFF-family background; MultiMap wording)
     seq:
       - id: file_type
         type: str
@@ -118,6 +171,7 @@ types:
         doc: |
           File type signature (FourCC), e.g. `"UTC "`, `"DLG "`, `"ARE "`. Wiki `File Header` row “File Type”, offset 0x00.
           Source: Ghidra `GFFHeaderInfo.file_type` @ +0x0 (char[4]) on `/K1/k1_win_gog_swkotor.exe`.
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L79 (read 4 bytes); validated against `GFFContent` L82–L84.
 
       - id: file_version
         type: str
@@ -126,72 +180,84 @@ types:
         doc: |
           Format version; KotOR uses `"V3.2"`. Wiki `File Header` row “File Version”, offset 0x04.
           Source: Ghidra `GFFHeaderInfo.file_version` @ +0x4 (char[4]) on `/K1/k1_win_gog_swkotor.exe`.
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L80 (must equal `"V3.2"` L86–L88).
 
       - id: struct_offset
         type: u4
         doc: |
           Byte offset to struct array. Wiki `File Header` row “Struct Array Offset”, offset 0x08.
           Source: Ghidra `GFFHeaderInfo.struct_offset` @ +0x8 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L93 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L30
 
       - id: struct_count
         type: u4
         doc: |
           Struct row count. Wiki `File Header` row “Struct Count”, offset 0x0C.
           Source: Ghidra `GFFHeaderInfo.struct_count` @ +0xC (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L94 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L31
 
       - id: field_offset
         type: u4
         doc: |
           Byte offset to field array. Wiki `File Header` row “Field Array Offset”, offset 0x10.
           Source: Ghidra `GFFHeaderInfo.field_offset` @ +0x10 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L95 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L32
 
       - id: field_count
         type: u4
         doc: |
           Field row count. Wiki `File Header` row “Field Count”, offset 0x14.
           Source: Ghidra `GFFHeaderInfo.field_count` @ +0x14 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L96 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L33
 
       - id: label_offset
         type: u4
         doc: |
           Byte offset to label array. Wiki `File Header` row “Label Array Offset”, offset 0x18.
           Source: Ghidra `GFFHeaderInfo.label_offset` @ +0x18 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L98 (variable `label_offset` then seek L110) — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L34
 
       - id: label_count
         type: u4
         doc: |
           Label slot count. Wiki `File Header` row “Label Count”, offset 0x1C.
           Source: Ghidra `GFFHeaderInfo.label_count` @ +0x1C (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L99 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L35
 
       - id: field_data_offset
         type: u4
         doc: |
           Byte offset to field-data section. Wiki `File Header` row “Field Data Offset”, offset 0x20.
           Source: Ghidra `GFFHeaderInfo.field_data_offset` @ +0x20 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L101 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L36
 
       - id: field_data_count
         type: u4
         doc: |
           Field-data section size in bytes. Wiki `File Header` row “Field Data Count”, offset 0x24.
           Source: Ghidra `GFFHeaderInfo.field_data_count` @ +0x24 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L102 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L37
 
       - id: field_indices_offset
         type: u4
         doc: |
           Byte offset to field-indices stream. Wiki `File Header` row “Field Indices Offset”, offset 0x28.
           Source: Ghidra `GFFHeaderInfo.field_indices_offset` @ +0x28 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L103 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L38
 
       - id: field_indices_count
         type: u4
         doc: |
           Count of `u32` entries in the field-indices stream (MultiMap). Wiki `File Header` row “Field Indices Count”, offset 0x2C.
           Source: Ghidra `GFFHeaderInfo.field_indices_count` @ +0x2C (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L104 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L39 (member typo `fieldIncidesCount` in upstream)
 
       - id: list_indices_offset
         type: u4
         doc: |
           Byte offset to list-indices arena. Wiki `File Header` row “List Indices Offset”, offset 0x30.
           Source: Ghidra `GFFHeaderInfo.list_indices_offset` @ +0x30 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L105 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L40
 
       - id: list_indices_count
         type: u4
@@ -199,11 +265,13 @@ types:
           List-indices arena size in bytes (this `.ksy` uses it as `list_indices_array.raw_data` byte length).
           Wiki `File Header` row “List Indices Count”, offset 0x34 — note wiki table header wording; access pattern is under [List Indices](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices).
           Source: Ghidra `GFFHeaderInfo.list_indices_count` @ +0x34 (ulong).
+          PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L106 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L41; list decode https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L275-L294 vs reone https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L222
 
   label_array:
     doc: |
       Contiguous table of `label_count` fixed 16-byte ASCII name slots at `label_offset`.
       Indexed by `GFFFieldData.label_index` (×16). Not a separate Ghidra struct — rows are `char[16]` in bulk.
+      Community tooling (16-byte label convention, KotOR-focused): https://www.lucasforumsarchive.com/thread/149407 — https://deadlystream.com/files/file/719-k-gff/
     seq:
       - id: labels
         type: label_entry
@@ -230,6 +298,7 @@ types:
   struct_array:
     doc: |
       Table of `GFFStructData` rows (`struct_count` × 12 bytes at `struct_offset`). Ghidra name `GFFStructData`.
+      Cross-check: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L121-L127 (three `u32` per row) — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L47-L51
     seq:
       - id: entries
         type: struct_entry
@@ -290,6 +359,7 @@ types:
   field_array:
     doc: |
       Table of `GFFFieldData` rows (`field_count` × 12 bytes at `field_offset`). Indexed by struct metadata and `field_indices_array`.
+      Cross-check: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L187-L191 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L68-L72
     seq:
       - id: entries
         type: field_entry
@@ -303,16 +373,18 @@ types:
     doc: |
       One `GFFFieldData` row: `field_type` (+0, `GFFFieldTypes`), `label_index` (+4), `data_or_data_offset` (+8).
       `CResGFF::GetField` @ `0x00410990` walks these with 12-byte stride.
+      Dispatch table (inline vs `field_data` vs struct/list): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L208-L273 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L78-L146
     seq:
       - id: field_type
         type: u4
-        enum: gff_field_type
+        enum: bioware_gff_common::gff_field_type
         doc: |
           Field data type tag. Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types
           (ID → storage: inline vs `field_data` vs struct/list indirection).
           Inline: types 0–5, 8, 18; `field_data`: 6–7, 9–13, 16–17; struct index 14; list offset 15.
           Source: Ghidra `/K1/k1_win_gog_swkotor.exe` — `GFFFieldData.field_type` @ +0 (`GFFFieldTypes`).
           Runtime: `CResGFF::GetField` @ `0x00410990` (12-byte stride); `ReadFieldBYTE` @ `0x00411a60`, `ReadFieldINT` @ `0x00411c90`.
+          PyKotor `GFFFieldType` enum ends at `Vector3 = 17` (no `StrRef`): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py#L347-L367 — binary reader comment on type 18: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L273
 
       - id: label_index
         type: u4
@@ -333,36 +405,37 @@ types:
     instances:
       is_simple_type:
         value: |
-          field_type == gff_field_type::uint8 or
-          field_type == gff_field_type::int8 or
-          field_type == gff_field_type::uint16 or
-          field_type == gff_field_type::int16 or
-          field_type == gff_field_type::uint32 or
-          field_type == gff_field_type::int32 or
-          field_type == gff_field_type::single or
-          field_type == gff_field_type::str_ref
+          field_type == bioware_gff_common::gff_field_type::uint8 or
+          field_type == bioware_gff_common::gff_field_type::int8 or
+          field_type == bioware_gff_common::gff_field_type::uint16 or
+          field_type == bioware_gff_common::gff_field_type::int16 or
+          field_type == bioware_gff_common::gff_field_type::uint32 or
+          field_type == bioware_gff_common::gff_field_type::int32 or
+          field_type == bioware_gff_common::gff_field_type::single or
+          field_type == bioware_gff_common::gff_field_type::str_ref
         doc: |
           Derived: inline scalars — payload lives in the 4-byte `GFFFieldData.data_or_data_offset` word (`+0x8` in the 12-byte record).
           Matches readers that widen to 32-bit in-memory (see `ReadField*` callers).
+          **PyKotor `GFFBinaryReader`:** type **18 is not handled** after the float branch — see https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L268-L273 (wire layout for 18 is still per wiki + this `.ksy`).
       is_complex_type:
         value: |
-          field_type == gff_field_type::uint64 or
-          field_type == gff_field_type::int64 or
-          field_type == gff_field_type::double or
-          field_type == gff_field_type::string or
-          field_type == gff_field_type::resref or
-          field_type == gff_field_type::localized_string or
-          field_type == gff_field_type::binary or
-          field_type == gff_field_type::vector4 or
-          field_type == gff_field_type::vector3
+          field_type == bioware_gff_common::gff_field_type::uint64 or
+          field_type == bioware_gff_common::gff_field_type::int64 or
+          field_type == bioware_gff_common::gff_field_type::double or
+          field_type == bioware_gff_common::gff_field_type::string or
+          field_type == bioware_gff_common::gff_field_type::resref or
+          field_type == bioware_gff_common::gff_field_type::localized_string or
+          field_type == bioware_gff_common::gff_field_type::binary or
+          field_type == bioware_gff_common::gff_field_type::vector4 or
+          field_type == bioware_gff_common::gff_field_type::vector3
         doc: |
           Derived: `data_or_data_offset` is byte offset into `field_data` blob (base `field_data_offset`).
       is_struct_type:
-        value: field_type == gff_field_type::struct
+        value: field_type == bioware_gff_common::gff_field_type::struct
         doc: |
           Derived: `data_or_data_offset` is struct index into `struct_array` (`GFFStructData` row).
       is_list_type:
-        value: field_type == gff_field_type::list
+        value: field_type == bioware_gff_common::gff_field_type::list
         doc: |
           Derived: `data_or_data_offset` is byte offset into `list_indices_array` (base `list_indices_offset`).
       field_data_offset_value:
@@ -396,6 +469,7 @@ types:
   field_indices_array:
     doc: |
       Flat `u4` stream (`field_indices_count` elements from `field_indices_offset`). Multi-field structs slice this stream via `GFFStructData.data_or_data_offset`.
+      “MultiMap” naming: wiki + Torlack ITP HTML (linked in `meta.doc` bibliography).
     seq:
       - id: indices
         type: u4
@@ -420,6 +494,7 @@ types:
   list_entry:
     doc: |
       One list node on disk: leading cardinality then struct row indices. Used when `GFFFieldTypes` = list (15).
+      Mirrors: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L278-L285 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L222
     seq:
       - id: num_struct_indices
         type: u4
@@ -527,106 +602,109 @@ types:
       # Inline/simple types — payload in the DWORD at file offset field_entry_pos+8
       value_uint8:
         type: u1
-        if: entry.field_type == gff_field_type::uint8
+        if: entry.field_type == bioware_gff_common::gff_field_type::uint8
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 0 (UINT8). Engine: `ReadFieldBYTE` @ `0x00411a60` after lookup.
       value_int8:
         type: s1
-        if: entry.field_type == gff_field_type::int8
+        if: entry.field_type == bioware_gff_common::gff_field_type::int8
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 1 (INT8 in low byte of slot).
       value_uint16:
         type: u2
-        if: entry.field_type == gff_field_type::uint16
+        if: entry.field_type == bioware_gff_common::gff_field_type::uint16
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 2 (UINT16 LE at +8).
       value_int16:
         type: s2
-        if: entry.field_type == gff_field_type::int16
+        if: entry.field_type == bioware_gff_common::gff_field_type::int16
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 3 (INT16 LE at +8).
       value_uint32:
         type: u4
-        if: entry.field_type == gff_field_type::uint32
+        if: entry.field_type == bioware_gff_common::gff_field_type::uint32
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 4 (full inline DWORD).
       value_int32:
         type: s4
-        if: entry.field_type == gff_field_type::int32
+        if: entry.field_type == bioware_gff_common::gff_field_type::int32
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 5. `ReadFieldINT` @ `0x00411c90` after lookup.
       value_single:
         type: f4
-        if: entry.field_type == gff_field_type::single
+        if: entry.field_type == bioware_gff_common::gff_field_type::single
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 8 (32-bit float).
       value_str_ref:
         type: u4
-        if: entry.field_type == gff_field_type::str_ref
+        if: entry.field_type == bioware_gff_common::gff_field_type::str_ref
         pos: field_entry_pos + 8
         doc: |
           `GFFFieldTypes` 18 — TLK StrRef inline (same 4-byte width as type 5; distinct meaning).
           `0xFFFFFFFF` often unset. Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types and https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#string-references-strref
+          **reone** implements `StrRef` as **`field_data`-relative** (`readStrRefFieldData`), not as an inline dword at +8: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L141-L143 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L199-L204 (treat as cross-engine / cross-tool variance when porting assets).
+          Historical KotOR editor discussion (type list / StrRef): https://www.lucasforumsarchive.com/thread/149407 — https://deadlystream.com/files/file/719-k-gff/
+          PyKotor reader gap (no `elif` for 18): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L273
 
       # Complex — payload in field_data blob
       value_uint64:
         type: u8
-        if: entry.field_type == gff_field_type::uint64
+        if: entry.field_type == bioware_gff_common::gff_field_type::uint64
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 6 (UINT64 at `field_data` + relative offset).
       value_int64:
         type: s8
-        if: entry.field_type == gff_field_type::int64
+        if: entry.field_type == bioware_gff_common::gff_field_type::int64
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 7 (INT64).
       value_double:
         type: f8
-        if: entry.field_type == gff_field_type::double
+        if: entry.field_type == bioware_gff_common::gff_field_type::double
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 9 (double).
       value_string:
         type: bioware_common::bioware_cexo_string
-        if: entry.field_type == gff_field_type::string
+        if: entry.field_type == bioware_gff_common::gff_field_type::string
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 10 — CExoString (`bioware_cexo_string`).
       value_resref:
         type: bioware_common::bioware_resref
-        if: entry.field_type == gff_field_type::resref
+        if: entry.field_type == bioware_gff_common::gff_field_type::resref
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 11 — ResRef (`bioware_resref`).
       value_localized_string:
         type: bioware_common::bioware_locstring
-        if: entry.field_type == gff_field_type::localized_string
+        if: entry.field_type == bioware_gff_common::gff_field_type::localized_string
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 12 — CExoLocString (`bioware_locstring`).
       value_binary:
         type: bioware_common::bioware_binary_data
-        if: entry.field_type == gff_field_type::binary
+        if: entry.field_type == bioware_gff_common::gff_field_type::binary
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 13 — binary (`bioware_binary_data`).
       value_vector4:
         type: bioware_common::bioware_vector4
-        if: entry.field_type == gff_field_type::vector4
+        if: entry.field_type == bioware_gff_common::gff_field_type::vector4
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 16 — four floats (`bioware_vector4`).
       value_vector3:
         type: bioware_common::bioware_vector3
-        if: entry.field_type == gff_field_type::vector3
+        if: entry.field_type == bioware_gff_common::gff_field_type::vector3
         pos: _root.header.field_data_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 17 — three floats (`bioware_vector3`).
@@ -634,13 +712,13 @@ types:
       # Struct / list — index or offset in data_or_offset (+8)
       value_struct:
         type: resolved_struct(entry.data_or_offset)
-        if: entry.field_type == gff_field_type::struct
+        if: entry.field_type == bioware_gff_common::gff_field_type::struct
         doc: |
           `GFFFieldTypes` 14 — `data_or_data_offset` is struct row index.
 
       list_entry:
         type: list_entry
-        if: entry.field_type == gff_field_type::list
+        if: entry.field_type == bioware_gff_common::gff_field_type::list
         pos: _root.header.list_indices_offset + entry.data_or_offset
         doc: |
           `GFFFieldTypes` 15 — list node at `list_indices_offset` + relative byte offset.
@@ -649,89 +727,6 @@ types:
         type: resolved_struct(list_entry.struct_indices[_index])
         repeat: expr
         repeat-expr: list_entry.num_struct_indices
-        if: entry.field_type == gff_field_type::list
+        if: entry.field_type == bioware_gff_common::gff_field_type::list
         doc: |
           Child structs for this list; indices from `list_entry.struct_indices`.
-
-enums:
-  gff_field_type:
-    0:
-      id: uint8
-      doc: |
-        Numeric 0 — UINT8; value in `GFFFieldData.data_or_data_offset` (+8). Ghidra `/K1/k1_win_gog_swkotor.exe`:
-        `GFFFieldTypes` on `GFFFieldData.field_type` @ +0. Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types
-    1:
-      id: int8
-      doc: |
-        Numeric 1 — INT8 in low byte of the 4-byte inline slot (+8).
-    2:
-      id: uint16
-      doc: |
-        Numeric 2 — UINT16 LE at +8.
-    3:
-      id: int16
-      doc: |
-        Numeric 3 — INT16 LE at +8.
-    4:
-      id: uint32
-      doc: |
-        Numeric 4 — UINT32; full inline DWORD at +8.
-    5:
-      id: int32
-      doc: |
-        Numeric 5 — INT32 inline. Engine: `CResGFF::ReadFieldINT` @ `0x00411c90` (uses `GetField` @ `0x00410990`).
-    6:
-      id: uint64
-      doc: |
-        Numeric 6 — UINT64 payload in `field_data` at `field_data_offset` + relative offset from +8.
-    7:
-      id: int64
-      doc: |
-        Numeric 7 — INT64 in `field_data`.
-    8:
-      id: single
-      doc: |
-        Numeric 8 — 32-bit IEEE float inline at +8.
-    9:
-      id: double
-      doc: |
-        Numeric 9 — 64-bit IEEE float in `field_data`.
-    10:
-      id: string
-      doc: |
-        Numeric 10 — CExoString in `field_data` (`bioware_cexo_string` in this repo).
-    11:
-      id: resref
-      doc: |
-        Numeric 11 — ResRef in `field_data` (`bioware_resref`).
-    12:
-      id: localized_string
-      doc: |
-        Numeric 12 — CExoLocString in `field_data` (`bioware_locstring`).
-    13:
-      id: binary
-      doc: |
-        Numeric 13 — length-prefixed octets in `field_data` (`bioware_binary_data`).
-    14:
-      id: struct
-      doc: |
-        Numeric 14 — nested struct; +8 word is index into `GFFStructData` table (`struct_offset` + index×12).
-    15:
-      id: list
-      doc: |
-        Numeric 15 — list; +8 word is byte offset into list-indices arena (`list_indices_offset` + offset).
-    16:
-      id: vector4
-      doc: |
-        Numeric 16 — four floats in `field_data` (`bioware_vector4`).
-    17:
-      id: vector3
-      doc: |
-        Numeric 17 — three floats in `field_data` (`bioware_vector3`).
-    18:
-      id: str_ref
-      doc: |
-        Numeric 18 — TLK StrRef (inline DWORD at +8). KotOR extension; same width as type 5, distinct field kind in data.
-        Ghidra: `GFFFieldTypes` on `/K1/k1_win_gog_swkotor.exe`.
-        Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types — row “StrRef”; StrRef semantics: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#string-references-strref
-
