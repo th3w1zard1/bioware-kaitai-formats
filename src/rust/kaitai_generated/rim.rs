@@ -22,14 +22,14 @@ use std::rc::{Rc, Weak};
  * - Standard RIM: Basic module template files
  * - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
  * 
- * Binary Format:
- * - Header (20 bytes): File type, version, resource count, offset to resource table
- * - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
- * - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
- * - Resource Data (variable size): Raw binary data for each resource
+ * Binary Format (KotOR / PyKotor):
+ * - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+ * - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+ * - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+ * - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
  * - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -42,7 +42,8 @@ pub struct Rim {
     pub _parent: SharedType<Rim>,
     pub _self: SharedType<Self>,
     header: RefCell<OptRc<Rim_RimHeader>>,
-    extended_header: RefCell<OptRc<Rim_RimExtendedHeader>>,
+    gap_before_key_table_implicit: RefCell<Vec<u8>>,
+    gap_before_key_table_explicit: RefCell<Vec<u8>>,
     resource_entry_table: RefCell<OptRc<Rim_ResourceEntryTable>>,
     _io: RefCell<BytesReader>,
 }
@@ -65,8 +66,12 @@ impl KStruct for Rim {
         let _r = _rrc.as_ref().unwrap();
         let t = Self::read_into::<_, Rim_RimHeader>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
         *self_rc.header.borrow_mut() = t;
-        let t = Self::read_into::<_, Rim_RimExtendedHeader>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
-        *self_rc.extended_header.borrow_mut() = t;
+        if ((*self_rc.header().offset_to_resource_table() as u32) == (0 as u32)) {
+            *self_rc.gap_before_key_table_implicit.borrow_mut() = _io.read_bytes(96 as usize)?.into();
+        }
+        if ((*self_rc.header().offset_to_resource_table() as u32) != (0 as u32)) {
+            *self_rc.gap_before_key_table_explicit.borrow_mut() = _io.read_bytes(((*self_rc.header().offset_to_resource_table() as u32) - (24 as u32)) as usize)?.into();
+        }
         if ((*self_rc.header().resource_count() as u32) > (0 as u32)) {
             let t = Self::read_into::<_, Rim_ResourceEntryTable>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
             *self_rc.resource_entry_table.borrow_mut() = t;
@@ -78,7 +83,7 @@ impl Rim {
 }
 
 /**
- * RIM file header (20 bytes)
+ * RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
  */
 impl Rim {
     pub fn header(&self) -> Ref<'_, OptRc<Rim_RimHeader>> {
@@ -87,11 +92,22 @@ impl Rim {
 }
 
 /**
- * Extended header padding (100 bytes, total header = 120 bytes)
+ * When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+ * After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
  */
 impl Rim {
-    pub fn extended_header(&self) -> Ref<'_, OptRc<Rim_RimExtendedHeader>> {
-        self.extended_header.borrow()
+    pub fn gap_before_key_table_implicit(&self) -> Ref<'_, Vec<u8>> {
+        self.gap_before_key_table_implicit.borrow()
+    }
+}
+
+/**
+ * When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+ * Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
+ */
+impl Rim {
+    pub fn gap_before_key_table_explicit(&self) -> Ref<'_, Vec<u8>> {
+        self.gap_before_key_table_explicit.borrow()
     }
 }
 
@@ -1047,7 +1063,7 @@ pub struct Rim_ResourceEntry {
     resource_type: RefCell<Rim_XoreosFileTypeId>,
     resource_id: RefCell<u32>,
     offset_to_data: RefCell<u32>,
-    resource_size: RefCell<u32>,
+    num_data: RefCell<u32>,
     _io: RefCell<BytesReader>,
     f_data: Cell<bool>,
     data: RefCell<Vec<u8>>,
@@ -1073,7 +1089,7 @@ impl KStruct for Rim_ResourceEntry {
         *self_rc.resource_type.borrow_mut() = (_io.read_u4le()? as i64).try_into()?;
         *self_rc.resource_id.borrow_mut() = _io.read_u4le()?.into();
         *self_rc.offset_to_data.borrow_mut() = _io.read_u4le()?.into();
-        *self_rc.resource_size.borrow_mut() = _io.read_u4le()?.into();
+        *self_rc.num_data.borrow_mut() = _io.read_u4le()?.into();
         Ok(())
     }
 }
@@ -1096,7 +1112,7 @@ impl Rim_ResourceEntry {
         let _pos = _io.pos();
         _io.seek(*self.offset_to_data() as usize)?;
         *self.data.borrow_mut() = Vec::new();
-        let l_data = *self.resource_size();
+        let l_data = *self.num_data();
         for _i in 0..l_data {
             self.data.borrow_mut().push(_io.read_u1()?.into());
         }
@@ -1149,12 +1165,12 @@ impl Rim_ResourceEntry {
 }
 
 /**
- * Size of resource data in bytes.
+ * Size of resource data in bytes (repeat count for raw `data` bytes).
  * Uncompressed size of the resource.
  */
 impl Rim_ResourceEntry {
-    pub fn resource_size(&self) -> Ref<'_, u32> {
-        self.resource_size.borrow()
+    pub fn num_data(&self) -> Ref<'_, u32> {
+        self.num_data.borrow()
     }
 }
 impl Rim_ResourceEntry {
@@ -1215,57 +1231,6 @@ impl Rim_ResourceEntryTable {
 }
 
 #[derive(Default, Debug, Clone)]
-pub struct Rim_RimExtendedHeader {
-    pub _root: SharedType<Rim>,
-    pub _parent: SharedType<Rim>,
-    pub _self: SharedType<Self>,
-    reserved_padding: RefCell<String>,
-    _io: RefCell<BytesReader>,
-}
-impl KStruct for Rim_RimExtendedHeader {
-    type Root = Rim;
-    type Parent = Rim;
-
-    fn read<S: KStream>(
-        self_rc: &OptRc<Self>,
-        _io: &S,
-        _root: SharedType<Self::Root>,
-        _parent: SharedType<Self::Parent>,
-    ) -> KResult<()> {
-        *self_rc._io.borrow_mut() = _io.clone();
-        self_rc._root.set(_root.get());
-        self_rc._parent.set(_parent.get());
-        self_rc._self.set(Ok(self_rc.clone()));
-        let _rrc = self_rc._root.get_value().borrow().upgrade();
-        let _prc = self_rc._parent.get_value().borrow().upgrade();
-        let _r = _rrc.as_ref().unwrap();
-        *self_rc.reserved_padding.borrow_mut() = bytes_to_str(&_io.read_bytes(100 as usize)?.into(), "ASCII")?;
-        Ok(())
-    }
-}
-impl Rim_RimExtendedHeader {
-}
-
-/**
- * Reserved padding bytes (typically all zeros).
- * Total header size is 120 bytes:
- * header (20) + extended_header (100) = 120 bytes
- * 
- * In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
- * may contain an IsExtension flag, but this is not consistently used.
- */
-impl Rim_RimExtendedHeader {
-    pub fn reserved_padding(&self) -> Ref<'_, String> {
-        self.reserved_padding.borrow()
-    }
-}
-impl Rim_RimExtendedHeader {
-    pub fn _io(&self) -> Ref<'_, BytesReader> {
-        self._io.borrow()
-    }
-}
-
-#[derive(Default, Debug, Clone)]
 pub struct Rim_RimHeader {
     pub _root: SharedType<Rim>,
     pub _parent: SharedType<Rim>,
@@ -1275,6 +1240,7 @@ pub struct Rim_RimHeader {
     reserved: RefCell<u32>,
     resource_count: RefCell<u32>,
     offset_to_resource_table: RefCell<u32>,
+    offset_to_resources: RefCell<u32>,
     _io: RefCell<BytesReader>,
     f_has_resources: Cell<bool>,
     has_resources: RefCell<bool>,
@@ -1307,6 +1273,7 @@ impl KStruct for Rim_RimHeader {
         *self_rc.reserved.borrow_mut() = _io.read_u4le()?.into();
         *self_rc.resource_count.borrow_mut() = _io.read_u4le()?.into();
         *self_rc.offset_to_resource_table.borrow_mut() = _io.read_u4le()?.into();
+        *self_rc.offset_to_resources.borrow_mut() = _io.read_u4le()?.into();
         Ok(())
     }
 }
@@ -1373,13 +1340,23 @@ impl Rim_RimHeader {
 }
 
 /**
- * Byte offset to the resource entry table from the beginning of the file.
- * Typically 120 (right after header + extended header) if resources are present.
- * Points to the start of the resource_entry_table.
+ * Byte offset to the key / resource entry table from the beginning of the file.
+ * 0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+ * When non-zero, this offset is used directly (commonly 120).
  */
 impl Rim_RimHeader {
     pub fn offset_to_resource_table(&self) -> Ref<'_, u32> {
         self.offset_to_resource_table.borrow()
+    }
+}
+
+/**
+ * Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+ * taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
+ */
+impl Rim_RimHeader {
+    pub fn offset_to_resources(&self) -> Ref<'_, u32> {
+        self.offset_to_resources.borrow()
     }
 }
 impl Rim_RimHeader {

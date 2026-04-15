@@ -5,15 +5,26 @@ meta:
   endian: le
   file-extension: da2s
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
       note: "Dragon Age 2 save format (DragonAge2.exe in Odyssey), not KotOR k1_win_gog_swkotor.exe."
-    runtime: src/Andastra/Runtime/Games/Eclipse/DragonAge2/Save/DragonAge2SaveSerializer.cs
+    github_oldrepublicdevs_andastra_da2_save_serializer: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/DragonAge2/Save/DragonAge2SaveSerializer.cs`:
+      **`SaveSignature = "DA2S"`** **24**; **`SerializeSaveNfo`** **30–67**; **`DeserializeSaveNfo`** **72–115**; **`SerializeSaveArchive`** **120+**; **`DeserializeSaveArchive`** **169+**.
+    github_oldrepublicdevs_andastra_eclipse_save_base: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs`:
+      shared UTF-8 length-prefixed strings + common metadata helpers **35–126** (same base as **DAS**).
+    github_xoreos_types_game_id_dragon_age2: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
 doc: |
   **DA2S** (Dragon Age 2 save): Eclipse binary save — `DA2S` signature, `version==1`, length-prefixed strings + tagged
-  blocks (party/inventory/journal/etc.). **Not KotOR** — see `meta.xref` for Andastra serializer paths + `xoreos_game_id`.
+  blocks (party/inventory/journal/etc.). **Not KotOR** — Andastra serializers under `Game/Games/Eclipse/DragonAge2/Save/` (`meta.xref`).
 
 doc-ref:
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408 xoreos — game id enum (Dragon Age 2 = 8)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408 xoreos — `GameID` (`kGameIDDragonAge2` = 8)"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/master/src/Andastra/Game/Games/Eclipse/DragonAge2/Save/DragonAge2SaveSerializer.cs#L24-L180 Andastra — `DragonAge2SaveSerializer`"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/master/src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs#L35-L126 Andastra — `EclipseSaveSerializer` helpers"
 
 seq:
   - id: signature

@@ -13,8 +13,7 @@ digraph {
 			<TR><TD COLSPAN="4" PORT="header__if">if magic == &quot;DDS &quot;</TD></TR>
 			<TR><TD PORT="bioware_header_pos">128</TD><TD PORT="bioware_header_size">20</TD><TD>BiowareDdsHeader</TD><TD PORT="bioware_header_type">bioware_header</TD></TR>
 			<TR><TD COLSPAN="4" PORT="bioware_header__if">if magic != &quot;DDS &quot;</TD></TR>
-			<TR><TD PORT="pixel_data_pos">148</TD><TD PORT="pixel_data_size">1</TD><TD>u1</TD><TD PORT="pixel_data_type">pixel_data</TD></TR>
-			<TR><TD COLSPAN="4" PORT="pixel_data__repeat">repeat to end of stream</TD></TR>
+			<TR><TD PORT="pixel_data_pos">148</TD><TD PORT="pixel_data_size">⇲</TD><TD></TD><TD PORT="pixel_data_type">pixel_data</TD></TR>
 		</TABLE>>];
 		subgraph cluster__bioware_dds_header {
 			label="Dds::BiowareDdsHeader";
@@ -24,7 +23,7 @@ digraph {
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="width_pos">0</TD><TD PORT="width_size">4</TD><TD>u4le</TD><TD PORT="width_type">width</TD></TR>
 				<TR><TD PORT="height_pos">4</TD><TD PORT="height_size">4</TD><TD>u4le</TD><TD PORT="height_type">height</TD></TR>
-				<TR><TD PORT="bytes_per_pixel_pos">8</TD><TD PORT="bytes_per_pixel_size">4</TD><TD>u4le</TD><TD PORT="bytes_per_pixel_type">bytes_per_pixel</TD></TR>
+				<TR><TD PORT="bytes_per_pixel_pos">8</TD><TD PORT="bytes_per_pixel_size">4</TD><TD>u4le→BiowareCommon::BiowareDdsVariantBytesPerPixel</TD><TD PORT="bytes_per_pixel_type">bytes_per_pixel</TD></TR>
 				<TR><TD PORT="data_size_pos">12</TD><TD PORT="data_size_size">4</TD><TD>u4le</TD><TD PORT="data_size_type">data_size</TD></TR>
 				<TR><TD PORT="unused_float_pos">16</TD><TD PORT="unused_float_size">4</TD><TD>f4le</TD><TD PORT="unused_float_type">unused_float</TD></TR>
 			</TABLE>>];

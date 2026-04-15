@@ -27,20 +27,16 @@ namespace Kaitai
     /// storage of duplicate values (shared strings are stored once and referenced by offset).
     /// 
     /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
-    /// - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
+    /// - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+    /// - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
     /// </summary>
     public partial class Twoda : KaitaiStruct
     {
-        public static Twoda FromFile(string fileName)
-        {
-            return new Twoda(new KaitaiStream(fileName));
-        }
-
-        public Twoda(KaitaiStream p__io, KaitaiStruct p__parent = null, Twoda p__root = null) : base(p__io)
+        public Twoda(uint p_columnCount, KaitaiStream p__io, KaitaiStruct p__parent = null, Twoda p__root = null) : base(p__io)
         {
             m_parent = p__parent;
             m_root = p__root ?? this;
+            _columnCount = p_columnCount;
             _read();
         }
         private void _read()
@@ -49,62 +45,15 @@ namespace Kaitai
             _columnHeadersRaw = System.Text.Encoding.GetEncoding("ASCII").GetString(m_io.ReadBytesTerm(0, false, true, true));
             _rowCount = m_io.ReadU4le();
             _rowLabelsSection = new RowLabelsSection(m_io, this, m_root);
-            _cellOffsetsArray = new CellOffsetsArray(m_io, this, m_root);
+            _cellOffsets = new List<ushort>();
+            for (var i = 0; i < RowCount * ColumnCount; i++)
+            {
+                _cellOffsets.Add(m_io.ReadU2le());
+            }
             _lenCellValuesSection = m_io.ReadU2le();
             __raw_cellValuesSection = m_io.ReadBytes(LenCellValuesSection);
             var io___raw_cellValuesSection = new KaitaiStream(__raw_cellValuesSection);
             _cellValuesSection = new CellValuesSection(io___raw_cellValuesSection, this, m_root);
-        }
-        public partial class CellOffsetsArray : KaitaiStruct
-        {
-            public static CellOffsetsArray FromFile(string fileName)
-            {
-                return new CellOffsetsArray(new KaitaiStream(fileName));
-            }
-
-            public CellOffsetsArray(KaitaiStream p__io, Twoda p__parent = null, Twoda p__root = null) : base(p__io)
-            {
-                m_parent = p__parent;
-                m_root = p__root;
-                _read();
-            }
-            private void _read()
-            {
-                _offsets = new List<ushort>();
-                {
-                    var i = 0;
-                    ushort M_;
-                    do {
-                        M_ = m_io.ReadU2le();
-                        _offsets.Add(M_);
-                        i++;
-                    } while (!(M_Io.Pos >= M_Io.Size - 2));
-                }
-            }
-            private List<ushort> _offsets;
-            private Twoda m_root;
-            private Twoda m_parent;
-
-            /// <summary>
-            /// Array of cell value offsets (uint16, little-endian).
-            /// Each offset points to a null-terminated string in the cell_values_section.
-            /// Offsets are relative to the start of cell_values_section.
-            /// 
-            /// Reading continues until we reach 2 bytes before end of file (where len_cell_values_section field is).
-            /// Then len_cell_values_section is read, followed by cell_values_section.
-            /// 
-            /// The actual count is: row_count * column_count
-            /// where column_count = number of tab-separated parts in column_headers_raw.
-            /// 
-            /// Cell access pattern:
-            /// - Cell at row i, column j = offsets[i * column_count + j]
-            /// - Value = read string at cell_values_section start + offsets[i * column_count + j]
-            /// 
-            /// Duplicate cell values share the same offset (string deduplication).
-            /// </summary>
-            public List<ushort> Offsets { get { return _offsets; } }
-            public Twoda M_Root { get { return m_root; } }
-            public Twoda M_Parent { get { return m_parent; } }
         }
         public partial class CellValuesSection : KaitaiStruct
         {
@@ -130,7 +79,7 @@ namespace Kaitai
             /// <summary>
             /// Raw cell values data as a single string.
             /// Contains all null-terminated cell value strings concatenated together.
-            /// Individual strings can be extracted using offsets from cell_offsets_array.
+            /// Individual strings can be extracted using offsets from cell_offsets.
             /// Note: To read a specific cell value, seek to (cell_values_section start + offset) and read a null-terminated string.
             /// </summary>
             public string RawData { get { return _rawData; } }
@@ -273,9 +222,10 @@ namespace Kaitai
         private string _columnHeadersRaw;
         private uint _rowCount;
         private RowLabelsSection _rowLabelsSection;
-        private CellOffsetsArray _cellOffsetsArray;
+        private List<ushort> _cellOffsets;
         private ushort _lenCellValuesSection;
         private CellValuesSection _cellValuesSection;
+        private uint _columnCount;
         private Twoda m_root;
         private KaitaiStruct m_parent;
         private byte[] __raw_cellValuesSection;
@@ -305,11 +255,11 @@ namespace Kaitai
         public RowLabelsSection RowLabelsSection { get { return _rowLabelsSection; } }
 
         /// <summary>
-        /// Array of cell value offsets (uint16 per cell).
-        /// Total entries = row_count * column_count (where column_count = number of tab-separated parts in column_headers_raw).
-        /// Each offset points to a null-terminated string in the cell values section.
+        /// Array of cell value offsets (uint16 per cell). There are exactly row_count * column_count
+        /// entries, in row-major order. Each offset is relative to the start of the cell values blob
+        /// and points to a null-terminated string.
         /// </summary>
-        public CellOffsetsArray CellOffsetsArray { get { return _cellOffsetsArray; } }
+        public List<ushort> CellOffsets { get { return _cellOffsets; } }
 
         /// <summary>
         /// Total size in bytes of the cell values data section.
@@ -320,10 +270,18 @@ namespace Kaitai
 
         /// <summary>
         /// Cell values data section containing all unique cell value strings.
-        /// Each string is null-terminated. Offsets from cell_offsets_array point into this section.
+        /// Each string is null-terminated. Offsets from cell_offsets point into this section.
         /// The section starts immediately after len_cell_values_section field and has size = len_cell_values_section bytes.
         /// </summary>
         public CellValuesSection CellValuesSection { get { return _cellValuesSection; } }
+
+        /// <summary>
+        /// Number of tab-separated column headers in the file (excluding the trailing null terminator).
+        /// Kaitai expressions cannot derive this from the header blob, so callers must pre-scan the
+        /// column header section (same rule as PyKotor: count tab characters between the newline after
+        /// V2.b and the first 0x00) and pass it into the parser.
+        /// </summary>
+        public uint ColumnCount { get { return _columnCount; } }
         public Twoda M_Root { get { return m_root; } }
         public KaitaiStruct M_Parent { get { return m_parent; } }
         public byte[] M_RawCellValuesSection { get { return __raw_cellValuesSection; } }

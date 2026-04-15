@@ -7,19 +7,9 @@ require("kaitaistruct")
 local str_decode = require("string_decode")
 
 -- 
--- BZF (BioWare Zipped File) files are LZMA-compressed BIF files used primarily in iOS
--- (and maybe Android) ports of KotOR. The BZF header contains "BZF " + "V1.0", followed
--- by LZMA-compressed BIF data. Decompression reveals a standard BIF structure.
--- 
--- Format Structure:
--- - Header (8 bytes): File type signature "BZF " and version "V1.0"
--- - Compressed Data: LZMA-compressed BIF file data
--- 
--- After decompression, the data follows the standard BIF format structure.
--- 
--- References:
--- - https://github.com/OldRepublicDevs/PyKotor/wiki/BIF-File-Format.md - BZF compression section
--- - BIF.ksy - Standard BIF format (decompressed BZF data matches this)
+-- **BZF**: `BZF ` + `V1.0` header, then **LZMA** payload that expands to a normal **BIF** (`BIF.ksy`). Common on
+-- mobile KotOR ports.
+-- See also: PyKotor wiki — BZF (LZMA BIF) (https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bzf-compression)
 Bzf = class.class(KaitaiStruct)
 
 function Bzf:_init(io, parent, root)
@@ -38,12 +28,7 @@ function Bzf:_read()
   if not(self.version == "V1.0") then
     error("not equal, expected " .. "V1.0" .. ", but got " .. self.version)
   end
-  self.compressed_data = {}
-  local i = 0
-  while not self._io:is_eof() do
-    self.compressed_data[i + 1] = self._io:read_u1()
-    i = i + 1
-  end
+  self.compressed_data = self._io:read_bytes_full()
 end
 
 -- 
@@ -51,7 +36,6 @@ end
 -- 
 -- File format version. Always "V1.0" for BZF files.
 -- 
--- LZMA-compressed BIF file data.
--- This data must be decompressed using LZMA algorithm to obtain the standard BIF structure.
--- After decompression, the data can be parsed using the BIF format definition.
+-- LZMA-compressed BIF file data (single blob to EOF).
+-- Decompress with LZMA to obtain the standard BIF structure (see BIF.ksy).
 

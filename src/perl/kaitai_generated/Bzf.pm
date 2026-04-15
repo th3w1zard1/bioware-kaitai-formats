@@ -37,10 +37,7 @@ sub _read {
 
     $self->{file_type} = Encode::decode("ASCII", $self->{_io}->read_bytes(4));
     $self->{version} = Encode::decode("ASCII", $self->{_io}->read_bytes(4));
-    $self->{compressed_data} = [];
-    while (!$self->{_io}->is_eof()) {
-        push @{$self->{compressed_data}}, $self->{_io}->read_u1();
-    }
+    $self->{compressed_data} = $self->{_io}->read_bytes_full();
 }
 
 sub file_type {

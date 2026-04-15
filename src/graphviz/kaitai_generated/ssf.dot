@@ -12,23 +12,11 @@ digraph {
 			<TR><TD PORT="file_version_pos">4</TD><TD PORT="file_version_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_version_type">file_version</TD></TR>
 			<TR><TD COLSPAN="4" PORT="file_version__valid">must be equal to &quot;V1.1&quot;</TD></TR>
 			<TR><TD PORT="sounds_offset_pos">8</TD><TD PORT="sounds_offset_size">4</TD><TD>u4le</TD><TD PORT="sounds_offset_type">sounds_offset</TD></TR>
-			<TR><TD COLSPAN="4" PORT="sounds_offset__valid">must be equal to 12</TD></TR>
-			<TR><TD PORT="padding_pos">12</TD><TD PORT="padding_size">12</TD><TD>Padding</TD><TD PORT="padding_type">padding</TD></TR>
 		</TABLE>>];
 		ssf__inst__sounds [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 			<TR><TD PORT="sounds_pos">sounds_offset</TD><TD PORT="sounds_size">112</TD><TD>SoundArray</TD><TD PORT="sounds_type">sounds</TD></TR>
 		</TABLE>>];
-		subgraph cluster__padding {
-			label="Ssf::Padding";
-			graph[style=dotted];
-
-			padding__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="padding_bytes_pos">0</TD><TD PORT="padding_bytes_size">4</TD><TD>u4le</TD><TD PORT="padding_bytes_type">padding_bytes</TD></TR>
-				<TR><TD COLSPAN="4" PORT="padding_bytes__repeat">repeat 3 times</TD></TR>
-			</TABLE>>];
-		}
 		subgraph cluster__sound_array {
 			label="Ssf::SoundArray";
 			graph[style=dotted];
@@ -53,7 +41,6 @@ digraph {
 			</TABLE>>];
 		}
 	}
-	ssf__seq:padding_type -> padding__seq [style=bold];
 	ssf__seq:sounds_offset_type -> ssf__inst__sounds:sounds_pos [color="#404040"];
 	ssf__inst__sounds:sounds_type -> sound_array__seq [style=bold];
 	sound_array__seq:entries_type -> sound_entry__seq [style=bold];

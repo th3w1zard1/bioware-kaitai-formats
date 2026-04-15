@@ -7,98 +7,37 @@ import (
 
 
 /**
- * GFF (Generic File Format) is BioWare's universal container format for structured game data.
- * It is used by many KotOR file types including UTC (creature), UTI (item), DLG (dialogue),
- * ARE (area), GIT (game instance template), IFO (module info), and many others.
+ * BioWare **GFF** (Generic File Format): hierarchical binary game data (KotOR/TSL and Aurora lineage; GFF4 for
+ * DA / Eclipse-class payloads in this `.ksy`). Human-readable tables and tutorials: PyKotor wiki (**Further
+ * reading**). Wire `gff_field_type` enum: `formats/Common/bioware_gff_common.ksy`.
  * 
- * GFF uses a hierarchical structure with structs containing fields, which can be simple values,
- * nested structs, or lists of structs. The format supports version V3.2 (KotOR) and later
- * versions (V3.3, V4.0, V4.1) used in other BioWare games.
+ * **Aurora prefix (8 bytes):** `u4be` FourCC + `u4be` version (`AuroraFile::readHeader` — `meta.xref`
+ * `xoreos_aurorafile_read_header`).
+ * **GFF3:** Twelve LE `u32` counts/offsets as `gff_header_tail` under `gff3_after_aurora`, then lazy arena
+ * `instances`.
+ * **GFF4:** When version is `V4.0` / `V4.1`, the next field is `platform_id` (`u4be`), not GFF3 `struct_offset`
+ * (`gff4_after_aurora`; partial GFF4 graph — `tail` blob still opaque).
  * 
- * Binary Format Structure:
- * - File Header (56 bytes): File type signature (FourCC), version, counts, and offsets to all
- *   data tables (structs, fields, labels, field_data, field_indices, list_indices)
- * - Label Array: Array of 16-byte null-padded field name labels
- * - Struct Array: Array of struct entries (12 bytes each) - struct_id, data_or_offset, field_count
- * - Field Array: Array of field entries (12 bytes each) - field_type, label_index, data_or_offset
- * - Field Data: Storage area for complex field types (strings, binary, vectors, etc.)
- * - Field Indices Array: Array of field index arrays (used when structs have multiple fields)
- * - List Indices Array: Array of list entry structures (count + struct indices)
+ * **GFF3 wire summary:**
+ * - Root `file` → `gff_union_file`; arenas addressed via `gff3.header` offsets.
+ * - 12-byte struct rows (`struct_entry`), 12-byte field rows (`field_entry`); root struct index **0**; single-field
+ *   vs multi-field vs lists per wiki *Struct array* / *Field indices* / *List indices*.
  * 
- * Field Types:
- * - Simple types (0-5, 8): Stored inline in data_or_offset (uint8, int8, uint16, int16, uint32,
- *   int32, float)
- * - Complex types (6-7, 9-13, 16-17): Offset to field_data section (uint64, int64, double, string,
- *   resref, localized_string, binary, vector4, vector3)
- * - Struct (14): Struct index stored inline (nested struct)
- * - List (15): Offset to list_indices_array (list of structs)
+ * **Ghidra / VMA:** engine record names and addresses live on the `seq` / `types` nodes they justify, not in this blurb.
  * 
- * Struct Access Pattern:
- * 1. Root struct is always at struct_array index 0
- * 2. If struct.field_count == 1: data_or_offset contains direct field index
- * 3. If struct.field_count > 1: data_or_offset contains offset into field_indices_array
- * 4. Use field_index to access field_array entry
- * 5. Use field.label_index to get field name from label_array
- * 6. Use field.data_or_offset based on field_type (inline, offset, struct index, list offset)
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/GFF-File-Format.md - Complete GFF format documentation
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/Bioware-Aurora-GFF.md - Official BioWare Aurora GFF specification
- * - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html - Tim Smith/Torlack's GFF/ITP documentation
- * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/gffreader.cpp - Complete C++ GFF reader implementation
- * - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp - Generic Aurora GFF implementation (shared format)
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/GFFObject.ts - TypeScript GFF parser
- * - https://github.com/KotOR-Community-Patches/KotOR-Unity/blob/master/Assets/Scripts/FileObjects/GFFObject.cs - C# Unity GFF loader
- * - https://github.com/KotOR-Community-Patches/Kotor.NET/tree/master/Kotor.NET/Formats/KotorGFF/ - .NET GFF reader/writer
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py - PyKotor binary reader/writer
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py - GFF data model
+ * **Pinned URLs and tool history:** `meta.xref` (alphabetical keys). Coverage matrix: `docs/XOREOS_FORMAT_COVERAGE.md`.
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format">PyKotor wiki — GFF binary format</a>
+ * @see <a href="https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63">xoreos — GFF3File::Header::read</a>
+ * @see <a href="https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L48-L72">xoreos — GFF4File::Header::read</a>
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114">PyKotor — GFFBinaryReader.load</a>
+ * @see <a href="https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L225">reone — GffReader</a>
+ * @see <a href="https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/GFFObject.ts#L152-L221">KotOR.js — GFFObject.parse</a>
  */
-
-type Gff_GffFieldType int
-const (
-	Gff_GffFieldType__Uint8 Gff_GffFieldType = 0
-	Gff_GffFieldType__Int8 Gff_GffFieldType = 1
-	Gff_GffFieldType__Uint16 Gff_GffFieldType = 2
-	Gff_GffFieldType__Int16 Gff_GffFieldType = 3
-	Gff_GffFieldType__Uint32 Gff_GffFieldType = 4
-	Gff_GffFieldType__Int32 Gff_GffFieldType = 5
-	Gff_GffFieldType__Uint64 Gff_GffFieldType = 6
-	Gff_GffFieldType__Int64 Gff_GffFieldType = 7
-	Gff_GffFieldType__Single Gff_GffFieldType = 8
-	Gff_GffFieldType__Double Gff_GffFieldType = 9
-	Gff_GffFieldType__String Gff_GffFieldType = 10
-	Gff_GffFieldType__Resref Gff_GffFieldType = 11
-	Gff_GffFieldType__LocalizedString Gff_GffFieldType = 12
-	Gff_GffFieldType__Binary Gff_GffFieldType = 13
-	Gff_GffFieldType__Struct Gff_GffFieldType = 14
-	Gff_GffFieldType__List Gff_GffFieldType = 15
-	Gff_GffFieldType__Vector4 Gff_GffFieldType = 16
-	Gff_GffFieldType__Vector3 Gff_GffFieldType = 17
-)
-var values_Gff_GffFieldType = map[Gff_GffFieldType]struct{}{0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}, 13: {}, 14: {}, 15: {}, 16: {}, 17: {}}
-func (v Gff_GffFieldType) isDefined() bool {
-	_, ok := values_Gff_GffFieldType[v]
-	return ok
-}
 type Gff struct {
-	Header *Gff_GffHeader
+	File *Gff_GffUnionFile
 	_io *kaitai.Stream
 	_root *Gff
 	_parent kaitai.Struct
-	_f_fieldArray bool
-	fieldArray *Gff_FieldArray
-	_f_fieldData bool
-	fieldData *Gff_FieldData
-	_f_fieldIndicesArray bool
-	fieldIndicesArray *Gff_FieldIndicesArray
-	_f_labelArray bool
-	labelArray *Gff_LabelArray
-	_f_listIndicesArray bool
-	listIndicesArray *Gff_ListIndicesArray
-	_f_rootStructResolved bool
-	rootStructResolved *Gff_ResolvedStruct
-	_f_structArray bool
-	structArray *Gff_StructArray
 }
 func NewGff() *Gff {
 	return &Gff{
@@ -114,228 +53,32 @@ func (this *Gff) Read(io *kaitai.Stream, parent kaitai.Struct, root *Gff) (err e
 	this._parent = parent
 	this._root = root
 
-	tmp1 := NewGff_GffHeader()
+	tmp1 := NewGff_GffUnionFile()
 	err = tmp1.Read(this._io, this, this._root)
 	if err != nil {
 		return err
 	}
-	this.Header = tmp1
+	this.File = tmp1
 	return err
 }
 
 /**
- * Array of field entries (12 bytes each)
+ * Aurora container: shared **8-byte** prefix (`u4be` magic + `u4be` version tag), then either **GFF3**
+ * (`gff3_after_aurora`: 48-byte `gff_header_tail` + arena `instances`) or **GFF4** (`gff4_after_aurora`).
+ * Discrimination matches xoreos `loadHeader` order (`gff3file.cpp` vs `gff4file.cpp`); Kaitai uses
+ * mutually exclusive `if` on `seq` fields (V4.* vs non-V4) so `gff3` / `gff4` have stable types for
+ * downstream `pos:` / `_root.file.gff3.header` paths.
  */
-func (this *Gff) FieldArray() (v *Gff_FieldArray, err error) {
-	if (this._f_fieldArray) {
-		return this.fieldArray, nil
-	}
-	this._f_fieldArray = true
-	if (this.Header.FieldCount > 0) {
-		_pos, err := this._io.Pos()
-		if err != nil {
-			return nil, err
-		}
-		_, err = this._io.Seek(int64(this.Header.FieldOffset), io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-		tmp2 := NewGff_FieldArray()
-		err = tmp2.Read(this._io, this, this._root)
-		if err != nil {
-			return nil, err
-		}
-		this.fieldArray = tmp2
-		_, err = this._io.Seek(_pos, io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return this.fieldArray, nil
-}
 
 /**
- * Storage area for complex field types (strings, binary, vectors, etc.)
- */
-func (this *Gff) FieldData() (v *Gff_FieldData, err error) {
-	if (this._f_fieldData) {
-		return this.fieldData, nil
-	}
-	this._f_fieldData = true
-	if (this.Header.FieldDataCount > 0) {
-		_pos, err := this._io.Pos()
-		if err != nil {
-			return nil, err
-		}
-		_, err = this._io.Seek(int64(this.Header.FieldDataOffset), io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-		tmp3 := NewGff_FieldData()
-		err = tmp3.Read(this._io, this, this._root)
-		if err != nil {
-			return nil, err
-		}
-		this.fieldData = tmp3
-		_, err = this._io.Seek(_pos, io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return this.fieldData, nil
-}
-
-/**
- * Array of field index arrays (used when structs have multiple fields)
- */
-func (this *Gff) FieldIndicesArray() (v *Gff_FieldIndicesArray, err error) {
-	if (this._f_fieldIndicesArray) {
-		return this.fieldIndicesArray, nil
-	}
-	this._f_fieldIndicesArray = true
-	if (this.Header.FieldIndicesCount > 0) {
-		_pos, err := this._io.Pos()
-		if err != nil {
-			return nil, err
-		}
-		_, err = this._io.Seek(int64(this.Header.FieldIndicesOffset), io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-		tmp4 := NewGff_FieldIndicesArray()
-		err = tmp4.Read(this._io, this, this._root)
-		if err != nil {
-			return nil, err
-		}
-		this.fieldIndicesArray = tmp4
-		_, err = this._io.Seek(_pos, io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return this.fieldIndicesArray, nil
-}
-
-/**
- * Array of 16-byte null-padded field name labels
- */
-func (this *Gff) LabelArray() (v *Gff_LabelArray, err error) {
-	if (this._f_labelArray) {
-		return this.labelArray, nil
-	}
-	this._f_labelArray = true
-	if (this.Header.LabelCount > 0) {
-		_pos, err := this._io.Pos()
-		if err != nil {
-			return nil, err
-		}
-		_, err = this._io.Seek(int64(this.Header.LabelOffset), io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-		tmp5 := NewGff_LabelArray()
-		err = tmp5.Read(this._io, this, this._root)
-		if err != nil {
-			return nil, err
-		}
-		this.labelArray = tmp5
-		_, err = this._io.Seek(_pos, io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return this.labelArray, nil
-}
-
-/**
- * Array of list entry structures (count + struct indices)
- */
-func (this *Gff) ListIndicesArray() (v *Gff_ListIndicesArray, err error) {
-	if (this._f_listIndicesArray) {
-		return this.listIndicesArray, nil
-	}
-	this._f_listIndicesArray = true
-	if (this.Header.ListIndicesCount > 0) {
-		_pos, err := this._io.Pos()
-		if err != nil {
-			return nil, err
-		}
-		_, err = this._io.Seek(int64(this.Header.ListIndicesOffset), io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-		tmp6 := NewGff_ListIndicesArray()
-		err = tmp6.Read(this._io, this, this._root)
-		if err != nil {
-			return nil, err
-		}
-		this.listIndicesArray = tmp6
-		_, err = this._io.Seek(_pos, io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return this.listIndicesArray, nil
-}
-
-/**
- * Convenience "decoded" view of the root struct (struct_array[0]).
- * This resolves field indices to field entries, resolves labels to strings,
- * and decodes field values (including nested structs and lists) into typed instances.
- */
-func (this *Gff) RootStructResolved() (v *Gff_ResolvedStruct, err error) {
-	if (this._f_rootStructResolved) {
-		return this.rootStructResolved, nil
-	}
-	this._f_rootStructResolved = true
-	tmp7 := NewGff_ResolvedStruct(0)
-	err = tmp7.Read(this._io, this, this._root)
-	if err != nil {
-		return nil, err
-	}
-	this.rootStructResolved = tmp7
-	return this.rootStructResolved, nil
-}
-
-/**
- * Array of struct entries (12 bytes each)
- */
-func (this *Gff) StructArray() (v *Gff_StructArray, err error) {
-	if (this._f_structArray) {
-		return this.structArray, nil
-	}
-	this._f_structArray = true
-	if (this.Header.StructCount > 0) {
-		_pos, err := this._io.Pos()
-		if err != nil {
-			return nil, err
-		}
-		_, err = this._io.Seek(int64(this.Header.StructOffset), io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-		tmp8 := NewGff_StructArray()
-		err = tmp8.Read(this._io, this, this._root)
-		if err != nil {
-			return nil, err
-		}
-		this.structArray = tmp8
-		_, err = this._io.Seek(_pos, io.SeekStart)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return this.structArray, nil
-}
-
-/**
- * GFF file header (56 bytes total)
+ * Table of `GFFFieldData` rows (`field_count` × 12 bytes at `field_offset`). Indexed by struct metadata and `field_indices_array`.
+ * Cross-check: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L163-L180 (`_load_fields_batch` reads 12-byte headers via `struct.unpack_from` L176–L178); single-field path `_load_field` L188–L191 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L68-L72
  */
 type Gff_FieldArray struct {
 	Entries []*Gff_FieldEntry
 	_io *kaitai.Stream
 	_root *Gff
-	_parent *Gff
+	_parent *Gff_Gff3AfterAurora
 }
 func NewGff_FieldArray() *Gff_FieldArray {
 	return &Gff_FieldArray{
@@ -346,31 +89,36 @@ func (this Gff_FieldArray) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *Gff_FieldArray) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+func (this *Gff_FieldArray) Read(io *kaitai.Stream, parent *Gff_Gff3AfterAurora, root *Gff) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
 
-	for i := 0; i < int(this._root.Header.FieldCount); i++ {
+	for i := 0; i < int(this._root.File.Gff3.Header.FieldCount); i++ {
 		_ = i
-		tmp9 := NewGff_FieldEntry()
-		err = tmp9.Read(this._io, this, this._root)
+		tmp2 := NewGff_FieldEntry()
+		err = tmp2.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.Entries = append(this.Entries, tmp9)
+		this.Entries = append(this.Entries, tmp2)
 	}
 	return err
 }
 
 /**
- * Array of field entries (12 bytes each)
+ * Repeated `field_entry` (`GFFFieldData`); count `field_count`, base `field_offset`.
+ * Stride 12 bytes; consistent with `CResGFF::GetField` indexing (`0x00410990`).
+ */
+
+/**
+ * Byte arena for complex field payloads; span = `field_data_count` from `field_data_offset` (`GFFHeaderInfo` +0x20 / +0x24).
  */
 type Gff_FieldData struct {
 	RawData []byte
 	_io *kaitai.Stream
 	_root *Gff
-	_parent *Gff
+	_parent *Gff_Gff3AfterAurora
 }
 func NewGff_FieldData() *Gff_FieldData {
 	return &Gff_FieldData{
@@ -381,34 +129,34 @@ func (this Gff_FieldData) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *Gff_FieldData) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+func (this *Gff_FieldData) Read(io *kaitai.Stream, parent *Gff_Gff3AfterAurora, root *Gff) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
 
-	tmp10, err := this._io.ReadBytes(int(this._root.Header.FieldDataCount))
+	tmp3, err := this._io.ReadBytes(int(this._root.File.Gff3.Header.FieldDataCount))
 	if err != nil {
 		return err
 	}
-	tmp10 = tmp10
-	this.RawData = tmp10
+	tmp3 = tmp3
+	this.RawData = tmp3
 	return err
 }
 
 /**
- * Raw field data storage. Individual field data entries are accessed via
- * field_entry.field_data_offset_value offsets. The structure of each entry
- * depends on the field_type:
- * - UInt64/Int64/Double: 8 bytes
- * - String: 4-byte length + string bytes
- * - ResRef: 1-byte length + string bytes (max 16)
- * - LocalizedString: variable (see bioware_common::bioware_locstring type)
- * - Binary: 4-byte length + binary bytes
- * - Vector3: 12 bytes (3×float)
- * - Vector4: 16 bytes (4×float)
+ * Opaque span sized by `GFFHeaderInfo.field_data_count` @ +0x24; base @ +0x20.
+ * Entries are addressed only through `GFFFieldData` complex-type offsets (not sequential).
+ * Per-type layouts: see `resolved_field` value_* instances and `bioware_common` types (CExoString, ResRef, LocString, vectors, binary).
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-data
+ */
+
+/**
+ * One `GFFFieldData` row: `field_type` (+0, `GFFFieldTypes`), `label_index` (+4), `data_or_data_offset` (+8).
+ * `CResGFF::GetField` @ `0x00410990` walks these with 12-byte stride.
+ * Dispatch table (inline vs `field_data` vs struct/list): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L208-L273 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L78-L146
  */
 type Gff_FieldEntry struct {
-	FieldType Gff_GffFieldType
+	FieldType BiowareGffCommon_GffFieldType
 	LabelIndex uint32
 	DataOrOffset uint32
 	_io *kaitai.Stream
@@ -443,150 +191,161 @@ func (this *Gff_FieldEntry) Read(io *kaitai.Stream, parent kaitai.Struct, root *
 	this._parent = parent
 	this._root = root
 
-	tmp11, err := this._io.ReadU4le()
+	tmp4, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldType = Gff_GffFieldType(tmp11)
-	tmp12, err := this._io.ReadU4le()
+	this.FieldType = BiowareGffCommon_GffFieldType(tmp4)
+	tmp5, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.LabelIndex = uint32(tmp12)
-	tmp13, err := this._io.ReadU4le()
+	this.LabelIndex = uint32(tmp5)
+	tmp6, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.DataOrOffset = uint32(tmp13)
+	this.DataOrOffset = uint32(tmp6)
 	return err
 }
 
 /**
- * Absolute file offset to field data for complex types
+ * Absolute file offset: `GFFHeaderInfo.field_data_offset` + relative payload offset in `GFFFieldData`.
  */
 func (this *Gff_FieldEntry) FieldDataOffsetValue() (v int, err error) {
 	if (this._f_fieldDataOffsetValue) {
 		return this.fieldDataOffsetValue, nil
 	}
 	this._f_fieldDataOffsetValue = true
-	tmp14, err := this.IsComplexType()
+	tmp7, err := this.IsComplexType()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp14) {
-		this.fieldDataOffsetValue = int(this._root.Header.FieldDataOffset + this.DataOrOffset)
+	if (tmp7) {
+		this.fieldDataOffsetValue = int(this._root.File.Gff3.Header.FieldDataOffset + this.DataOrOffset)
 	}
 	return this.fieldDataOffsetValue, nil
 }
 
 /**
- * True if field stores data in field_data section
+ * Derived: `data_or_data_offset` is byte offset into `field_data` blob (base `field_data_offset`).
  */
 func (this *Gff_FieldEntry) IsComplexType() (v bool, err error) {
 	if (this._f_isComplexType) {
 		return this.isComplexType, nil
 	}
 	this._f_isComplexType = true
-	this.isComplexType = bool( ((this.FieldType == Gff_GffFieldType__Uint64) || (this.FieldType == Gff_GffFieldType__Int64) || (this.FieldType == Gff_GffFieldType__Double) || (this.FieldType == Gff_GffFieldType__String) || (this.FieldType == Gff_GffFieldType__Resref) || (this.FieldType == Gff_GffFieldType__LocalizedString) || (this.FieldType == Gff_GffFieldType__Binary) || (this.FieldType == Gff_GffFieldType__Vector4) || (this.FieldType == Gff_GffFieldType__Vector3)) )
+	this.isComplexType = bool( ((this.FieldType == BiowareGffCommon_GffFieldType__Uint64) || (this.FieldType == BiowareGffCommon_GffFieldType__Int64) || (this.FieldType == BiowareGffCommon_GffFieldType__Double) || (this.FieldType == BiowareGffCommon_GffFieldType__String) || (this.FieldType == BiowareGffCommon_GffFieldType__Resref) || (this.FieldType == BiowareGffCommon_GffFieldType__LocalizedString) || (this.FieldType == BiowareGffCommon_GffFieldType__Binary) || (this.FieldType == BiowareGffCommon_GffFieldType__Vector4) || (this.FieldType == BiowareGffCommon_GffFieldType__Vector3)) )
 	return this.isComplexType, nil
 }
 
 /**
- * True if field is a list of structs
+ * Derived: `data_or_data_offset` is byte offset into `list_indices_array` (base `list_indices_offset`).
  */
 func (this *Gff_FieldEntry) IsListType() (v bool, err error) {
 	if (this._f_isListType) {
 		return this.isListType, nil
 	}
 	this._f_isListType = true
-	this.isListType = bool(this.FieldType == Gff_GffFieldType__List)
+	this.isListType = bool(this.FieldType == BiowareGffCommon_GffFieldType__List)
 	return this.isListType, nil
 }
 
 /**
- * True if field stores data inline (simple types)
+ * Derived: inline scalars — payload lives in the 4-byte `GFFFieldData.data_or_data_offset` word (`+0x8` in the 12-byte record).
+ * Matches readers that widen to 32-bit in-memory (see `ReadField*` callers).
+ * **PyKotor `GFFBinaryReader`:** type **18 is not handled** after the float branch — see https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L268-L273 (wire layout for 18 is still per wiki + this `.ksy`).
  */
 func (this *Gff_FieldEntry) IsSimpleType() (v bool, err error) {
 	if (this._f_isSimpleType) {
 		return this.isSimpleType, nil
 	}
 	this._f_isSimpleType = true
-	this.isSimpleType = bool( ((this.FieldType == Gff_GffFieldType__Uint8) || (this.FieldType == Gff_GffFieldType__Int8) || (this.FieldType == Gff_GffFieldType__Uint16) || (this.FieldType == Gff_GffFieldType__Int16) || (this.FieldType == Gff_GffFieldType__Uint32) || (this.FieldType == Gff_GffFieldType__Int32) || (this.FieldType == Gff_GffFieldType__Single)) )
+	this.isSimpleType = bool( ((this.FieldType == BiowareGffCommon_GffFieldType__Uint8) || (this.FieldType == BiowareGffCommon_GffFieldType__Int8) || (this.FieldType == BiowareGffCommon_GffFieldType__Uint16) || (this.FieldType == BiowareGffCommon_GffFieldType__Int16) || (this.FieldType == BiowareGffCommon_GffFieldType__Uint32) || (this.FieldType == BiowareGffCommon_GffFieldType__Int32) || (this.FieldType == BiowareGffCommon_GffFieldType__Single) || (this.FieldType == BiowareGffCommon_GffFieldType__StrRef)) )
 	return this.isSimpleType, nil
 }
 
 /**
- * True if field is a nested struct
+ * Derived: `data_or_data_offset` is struct index into `struct_array` (`GFFStructData` row).
  */
 func (this *Gff_FieldEntry) IsStructType() (v bool, err error) {
 	if (this._f_isStructType) {
 		return this.isStructType, nil
 	}
 	this._f_isStructType = true
-	this.isStructType = bool(this.FieldType == Gff_GffFieldType__Struct)
+	this.isStructType = bool(this.FieldType == BiowareGffCommon_GffFieldType__Struct)
 	return this.isStructType, nil
 }
 
 /**
- * Absolute file offset to list indices for list type fields
+ * Absolute file offset to a `list_entry` (count + indices) inside `list_indices_array`.
  */
 func (this *Gff_FieldEntry) ListIndicesOffsetValue() (v int, err error) {
 	if (this._f_listIndicesOffsetValue) {
 		return this.listIndicesOffsetValue, nil
 	}
 	this._f_listIndicesOffsetValue = true
-	tmp15, err := this.IsListType()
+	tmp8, err := this.IsListType()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp15) {
-		this.listIndicesOffsetValue = int(this._root.Header.ListIndicesOffset + this.DataOrOffset)
+	if (tmp8) {
+		this.listIndicesOffsetValue = int(this._root.File.Gff3.Header.ListIndicesOffset + this.DataOrOffset)
 	}
 	return this.listIndicesOffsetValue, nil
 }
 
 /**
- * Struct index for struct type fields
+ * Struct index (same numeric interpretation as `GFFStructData` row index).
  */
 func (this *Gff_FieldEntry) StructIndexValue() (v uint32, err error) {
 	if (this._f_structIndexValue) {
 		return this.structIndexValue, nil
 	}
 	this._f_structIndexValue = true
-	tmp16, err := this.IsStructType()
+	tmp9, err := this.IsStructType()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp16) {
+	if (tmp9) {
 		this.structIndexValue = uint32(this.DataOrOffset)
 	}
 	return this.structIndexValue, nil
 }
 
 /**
- * Field data type (see gff_field_type enum):
- * - 0-5, 8: Simple types (stored inline in data_or_offset)
- * - 6-7, 9-13, 16-17: Complex types (offset to field_data in data_or_offset)
- * - 14: Struct (struct index in data_or_offset)
- * - 15: List (offset to list_indices_array in data_or_offset)
+ * Field data type tag. Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types
+ * (ID → storage: inline vs `field_data` vs struct/list indirection).
+ * Inline: types 0–5, 8, 18; `field_data`: 6–7, 9–13, 16–17; struct index 14; list offset 15.
+ * Source: Ghidra `/K1/k1_win_gog_swkotor.exe` — `GFFFieldData.field_type` @ +0 (`GFFFieldTypes`).
+ * Runtime: `CResGFF::GetField` @ `0x00410990` (12-byte stride); `ReadFieldBYTE` @ `0x00411a60`, `ReadFieldINT` @ `0x00411c90`.
+ * PyKotor `GFFFieldType` enum ends at `Vector3 = 17` (no `StrRef`): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py#L347-L367 — binary reader comment on type 18: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L273
  */
 
 /**
- * Index into label_array for field name
+ * Index into the label table (×16 bytes from `label_offset`). Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-array
+ * Source: Ghidra `GFFFieldData.label_index` @ +0x4 (ulong).
  */
 
 /**
  * Inline data (simple types) or offset/index (complex types):
- * - Simple types (0-5, 8): Value stored directly (1-4 bytes, sign/zero extended to 4 bytes)
+ * - Simple types (0-5, 8, 18): Value stored directly (1-4 bytes, sign/zero extended to 4 bytes)
  * - Complex types (6-7, 9-13, 16-17): Byte offset into field_data section (relative to field_data_offset)
  * - Struct (14): Struct index (index into struct_array)
  * - List (15): Byte offset into list_indices_array (relative to list_indices_offset)
+ * Source: Ghidra `GFFFieldData.data_or_data_offset` @ +0x8.
+ * `resolved_field` reads narrow values at `field_offset + index*12 + 8` for inline types; wiki storage rules: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types
+ */
+
+/**
+ * Flat `u4` stream (`field_indices_count` elements from `field_indices_offset`). Multi-field structs slice this stream via `GFFStructData.data_or_data_offset`.
+ * “MultiMap” naming: PyKotor wiki (`wiki_gff_field_indices`) + Torlack ITP HTML (`xoreos_docs_torlack_itp_html`).
  */
 type Gff_FieldIndicesArray struct {
 	Indices []uint32
 	_io *kaitai.Stream
 	_root *Gff
-	_parent *Gff
+	_parent *Gff_Gff3AfterAurora
 }
 func NewGff_FieldIndicesArray() *Gff_FieldIndicesArray {
 	return &Gff_FieldIndicesArray{
@@ -597,30 +356,565 @@ func (this Gff_FieldIndicesArray) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *Gff_FieldIndicesArray) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+func (this *Gff_FieldIndicesArray) Read(io *kaitai.Stream, parent *Gff_Gff3AfterAurora, root *Gff) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
 
-	for i := 0; i < int(this._root.Header.FieldIndicesCount); i++ {
+	for i := 0; i < int(this._root.File.Gff3.Header.FieldIndicesCount); i++ {
 		_ = i
-		tmp17, err := this._io.ReadU4le()
+		tmp10, err := this._io.ReadU4le()
 		if err != nil {
 			return err
 		}
-		this.Indices = append(this.Indices, tmp17)
+		this.Indices = append(this.Indices, tmp10)
 	}
 	return err
 }
 
 /**
- * Array of field indices. When a struct has multiple fields, it stores an offset
- * into this array, and the next N consecutive u4 values (where N = struct.field_count)
- * are the field indices for that struct.
+ * `field_indices_count` × `u4` from `field_indices_offset`. No per-row header on disk —
+ * `GFFStructData` for a multi-field struct points at the first `u4` of its slice; length = `field_count`.
+ * Ghidra: counts/offset from `GFFHeaderInfo` @ +0x28 / +0x2C.
  */
-type Gff_GffHeader struct {
-	FileType string
-	FileVersion string
+
+/**
+ * GFF3 payload after the shared 8-byte Aurora prefix: `gff_header_tail` (48 B) then lazy arena instances.
+ */
+type Gff_Gff3AfterAurora struct {
+	Header *Gff_GffHeaderTail
+	_io *kaitai.Stream
+	_root *Gff
+	_parent *Gff_GffUnionFile
+	_f_fieldArray bool
+	fieldArray *Gff_FieldArray
+	_f_fieldData bool
+	fieldData *Gff_FieldData
+	_f_fieldIndicesArray bool
+	fieldIndicesArray *Gff_FieldIndicesArray
+	_f_labelArray bool
+	labelArray *Gff_LabelArray
+	_f_listIndicesArray bool
+	listIndicesArray *Gff_ListIndicesArray
+	_f_rootStructResolved bool
+	rootStructResolved *Gff_ResolvedStruct
+	_f_structArray bool
+	structArray *Gff_StructArray
+}
+func NewGff_Gff3AfterAurora() *Gff_Gff3AfterAurora {
+	return &Gff_Gff3AfterAurora{
+	}
+}
+
+func (this Gff_Gff3AfterAurora) IO_() *kaitai.Stream {
+	return this._io
+}
+
+func (this *Gff_Gff3AfterAurora) Read(io *kaitai.Stream, parent *Gff_GffUnionFile, root *Gff) (err error) {
+	this._io = io
+	this._parent = parent
+	this._root = root
+
+	tmp11 := NewGff_GffHeaderTail()
+	err = tmp11.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.Header = tmp11
+	return err
+}
+
+/**
+ * Field dictionary: `header.field_count` × 12 B at `header.field_offset`. Ghidra: `GFFFieldData`.
+ * `CResGFF::GetField` @ `0x00410990` uses 12-byte stride on this table.
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-array
+ *     PyKotor `_load_fields_batch` / `_load_field`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L145-L180 — https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L182-L195 — reone `readField`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L67-L149
+ */
+func (this *Gff_Gff3AfterAurora) FieldArray() (v *Gff_FieldArray, err error) {
+	if (this._f_fieldArray) {
+		return this.fieldArray, nil
+	}
+	this._f_fieldArray = true
+	if (this.Header.FieldCount > 0) {
+		_pos, err := this._io.Pos()
+		if err != nil {
+			return nil, err
+		}
+		_, err = this._io.Seek(int64(this.Header.FieldOffset), io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+		tmp12 := NewGff_FieldArray()
+		err = tmp12.Read(this._io, this, this._root)
+		if err != nil {
+			return nil, err
+		}
+		this.fieldArray = tmp12
+		_, err = this._io.Seek(_pos, io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return this.fieldArray, nil
+}
+
+/**
+ * Complex-type payload heap. Ghidra: `field_data_offset` @ +0x20, size `field_data_count` @ +0x24.
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-data
+ *     PyKotor seeks `field_data_offset + offset` for “complex” IDs: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L211-L213 — reone helpers from `_fieldDataOffset`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L160-L216
+ */
+func (this *Gff_Gff3AfterAurora) FieldData() (v *Gff_FieldData, err error) {
+	if (this._f_fieldData) {
+		return this.fieldData, nil
+	}
+	this._f_fieldData = true
+	if (this.Header.FieldDataCount > 0) {
+		_pos, err := this._io.Pos()
+		if err != nil {
+			return nil, err
+		}
+		_, err = this._io.Seek(int64(this.Header.FieldDataOffset), io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+		tmp13 := NewGff_FieldData()
+		err = tmp13.Read(this._io, this, this._root)
+		if err != nil {
+			return nil, err
+		}
+		this.fieldData = tmp13
+		_, err = this._io.Seek(_pos, io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return this.fieldData, nil
+}
+
+/**
+ * Flat `u4` stream (`field_indices_count` elements). Multi-field structs slice via `GFFStructData.data_or_data_offset`.
+ * Ghidra: `field_indices_offset` @ +0x28, `field_indices_count` @ +0x2C.
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-indices-multiple-element-map--multimap
+ *     PyKotor batch read: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L135-L139 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L156-L158 — Torlack MultiMap context: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html#L44-L49
+ */
+func (this *Gff_Gff3AfterAurora) FieldIndicesArray() (v *Gff_FieldIndicesArray, err error) {
+	if (this._f_fieldIndicesArray) {
+		return this.fieldIndicesArray, nil
+	}
+	this._f_fieldIndicesArray = true
+	if (this.Header.FieldIndicesCount > 0) {
+		_pos, err := this._io.Pos()
+		if err != nil {
+			return nil, err
+		}
+		_, err = this._io.Seek(int64(this.Header.FieldIndicesOffset), io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+		tmp14 := NewGff_FieldIndicesArray()
+		err = tmp14.Read(this._io, this, this._root)
+		if err != nil {
+			return nil, err
+		}
+		this.fieldIndicesArray = tmp14
+		_, err = this._io.Seek(_pos, io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return this.fieldIndicesArray, nil
+}
+
+/**
+ * Label table: `header.label_count` entries ×16 bytes at `header.label_offset`.
+ * Ghidra: slots indexed by `GFFFieldData.label_index` (+0x4); header fields `label_offset` / `label_count` @ +0x18 / +0x1C.
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#label-array
+ *     PyKotor load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L108-L111 — reone `readLabel`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L151-L154
+ */
+func (this *Gff_Gff3AfterAurora) LabelArray() (v *Gff_LabelArray, err error) {
+	if (this._f_labelArray) {
+		return this.labelArray, nil
+	}
+	this._f_labelArray = true
+	if (this.Header.LabelCount > 0) {
+		_pos, err := this._io.Pos()
+		if err != nil {
+			return nil, err
+		}
+		_, err = this._io.Seek(int64(this.Header.LabelOffset), io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+		tmp15 := NewGff_LabelArray()
+		err = tmp15.Read(this._io, this, this._root)
+		if err != nil {
+			return nil, err
+		}
+		this.labelArray = tmp15
+		_, err = this._io.Seek(_pos, io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return this.labelArray, nil
+}
+
+/**
+ * Packed list nodes (`u4` count + `u4` struct indices). List fields store byte offsets from this arena base.
+ * Ghidra: `list_indices_offset` @ +0x30; `list_indices_count` @ +0x34 = span length in bytes (this `.ksy` `raw_data` size).
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices
+ *     PyKotor `_load_list`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L275-L294 — reone `readList`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L223
+ */
+func (this *Gff_Gff3AfterAurora) ListIndicesArray() (v *Gff_ListIndicesArray, err error) {
+	if (this._f_listIndicesArray) {
+		return this.listIndicesArray, nil
+	}
+	this._f_listIndicesArray = true
+	if (this.Header.ListIndicesCount > 0) {
+		_pos, err := this._io.Pos()
+		if err != nil {
+			return nil, err
+		}
+		_, err = this._io.Seek(int64(this.Header.ListIndicesOffset), io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+		tmp16 := NewGff_ListIndicesArray()
+		err = tmp16.Read(this._io, this, this._root)
+		if err != nil {
+			return nil, err
+		}
+		this.listIndicesArray = tmp16
+		_, err = this._io.Seek(_pos, io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return this.listIndicesArray, nil
+}
+
+/**
+ * Kaitai-only convenience: decoded view of struct index 0 (`struct_array.entries[0]`).
+ * Not a distinct on-disk record; uses same `GFFStructData` + tables as above.
+ * Implements the access pattern described in meta.doc (single-field vs multi-field structs).
+ */
+func (this *Gff_Gff3AfterAurora) RootStructResolved() (v *Gff_ResolvedStruct, err error) {
+	if (this._f_rootStructResolved) {
+		return this.rootStructResolved, nil
+	}
+	this._f_rootStructResolved = true
+	tmp17 := NewGff_ResolvedStruct(0)
+	err = tmp17.Read(this._io, this, this._root)
+	if err != nil {
+		return nil, err
+	}
+	this.rootStructResolved = tmp17
+	return this.rootStructResolved, nil
+}
+
+/**
+ * Struct table: `header.struct_count` × 12 B at `header.struct_offset`. Ghidra: `GFFStructData` rows.
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#struct-array
+ *     PyKotor `_load_struct`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L116-L143 — reone `readStruct`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L46-L65
+ */
+func (this *Gff_Gff3AfterAurora) StructArray() (v *Gff_StructArray, err error) {
+	if (this._f_structArray) {
+		return this.structArray, nil
+	}
+	this._f_structArray = true
+	if (this.Header.StructCount > 0) {
+		_pos, err := this._io.Pos()
+		if err != nil {
+			return nil, err
+		}
+		_, err = this._io.Seek(int64(this.Header.StructOffset), io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+		tmp18 := NewGff_StructArray()
+		err = tmp18.Read(this._io, this, this._root)
+		if err != nil {
+			return nil, err
+		}
+		this.structArray = tmp18
+		_, err = this._io.Seek(_pos, io.SeekStart)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return this.structArray, nil
+}
+
+/**
+ * Bytes 8–55: same twelve `u32` LE fields as wiki [File Header](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#file-header)
+ * rows from Struct Array Offset through List Indices Count. Ghidra: `GFFHeaderInfo` @ +0x8 … +0x34.
+ */
+
+/**
+ * GFF4 payload after the shared 8-byte Aurora prefix (through struct-template strip + remainder `tail`).
+ * PC-first LE numeric tail; `string_*` fields only when `aurora_version` (param) is V4.1.
+ */
+type Gff_Gff4AfterAurora struct {
+	PlatformId uint32
+	FileType uint32
+	TypeVersion uint32
+	NumStructTemplates uint32
+	StringCount uint32
+	StringOffset uint32
+	DataOffset uint32
+	StructTemplates []*Gff_Gff4StructTemplateHeader
+	Tail []byte
+	AuroraVersion uint32
+	_io *kaitai.Stream
+	_root *Gff
+	_parent kaitai.Struct
+}
+func NewGff_Gff4AfterAurora(auroraVersion uint32) *Gff_Gff4AfterAurora {
+	return &Gff_Gff4AfterAurora{
+		AuroraVersion: auroraVersion,
+	}
+}
+
+func (this Gff_Gff4AfterAurora) IO_() *kaitai.Stream {
+	return this._io
+}
+
+func (this *Gff_Gff4AfterAurora) Read(io *kaitai.Stream, parent kaitai.Struct, root *Gff) (err error) {
+	this._io = io
+	this._parent = parent
+	this._root = root
+
+	tmp19, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.PlatformId = uint32(tmp19)
+	tmp20, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.FileType = uint32(tmp20)
+	tmp21, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.TypeVersion = uint32(tmp21)
+	tmp22, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.NumStructTemplates = uint32(tmp22)
+	if (this.AuroraVersion == 1446260273) {
+		tmp23, err := this._io.ReadU4le()
+		if err != nil {
+			return err
+		}
+		this.StringCount = uint32(tmp23)
+	}
+	if (this.AuroraVersion == 1446260273) {
+		tmp24, err := this._io.ReadU4le()
+		if err != nil {
+			return err
+		}
+		this.StringOffset = uint32(tmp24)
+	}
+	tmp25, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.DataOffset = uint32(tmp25)
+	for i := 0; i < int(this.NumStructTemplates); i++ {
+		_ = i
+		tmp26 := NewGff_Gff4StructTemplateHeader()
+		err = tmp26.Read(this._io, this, this._root)
+		if err != nil {
+			return err
+		}
+		this.StructTemplates = append(this.StructTemplates, tmp26)
+	}
+	tmp27, err := this._io.ReadBytesFull()
+	if err != nil {
+		return err
+	}
+	tmp27 = tmp27
+	this.Tail = tmp27
+	return err
+}
+
+/**
+ * Platform fourCC (`Header::read` first field). PC = `PC  ` (little-endian payload);
+ * `PS3 ` / `X360` use big-endian numeric tail (not modeled byte-for-byte here).
+ */
+
+/**
+ * GFF4 logical type fourCC (e.g. `G2DA` for GDA tables). `Header::read` uses
+ * `readUint32BE` on the endian-aware substream (`gff4file.cpp`).
+ */
+
+/**
+ * Version of the logical `file_type` (GDA uses `V0.1` / `V0.2` per `gdafile.cpp`).
+ */
+
+/**
+ * Struct template count (`readUint32` without BE — follows platform endianness; **PC LE**
+ * in typical DA assets). xoreos: `_header.structCount`.
+ */
+
+/**
+ * V4.1 only — entry count for global shared string table (`gff4file.cpp` `Header::read`).
+ */
+
+/**
+ * V4.1 only — byte offset to UTF-8 shared strings (`loadStrings`).
+ */
+
+/**
+ * Byte offset to instantiated struct data (`GFF4Struct` root @ `_header.dataOffset`).
+ * `readUint32` on the endian substream (`gff4file.cpp`).
+ */
+
+/**
+ * Contiguous template header array (`structTemplateStart + i * 16` in `loadStructs`).
+ */
+
+/**
+ * Remaining bytes after the template strip (field-declaration tables at arbitrary offsets,
+ * optional V4.1 string heap, struct payload at `data_offset`, etc.). Parse with a full
+ * GFF4 graph walker or defer to engine code.
+ */
+
+/**
+ * Full GFF4 stream (8-byte Aurora prefix + `gff4_after_aurora`). Use from importers such as `GDA.ksy`
+ * that expect a single user-type over the whole file.
+ */
+type Gff_Gff4File struct {
+	AuroraMagic uint32
+	AuroraVersion uint32
+	Gff4 *Gff_Gff4AfterAurora
+	_io *kaitai.Stream
+	_root *Gff
+	_parent kaitai.Struct
+}
+func NewGff_Gff4File() *Gff_Gff4File {
+	return &Gff_Gff4File{
+	}
+}
+
+func (this Gff_Gff4File) IO_() *kaitai.Stream {
+	return this._io
+}
+
+func (this *Gff_Gff4File) Read(io *kaitai.Stream, parent kaitai.Struct, root *Gff) (err error) {
+	this._io = io
+	this._parent = parent
+	this._root = root
+
+	tmp28, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.AuroraMagic = uint32(tmp28)
+	tmp29, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.AuroraVersion = uint32(tmp29)
+	tmp30 := NewGff_Gff4AfterAurora(this.AuroraVersion)
+	err = tmp30.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.Gff4 = tmp30
+	return err
+}
+
+/**
+ * Aurora container magic (`GFF ` as `u4be`).
+ */
+
+/**
+ * GFF4 `V4.0` / `V4.1` on-disk tags.
+ */
+
+/**
+ * GFF4 header tail + struct templates + opaque remainder.
+ */
+type Gff_Gff4StructTemplateHeader struct {
+	StructLabel uint32
+	FieldCount uint32
+	FieldOffset uint32
+	StructSize uint32
+	_io *kaitai.Stream
+	_root *Gff
+	_parent *Gff_Gff4AfterAurora
+}
+func NewGff_Gff4StructTemplateHeader() *Gff_Gff4StructTemplateHeader {
+	return &Gff_Gff4StructTemplateHeader{
+	}
+}
+
+func (this Gff_Gff4StructTemplateHeader) IO_() *kaitai.Stream {
+	return this._io
+}
+
+func (this *Gff_Gff4StructTemplateHeader) Read(io *kaitai.Stream, parent *Gff_Gff4AfterAurora, root *Gff) (err error) {
+	this._io = io
+	this._parent = parent
+	this._root = root
+
+	tmp31, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.StructLabel = uint32(tmp31)
+	tmp32, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.FieldCount = uint32(tmp32)
+	tmp33, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.FieldOffset = uint32(tmp33)
+	tmp34, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.StructSize = uint32(tmp34)
+	return err
+}
+
+/**
+ * Template label (fourCC style, read `readUint32BE` in `loadStructs`).
+ */
+
+/**
+ * Number of field declaration records for this template (may be 0).
+ */
+
+/**
+ * Absolute stream offset to field declaration array, or `0xFFFFFFFF` when `field_count == 0`
+ * (xoreos `continue`s without reading declarations).
+ */
+
+/**
+ * Declared on-disk struct size for instances of this template (`strct.size`).
+ */
+
+/**
+ * **GFF3** header continuation: **48 bytes** (twelve LE `u32` dwords) at file offsets **0x08–0x37**, immediately
+ * after the shared Aurora 8-byte prefix (`aurora_magic` / `aurora_version` on `gff_union_file`). Same layout as
+ * wiki [File Header](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#file-header) rows from “Struct Array
+ * Offset” through “List Indices Count”. Ghidra `/K1/k1_win_gog_swkotor.exe`: `GFFHeaderInfo` @ +0x8 … +0x34.
+ * 
+ * Sources (same DWORD order on disk after the 8-byte signature):
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114 (`file_type`/`file_version` L79–L80 then twelve header `u32`s L93–L106)
+ * - https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L44 (`GffReader::load` — skips 8-byte signature, reads twelve header `u32`s L30–L41)
+ * - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63 (`GFF3File::Header::read` — Aurora GFF3 header DWORD layout)
+ * - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html#L44-L49 (Aurora/GFF-family background; MultiMap wording)
+ */
+type Gff_GffHeaderTail struct {
 	StructOffset uint32
 	StructCount uint32
 	FieldOffset uint32
@@ -635,160 +929,242 @@ type Gff_GffHeader struct {
 	ListIndicesCount uint32
 	_io *kaitai.Stream
 	_root *Gff
-	_parent *Gff
+	_parent *Gff_Gff3AfterAurora
 }
-func NewGff_GffHeader() *Gff_GffHeader {
-	return &Gff_GffHeader{
+func NewGff_GffHeaderTail() *Gff_GffHeaderTail {
+	return &Gff_GffHeaderTail{
 	}
 }
 
-func (this Gff_GffHeader) IO_() *kaitai.Stream {
+func (this Gff_GffHeaderTail) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *Gff_GffHeader) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+func (this *Gff_GffHeaderTail) Read(io *kaitai.Stream, parent *Gff_Gff3AfterAurora, root *Gff) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
 
-	tmp18, err := this._io.ReadBytes(int(4))
+	tmp35, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	tmp18 = tmp18
-	this.FileType = string(tmp18)
-	tmp19, err := this._io.ReadBytes(int(4))
+	this.StructOffset = uint32(tmp35)
+	tmp36, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	tmp19 = tmp19
-	this.FileVersion = string(tmp19)
-	tmp20, err := this._io.ReadU4le()
+	this.StructCount = uint32(tmp36)
+	tmp37, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.StructOffset = uint32(tmp20)
-	tmp21, err := this._io.ReadU4le()
+	this.FieldOffset = uint32(tmp37)
+	tmp38, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.StructCount = uint32(tmp21)
-	tmp22, err := this._io.ReadU4le()
+	this.FieldCount = uint32(tmp38)
+	tmp39, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldOffset = uint32(tmp22)
-	tmp23, err := this._io.ReadU4le()
+	this.LabelOffset = uint32(tmp39)
+	tmp40, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldCount = uint32(tmp23)
-	tmp24, err := this._io.ReadU4le()
+	this.LabelCount = uint32(tmp40)
+	tmp41, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.LabelOffset = uint32(tmp24)
-	tmp25, err := this._io.ReadU4le()
+	this.FieldDataOffset = uint32(tmp41)
+	tmp42, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.LabelCount = uint32(tmp25)
-	tmp26, err := this._io.ReadU4le()
+	this.FieldDataCount = uint32(tmp42)
+	tmp43, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldDataOffset = uint32(tmp26)
-	tmp27, err := this._io.ReadU4le()
+	this.FieldIndicesOffset = uint32(tmp43)
+	tmp44, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldDataCount = uint32(tmp27)
-	tmp28, err := this._io.ReadU4le()
+	this.FieldIndicesCount = uint32(tmp44)
+	tmp45, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldIndicesOffset = uint32(tmp28)
-	tmp29, err := this._io.ReadU4le()
+	this.ListIndicesOffset = uint32(tmp45)
+	tmp46, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldIndicesCount = uint32(tmp29)
-	tmp30, err := this._io.ReadU4le()
-	if err != nil {
-		return err
-	}
-	this.ListIndicesOffset = uint32(tmp30)
-	tmp31, err := this._io.ReadU4le()
-	if err != nil {
-		return err
-	}
-	this.ListIndicesCount = uint32(tmp31)
+	this.ListIndicesCount = uint32(tmp46)
 	return err
 }
 
 /**
- * File type signature (FourCC). Examples: "GFF ", "UTC ", "UTI ", "DLG ", "ARE ", etc.
- * Must match a valid GFFContent enum value.
+ * Byte offset to struct array. Wiki `File Header` row “Struct Array Offset”, offset 0x08.
+ * Source: Ghidra `GFFHeaderInfo.struct_offset` @ +0x8 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L93 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L30
  */
 
 /**
- * File format version. Must be "V3.2" for KotOR games.
- * Later BioWare games use "V3.3", "V4.0", or "V4.1".
- * Valid values: "V3.2" (KotOR), "V3.3", "V4.0", "V4.1" (other BioWare games)
+ * Struct row count. Wiki `File Header` row “Struct Count”, offset 0x0C.
+ * Source: Ghidra `GFFHeaderInfo.struct_count` @ +0xC (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L94 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L31
  */
 
 /**
- * Byte offset to struct array from beginning of file
+ * Byte offset to field array. Wiki `File Header` row “Field Array Offset”, offset 0x10.
+ * Source: Ghidra `GFFHeaderInfo.field_offset` @ +0x10 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L95 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L32
  */
 
 /**
- * Number of struct entries in struct array
+ * Field row count. Wiki `File Header` row “Field Count”, offset 0x14.
+ * Source: Ghidra `GFFHeaderInfo.field_count` @ +0x14 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L96 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L33
  */
 
 /**
- * Byte offset to field array from beginning of file
+ * Byte offset to label array. Wiki `File Header` row “Label Array Offset”, offset 0x18.
+ * Source: Ghidra `GFFHeaderInfo.label_offset` @ +0x18 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L98 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L34
  */
 
 /**
- * Number of field entries in field array
+ * Label slot count. Wiki `File Header` row “Label Count”, offset 0x1C.
+ * Source: Ghidra `GFFHeaderInfo.label_count` @ +0x1C (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L99 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L35
  */
 
 /**
- * Byte offset to label array from beginning of file
+ * Byte offset to field-data section. Wiki `File Header` row “Field Data Offset”, offset 0x20.
+ * Source: Ghidra `GFFHeaderInfo.field_data_offset` @ +0x20 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L101 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L36
  */
 
 /**
- * Number of labels in label array
+ * Field-data section size in bytes. Wiki `File Header` row “Field Data Count”, offset 0x24.
+ * Source: Ghidra `GFFHeaderInfo.field_data_count` @ +0x24 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L102 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L37
  */
 
 /**
- * Byte offset to field data section from beginning of file
+ * Byte offset to field-indices stream. Wiki `File Header` row “Field Indices Offset”, offset 0x28.
+ * Source: Ghidra `GFFHeaderInfo.field_indices_offset` @ +0x28 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L103 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L38
  */
 
 /**
- * Size of field data section in bytes
+ * Count of `u32` entries in the field-indices stream (MultiMap). Wiki `File Header` row “Field Indices Count”, offset 0x2C.
+ * Source: Ghidra `GFFHeaderInfo.field_indices_count` @ +0x2C (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L104 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L39 (member typo `fieldIncidesCount` in upstream)
  */
 
 /**
- * Byte offset to field indices array from beginning of file
+ * Byte offset to list-indices arena. Wiki `File Header` row “List Indices Offset”, offset 0x30.
+ * Source: Ghidra `GFFHeaderInfo.list_indices_offset` @ +0x30 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L105 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L40
  */
 
 /**
- * Number of field indices (total count across all structs with multiple fields)
+ * List-indices arena size in bytes (this `.ksy` uses it as `list_indices_array.raw_data` byte length).
+ * Wiki `File Header` row “List Indices Count”, offset 0x34 — note wiki table header wording; access pattern is under [List Indices](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices).
+ * Source: Ghidra `GFFHeaderInfo.list_indices_count` @ +0x34 (ulong).
+ * PyKotor: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L106 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L41; list decode https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L275-L294 vs reone https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L223
  */
 
 /**
- * Byte offset to list indices array from beginning of file
+ * Shared Aurora wire prefix + GFF3/GFF4 branch. First 8 bytes align with `AuroraFile::readHeader`
+ * (`aurorafile.cpp`) and with the opening of `GFF3File::Header::read` / `GFF4File::Header::read`.
+ */
+type Gff_GffUnionFile struct {
+	AuroraMagic uint32
+	AuroraVersion uint32
+	Gff3 *Gff_Gff3AfterAurora
+	Gff4 *Gff_Gff4AfterAurora
+	_io *kaitai.Stream
+	_root *Gff
+	_parent *Gff
+}
+func NewGff_GffUnionFile() *Gff_GffUnionFile {
+	return &Gff_GffUnionFile{
+	}
+}
+
+func (this Gff_GffUnionFile) IO_() *kaitai.Stream {
+	return this._io
+}
+
+func (this *Gff_GffUnionFile) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+	this._io = io
+	this._parent = parent
+	this._root = root
+
+	tmp47, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.AuroraMagic = uint32(tmp47)
+	tmp48, err := this._io.ReadU4be()
+	if err != nil {
+		return err
+	}
+	this.AuroraVersion = uint32(tmp48)
+	if ( ((this.AuroraVersion != 1446260272) && (this.AuroraVersion != 1446260273)) ) {
+		tmp49 := NewGff_Gff3AfterAurora()
+		err = tmp49.Read(this._io, this, this._root)
+		if err != nil {
+			return err
+		}
+		this.Gff3 = tmp49
+	}
+	if ( ((this.AuroraVersion == 1446260272) || (this.AuroraVersion == 1446260273)) ) {
+		tmp50 := NewGff_Gff4AfterAurora(this.AuroraVersion)
+		err = tmp50.Read(this._io, this, this._root)
+		if err != nil {
+			return err
+		}
+		this.Gff4 = tmp50
+	}
+	return err
+}
+
+/**
+ * File type signature as **big-endian u32** (e.g. `0x47464620` for ASCII `GFF `). Same four bytes as
+ * legacy `gff_header.file_type` / PyKotor `read(4)` at offset 0.
  */
 
 /**
- * Number of list indices entries
+ * Format version tag as **big-endian u32** (e.g. KotOR `V3.2` → `0x56332e32`; GFF4 `V4.0`/`V4.1` →
+ * `0x56342e30` / `0x56342e31`). Same four bytes as legacy `gff_header.file_version`.
+ */
+
+/**
+ * **GFF3** (KotOR and other Aurora titles using V3.x tags). Twelve LE `u32` arena fields follow the prefix.
+ */
+
+/**
+ * **GFF4** (DA / DA2 / Sonic Chronicles / …). `platform_id` and following header fields per `gff4file.cpp`.
+ */
+
+/**
+ * Contiguous table of `label_count` fixed 16-byte ASCII name slots at `label_offset`.
+ * Indexed by `GFFFieldData.label_index` (×16). Not a separate Ghidra struct — rows are `char[16]` in bulk.
+ * Community tooling (16-byte label convention, KotOR-focused): https://www.lucasforumsarchive.com/thread/149407 — https://deadlystream.com/files/file/719-k-gff/
  */
 type Gff_LabelArray struct {
 	Labels []*Gff_LabelEntry
 	_io *kaitai.Stream
 	_root *Gff
-	_parent *Gff
+	_parent *Gff_Gff3AfterAurora
 }
 func NewGff_LabelArray() *Gff_LabelArray {
 	return &Gff_LabelArray{
@@ -799,25 +1175,30 @@ func (this Gff_LabelArray) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *Gff_LabelArray) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+func (this *Gff_LabelArray) Read(io *kaitai.Stream, parent *Gff_Gff3AfterAurora, root *Gff) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
 
-	for i := 0; i < int(this._root.Header.LabelCount); i++ {
+	for i := 0; i < int(this._root.File.Gff3.Header.LabelCount); i++ {
 		_ = i
-		tmp32 := NewGff_LabelEntry()
-		err = tmp32.Read(this._io, this, this._root)
+		tmp51 := NewGff_LabelEntry()
+		err = tmp51.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.Labels = append(this.Labels, tmp32)
+		this.Labels = append(this.Labels, tmp51)
 	}
 	return err
 }
 
 /**
- * Array of label entries (16 bytes each)
+ * Repeated `label_entry`; count from `GFFHeaderInfo.label_count`. Stride 16 bytes per label.
+ * Index `i` is at file offset `label_offset + i*16`.
+ */
+
+/**
+ * One on-disk label: 16 bytes ASCII, NUL-padded (GFF label convention). Same bytes as `label_entry_terminated` without terminator trim.
  */
 type Gff_LabelEntry struct {
 	Name string
@@ -839,24 +1220,25 @@ func (this *Gff_LabelEntry) Read(io *kaitai.Stream, parent *Gff_LabelArray, root
 	this._parent = parent
 	this._root = root
 
-	tmp33, err := this._io.ReadBytes(int(16))
+	tmp52, err := this._io.ReadBytes(int(16))
 	if err != nil {
 		return err
 	}
-	tmp33 = tmp33
-	this.Name = string(tmp33)
+	tmp52 = tmp52
+	this.Name = string(tmp52)
 	return err
 }
 
 /**
- * Field name label (null-padded to 16 bytes, null-terminated).
- * The actual label length is determined by the first null byte.
- * Application code should trim trailing null bytes when using this field.
+ * Field name label (null-padded to 16 bytes, ASCII, first NUL terminates logical name).
+ * Referenced by `GFFFieldData.label_index` ×16 from `label_offset`.
+ * Engine resolves names when matching `ReadField*` label parameters (e.g. string pointers pushed to `ReadFieldBYTE` @ `0x00411a60`).
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#label-array
  */
 
 /**
- * Label entry as a null-terminated ASCII string within a fixed 16-byte field.
- * This avoids leaking trailing `\0` bytes into generated-code consumers.
+ * Kaitai helper: same 16-byte on-disk label as `label_entry`, but `str` ends at first NUL (`terminator: 0`).
+ * Not a separate Ghidra datatype. Wire cite: `label_entry.name`.
  */
 type Gff_LabelEntryTerminated struct {
 	Name string
@@ -878,14 +1260,23 @@ func (this *Gff_LabelEntryTerminated) Read(io *kaitai.Stream, parent *Gff_Resolv
 	this._parent = parent
 	this._root = root
 
-	tmp34, err := this._io.ReadBytes(int(16))
+	tmp53, err := this._io.ReadBytes(int(16))
 	if err != nil {
 		return err
 	}
-	tmp34 = kaitai.BytesTerminate(tmp34, 0, false)
-	this.Name = string(tmp34)
+	tmp53 = kaitai.BytesTerminate(tmp53, 0, false)
+	this.Name = string(tmp53)
 	return err
 }
+
+/**
+ * Logical ASCII name; bytes match the fixed 16-byte `label_entry` slot up to the first `0x00`.
+ */
+
+/**
+ * One list node on disk: leading cardinality then struct row indices. Used when `GFFFieldTypes` = list (15).
+ * Mirrors: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L278-L285 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L223
+ */
 type Gff_ListEntry struct {
 	NumStructIndices uint32
 	StructIndices []uint32
@@ -907,34 +1298,39 @@ func (this *Gff_ListEntry) Read(io *kaitai.Stream, parent *Gff_ResolvedField, ro
 	this._parent = parent
 	this._root = root
 
-	tmp35, err := this._io.ReadU4le()
+	tmp54, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.NumStructIndices = uint32(tmp35)
+	this.NumStructIndices = uint32(tmp54)
 	for i := 0; i < int(this.NumStructIndices); i++ {
 		_ = i
-		tmp36, err := this._io.ReadU4le()
+		tmp55, err := this._io.ReadU4le()
 		if err != nil {
 			return err
 		}
-		this.StructIndices = append(this.StructIndices, tmp36)
+		this.StructIndices = append(this.StructIndices, tmp55)
 	}
 	return err
 }
 
 /**
- * Number of struct indices in this list
+ * Little-endian count of following struct indices (list cardinality).
+ * Wiki list packing: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices
  */
 
 /**
- * Array of struct indices (indices into struct_array)
+ * Each value indexes `struct_array.entries[index]` (`GFFStructData` row).
+ */
+
+/**
+ * Packed list nodes (`u4` count + `u4` struct indices); arena size `list_indices_count` bytes from `list_indices_offset` (+0x30 / +0x34).
  */
 type Gff_ListIndicesArray struct {
 	RawData []byte
 	_io *kaitai.Stream
 	_root *Gff
-	_parent *Gff
+	_parent *Gff_Gff3AfterAurora
 }
 func NewGff_ListIndicesArray() *Gff_ListIndicesArray {
 	return &Gff_ListIndicesArray{
@@ -945,33 +1341,31 @@ func (this Gff_ListIndicesArray) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *Gff_ListIndicesArray) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+func (this *Gff_ListIndicesArray) Read(io *kaitai.Stream, parent *Gff_Gff3AfterAurora, root *Gff) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
 
-	tmp37, err := this._io.ReadBytes(int(this._root.Header.ListIndicesCount))
+	tmp56, err := this._io.ReadBytes(int(this._root.File.Gff3.Header.ListIndicesCount))
 	if err != nil {
 		return err
 	}
-	tmp37 = tmp37
-	this.RawData = tmp37
+	tmp56 = tmp56
+	this.RawData = tmp56
 	return err
 }
 
 /**
- * Raw list indices data. List entries are accessed via offsets stored in
- * list-type field entries (field_entry.list_indices_offset_value).
- * Each entry starts with a count (u4), followed by that many struct indices (u4 each).
- * 
- * Note: This is a raw data block. In practice, list entries are accessed via
- * offsets stored in list-type field entries, not as a sequential array.
- * Use list_entry type to parse individual entries at specific offsets.
+ * Byte span `list_indices_count` @ +0x34 from base `list_indices_offset` @ +0x30.
+ * Contains packed `list_entry` blobs at offsets referenced by list-typed `GFFFieldData`.
+ * This `raw_data` instance exposes the whole arena; use `list_entry` at `list_indices_offset + field_offset`.
  */
 
 /**
- * A decoded field: includes resolved label string and decoded typed value.
- * Exactly one `value_*` instance (or one of `value_struct` / `list_*`) will be non-null.
+ * Kaitai composition: one `GFFFieldData` row + label + payload.
+ * Inline scalars: read at `field_entry_pos + 8` (same file offset as `data_or_data_offset` in the 12-byte record).
+ * Complex: `field_data_offset + data_or_offset`. List head: `list_indices_offset + data_or_offset`.
+ * For well-formed data, exactly one `value_*` / `value_struct` / `list_*` branch applies.
  */
 type Gff_ResolvedField struct {
 	FieldIndex uint32
@@ -1006,6 +1400,8 @@ type Gff_ResolvedField struct {
 	valueResref *BiowareCommon_BiowareResref
 	_f_valueSingle bool
 	valueSingle float32
+	_f_valueStrRef bool
+	valueStrRef uint32
 	_f_valueString bool
 	valueString *BiowareCommon_BiowareCexoString
 	_f_valueStruct bool
@@ -1042,7 +1438,7 @@ func (this *Gff_ResolvedField) Read(io *kaitai.Stream, parent *Gff_ResolvedStruc
 }
 
 /**
- * Raw field entry at field_index
+ * Raw `GFFFieldData`; 12-byte stride (see `CResGFF::GetField` @ `0x00410990`).
  */
 func (this *Gff_ResolvedField) Entry() (v *Gff_FieldEntry, err error) {
 	if (this._f_entry) {
@@ -1053,16 +1449,16 @@ func (this *Gff_ResolvedField) Entry() (v *Gff_FieldEntry, err error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = this._io.Seek(int64(this._root.Header.FieldOffset + this.FieldIndex * 12), io.SeekStart)
+	_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldOffset + this.FieldIndex * 12), io.SeekStart)
 	if err != nil {
 		return nil, err
 	}
-	tmp38 := NewGff_FieldEntry()
-	err = tmp38.Read(this._io, this, this._root)
+	tmp57 := NewGff_FieldEntry()
+	err = tmp57.Read(this._io, this, this._root)
 	if err != nil {
 		return nil, err
 	}
-	this.entry = tmp38
+	this.entry = tmp57
 	_, err = this._io.Seek(_pos, io.SeekStart)
 	if err != nil {
 		return nil, err
@@ -1071,19 +1467,19 @@ func (this *Gff_ResolvedField) Entry() (v *Gff_FieldEntry, err error) {
 }
 
 /**
- * Absolute file offset of this field entry (start of 12-byte record)
+ * Byte offset of `field_type` (+0), `label_index` (+4), `data_or_data_offset` (+8).
  */
 func (this *Gff_ResolvedField) FieldEntryPos() (v int, err error) {
 	if (this._f_fieldEntryPos) {
 		return this.fieldEntryPos, nil
 	}
 	this._f_fieldEntryPos = true
-	this.fieldEntryPos = int(this._root.Header.FieldOffset + this.FieldIndex * 12)
+	this.fieldEntryPos = int(this._root.File.Gff3.Header.FieldOffset + this.FieldIndex * 12)
 	return this.fieldEntryPos, nil
 }
 
 /**
- * Resolved field label string
+ * Resolved name: `label_index` × 16 from `label_offset`; matches `ReadField*` label parameters.
  */
 func (this *Gff_ResolvedField) Label() (v *Gff_LabelEntryTerminated, err error) {
 	if (this._f_label) {
@@ -1094,20 +1490,20 @@ func (this *Gff_ResolvedField) Label() (v *Gff_LabelEntryTerminated, err error) 
 	if err != nil {
 		return nil, err
 	}
-	tmp39, err := this.Entry()
+	tmp58, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	_, err = this._io.Seek(int64(this._root.Header.LabelOffset + tmp39.LabelIndex * 16), io.SeekStart)
+	_, err = this._io.Seek(int64(this._root.File.Gff3.Header.LabelOffset + tmp58.LabelIndex * 16), io.SeekStart)
 	if err != nil {
 		return nil, err
 	}
-	tmp40 := NewGff_LabelEntryTerminated()
-	err = tmp40.Read(this._io, this, this._root)
+	tmp59 := NewGff_LabelEntryTerminated()
+	err = tmp59.Read(this._io, this, this._root)
 	if err != nil {
 		return nil, err
 	}
-	this.label = tmp40
+	this.label = tmp59
 	_, err = this._io.Seek(_pos, io.SeekStart)
 	if err != nil {
 		return nil, err
@@ -1116,36 +1512,36 @@ func (this *Gff_ResolvedField) Label() (v *Gff_LabelEntryTerminated, err error) 
 }
 
 /**
- * Parsed list entry at offset (list indices)
+ * `GFFFieldTypes` 15 — list node at `list_indices_offset` + relative byte offset.
  */
 func (this *Gff_ResolvedField) ListEntry() (v *Gff_ListEntry, err error) {
 	if (this._f_listEntry) {
 		return this.listEntry, nil
 	}
 	this._f_listEntry = true
-	tmp41, err := this.Entry()
+	tmp60, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp41.FieldType == Gff_GffFieldType__List) {
+	if (tmp60.FieldType == BiowareGffCommon_GffFieldType__List) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp42, err := this.Entry()
+		tmp61, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.ListIndicesOffset + tmp42.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.ListIndicesOffset + tmp61.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp43 := NewGff_ListEntry()
-		err = tmp43.Read(this._io, this, this._root)
+		tmp62 := NewGff_ListEntry()
+		err = tmp62.Read(this._io, this, this._root)
 		if err != nil {
 			return nil, err
 		}
-		this.listEntry = tmp43
+		this.listEntry = tmp62
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return nil, err
@@ -1155,66 +1551,70 @@ func (this *Gff_ResolvedField) ListEntry() (v *Gff_ListEntry, err error) {
 }
 
 /**
- * Resolved structs referenced by this list
+ * Child structs for this list; indices from `list_entry.struct_indices`.
  */
 func (this *Gff_ResolvedField) ListStructs() (v []*Gff_ResolvedStruct, err error) {
 	if (this._f_listStructs) {
 		return this.listStructs, nil
 	}
 	this._f_listStructs = true
-	tmp44, err := this.Entry()
+	tmp63, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp44.FieldType == Gff_GffFieldType__List) {
-		tmp45, err := this.ListEntry()
+	if (tmp63.FieldType == BiowareGffCommon_GffFieldType__List) {
+		tmp64, err := this.ListEntry()
 		if err != nil {
 			return nil, err
 		}
-		for i := 0; i < int(tmp45.NumStructIndices); i++ {
+		for i := 0; i < int(tmp64.NumStructIndices); i++ {
 			_ = i
-			tmp46, err := this.ListEntry()
+			tmp65, err := this.ListEntry()
 			if err != nil {
 				return nil, err
 			}
-			tmp47 := NewGff_ResolvedStruct(tmp46.StructIndices[i])
-			err = tmp47.Read(this._io, this, this._root)
+			tmp66 := NewGff_ResolvedStruct(tmp65.StructIndices[i])
+			err = tmp66.Read(this._io, this, this._root)
 			if err != nil {
 				return nil, err
 			}
-			this.listStructs = append(this.listStructs, tmp47)
+			this.listStructs = append(this.listStructs, tmp66)
 		}
 	}
 	return this.listStructs, nil
 }
+
+/**
+ * `GFFFieldTypes` 13 — binary (`bioware_binary_data`).
+ */
 func (this *Gff_ResolvedField) ValueBinary() (v *BiowareCommon_BiowareBinaryData, err error) {
 	if (this._f_valueBinary) {
 		return this.valueBinary, nil
 	}
 	this._f_valueBinary = true
-	tmp48, err := this.Entry()
+	tmp67, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp48.FieldType == Gff_GffFieldType__Binary) {
+	if (tmp67.FieldType == BiowareGffCommon_GffFieldType__Binary) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp49, err := this.Entry()
+		tmp68, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp49.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp68.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp50 := NewBiowareCommon_BiowareBinaryData()
-		err = tmp50.Read(this._io, nil, nil)
+		tmp69 := NewBiowareCommon_BiowareBinaryData()
+		err = tmp69.Read(this._io, nil, nil)
 		if err != nil {
 			return nil, err
 		}
-		this.valueBinary = tmp50
+		this.valueBinary = tmp69
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return nil, err
@@ -1222,33 +1622,37 @@ func (this *Gff_ResolvedField) ValueBinary() (v *BiowareCommon_BiowareBinaryData
 	}
 	return this.valueBinary, nil
 }
+
+/**
+ * `GFFFieldTypes` 9 (double).
+ */
 func (this *Gff_ResolvedField) ValueDouble() (v float64, err error) {
 	if (this._f_valueDouble) {
 		return this.valueDouble, nil
 	}
 	this._f_valueDouble = true
-	tmp51, err := this.Entry()
+	tmp70, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp51.FieldType == Gff_GffFieldType__Double) {
+	if (tmp70.FieldType == BiowareGffCommon_GffFieldType__Double) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp52, err := this.Entry()
+		tmp71, err := this.Entry()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp52.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp71.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp53, err := this._io.ReadF8le()
+		tmp72, err := this._io.ReadF8le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueDouble = tmp53
+		this.valueDouble = tmp72
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1256,33 +1660,37 @@ func (this *Gff_ResolvedField) ValueDouble() (v float64, err error) {
 	}
 	return this.valueDouble, nil
 }
+
+/**
+ * `GFFFieldTypes` 3 (INT16 LE at +8).
+ */
 func (this *Gff_ResolvedField) ValueInt16() (v int16, err error) {
 	if (this._f_valueInt16) {
 		return this.valueInt16, nil
 	}
 	this._f_valueInt16 = true
-	tmp54, err := this.Entry()
+	tmp73, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp54.FieldType == Gff_GffFieldType__Int16) {
+	if (tmp73.FieldType == BiowareGffCommon_GffFieldType__Int16) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp55, err := this.FieldEntryPos()
+		tmp74, err := this.FieldEntryPos()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(tmp55 + 8), io.SeekStart)
+		_, err = this._io.Seek(int64(tmp74 + 8), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp56, err := this._io.ReadS2le()
+		tmp75, err := this._io.ReadS2le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueInt16 = tmp56
+		this.valueInt16 = tmp75
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1290,33 +1698,37 @@ func (this *Gff_ResolvedField) ValueInt16() (v int16, err error) {
 	}
 	return this.valueInt16, nil
 }
+
+/**
+ * `GFFFieldTypes` 5. `ReadFieldINT` @ `0x00411c90` after lookup.
+ */
 func (this *Gff_ResolvedField) ValueInt32() (v int32, err error) {
 	if (this._f_valueInt32) {
 		return this.valueInt32, nil
 	}
 	this._f_valueInt32 = true
-	tmp57, err := this.Entry()
+	tmp76, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp57.FieldType == Gff_GffFieldType__Int32) {
+	if (tmp76.FieldType == BiowareGffCommon_GffFieldType__Int32) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp58, err := this.FieldEntryPos()
+		tmp77, err := this.FieldEntryPos()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(tmp58 + 8), io.SeekStart)
+		_, err = this._io.Seek(int64(tmp77 + 8), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp59, err := this._io.ReadS4le()
+		tmp78, err := this._io.ReadS4le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueInt32 = tmp59
+		this.valueInt32 = tmp78
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1324,33 +1736,37 @@ func (this *Gff_ResolvedField) ValueInt32() (v int32, err error) {
 	}
 	return this.valueInt32, nil
 }
+
+/**
+ * `GFFFieldTypes` 7 (INT64).
+ */
 func (this *Gff_ResolvedField) ValueInt64() (v int64, err error) {
 	if (this._f_valueInt64) {
 		return this.valueInt64, nil
 	}
 	this._f_valueInt64 = true
-	tmp60, err := this.Entry()
+	tmp79, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp60.FieldType == Gff_GffFieldType__Int64) {
+	if (tmp79.FieldType == BiowareGffCommon_GffFieldType__Int64) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp61, err := this.Entry()
+		tmp80, err := this.Entry()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp61.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp80.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp62, err := this._io.ReadS8le()
+		tmp81, err := this._io.ReadS8le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueInt64 = tmp62
+		this.valueInt64 = tmp81
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1358,33 +1774,37 @@ func (this *Gff_ResolvedField) ValueInt64() (v int64, err error) {
 	}
 	return this.valueInt64, nil
 }
+
+/**
+ * `GFFFieldTypes` 1 (INT8 in low byte of slot).
+ */
 func (this *Gff_ResolvedField) ValueInt8() (v int8, err error) {
 	if (this._f_valueInt8) {
 		return this.valueInt8, nil
 	}
 	this._f_valueInt8 = true
-	tmp63, err := this.Entry()
+	tmp82, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp63.FieldType == Gff_GffFieldType__Int8) {
+	if (tmp82.FieldType == BiowareGffCommon_GffFieldType__Int8) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp64, err := this.FieldEntryPos()
+		tmp83, err := this.FieldEntryPos()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(tmp64 + 8), io.SeekStart)
+		_, err = this._io.Seek(int64(tmp83 + 8), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp65, err := this._io.ReadS1()
+		tmp84, err := this._io.ReadS1()
 		if err != nil {
 			return 0, err
 		}
-		this.valueInt8 = tmp65
+		this.valueInt8 = tmp84
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1392,34 +1812,38 @@ func (this *Gff_ResolvedField) ValueInt8() (v int8, err error) {
 	}
 	return this.valueInt8, nil
 }
+
+/**
+ * `GFFFieldTypes` 12 — CExoLocString (`bioware_locstring`).
+ */
 func (this *Gff_ResolvedField) ValueLocalizedString() (v *BiowareCommon_BiowareLocstring, err error) {
 	if (this._f_valueLocalizedString) {
 		return this.valueLocalizedString, nil
 	}
 	this._f_valueLocalizedString = true
-	tmp66, err := this.Entry()
+	tmp85, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp66.FieldType == Gff_GffFieldType__LocalizedString) {
+	if (tmp85.FieldType == BiowareGffCommon_GffFieldType__LocalizedString) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp67, err := this.Entry()
+		tmp86, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp67.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp86.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp68 := NewBiowareCommon_BiowareLocstring()
-		err = tmp68.Read(this._io, nil, nil)
+		tmp87 := NewBiowareCommon_BiowareLocstring()
+		err = tmp87.Read(this._io, nil, nil)
 		if err != nil {
 			return nil, err
 		}
-		this.valueLocalizedString = tmp68
+		this.valueLocalizedString = tmp87
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return nil, err
@@ -1427,34 +1851,38 @@ func (this *Gff_ResolvedField) ValueLocalizedString() (v *BiowareCommon_BiowareL
 	}
 	return this.valueLocalizedString, nil
 }
+
+/**
+ * `GFFFieldTypes` 11 — ResRef (`bioware_resref`).
+ */
 func (this *Gff_ResolvedField) ValueResref() (v *BiowareCommon_BiowareResref, err error) {
 	if (this._f_valueResref) {
 		return this.valueResref, nil
 	}
 	this._f_valueResref = true
-	tmp69, err := this.Entry()
+	tmp88, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp69.FieldType == Gff_GffFieldType__Resref) {
+	if (tmp88.FieldType == BiowareGffCommon_GffFieldType__Resref) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp70, err := this.Entry()
+		tmp89, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp70.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp89.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp71 := NewBiowareCommon_BiowareResref()
-		err = tmp71.Read(this._io, nil, nil)
+		tmp90 := NewBiowareCommon_BiowareResref()
+		err = tmp90.Read(this._io, nil, nil)
 		if err != nil {
 			return nil, err
 		}
-		this.valueResref = tmp71
+		this.valueResref = tmp90
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return nil, err
@@ -1462,33 +1890,37 @@ func (this *Gff_ResolvedField) ValueResref() (v *BiowareCommon_BiowareResref, er
 	}
 	return this.valueResref, nil
 }
+
+/**
+ * `GFFFieldTypes` 8 (32-bit float).
+ */
 func (this *Gff_ResolvedField) ValueSingle() (v float32, err error) {
 	if (this._f_valueSingle) {
 		return this.valueSingle, nil
 	}
 	this._f_valueSingle = true
-	tmp72, err := this.Entry()
+	tmp91, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp72.FieldType == Gff_GffFieldType__Single) {
+	if (tmp91.FieldType == BiowareGffCommon_GffFieldType__Single) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp73, err := this.FieldEntryPos()
+		tmp92, err := this.FieldEntryPos()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(tmp73 + 8), io.SeekStart)
+		_, err = this._io.Seek(int64(tmp92 + 8), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp74, err := this._io.ReadF4le()
+		tmp93, err := this._io.ReadF4le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueSingle = tmp74
+		this.valueSingle = tmp93
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1496,34 +1928,80 @@ func (this *Gff_ResolvedField) ValueSingle() (v float32, err error) {
 	}
 	return this.valueSingle, nil
 }
+
+/**
+ * `GFFFieldTypes` 18 — TLK StrRef inline (same 4-byte width as type 5; distinct meaning).
+ * `0xFFFFFFFF` often unset. Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types and https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#string-references-strref
+ * **reone** implements `StrRef` as **`field_data`-relative** (`readStrRefFieldData`), not as an inline dword at +8: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L141-L143 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L199-L204 (treat as cross-engine / cross-tool variance when porting assets).
+ * Historical KotOR editor discussion (type list / StrRef): https://www.lucasforumsarchive.com/thread/149407 — https://deadlystream.com/files/file/719-k-gff/
+ * PyKotor reader gap (no `elif` for 18): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L273
+ */
+func (this *Gff_ResolvedField) ValueStrRef() (v uint32, err error) {
+	if (this._f_valueStrRef) {
+		return this.valueStrRef, nil
+	}
+	this._f_valueStrRef = true
+	tmp94, err := this.Entry()
+	if err != nil {
+		return 0, err
+	}
+	if (tmp94.FieldType == BiowareGffCommon_GffFieldType__StrRef) {
+		_pos, err := this._io.Pos()
+		if err != nil {
+			return 0, err
+		}
+		tmp95, err := this.FieldEntryPos()
+		if err != nil {
+			return 0, err
+		}
+		_, err = this._io.Seek(int64(tmp95 + 8), io.SeekStart)
+		if err != nil {
+			return 0, err
+		}
+		tmp96, err := this._io.ReadU4le()
+		if err != nil {
+			return 0, err
+		}
+		this.valueStrRef = tmp96
+		_, err = this._io.Seek(_pos, io.SeekStart)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return this.valueStrRef, nil
+}
+
+/**
+ * `GFFFieldTypes` 10 — CExoString (`bioware_cexo_string`).
+ */
 func (this *Gff_ResolvedField) ValueString() (v *BiowareCommon_BiowareCexoString, err error) {
 	if (this._f_valueString) {
 		return this.valueString, nil
 	}
 	this._f_valueString = true
-	tmp75, err := this.Entry()
+	tmp97, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp75.FieldType == Gff_GffFieldType__String) {
+	if (tmp97.FieldType == BiowareGffCommon_GffFieldType__String) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp76, err := this.Entry()
+		tmp98, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp76.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp98.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp77 := NewBiowareCommon_BiowareCexoString()
-		err = tmp77.Read(this._io, nil, nil)
+		tmp99 := NewBiowareCommon_BiowareCexoString()
+		err = tmp99.Read(this._io, nil, nil)
 		if err != nil {
 			return nil, err
 		}
-		this.valueString = tmp77
+		this.valueString = tmp99
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return nil, err
@@ -1533,58 +2011,62 @@ func (this *Gff_ResolvedField) ValueString() (v *BiowareCommon_BiowareCexoString
 }
 
 /**
- * Nested struct (struct index = entry.data_or_offset)
+ * `GFFFieldTypes` 14 — `data_or_data_offset` is struct row index.
  */
 func (this *Gff_ResolvedField) ValueStruct() (v *Gff_ResolvedStruct, err error) {
 	if (this._f_valueStruct) {
 		return this.valueStruct, nil
 	}
 	this._f_valueStruct = true
-	tmp78, err := this.Entry()
+	tmp100, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp78.FieldType == Gff_GffFieldType__Struct) {
-		tmp79, err := this.Entry()
+	if (tmp100.FieldType == BiowareGffCommon_GffFieldType__Struct) {
+		tmp101, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		tmp80 := NewGff_ResolvedStruct(tmp79.DataOrOffset)
-		err = tmp80.Read(this._io, this, this._root)
+		tmp102 := NewGff_ResolvedStruct(tmp101.DataOrOffset)
+		err = tmp102.Read(this._io, this, this._root)
 		if err != nil {
 			return nil, err
 		}
-		this.valueStruct = tmp80
+		this.valueStruct = tmp102
 	}
 	return this.valueStruct, nil
 }
+
+/**
+ * `GFFFieldTypes` 2 (UINT16 LE at +8).
+ */
 func (this *Gff_ResolvedField) ValueUint16() (v uint16, err error) {
 	if (this._f_valueUint16) {
 		return this.valueUint16, nil
 	}
 	this._f_valueUint16 = true
-	tmp81, err := this.Entry()
+	tmp103, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp81.FieldType == Gff_GffFieldType__Uint16) {
+	if (tmp103.FieldType == BiowareGffCommon_GffFieldType__Uint16) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp82, err := this.FieldEntryPos()
+		tmp104, err := this.FieldEntryPos()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(tmp82 + 8), io.SeekStart)
+		_, err = this._io.Seek(int64(tmp104 + 8), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp83, err := this._io.ReadU2le()
+		tmp105, err := this._io.ReadU2le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueUint16 = tmp83
+		this.valueUint16 = tmp105
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1592,33 +2074,37 @@ func (this *Gff_ResolvedField) ValueUint16() (v uint16, err error) {
 	}
 	return this.valueUint16, nil
 }
+
+/**
+ * `GFFFieldTypes` 4 (full inline DWORD).
+ */
 func (this *Gff_ResolvedField) ValueUint32() (v uint32, err error) {
 	if (this._f_valueUint32) {
 		return this.valueUint32, nil
 	}
 	this._f_valueUint32 = true
-	tmp84, err := this.Entry()
+	tmp106, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp84.FieldType == Gff_GffFieldType__Uint32) {
+	if (tmp106.FieldType == BiowareGffCommon_GffFieldType__Uint32) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp85, err := this.FieldEntryPos()
+		tmp107, err := this.FieldEntryPos()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(tmp85 + 8), io.SeekStart)
+		_, err = this._io.Seek(int64(tmp107 + 8), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp86, err := this._io.ReadU4le()
+		tmp108, err := this._io.ReadU4le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueUint32 = tmp86
+		this.valueUint32 = tmp108
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1626,33 +2112,37 @@ func (this *Gff_ResolvedField) ValueUint32() (v uint32, err error) {
 	}
 	return this.valueUint32, nil
 }
+
+/**
+ * `GFFFieldTypes` 6 (UINT64 at `field_data` + relative offset).
+ */
 func (this *Gff_ResolvedField) ValueUint64() (v uint64, err error) {
 	if (this._f_valueUint64) {
 		return this.valueUint64, nil
 	}
 	this._f_valueUint64 = true
-	tmp87, err := this.Entry()
+	tmp109, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp87.FieldType == Gff_GffFieldType__Uint64) {
+	if (tmp109.FieldType == BiowareGffCommon_GffFieldType__Uint64) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp88, err := this.Entry()
+		tmp110, err := this.Entry()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp88.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp110.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp89, err := this._io.ReadU8le()
+		tmp111, err := this._io.ReadU8le()
 		if err != nil {
 			return 0, err
 		}
-		this.valueUint64 = tmp89
+		this.valueUint64 = tmp111
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1660,33 +2150,37 @@ func (this *Gff_ResolvedField) ValueUint64() (v uint64, err error) {
 	}
 	return this.valueUint64, nil
 }
+
+/**
+ * `GFFFieldTypes` 0 (UINT8). Engine: `ReadFieldBYTE` @ `0x00411a60` after lookup.
+ */
 func (this *Gff_ResolvedField) ValueUint8() (v uint8, err error) {
 	if (this._f_valueUint8) {
 		return this.valueUint8, nil
 	}
 	this._f_valueUint8 = true
-	tmp90, err := this.Entry()
+	tmp112, err := this.Entry()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp90.FieldType == Gff_GffFieldType__Uint8) {
+	if (tmp112.FieldType == BiowareGffCommon_GffFieldType__Uint8) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return 0, err
 		}
-		tmp91, err := this.FieldEntryPos()
+		tmp113, err := this.FieldEntryPos()
 		if err != nil {
 			return 0, err
 		}
-		_, err = this._io.Seek(int64(tmp91 + 8), io.SeekStart)
+		_, err = this._io.Seek(int64(tmp113 + 8), io.SeekStart)
 		if err != nil {
 			return 0, err
 		}
-		tmp92, err := this._io.ReadU1()
+		tmp114, err := this._io.ReadU1()
 		if err != nil {
 			return 0, err
 		}
-		this.valueUint8 = tmp92
+		this.valueUint8 = tmp114
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return 0, err
@@ -1694,34 +2188,38 @@ func (this *Gff_ResolvedField) ValueUint8() (v uint8, err error) {
 	}
 	return this.valueUint8, nil
 }
+
+/**
+ * `GFFFieldTypes` 17 — three floats (`bioware_vector3`).
+ */
 func (this *Gff_ResolvedField) ValueVector3() (v *BiowareCommon_BiowareVector3, err error) {
 	if (this._f_valueVector3) {
 		return this.valueVector3, nil
 	}
 	this._f_valueVector3 = true
-	tmp93, err := this.Entry()
+	tmp115, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp93.FieldType == Gff_GffFieldType__Vector3) {
+	if (tmp115.FieldType == BiowareGffCommon_GffFieldType__Vector3) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp94, err := this.Entry()
+		tmp116, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp94.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp116.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp95 := NewBiowareCommon_BiowareVector3()
-		err = tmp95.Read(this._io, nil, nil)
+		tmp117 := NewBiowareCommon_BiowareVector3()
+		err = tmp117.Read(this._io, nil, nil)
 		if err != nil {
 			return nil, err
 		}
-		this.valueVector3 = tmp95
+		this.valueVector3 = tmp117
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return nil, err
@@ -1729,34 +2227,38 @@ func (this *Gff_ResolvedField) ValueVector3() (v *BiowareCommon_BiowareVector3, 
 	}
 	return this.valueVector3, nil
 }
+
+/**
+ * `GFFFieldTypes` 16 — four floats (`bioware_vector4`).
+ */
 func (this *Gff_ResolvedField) ValueVector4() (v *BiowareCommon_BiowareVector4, err error) {
 	if (this._f_valueVector4) {
 		return this.valueVector4, nil
 	}
 	this._f_valueVector4 = true
-	tmp96, err := this.Entry()
+	tmp118, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp96.FieldType == Gff_GffFieldType__Vector4) {
+	if (tmp118.FieldType == BiowareGffCommon_GffFieldType__Vector4) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp97, err := this.Entry()
+		tmp119, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldDataOffset + tmp97.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldDataOffset + tmp119.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp98 := NewBiowareCommon_BiowareVector4()
-		err = tmp98.Read(this._io, nil, nil)
+		tmp120 := NewBiowareCommon_BiowareVector4()
+		err = tmp120.Read(this._io, nil, nil)
 		if err != nil {
 			return nil, err
 		}
-		this.valueVector4 = tmp98
+		this.valueVector4 = tmp120
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
 			return nil, err
@@ -1766,8 +2268,8 @@ func (this *Gff_ResolvedField) ValueVector4() (v *BiowareCommon_BiowareVector4, 
 }
 
 /**
- * A decoded struct node: resolves field indices -> field entries -> typed values,
- * and recursively resolves nested structs and lists.
+ * Kaitai composition: expands one `GFFStructData` row into child `resolved_field`s (recursive).
+ * On-disk row remains at `struct_offset + struct_index * 12`.
  */
 type Gff_ResolvedStruct struct {
 	StructIndex uint32
@@ -1802,7 +2304,7 @@ func (this *Gff_ResolvedStruct) Read(io *kaitai.Stream, parent kaitai.Struct, ro
 }
 
 /**
- * Raw struct entry at struct_index
+ * Raw `GFFStructData` (Ghidra 12-byte layout).
  */
 func (this *Gff_ResolvedStruct) Entry() (v *Gff_StructEntry, err error) {
 	if (this._f_entry) {
@@ -1813,16 +2315,16 @@ func (this *Gff_ResolvedStruct) Entry() (v *Gff_StructEntry, err error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = this._io.Seek(int64(this._root.Header.StructOffset + this.StructIndex * 12), io.SeekStart)
+	_, err = this._io.Seek(int64(this._root.File.Gff3.Header.StructOffset + this.StructIndex * 12), io.SeekStart)
 	if err != nil {
 		return nil, err
 	}
-	tmp99 := NewGff_StructEntry()
-	err = tmp99.Read(this._io, this, this._root)
+	tmp121 := NewGff_StructEntry()
+	err = tmp121.Read(this._io, this, this._root)
 	if err != nil {
 		return nil, err
 	}
-	this.entry = tmp99
+	this.entry = tmp121
 	_, err = this._io.Seek(_pos, io.SeekStart)
 	if err != nil {
 		return nil, err
@@ -1831,42 +2333,42 @@ func (this *Gff_ResolvedStruct) Entry() (v *Gff_StructEntry, err error) {
 }
 
 /**
- * Field indices for this struct (only present when field_count > 1).
- * When field_count == 1, the single field index is stored directly in entry.data_or_offset.
+ * Contiguous `u4` slice when `field_count > 1`; absolute pos = `field_indices_offset` + `data_or_offset`.
+ * Length = `field_count`. If `field_count == 1`, the sole index is `data_or_offset` (see `single_field`).
  */
 func (this *Gff_ResolvedStruct) FieldIndices() (v []uint32, err error) {
 	if (this._f_fieldIndices) {
 		return this.fieldIndices, nil
 	}
 	this._f_fieldIndices = true
-	tmp100, err := this.Entry()
+	tmp122, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp100.FieldCount > 1) {
+	if (tmp122.FieldCount > 1) {
 		_pos, err := this._io.Pos()
 		if err != nil {
 			return nil, err
 		}
-		tmp101, err := this.Entry()
+		tmp123, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		_, err = this._io.Seek(int64(this._root.Header.FieldIndicesOffset + tmp101.DataOrOffset), io.SeekStart)
+		_, err = this._io.Seek(int64(this._root.File.Gff3.Header.FieldIndicesOffset + tmp123.DataOrOffset), io.SeekStart)
 		if err != nil {
 			return nil, err
 		}
-		tmp102, err := this.Entry()
+		tmp124, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		for i := 0; i < int(tmp102.FieldCount); i++ {
+		for i := 0; i < int(tmp124.FieldCount); i++ {
 			_ = i
-			tmp103, err := this._io.ReadU4le()
+			tmp125, err := this._io.ReadU4le()
 			if err != nil {
 				return nil, err
 			}
-			this.fieldIndices = append(this.fieldIndices, tmp103)
+			this.fieldIndices = append(this.fieldIndices, tmp125)
 		}
 		_, err = this._io.Seek(_pos, io.SeekStart)
 		if err != nil {
@@ -1877,70 +2379,75 @@ func (this *Gff_ResolvedStruct) FieldIndices() (v []uint32, err error) {
 }
 
 /**
- * Resolved fields (multi-field struct)
+ * One `resolved_field` per entry in `field_indices`.
  */
 func (this *Gff_ResolvedStruct) Fields() (v []*Gff_ResolvedField, err error) {
 	if (this._f_fields) {
 		return this.fields, nil
 	}
 	this._f_fields = true
-	tmp104, err := this.Entry()
+	tmp126, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp104.FieldCount > 1) {
-		tmp105, err := this.Entry()
+	if (tmp126.FieldCount > 1) {
+		tmp127, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		for i := 0; i < int(tmp105.FieldCount); i++ {
+		for i := 0; i < int(tmp127.FieldCount); i++ {
 			_ = i
-			tmp106, err := this.FieldIndices()
+			tmp128, err := this.FieldIndices()
 			if err != nil {
 				return nil, err
 			}
-			tmp107 := NewGff_ResolvedField(tmp106[i])
-			err = tmp107.Read(this._io, this, this._root)
+			tmp129 := NewGff_ResolvedField(tmp128[i])
+			err = tmp129.Read(this._io, this, this._root)
 			if err != nil {
 				return nil, err
 			}
-			this.fields = append(this.fields, tmp107)
+			this.fields = append(this.fields, tmp129)
 		}
 	}
 	return this.fields, nil
 }
 
 /**
- * Resolved field (single-field struct)
+ * `field_count == 1`: `data_or_offset` is the field dictionary index (not an offset into `field_indices`).
  */
 func (this *Gff_ResolvedStruct) SingleField() (v *Gff_ResolvedField, err error) {
 	if (this._f_singleField) {
 		return this.singleField, nil
 	}
 	this._f_singleField = true
-	tmp108, err := this.Entry()
+	tmp130, err := this.Entry()
 	if err != nil {
 		return nil, err
 	}
-	if (tmp108.FieldCount == 1) {
-		tmp109, err := this.Entry()
+	if (tmp130.FieldCount == 1) {
+		tmp131, err := this.Entry()
 		if err != nil {
 			return nil, err
 		}
-		tmp110 := NewGff_ResolvedField(tmp109.DataOrOffset)
-		err = tmp110.Read(this._io, this, this._root)
+		tmp132 := NewGff_ResolvedField(tmp131.DataOrOffset)
+		err = tmp132.Read(this._io, this, this._root)
 		if err != nil {
 			return nil, err
 		}
-		this.singleField = tmp110
+		this.singleField = tmp132
 	}
 	return this.singleField, nil
 }
+
+/**
+ * Table of `GFFStructData` rows (`struct_count` × 12 bytes at `struct_offset`). Ghidra name `GFFStructData`.
+ * Cross-check: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L122-L127 (seek row base L122; three `u32` L123–L127) — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L47-L51
+ */
 type Gff_StructArray struct {
 	Entries []*Gff_StructEntry
 	_io *kaitai.Stream
 	_root *Gff
-	_parent *Gff
+	_parent *Gff_Gff3AfterAurora
 }
 func NewGff_StructArray() *Gff_StructArray {
 	return &Gff_StructArray{
@@ -1951,28 +2458,33 @@ func (this Gff_StructArray) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *Gff_StructArray) Read(io *kaitai.Stream, parent *Gff, root *Gff) (err error) {
+func (this *Gff_StructArray) Read(io *kaitai.Stream, parent *Gff_Gff3AfterAurora, root *Gff) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
 
-	for i := 0; i < int(this._root.Header.StructCount); i++ {
+	for i := 0; i < int(this._root.File.Gff3.Header.StructCount); i++ {
 		_ = i
-		tmp111 := NewGff_StructEntry()
-		err = tmp111.Read(this._io, this, this._root)
+		tmp133 := NewGff_StructEntry()
+		err = tmp133.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.Entries = append(this.Entries, tmp111)
+		this.Entries = append(this.Entries, tmp133)
 	}
 	return err
 }
 
 /**
- * Array of struct entries (12 bytes each)
+ * Repeated `struct_entry` (`GFFStructData`); count from `struct_count`, base `struct_offset`.
+ * Stride 12 bytes per struct (matches Ghidra component sizes).
+ */
+
+/**
+ * One `GFFStructData` row: `id` (+0), `data_or_data_offset` (+4), `field_count` (+8). Drives single-field vs multi-field indexing.
  */
 type Gff_StructEntry struct {
-	StructId int32
+	StructId uint32
 	DataOrOffset uint32
 	FieldCount uint32
 	_io *kaitai.Stream
@@ -2001,44 +2513,44 @@ func (this *Gff_StructEntry) Read(io *kaitai.Stream, parent kaitai.Struct, root 
 	this._parent = parent
 	this._root = root
 
-	tmp112, err := this._io.ReadS4le()
+	tmp134, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.StructId = int32(tmp112)
-	tmp113, err := this._io.ReadU4le()
+	this.StructId = uint32(tmp134)
+	tmp135, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.DataOrOffset = uint32(tmp113)
-	tmp114, err := this._io.ReadU4le()
+	this.DataOrOffset = uint32(tmp135)
+	tmp136, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.FieldCount = uint32(tmp114)
+	this.FieldCount = uint32(tmp136)
 	return err
 }
 
 /**
- * Byte offset into field_indices_array when struct has multiple fields
+ * Alias of `data_or_offset` when `field_count > 1`; added to `field_indices_offset` header field for absolute file pos.
  */
 func (this *Gff_StructEntry) FieldIndicesOffset() (v uint32, err error) {
 	if (this._f_fieldIndicesOffset) {
 		return this.fieldIndicesOffset, nil
 	}
 	this._f_fieldIndicesOffset = true
-	tmp115, err := this.HasMultipleFields()
+	tmp137, err := this.HasMultipleFields()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp115) {
+	if (tmp137) {
 		this.fieldIndicesOffset = uint32(this.DataOrOffset)
 	}
 	return this.fieldIndicesOffset, nil
 }
 
 /**
- * True if struct has multiple fields (offset to field indices in data_or_offset)
+ * Derived: `field_count > 1` ⇒ `data_or_data_offset` is byte offset into the flat `field_indices_array` stream.
  */
 func (this *Gff_StructEntry) HasMultipleFields() (v bool, err error) {
 	if (this._f_hasMultipleFields) {
@@ -2050,7 +2562,8 @@ func (this *Gff_StructEntry) HasMultipleFields() (v bool, err error) {
 }
 
 /**
- * True if struct has exactly one field (direct field index in data_or_offset)
+ * Derived: `GFFStructData.field_count == 1` ⇒ `data_or_data_offset` holds a direct index into the field dictionary.
+ * Same access pattern: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#struct-array
  */
 func (this *Gff_StructEntry) HasSingleField() (v bool, err error) {
 	if (this._f_hasSingleField) {
@@ -2062,31 +2575,34 @@ func (this *Gff_StructEntry) HasSingleField() (v bool, err error) {
 }
 
 /**
- * Direct field index when struct has exactly one field
+ * Alias of `data_or_offset` when `field_count == 1`; indexes `field_array.entries[index]`.
  */
 func (this *Gff_StructEntry) SingleFieldIndex() (v uint32, err error) {
 	if (this._f_singleFieldIndex) {
 		return this.singleFieldIndex, nil
 	}
 	this._f_singleFieldIndex = true
-	tmp116, err := this.HasSingleField()
+	tmp138, err := this.HasSingleField()
 	if err != nil {
 		return 0, err
 	}
-	if (tmp116) {
+	if (tmp138) {
 		this.singleFieldIndex = uint32(this.DataOrOffset)
 	}
 	return this.singleFieldIndex, nil
 }
 
 /**
- * Structure type identifier. Often 0xFFFFFFFF (-1) for generic structs.
- * Used to identify struct types in schema-aware parsers.
+ * Structure type identifier.
+ * Source: Ghidra `GFFStructData.id` @ +0x0 on `/K1/k1_win_gog_swkotor.exe`.
+ * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#struct-array
+ * 0xFFFFFFFF is the conventional "generic" / unset id in KotOR data; other values are schema-specific.
  */
 
 /**
  * Field index (if field_count == 1) or byte offset to field indices array (if field_count > 1).
  * If field_count == 0, this value is unused.
+ * Source: Ghidra `GFFStructData.data_or_data_offset` @ +0x4 (matches engine naming; same 4-byte slot as here).
  */
 
 /**
@@ -2094,4 +2610,5 @@ func (this *Gff_StructEntry) SingleFieldIndex() (v uint32, err error) {
  * - 0: No fields
  * - 1: Single field, data_or_offset contains the field index directly
  * - >1: Multiple fields, data_or_offset contains byte offset into field_indices_array
+ * Source: Ghidra `GFFStructData.field_count` @ +0x8 (ulong).
  */

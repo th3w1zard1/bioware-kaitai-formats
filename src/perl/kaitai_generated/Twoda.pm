@@ -39,7 +39,11 @@ sub _read {
     $self->{column_headers_raw} = Encode::decode("ASCII", $self->{_io}->read_bytes_term(0, 0, 1, 1));
     $self->{row_count} = $self->{_io}->read_u4le();
     $self->{row_labels_section} = Twoda::RowLabelsSection->new($self->{_io}, $self, $self->{_root});
-    $self->{cell_offsets_array} = Twoda::CellOffsetsArray->new($self->{_io}, $self, $self->{_root});
+    $self->{cell_offsets} = [];
+    my $n_cell_offsets = $self->row_count() * $self->column_count();
+    for (my $i = 0; $i < $n_cell_offsets; $i++) {
+        push @{$self->{cell_offsets}}, $self->{_io}->read_u2le();
+    }
     $self->{len_cell_values_section} = $self->{_io}->read_u2le();
     $self->{_raw_cell_values_section} = $self->{_io}->read_bytes($self->len_cell_values_section());
     my $io__raw_cell_values_section = IO::KaitaiStruct::Stream->new($self->{_raw_cell_values_section});
@@ -66,9 +70,9 @@ sub row_labels_section {
     return $self->{row_labels_section};
 }
 
-sub cell_offsets_array {
+sub cell_offsets {
     my ($self) = @_;
-    return $self->{cell_offsets_array};
+    return $self->{cell_offsets};
 }
 
 sub len_cell_values_section {
@@ -81,54 +85,14 @@ sub cell_values_section {
     return $self->{cell_values_section};
 }
 
+sub column_count {
+    my ($self) = @_;
+    return $self->{column_count};
+}
+
 sub _raw_cell_values_section {
     my ($self) = @_;
     return $self->{_raw_cell_values_section};
-}
-
-########################################################################
-package Twoda::CellOffsetsArray;
-
-our @ISA = 'IO::KaitaiStruct::Struct';
-
-sub from_file {
-    my ($class, $filename) = @_;
-    my $fd;
-
-    open($fd, '<', $filename) or return undef;
-    binmode($fd);
-    return new($class, IO::KaitaiStruct::Stream->new($fd));
-}
-
-sub new {
-    my ($class, $_io, $_parent, $_root) = @_;
-    my $self = IO::KaitaiStruct::Struct->new($_io);
-
-    bless $self, $class;
-    $self->{_parent} = $_parent;
-    $self->{_root} = $_root;
-
-    $self->_read();
-
-    return $self;
-}
-
-sub _read {
-    my ($self) = @_;
-
-    $self->{offsets} = [];
-    {
-        my $_it;
-        do {
-            $_it = $self->{_io}->read_u2le();
-            push @{$self->{offsets}}, $_it;
-        } until ($self->_io()->pos() >= $self->_io()->size() - 2);
-    }
-}
-
-sub offsets {
-    my ($self) = @_;
-    return $self->{offsets};
 }
 
 ########################################################################

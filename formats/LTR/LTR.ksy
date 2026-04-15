@@ -7,14 +7,21 @@ meta:
   imports:
     - ../Common/bioware_common
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CResLTR present; binary LTR wire format per PyKotor wiki.
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ltr/
+    github_openkotor_pykotor_io_ltr: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/ltr/io_ltr.py`:
+      **`LTRBinaryReader`** **44–131** (`load` **70–131**, KotOR path hard-requires **`letter_count == 28`** **104–108**); **`LTRBinaryWriter`** **134+** (`write` from **143**).
     reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L168
     xoreos_types_kfiletype_ltr: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101
     xoreos_ltr_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168
-    kotor_js: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LTRObject.ts#L52-L121
+    xoreos_ltr_read_letter_set: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L133
+    kotor_js_ltrobject_read_buffer: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LTRObject.ts#L51-L122
     kaitai_user_guide_enums: https://doc.kaitai.io/user_guide.html
     pykotor_wiki_ltr: https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format
     reone_ltrreader: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp#L27-L74
@@ -25,7 +32,12 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format PyKotor wiki — LTR"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168 xoreos — LTR::load"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ltr/io_ltr.py#L44-L155 PyKotor — `io_ltr` reader/writer (start of `write`)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101 xoreos — `kFileTypeLTR`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L133 xoreos — `LTRFile::readLetterSet`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168 xoreos — `LTRFile::load`"
+  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp#L27-L74 reone — `LtrReader::load` + `readLetterSet`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LTRObject.ts#L51-L122 KotOR.js — `LTRObject.readBuffer`"
 
 seq:
   - id: file_type
@@ -45,7 +57,7 @@ seq:
     enum: bioware_common::bioware_ltr_alphabet_length
     doc: |
       Alphabet size (`u1`). Canonical enum: `formats/Common/bioware_common.ksy` → `bioware_ltr_alphabet_length`
-      (26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide §6.4.5).
+      (26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide section 6.4.5).
   
   - id: single_letter_block
     type: letter_block

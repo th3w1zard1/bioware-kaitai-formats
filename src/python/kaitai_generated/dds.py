@@ -20,7 +20,7 @@ class Dds(KaitaiStruct):
     
     
     .. seealso::
-       PyKotor — TPCDDSReader - https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
+       PyKotor — TPCDDSReader - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Dds, self).__init__(_io)

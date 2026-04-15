@@ -3,13 +3,20 @@ meta:
   title: BioWare Type ID Enums (xoreos FileType + PyKotor ResourceType)
   license: MIT
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: archive entries use ResourceType (see CKeyTableEntry.type);
       numeric IDs align with xoreos_file_type_id / PyKotor ResourceType tables in this file.
-    xoreos_types: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
+    vendor_xoreos_trees_note: |
+      Local `vendor/xoreos`, `vendor/xoreos-tools`, and `vendor/xoreos-docs` may be **empty** until `git submodule update --init`
+      (see `docs/XOREOS_FORMAT_COVERAGE.md` section 0). Until populated, rely on GitHub `blob/master/...#L` anchors in `meta.xref` / `doc-ref`
+      and `scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges` for drift checks — not on-disk greps alone.
+    xoreos_types: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L443
     # Line anchors verified against upstream xoreos `master` (re-check if upstream moves).
     xoreos_types_file_type_comment: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55
-    xoreos_types_file_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394
+    xoreos_types_file_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L450
     xoreos_types_game_id_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
     xoreos_types_resource_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L410-L417
     xoreos_types_archive_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L419-L430
@@ -22,14 +29,19 @@ doc: |
   This file provides **exhaustive enum mappings** for resource/type identifiers used across
   BioWare-family games and their tooling ecosystems.
 
-  **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+  **Consumers:** KEY / ERF / RIM import `xoreos_file_type_id` from here instead of duplicating the archive
   type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
   `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
   Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
   mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
 
-  Why two enums?
-  - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
+  **xoreos naming (do not conflate):**
+  - `Aurora::ResourceType` in `types.h` is a **tiny media-class enum** (`kResourceImage` … `kResourceMAX`) — not archive numeric IDs.
+    It is mirrored here as `xoreos_resource_category` (`meta.xref.xoreos_types_resource_type_enum`).
+  - Archive **numeric restype** values come from `Aurora::FileType` (`kFileType*` constants) — mirrored here as `xoreos_file_type_id`.
+
+  Why two ID columns?
+  - `xoreos_file_type_id` mirrors xoreos `enum FileType` in `src/aurora/types.h` (`meta.xref.xoreos_types_file_type_enum`; full header band: `meta.xref.xoreos_types`) and is the
     canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
   - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
     and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
@@ -42,8 +54,19 @@ doc: |
     while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
   
   References:
-  - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
+  - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L443 xoreos — `types.h` (FileType comment + enums through `Platform`)
   - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+
+doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55 xoreos — `FileType` comment block"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L450 xoreos — `enum FileType` (engine-facing archive type IDs; includes post-`kFileTypeXEOSITEX` entries such as `kFileTypeWBM`)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408 xoreos — `enum GameID`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L410-L417 xoreos — `enum ResourceType`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L419-L430 xoreos — `enum ArchiveType`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L432-L443 xoreos — `enum Platform`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L316-L317 xoreos — `FXR` / `FXT` duplicate numeric key"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612 xoreos — `ResourceManager::addTypeAlias`"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py PyKotor — `ResourceType` + tooling-only extensions"
 
 enums:
   xoreos_file_type_id:
@@ -348,6 +371,7 @@ enums:
     30000: xds
     30001: wnd
     40000: xeositex
+    41000: wbm
   bioware_resource_type_id:
     -1: invalid
     0: res

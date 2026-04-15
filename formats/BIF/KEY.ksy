@@ -7,25 +7,43 @@ meta:
   imports:
     - ../Common/bioware_type_ids
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: runtime indexing uses CExoKeyTable / CKeyTableEntry (28B, ResRef + pointers + ResourceType);
       on-disk .key layout here remains the Aurora KEY V1 wire format (see PyKotor wiki).
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/key/
+    github_openkotor_pykotor_io_key: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/key/io_key.py`:
+      **`_load_key_from_kaitai`** **26–51**; legacy type/version checks **57–66**; **`KEYBinaryReader.load`** **136–143**; **`KEYBinaryWriter._write_header`** **164–183**.
+    github_openkotor_pykotor_key_data: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/key/key_data.py`:
+      **`FILE_TYPE` / `FILE_VERSION`** **228–229**; **`class KEY`** **219+**; **`BifEntry` / `KeyEntry`** models **60+** / **126+**.
     reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/keyreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp
+    github_modawan_reone_keyreader: |
+      https://github.com/modawan/reone — `src/libs/resource/format/keyreader.cpp`: **`KeyReader::load`** **26–35**; **`readFileEntry`** **48–59**; **`readKeyEntry`** **70+** (packed resource id split).
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
     xoreos_types_kfiletype_key: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L209
     xoreos_key_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
     xoreos_key_read_bif_list: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L90-L117
     xoreos_key_read_res_list: https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L119-L139
     pykotor_wiki_key: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#key
     xoreos_docs_torlack_key: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/key.html
+    github_xoreos_tools_unkeybif: https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L192-L210
+    github_xoreos_docs_keybif_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf
 doc: |
   **KEY** (key table): Aurora master index — BIF catalog rows + `(ResRef, ResourceType) → resource_id` map.
   Resource types use `bioware_type_ids`.
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#key PyKotor wiki — KEY"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88 xoreos — KEY::load"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/key/io_key.py#L26-L183 PyKotor — `io_key` (Kaitai + legacy + header write)"
+  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/keyreader.cpp#L26-L80 reone — `KeyReader`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88 xoreos — `KEYFile::load`"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L192-L210 xoreos-tools — `openKEYs` / `openKEYDataFiles`"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf xoreos-docs — KeyBIF_Format.pdf"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/key.html xoreos-docs — Torlack key.html"
 
 seq:
   - id: file_type

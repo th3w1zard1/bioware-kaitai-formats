@@ -7,26 +7,15 @@ class bzf_t;
 
 #include "kaitai/kaitaistruct.h"
 #include <stdint.h>
-#include <vector>
 
 #if KAITAI_STRUCT_VERSION < 11000L
 #error "Incompatible Kaitai Struct C++/STL API: version 0.11 or later is required"
 #endif
 
 /**
- * BZF (BioWare Zipped File) files are LZMA-compressed BIF files used primarily in iOS
- * (and maybe Android) ports of KotOR. The BZF header contains "BZF " + "V1.0", followed
- * by LZMA-compressed BIF data. Decompression reveals a standard BIF structure.
- * 
- * Format Structure:
- * - Header (8 bytes): File type signature "BZF " and version "V1.0"
- * - Compressed Data: LZMA-compressed BIF file data
- * 
- * After decompression, the data follows the standard BIF format structure.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/BIF-File-Format.md - BZF compression section
- * - BIF.ksy - Standard BIF format (decompressed BZF data matches this)
+ * **BZF**: `BZF ` + `V1.0` header, then **LZMA** payload that expands to a normal **BIF** (`BIF.ksy`). Common on
+ * mobile KotOR ports.
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bzf-compression PyKotor wiki — BZF (LZMA BIF)
  */
 
 class bzf_t : public kaitai::kstruct {
@@ -45,7 +34,7 @@ public:
 private:
     std::string m_file_type;
     std::string m_version;
-    std::vector<uint8_t>* m_compressed_data;
+    std::string m_compressed_data;
     bzf_t* m__root;
     kaitai::kstruct* m__parent;
 
@@ -62,11 +51,10 @@ public:
     std::string version() const { return m_version; }
 
     /**
-     * LZMA-compressed BIF file data.
-     * This data must be decompressed using LZMA algorithm to obtain the standard BIF structure.
-     * After decompression, the data can be parsed using the BIF format definition.
+     * LZMA-compressed BIF file data (single blob to EOF).
+     * Decompress with LZMA to obtain the standard BIF structure (see BIF.ksy).
      */
-    std::vector<uint8_t>* compressed_data() const { return m_compressed_data; }
+    std::string compressed_data() const { return m_compressed_data; }
     bzf_t* _root() const { return m__root; }
     kaitai::kstruct* _parent() const { return m__parent; }
 };

@@ -1,25 +1,17 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-using System.Collections.Generic;
+
 
 namespace Kaitai
 {
 
     /// <summary>
-    /// BZF (BioWare Zipped File) files are LZMA-compressed BIF files used primarily in iOS
-    /// (and maybe Android) ports of KotOR. The BZF header contains &quot;BZF &quot; + &quot;V1.0&quot;, followed
-    /// by LZMA-compressed BIF data. Decompression reveals a standard BIF structure.
-    /// 
-    /// Format Structure:
-    /// - Header (8 bytes): File type signature &quot;BZF &quot; and version &quot;V1.0&quot;
-    /// - Compressed Data: LZMA-compressed BIF file data
-    /// 
-    /// After decompression, the data follows the standard BIF format structure.
-    /// 
-    /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/wiki/BIF-File-Format.md - BZF compression section
-    /// - BIF.ksy - Standard BIF format (decompressed BZF data matches this)
+    /// **BZF**: `BZF ` + `V1.0` header, then **LZMA** payload that expands to a normal **BIF** (`BIF.ksy`). Common on
+    /// mobile KotOR ports.
     /// </summary>
+    /// <remarks>
+    /// Reference: <a href="https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bzf-compression">PyKotor wiki — BZF (LZMA BIF)</a>
+    /// </remarks>
     public partial class Bzf : KaitaiStruct
     {
         public static Bzf FromFile(string fileName)
@@ -45,18 +37,11 @@ namespace Kaitai
             {
                 throw new ValidationNotEqualError("V1.0", _version, m_io, "/seq/1");
             }
-            _compressedData = new List<byte>();
-            {
-                var i = 0;
-                while (!m_io.IsEof) {
-                    _compressedData.Add(m_io.ReadU1());
-                    i++;
-                }
-            }
+            _compressedData = m_io.ReadBytesFull();
         }
         private string _fileType;
         private string _version;
-        private List<byte> _compressedData;
+        private byte[] _compressedData;
         private Bzf m_root;
         private KaitaiStruct m_parent;
 
@@ -71,11 +56,10 @@ namespace Kaitai
         public string Version { get { return _version; } }
 
         /// <summary>
-        /// LZMA-compressed BIF file data.
-        /// This data must be decompressed using LZMA algorithm to obtain the standard BIF structure.
-        /// After decompression, the data can be parsed using the BIF format definition.
+        /// LZMA-compressed BIF file data (single blob to EOF).
+        /// Decompress with LZMA to obtain the standard BIF structure (see BIF.ksy).
         /// </summary>
-        public List<byte> CompressedData { get { return _compressedData; } }
+        public byte[] CompressedData { get { return _compressedData; } }
         public Bzf M_Root { get { return m_root; } }
         public KaitaiStruct M_Parent { get { return m_parent; } }
     }

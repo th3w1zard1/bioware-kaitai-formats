@@ -38,7 +38,6 @@ sub _read {
     $self->{file_type} = Encode::decode("ASCII", $self->{_io}->read_bytes(4));
     $self->{file_version} = Encode::decode("ASCII", $self->{_io}->read_bytes(4));
     $self->{sounds_offset} = $self->{_io}->read_u4le();
-    $self->{padding} = Ssf::Padding->new($self->{_io}, $self, $self->{_root});
 }
 
 sub sounds {
@@ -64,53 +63,6 @@ sub file_version {
 sub sounds_offset {
     my ($self) = @_;
     return $self->{sounds_offset};
-}
-
-sub padding {
-    my ($self) = @_;
-    return $self->{padding};
-}
-
-########################################################################
-package Ssf::Padding;
-
-our @ISA = 'IO::KaitaiStruct::Struct';
-
-sub from_file {
-    my ($class, $filename) = @_;
-    my $fd;
-
-    open($fd, '<', $filename) or return undef;
-    binmode($fd);
-    return new($class, IO::KaitaiStruct::Stream->new($fd));
-}
-
-sub new {
-    my ($class, $_io, $_parent, $_root) = @_;
-    my $self = IO::KaitaiStruct::Struct->new($_io);
-
-    bless $self, $class;
-    $self->{_parent} = $_parent;
-    $self->{_root} = $_root;
-
-    $self->_read();
-
-    return $self;
-}
-
-sub _read {
-    my ($self) = @_;
-
-    $self->{padding_bytes} = [];
-    my $n_padding_bytes = 3;
-    for (my $i = 0; $i < $n_padding_bytes; $i++) {
-        push @{$self->{padding_bytes}}, $self->{_io}->read_u4le();
-    }
-}
-
-sub padding_bytes {
-    my ($self) = @_;
-    return $self->{padding_bytes};
 }
 
 ########################################################################

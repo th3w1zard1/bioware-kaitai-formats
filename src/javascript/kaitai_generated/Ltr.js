@@ -2,29 +2,19 @@
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['exports', 'kaitai-struct/KaitaiStream'], factory);
+    define(['exports', 'kaitai-struct/KaitaiStream', './BiowareCommon'], factory);
   } else if (typeof exports === 'object' && exports !== null && typeof exports.nodeType !== 'number') {
-    factory(exports, require('kaitai-struct/KaitaiStream'));
+    factory(exports, require('kaitai-struct/KaitaiStream'), require('./BiowareCommon'));
   } else {
-    factory(root.Ltr || (root.Ltr = {}), root.KaitaiStream);
+    factory(root.Ltr || (root.Ltr = {}), root.KaitaiStream, root.BiowareCommon || (root.BiowareCommon = {}));
   }
-})(typeof self !== 'undefined' ? self : this, function (Ltr_, KaitaiStream) {
+})(typeof self !== 'undefined' ? self : this, function (Ltr_, KaitaiStream, BiowareCommon_) {
 /**
- * LTR (Letter) resources store third-order Markov chain probability tables that the game uses
- * to procedurally generate NPC names. The data encodes likelihoods for characters appearing at
- * the start, middle, and end of names given zero, one, or two-character context.
- * 
- * KotOR always uses the 28-character alphabet (a-z plus ' and -). Neverwinter Nights (NWN) used
- * 26 characters; the header explicitly stores the count. This is a KotOR-specific difference from NWN.
- * 
- * LTR files are binary and consist of a short header followed by three probability tables
- * (singles, doubles, triples) stored as contiguous float arrays.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LTR-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/ltrreader.cpp:27-74
- * - https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp:135-168
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LTRObject.ts:61-117
+ * **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
+ * `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
+ * `bioware_common.ksy`. Use `.to_i` on that enum inside `valid`/`repeat-expr` (see Kaitai user guide: enums).
+ * @see {@link https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format|PyKotor wiki — LTR}
+ * @see {@link https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168|xoreos — LTR::load}
  */
 
 var Ltr = (function() {
@@ -189,9 +179,8 @@ var Ltr = (function() {
    */
 
   /**
-   * Number of characters in the alphabet. Must be 26 (NWN) or 28 (KotOR).
-   * KotOR uses 28 characters: "abcdefghijklmnopqrstuvwxyz'-"
-   * NWN uses 26 characters: "abcdefghijklmnopqrstuvwxyz"
+   * Alphabet size (`u1`). Canonical enum: `formats/Common/bioware_common.ksy` → `bioware_ltr_alphabet_length`
+   * (26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide §6.4.5).
    */
 
   /**

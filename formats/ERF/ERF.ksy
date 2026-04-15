@@ -8,15 +8,38 @@ meta:
     - hak
     - mod
     - sav
+  imports:
+    - ../Common/bioware_type_ids
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
       note: |
         Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CERFHeader is 160 bytes with the same field order as erf_header
         (file_type, version, language_count, localized_string_size, entry_count, three offsets, build_year, build_day, description_str_ref, 116-byte reserved tail).
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/
-    reone: https://github.com/seedhartha/reone/tree/master/src/libs/resource/format/erfreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/tree/master/src/aurora/erffile.cpp
-    kotor_net: https://github.com/NickHugi/Kotor.NET/tree/master/Formats/KotorERF/
+    github_openkotor_pykotor_io_erf: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py`:
+      **`_load_erf_from_kaitai`** **22–83**; legacy **`V1.0`** **86–119**; **`ERFBinaryReader.load`** **206–215**; **`ERFBinaryWriter.write`** **247+** (160-byte header block **247–294**, then localized strings, key table, resource table, and payload writes — long method); header size constants **234–236**.
+    github_openkotor_pykotor_erf_data: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py`:
+      **`ERFType`** (`ERF` / `MOD` / `SAV` / `HAK`) **91–107**; header field overview **14–22**; **`class ERF`** **123+**.
+    reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/erfreader.cpp
+    github_modawan_reone_erfreader: |
+      https://github.com/modawan/reone — `src/libs/resource/format/erfreader.cpp`: **`ErfReader::load`** **26–39**; **`checkSignature`** (`ERF V1.0` / `MOD V1.0`) **41–51**; **`readKeyEntry`** **62–72**; **`readResourceEntry`** **83–92**.
+    xoreos_erffile: https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp#L50-L335
+    github_xoreos_types_kfiletype_erf: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L207
+    github_xoreos_erffile: |
+      https://github.com/xoreos/xoreos — `src/aurora/erffile.cpp`: type tags **`kERFID` / `kMODID` / `kHAKID` / `kSAVID`** + **`kVersion10`** **50–59**; **`ERFFile::load`** **281–306**; **`readV10Header`** **318–333**; **`readV11Header`** from **335**.
+    github_xoreos_types_erf_family: |
+      https://github.com/xoreos/xoreos — `src/aurora/types.h`: **`kFileTypeERF`** **207**; **`kFileTypeMOD`** (and related Aurora ids nearby — see full enum).
+    github_xoreos_tools_unerf: https://github.com/xoreos/xoreos-tools/blob/master/src/unerf.cpp#L69-L106
+    github_xoreos_tools_erf_pack: https://github.com/xoreos/xoreos-tools/blob/master/src/erf.cpp#L49-L96
+    github_xoreos_docs_erf_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/ERF_Format.pdf
+    github_xoreos_docs_torlack_mod: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html
+    github_kobaltblu_kotor_js_erf: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/ERFObject.ts#L70-L115
+    kotor_net_erf_tree: https://github.com/NickHugi/Kotor.NET/tree/master/Kotor.NET/Formats/KotorERF
     pykotor_wiki: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf
     bioware_aurora: https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf
 doc: |
@@ -33,6 +56,8 @@ doc: |
 
   All variants use the same binary format structure, differing only in the file type signature.
 
+  Archive `resource_type` values use the shared **`bioware_type_ids::xoreos_file_type_id`** enum (xoreos `FileType`); see `formats/Common/bioware_type_ids.ksy`.
+
   Binary Format Structure:
   - Header (160 bytes): File type, version, entry counts, offsets, build date, description
   - Localized String List (optional, variable size): Multi-language descriptions. MOD files may
@@ -41,7 +66,7 @@ doc: |
   - Key List (24 bytes per entry): ResRef to resource index mapping. Each entry contains:
     - resref (16 bytes, ASCII, null-padded): Resource filename
     - resource_id (u4): Index into resource_list
-    - resource_type (u2): Resource type identifier (see ResourceType enum)
+    - resource_type (u2): Resource type identifier (`bioware_type_ids::xoreos_file_type_id`, xoreos `FileType`)
     - unused (u2): Padding/unused field (typically 0)
   - Resource List (8 bytes per entry): Resource offset and size. Each entry contains:
     - offset_to_data (u4): Byte offset to resource data from beginning of file
@@ -55,14 +80,23 @@ doc: |
   3. Use resource_id to index into resource_list
   4. Read resource data from offset_to_data with byte length len_data
 
-  References:
-  - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf - Complete ERF format documentation
-  - https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf - Official BioWare Aurora ERF specification
-  - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/erfreader.cpp:24-106 - Complete C++ ERF reader implementation
-  - https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp:44-229 - Generic Aurora ERF implementation (shared format)
-  - https://github.com/NickHugi/Kotor.NET/blob/master/Formats/KotorERF/ERFBinaryStructure.cs:11-170 - .NET ERF reader/writer
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
+  Authoritative index: `meta.xref` and `doc-ref` (PyKotor `io_erf` / `erf_data`, xoreos `ERFFile`, xoreos-tools `unerf` / `erf`, reone `ErfReader`, KotOR.js `ERFObject`, NickHugi `Kotor.NET/Formats/KotorERF`).
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf PyKotor wiki — ERF"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf PyKotor wiki — Aurora ERF notes"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py#L22-L316 PyKotor — `io_erf` (Kaitai + legacy + `ERFBinaryWriter.write`)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py#L91-L130 PyKotor — `ERFType` + `ERF` model (opening)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp#L50-L335 xoreos — ERF type tags + `ERFFile::load` + `readV10Header` start"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/unerf.cpp#L69-L106 xoreos-tools — `unerf` CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/erf.cpp#L49-L96 xoreos-tools — `erf` packer CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html xoreos-docs — Torlack mod.html"
+  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/erfreader.cpp#L26-L92 reone — `ErfReader`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/ERFObject.ts#L70-L115 KotOR.js — `ERFObject`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorERF/ERFBinaryStructure.cs NickHugi/Kotor.NET — `ERFBinaryStructure`"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/ERF_Format.pdf xoreos-docs — ERF_Format.pdf"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394 xoreos — `enum FileType` (numeric IDs in KEY/ERF/RIM tables)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py PyKotor — `ResourceType` (tooling superset; overlaps FileType for KotOR rows)"
 
 seq:
   - id: header
@@ -252,9 +286,9 @@ types:
 
       - id: resource_type
         type: u2
-        enum: xoreos_file_type_id
+        enum: bioware_type_ids::xoreos_file_type_id
         doc: |
-          Resource type identifier (see ResourceType enum).
+          Resource type identifier (xoreos `FileType` numeric space; canonical enum in `formats/Common/bioware_type_ids.ksy`).
           Examples: 0x000B (TPC/texture), 0x000A (MOD/module), 0x0000 (RES/unknown)
 
       - id: unused
@@ -291,312 +325,3 @@ types:
         pos: offset_to_data
         size: len_data
         doc: Raw binary data for this resource
-
-enums:
-  # NOTE: Mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`).
-  # TODO: VERIFY - Aliases exist upstream (e.g. 2045 also known as DTF) but Kaitai enums cannot
-  # represent multiple names for the same numeric key.
-  xoreos_file_type_id:
-    -1: none
-    0: res
-    1: bmp
-    2: mve
-    3: tga
-    4: wav
-    6: plt
-    7: ini
-    8: bmu
-    9: mpg
-    10: txt
-    11: wma
-    12: wmv
-    13: xmv
-    2000: plh
-    2001: tex
-    2002: mdl
-    2003: thg
-    2005: fnt
-    2007: lua
-    2008: slt
-    2009: nss
-    2010: ncs
-    2011: mod
-    2012: are
-    2013: set
-    2014: ifo
-    2015: bic
-    2016: wok
-    2017: two_da
-    2018: tlk
-    2022: txi
-    2023: git
-    2024: bti
-    2025: uti
-    2026: btc
-    2027: utc
-    2029: dlg
-    2030: itp
-    2031: btt
-    2032: utt
-    2033: dds
-    2034: bts
-    2035: uts
-    2036: ltr
-    2037: gff
-    2038: fac
-    2039: bte
-    2040: ute
-    2041: btd
-    2042: utd
-    2043: btp
-    2044: utp
-    2045: dft
-    2046: gic
-    2047: gui
-    2048: css
-    2049: ccs
-    2050: btm
-    2051: utm
-    2052: dwk
-    2053: pwk
-    2054: btg
-    2055: utg
-    2056: jrl
-    2057: sav
-    2058: utw
-    2059: four_pc
-    2060: ssf
-    2061: hak
-    2062: nwm
-    2063: bik
-    2064: ndb
-    2065: ptm
-    2066: ptt
-    2067: ncm
-    2068: mfx
-    2069: mat
-    2070: mdb
-    2071: say
-    2072: ttf
-    2073: ttc
-    2074: cut
-    2075: ka
-    2076: jpg
-    2077: ico
-    2078: ogg
-    2079: spt
-    2080: spw
-    2081: wfx
-    2082: ugm
-    2083: qdb
-    2084: qst
-    2085: npc
-    2086: spn
-    2087: utx
-    2088: mmd
-    2089: smm
-    2090: uta
-    2091: mde
-    2092: mdv
-    2093: mda
-    2094: mba
-    2095: oct
-    2096: bfx
-    2097: pdb
-    2098: the_witcher_save
-    2099: pvs
-    2100: cfx
-    2101: luc
-    2103: prb
-    2104: cam
-    2105: vds
-    2106: bin
-    2107: wob
-    2108: api
-    2109: properties
-    2110: png
-    3000: lyt
-    3001: vis
-    3002: rim
-    3003: pth
-    3004: lip
-    3005: bwm
-    3006: txb
-    3007: tpc
-    3008: mdx
-    3009: rsv
-    3010: sig
-    3011: mab
-    3012: qst2
-    3013: sto
-    3015: hex
-    3016: mdx2
-    3017: txb2
-    3022: fsm
-    3023: art
-    3024: amp
-    3025: cwa
-    3028: bip
-    4000: mdb2
-    4001: mda2
-    4002: spt2
-    4003: gr2
-    4004: fxa
-    4005: fxe
-    4007: jpg2
-    4008: pwc
-    9996: one_da
-    9997: erf
-    9998: bif
-    9999: key
-    19000: exe
-    19001: dbf
-    19002: cdx
-    19003: fpt
-    20000: zip
-    20001: fxm
-    20002: fxs
-    20003: xml
-    20004: wlk
-    20005: utr
-    20006: sef
-    20007: pfx
-    20008: tfx
-    20009: ifx
-    20010: lfx
-    20011: bbx
-    20012: pfb
-    20013: upe
-    20014: usc
-    20015: ult
-    20016: fx
-    20017: max
-    20018: doc
-    20019: scc
-    20020: wmp
-    20021: osc
-    20022: trn
-    20023: uen
-    20024: ros
-    20025: rst
-    20026: ptx
-    20027: ltx
-    20028: trx
-    21000: nds
-    21001: herf
-    21002: dict
-    21003: small
-    21004: cbgt
-    21005: cdpth
-    21006: emit
-    21007: itm
-    21008: nanr
-    21009: nbfp
-    21010: nbfs
-    21011: ncer
-    21012: ncgr
-    21013: nclr
-    21014: nftr
-    21015: nsbca
-    21016: nsbmd
-    21017: nsbta
-    21018: nsbtp
-    21019: nsbtx
-    21020: pal
-    21021: raw
-    21022: sadl
-    21023: sdat
-    21024: smp
-    21025: spl
-    21026: vx
-    22000: anb
-    22001: ani
-    22002: cns
-    22003: cur
-    22004: evt
-    22005: fdl
-    22006: fxo
-    22007: gad
-    22008: gda
-    22009: gfx
-    22010: ldf
-    22011: lst
-    22012: mal
-    22013: mao
-    22014: mmh
-    22015: mop
-    22016: mor
-    22017: msh
-    22018: mtx
-    22019: ncc
-    22020: phy
-    22021: plo
-    22022: stg
-    22023: tbi
-    22024: tnt
-    22025: arl
-    22026: fev
-    22027: fsb
-    22028: opf
-    22029: crf
-    22030: rimp
-    22031: met
-    22032: meta
-    22033: fxr
-    22034: cif
-    22035: cub
-    22036: dlb
-    22037: nsc
-    23000: mov
-    23001: curs
-    23002: pict
-    23003: rsrc
-    23004: plist
-    24000: cre
-    24001: pso
-    24002: vso
-    24003: abc
-    24004: sbm
-    24005: pvd
-    24006: pla
-    24007: trg
-    24008: pk
-    25000: als
-    25001: apl
-    25002: assembly
-    25003: bak
-    25004: bnk
-    25005: cl
-    25006: cnv
-    25007: con
-    25008: dat
-    25009: dx11
-    25010: ids
-    25011: log
-    25012: map
-    25013: mml
-    25014: mp3
-    25015: pck
-    25016: rml
-    25017: s
-    25018: sta
-    25019: svr
-    25020: vlm
-    25021: wbd
-    25022: xbx
-    25023: xls
-    26000: bzf
-    27000: adv
-    28000: json
-    28001: tlk_expert
-    28002: tlk_mobile
-    28003: tlk_touch
-    28004: otf
-    28005: par
-    29000: xwb
-    29001: xsb
-    30000: xds
-    30001: wnd
-    40000: xeositex
-
-

@@ -13,7 +13,7 @@ class Das(KaitaiStruct):
     tagged blocks. **Not KotOR** — Andastra serializer paths + numeric `xoreos_game_id` live in `meta.xref`.
     
     .. seealso::
-       xoreos — game id enum (Dragon Age = 7) - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/types.h#L396-L408
+       xoreos — game id enum (Dragon Age = 7) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Das, self).__init__(_io)

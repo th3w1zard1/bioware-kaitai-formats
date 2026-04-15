@@ -13,12 +13,23 @@ import "github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
  * - The CExoLocString / LocalizedString binary layout
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
  * - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
  * - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
  */
+
+type BiowareCommon_BiowareDdsVariantBytesPerPixel int
+const (
+	BiowareCommon_BiowareDdsVariantBytesPerPixel__Dxt1 BiowareCommon_BiowareDdsVariantBytesPerPixel = 3
+	BiowareCommon_BiowareDdsVariantBytesPerPixel__Dxt5 BiowareCommon_BiowareDdsVariantBytesPerPixel = 4
+)
+var values_BiowareCommon_BiowareDdsVariantBytesPerPixel = map[BiowareCommon_BiowareDdsVariantBytesPerPixel]struct{}{3: {}, 4: {}}
+func (v BiowareCommon_BiowareDdsVariantBytesPerPixel) isDefined() bool {
+	_, ok := values_BiowareCommon_BiowareDdsVariantBytesPerPixel[v]
+	return ok
+}
 
 type BiowareCommon_BiowareEquipmentSlotFlag int
 const (
@@ -179,6 +190,42 @@ func (v BiowareCommon_BiowareLanguageId) isDefined() bool {
 	return ok
 }
 
+type BiowareCommon_BiowareLipVisemeId int
+const (
+	BiowareCommon_BiowareLipVisemeId__Neutral BiowareCommon_BiowareLipVisemeId = 0
+	BiowareCommon_BiowareLipVisemeId__Ee BiowareCommon_BiowareLipVisemeId = 1
+	BiowareCommon_BiowareLipVisemeId__Eh BiowareCommon_BiowareLipVisemeId = 2
+	BiowareCommon_BiowareLipVisemeId__Ah BiowareCommon_BiowareLipVisemeId = 3
+	BiowareCommon_BiowareLipVisemeId__Oh BiowareCommon_BiowareLipVisemeId = 4
+	BiowareCommon_BiowareLipVisemeId__Ooh BiowareCommon_BiowareLipVisemeId = 5
+	BiowareCommon_BiowareLipVisemeId__Y BiowareCommon_BiowareLipVisemeId = 6
+	BiowareCommon_BiowareLipVisemeId__Sts BiowareCommon_BiowareLipVisemeId = 7
+	BiowareCommon_BiowareLipVisemeId__Fv BiowareCommon_BiowareLipVisemeId = 8
+	BiowareCommon_BiowareLipVisemeId__Ng BiowareCommon_BiowareLipVisemeId = 9
+	BiowareCommon_BiowareLipVisemeId__Th BiowareCommon_BiowareLipVisemeId = 10
+	BiowareCommon_BiowareLipVisemeId__Mpb BiowareCommon_BiowareLipVisemeId = 11
+	BiowareCommon_BiowareLipVisemeId__Td BiowareCommon_BiowareLipVisemeId = 12
+	BiowareCommon_BiowareLipVisemeId__Sh BiowareCommon_BiowareLipVisemeId = 13
+	BiowareCommon_BiowareLipVisemeId__L BiowareCommon_BiowareLipVisemeId = 14
+	BiowareCommon_BiowareLipVisemeId__Kg BiowareCommon_BiowareLipVisemeId = 15
+)
+var values_BiowareCommon_BiowareLipVisemeId = map[BiowareCommon_BiowareLipVisemeId]struct{}{0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}, 13: {}, 14: {}, 15: {}}
+func (v BiowareCommon_BiowareLipVisemeId) isDefined() bool {
+	_, ok := values_BiowareCommon_BiowareLipVisemeId[v]
+	return ok
+}
+
+type BiowareCommon_BiowareLtrAlphabetLength int
+const (
+	BiowareCommon_BiowareLtrAlphabetLength__NeverwinterNights BiowareCommon_BiowareLtrAlphabetLength = 26
+	BiowareCommon_BiowareLtrAlphabetLength__Kotor BiowareCommon_BiowareLtrAlphabetLength = 28
+)
+var values_BiowareCommon_BiowareLtrAlphabetLength = map[BiowareCommon_BiowareLtrAlphabetLength]struct{}{26: {}, 28: {}}
+func (v BiowareCommon_BiowareLtrAlphabetLength) isDefined() bool {
+	_, ok := values_BiowareCommon_BiowareLtrAlphabetLength[v]
+	return ok
+}
+
 type BiowareCommon_BiowareObjectTypeId int
 const (
 	BiowareCommon_BiowareObjectTypeId__Invalid BiowareCommon_BiowareObjectTypeId = 0
@@ -197,6 +244,59 @@ const (
 var values_BiowareCommon_BiowareObjectTypeId = map[BiowareCommon_BiowareObjectTypeId]struct{}{0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}}
 func (v BiowareCommon_BiowareObjectTypeId) isDefined() bool {
 	_, ok := values_BiowareCommon_BiowareObjectTypeId[v]
+	return ok
+}
+
+type BiowareCommon_BiowarePccCompressionCodec int
+const (
+	BiowareCommon_BiowarePccCompressionCodec__None BiowareCommon_BiowarePccCompressionCodec = 0
+	BiowareCommon_BiowarePccCompressionCodec__Zlib BiowareCommon_BiowarePccCompressionCodec = 1
+	BiowareCommon_BiowarePccCompressionCodec__Lzo BiowareCommon_BiowarePccCompressionCodec = 2
+)
+var values_BiowareCommon_BiowarePccCompressionCodec = map[BiowareCommon_BiowarePccCompressionCodec]struct{}{0: {}, 1: {}, 2: {}}
+func (v BiowareCommon_BiowarePccCompressionCodec) isDefined() bool {
+	_, ok := values_BiowareCommon_BiowarePccCompressionCodec[v]
+	return ok
+}
+
+type BiowareCommon_BiowarePccPackageKind int
+const (
+	BiowareCommon_BiowarePccPackageKind__NormalPackage BiowareCommon_BiowarePccPackageKind = 0
+	BiowareCommon_BiowarePccPackageKind__PatchPackage BiowareCommon_BiowarePccPackageKind = 1
+)
+var values_BiowareCommon_BiowarePccPackageKind = map[BiowareCommon_BiowarePccPackageKind]struct{}{0: {}, 1: {}}
+func (v BiowareCommon_BiowarePccPackageKind) isDefined() bool {
+	_, ok := values_BiowareCommon_BiowarePccPackageKind[v]
+	return ok
+}
+
+type BiowareCommon_BiowareTpcPixelFormatId int
+const (
+	BiowareCommon_BiowareTpcPixelFormatId__Greyscale BiowareCommon_BiowareTpcPixelFormatId = 1
+	BiowareCommon_BiowareTpcPixelFormatId__RgbOrDxt1 BiowareCommon_BiowareTpcPixelFormatId = 2
+	BiowareCommon_BiowareTpcPixelFormatId__RgbaOrDxt5 BiowareCommon_BiowareTpcPixelFormatId = 4
+	BiowareCommon_BiowareTpcPixelFormatId__BgraXboxSwizzle BiowareCommon_BiowareTpcPixelFormatId = 12
+)
+var values_BiowareCommon_BiowareTpcPixelFormatId = map[BiowareCommon_BiowareTpcPixelFormatId]struct{}{1: {}, 2: {}, 4: {}, 12: {}}
+func (v BiowareCommon_BiowareTpcPixelFormatId) isDefined() bool {
+	_, ok := values_BiowareCommon_BiowareTpcPixelFormatId[v]
+	return ok
+}
+
+type BiowareCommon_RiffWaveFormatTag int
+const (
+	BiowareCommon_RiffWaveFormatTag__Pcm BiowareCommon_RiffWaveFormatTag = 1
+	BiowareCommon_RiffWaveFormatTag__AdpcmMs BiowareCommon_RiffWaveFormatTag = 2
+	BiowareCommon_RiffWaveFormatTag__IeeeFloat BiowareCommon_RiffWaveFormatTag = 3
+	BiowareCommon_RiffWaveFormatTag__Alaw BiowareCommon_RiffWaveFormatTag = 6
+	BiowareCommon_RiffWaveFormatTag__Mulaw BiowareCommon_RiffWaveFormatTag = 7
+	BiowareCommon_RiffWaveFormatTag__DviImaAdpcm BiowareCommon_RiffWaveFormatTag = 17
+	BiowareCommon_RiffWaveFormatTag__MpegLayer3 BiowareCommon_RiffWaveFormatTag = 85
+	BiowareCommon_RiffWaveFormatTag__WaveFormatExtensible BiowareCommon_RiffWaveFormatTag = 65534
+)
+var values_BiowareCommon_RiffWaveFormatTag = map[BiowareCommon_RiffWaveFormatTag]struct{}{1: {}, 2: {}, 3: {}, 6: {}, 7: {}, 17: {}, 85: {}, 65534: {}}
+func (v BiowareCommon_RiffWaveFormatTag) isDefined() bool {
+	_, ok := values_BiowareCommon_RiffWaveFormatTag[v]
 	return ok
 }
 type BiowareCommon struct {
@@ -388,7 +488,7 @@ func (this *BiowareCommon_BiowareLocstring) HasStrref() (v bool, err error) {
  */
 
 /**
- * StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+ * StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
  */
 
 /**

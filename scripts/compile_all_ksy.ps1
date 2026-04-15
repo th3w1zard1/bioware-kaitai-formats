@@ -4,8 +4,9 @@
 
 .DESCRIPTION
     This script recursively finds all .ksy files in the formats directory and compiles them
-    to the specified target language using the Kaitai Struct compiler. It provides detailed
-    progress reporting and error handling.
+    to the specified target language using the Kaitai Struct compiler. Output mirrors the
+    formats/ subdirectory layout under the output root (same as generate_code.ps1). It
+    provides detailed progress reporting and error handling.
 
 .PARAMETER TargetLanguage
     The target programming language to compile to. Supported languages include:
@@ -78,8 +79,10 @@ begin {
     }
     Write-Verbose "Using Kaitai Struct compiler at: $script:kscExe"
 
-    # Resolve paths to absolute paths
-    $formatsDir = Resolve-Path $FormatsDirectory
+    # Resolve paths to absolute paths (Resolve-Path can return a single PathInfo or an array)
+    $formatsResolved = @(Resolve-Path $FormatsDirectory)
+    $formatsDir = $formatsResolved[0]
+    $formatsBasePath = $formatsDir.Path
     $outputDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($OutputDirectory)
 
     Write-Verbose "Formats directory: $formatsDir"
@@ -128,7 +131,7 @@ process {
         # Process each file
         foreach ($file in $ksyFiles) {
             $script:processedCount++
-            $relativePath = $file.FullName.Replace("$formatsDir\", "").Replace("$formatsDir/", "")
+            $relativePath = $file.FullName.Substring($formatsBasePath.Length + 1)
 
             Write-Progress -Activity "Compiling Kaitai Struct files" `
                           -Status "Processing: $relativePath" `
@@ -138,12 +141,23 @@ process {
 
             if ($PSCmdlet.ShouldProcess($relativePath, "Compile to $TargetLanguage")) {
                 try {
+                    $relativeDir = Split-Path -Parent $relativePath
+                    if ($relativeDir) {
+                        $targetDir = Join-Path $outputDir $relativeDir
+                    }
+                    else {
+                        $targetDir = $outputDir
+                    }
+                    if (-not (Test-Path $targetDir)) {
+                        New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+                    }
+
                     # Call the compiler directly. Avoid Start-Process + empty redirected streams:
                     # ($null + $null).Trim() throws "You cannot call a method on a null-valued expression".
                     $prevEap = $ErrorActionPreference
                     $ErrorActionPreference = 'Continue'
                     try {
-                        $allOutput = & $script:kscExe -t $TargetLanguage -d $outputDir $file.FullName 2>&1
+                        $allOutput = & $script:kscExe -t $TargetLanguage -d $targetDir $file.FullName 2>&1
                     }
                     finally {
                         $ErrorActionPreference = $prevEap

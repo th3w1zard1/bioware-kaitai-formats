@@ -11,11 +11,19 @@ pinned commit for every ``https://github.com/<org>/<repo>/blob/<40-hex-sha>/…#
 checks that each ``#L`` / ``#Lx-Ly`` band lies within the file's line count.
 
 Optional: ``--check-xoreos-github-line-ranges`` fetches ``raw.githubusercontent.com`` for
-``https://github.com/xoreos/(xoreos|xoreos-tools)/blob/master/…#L…`` anchors only (upstream
-``master`` drift guard for engine/tooling sources).
+``https://github.com/xoreos/(xoreos|xoreos-tools)/blob/master/…#L…`` anchors (upstream
+``master`` drift guard for engine/tooling sources), and flags ``xoreos/xoreos/blob/master/…``
+URLs that omit a ``#L`` fragment (line-anchor policy for the engine repo). Companion script:
+``scripts/check_vendor_xoreos_xref_lines.py`` applies the same ``#L`` bands to **on-disk**
+``vendor/xoreos``, ``vendor/xoreos-tools``, and ``vendor/xoreos-docs`` after
+``git submodule update --init`` (fork SHA vs upstream ``master`` line drift).
 
 Optional: ``--fail-on-master-blob`` fails if any ``https://github.com/…/blob/master/`` or
 ``/tree/master/`` URL appears under the scanned roots (floating branch pins).
+
+**Always-on (``.ksy`` only):** detects ``meta.xref`` lines like ``some_key: >`` whose next non-blank line
+begins with ``note:`` — YAML parses that as a **single folded string** (the text ``note:`` is not a nested
+key). Fails the run until fixed (use ``some_key:`` then indented ``note: |`` / ``note: "..."``).
 
 GitHub wiki caveat: HEAD/GET may return 200 for a missing wiki page (UI falls back to Home
 or an empty editor). Do not treat HTTP status alone as proof that a /wiki/... slug exists;
@@ -61,6 +69,11 @@ _GITHUB_PINNED_BLOB_LINE_ANCHOR = re.compile(
 # Upstream xoreos ``master`` line anchors (``blob/master/…#L…``).
 _XOREOS_MASTER_LINE_ANCHOR = re.compile(
     r"https://github\.com/(xoreos/(?:xoreos|xoreos-tools))/blob/master/([^#\s\)\"]+)#L(\d+)(?:-L(\d+))?"
+)
+
+# Engine repo only: ``blob/master`` without a ``#L`` fragment (policy: cite a stable line band).
+_XOREOS_ENGINE_MASTER_BLOB = re.compile(
+    r"https://github\.com/xoreos/xoreos/blob/master/[^\s\)\"]+"
 )
 
 _FLOATING_GITHUB_MASTER_BLOB = re.compile(
@@ -178,7 +191,10 @@ def check_xoreos_master_blob_line_ranges(
     include_markdown: bool,
     timeout: float,
 ) -> int:
-    """Return 0 if all ``#L`` ranges are in-bounds for ``xoreos/xoreos`` and ``xoreos-tools`` on ``master``."""
+    """Return 0 if all ``#L`` ranges are in-bounds for ``xoreos/xoreos`` and ``xoreos-tools`` on ``master``.
+
+    Also flags ``github.com/xoreos/xoreos/blob/master/…`` URLs that omit a ``#L`` line anchor (same scan pass).
+    """
     cache: dict[tuple[str, str], list[str]] = {}
 
     def fetch_lines(org_repo: str, file_path: str) -> list[str]:
@@ -191,8 +207,23 @@ def check_xoreos_master_blob_line_ranges(
 
     issues: list[str] = []
     checked = 0
+    bare_engine_blobs = 0
     for path in iter_source_files(roots, include_markdown):
         text = path.read_text(encoding="utf-8", errors="replace")
+        for m in _XOREOS_ENGINE_MASTER_BLOB.finditer(text):
+            raw = m.group(0).rstrip(").,;]`'")
+            if "#L" in raw:
+                continue
+            if "/tree/master/" in raw:
+                continue
+            # Regex stops before ``#``; skip if the URL continues with ``#L…`` in the source.
+            if m.end() < len(text) and text[m.end() : m.end() + 2] == "#L":
+                continue
+            bare_engine_blobs += 1
+            issues.append(
+                f"{path}: xoreos engine URL missing #L line anchor: {raw[:120]!r} … "
+                "add e.g. `#L50-L120` to match upstream source."
+            )
         for m in _XOREOS_MASTER_LINE_ANCHOR.finditer(text):
             org_repo, file_path, a, b = m.group(1), m.group(2), m.group(3), m.group(4)
             start = int(a)
@@ -209,8 +240,8 @@ def check_xoreos_master_blob_line_ranges(
                     f"{path}: {m.group(0)[:120]!r} … range {start}-{end} vs nlines={n}"
                 )
     print(
-        f"xoreos GitHub ``master`` ``#L`` range check: {checked} URL(s), {len(issues)} issue(s) "
-        f"under [{', '.join(str(r.resolve()) for r in roots)}]"
+        f"xoreos GitHub ``master`` ``#L`` range check: {checked} URL(s), {bare_engine_blobs} bare engine blob(s), "
+        f"{len(issues)} issue(s) under [{', '.join(str(r.resolve()) for r in roots)}]"
     )
     for msg in issues[:200]:
         print(msg)
@@ -289,6 +320,68 @@ def check_fail_on_master_blob(roots: list[Path], include_markdown: bool) -> int:
     print(
         f"Floating GitHub master URL check: {len(issues)} issue(s) under "
         f"[{', '.join(str(r.resolve()) for r in roots)}]"
+    )
+    for msg in issues[:200]:
+        print(msg)
+    if len(issues) > 200:
+        print(f"… {len(issues) - 200} more")
+    return 1 if issues else 0
+
+
+_FOLD_SCALAR_KEY = re.compile(r"^(\s+)(\S+):\s*>\s*$")
+_NOTE_LINE = re.compile(r"^\s+note\s*:")
+
+
+def check_ksy_meta_xref_folded_scalar_note_pitfall(
+    roots: list[Path],
+    include_markdown: bool,
+) -> int:
+    """Return 1 if any ``*.ksy`` has ``key: >`` under ``meta`` … ``xref`` followed by a ``note:`` line.
+
+    YAML treats ``>`` as starting a folded block scalar; the following ``note:`` line becomes **string
+    content**, not a mapping entry (regression fixed historically on ``formats/MDL/MDL.ksy``).
+    """
+    issues: list[str] = []
+    for path in iter_source_files(roots, include_markdown):
+        if path.suffix.lower() != ".ksy":
+            continue
+        try:
+            lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError as e:
+            issues.append(f"{path}: read failed: {e!r}")
+            continue
+        in_xref = False
+        xref_indent: int | None = None
+        for i, line in enumerate(lines):
+            if not in_xref:
+                m = re.match(r"^(\s*)xref:\s*$", line)
+                if m:
+                    in_xref = True
+                    xref_indent = len(m.group(1))
+                continue
+            assert xref_indent is not None
+            if not line.strip():
+                continue
+            lead = len(line) - len(line.lstrip(" "))
+            if lead <= xref_indent:
+                in_xref = False
+                continue
+            mfold = _FOLD_SCALAR_KEY.match(line)
+            if not mfold:
+                continue
+            j = i + 1
+            while j < len(lines) and not lines[j].strip():
+                j += 1
+            if j < len(lines) and _NOTE_LINE.match(lines[j]):
+                key = mfold.group(2)
+                issues.append(
+                    f"{path}:{i + 1}: `meta.xref` uses `{key}: >` then `note:` on line {j + 1}; "
+                    "YAML folds that into one string. Use `"
+                    f"{key}:` then indented `note: |` (or `note: \"...\"`) with **no** `>`."
+                )
+    label = ", ".join(str(r.resolve()) for r in roots)
+    print(
+        f"meta.xref YAML fold + `note:` pitfall check: {len(issues)} issue(s) under [{label}]"
     )
     for msg in issues[:200]:
         print(msg)
@@ -404,6 +497,7 @@ def main() -> int:
     args = p.parse_args()
 
     roots = [args.root, *args.also]
+    fold_pitfall_rc = check_ksy_meta_xref_folded_scalar_note_pitfall(roots, args.include_markdown)
     pinned_range_rc = 0
     if args.check_github_blob_line_ranges:
         pinned_range_rc = check_github_blob_line_ranges(
@@ -447,7 +541,13 @@ def main() -> int:
     if not args.verify:
         for u in urls:
             print(u)
-        return max(pinned_range_rc, xoreos_master_rc, master_rc, opk_wiki_rc)
+        return max(
+            fold_pitfall_rc,
+            pinned_range_rc,
+            xoreos_master_rc,
+            master_rc,
+            opk_wiki_rc,
+        )
 
     ok = fail = skipped = 0
     allow = tuple(h.lower() for h in args.allow_fail_host)
@@ -463,7 +563,14 @@ def main() -> int:
             print(f"FAIL {u}\n      {detail}")
     print(f"OK={ok} FAIL={fail} SKIP={skipped} TOTAL={len(urls)}")
     verify_rc = 1 if fail else 0
-    return max(verify_rc, pinned_range_rc, xoreos_master_rc, master_rc, opk_wiki_rc)
+    return max(
+        verify_rc,
+        fold_pitfall_rc,
+        pinned_range_rc,
+        xoreos_master_rc,
+        master_rc,
+        opk_wiki_rc,
+    )
 
 
 if __name__ == "__main__":

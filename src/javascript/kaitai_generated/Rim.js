@@ -19,14 +19,14 @@
  * - Standard RIM: Basic module template files
  * - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
  * 
- * Binary Format:
- * - Header (20 bytes): File type, version, resource count, offset to resource table
- * - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
- * - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
- * - Resource Data (variable size): Raw binary data for each resource
+ * Binary Format (KotOR / PyKotor):
+ * - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+ * - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+ * - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+ * - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
  * - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -649,7 +649,12 @@ var Rim = (function() {
   }
   Rim.prototype._read = function() {
     this.header = new RimHeader(this._io, this, this._root);
-    this.extendedHeader = new RimExtendedHeader(this._io, this, this._root);
+    if (this.header.offsetToResourceTable == 0) {
+      this.gapBeforeKeyTableImplicit = this._io.readBytes(96);
+    }
+    if (this.header.offsetToResourceTable != 0) {
+      this.gapBeforeKeyTableExplicit = this._io.readBytes(this.header.offsetToResourceTable - 24);
+    }
     if (this.header.resourceCount > 0) {
       this.resourceEntryTable = new ResourceEntryTable(this._io, this, this._root);
     }
@@ -668,7 +673,7 @@ var Rim = (function() {
       this.resourceType = this._io.readU4le();
       this.resourceId = this._io.readU4le();
       this.offsetToData = this._io.readU4le();
-      this.resourceSize = this._io.readU4le();
+      this.numData = this._io.readU4le();
     }
 
     /**
@@ -681,7 +686,7 @@ var Rim = (function() {
         var _pos = this._io.pos;
         this._io.seek(this.offsetToData);
         this._m_data = [];
-        for (var i = 0; i < this.resourceSize; i++) {
+        for (var i = 0; i < this.numData; i++) {
           this._m_data.push(this._io.readU1());
         }
         this._io.seek(_pos);
@@ -713,7 +718,7 @@ var Rim = (function() {
      */
 
     /**
-     * Size of resource data in bytes.
+     * Size of resource data in bytes (repeat count for raw `data` bytes).
      * Uncompressed size of the resource.
      */
 
@@ -742,30 +747,6 @@ var Rim = (function() {
     return ResourceEntryTable;
   })();
 
-  var RimExtendedHeader = Rim.RimExtendedHeader = (function() {
-    function RimExtendedHeader(_io, _parent, _root) {
-      this._io = _io;
-      this._parent = _parent;
-      this._root = _root;
-
-      this._read();
-    }
-    RimExtendedHeader.prototype._read = function() {
-      this.reservedPadding = KaitaiStream.bytesToStr(this._io.readBytes(100), "ASCII");
-    }
-
-    /**
-     * Reserved padding bytes (typically all zeros).
-     * Total header size is 120 bytes:
-     * header (20) + extended_header (100) = 120 bytes
-     * 
-     * In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
-     * may contain an IsExtension flag, but this is not consistently used.
-     */
-
-    return RimExtendedHeader;
-  })();
-
   var RimHeader = Rim.RimHeader = (function() {
     function RimHeader(_io, _parent, _root) {
       this._io = _io;
@@ -786,6 +767,7 @@ var Rim = (function() {
       this.reserved = this._io.readU4le();
       this.resourceCount = this._io.readU4le();
       this.offsetToResourceTable = this._io.readU4le();
+      this.offsetToResources = this._io.readU4le();
     }
 
     /**
@@ -822,20 +804,31 @@ var Rim = (function() {
      */
 
     /**
-     * Byte offset to the resource entry table from the beginning of the file.
-     * Typically 120 (right after header + extended header) if resources are present.
-     * Points to the start of the resource_entry_table.
+     * Byte offset to the key / resource entry table from the beginning of the file.
+     * 0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+     * When non-zero, this offset is used directly (commonly 120).
+     */
+
+    /**
+     * Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+     * taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
      */
 
     return RimHeader;
   })();
 
   /**
-   * RIM file header (20 bytes)
+   * RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
    */
 
   /**
-   * Extended header padding (100 bytes, total header = 120 bytes)
+   * When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+   * After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
+   */
+
+  /**
+   * When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+   * Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
    */
 
   /**

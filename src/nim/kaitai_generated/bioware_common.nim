@@ -4,6 +4,9 @@ import options
 type
   BiowareCommon* = ref object of KaitaiStruct
     `parent`*: KaitaiStruct
+  BiowareCommon_BiowareDdsVariantBytesPerPixel* = enum
+    dxt1 = 3
+    dxt5 = 4
   BiowareCommon_BiowareEquipmentSlotFlag* = enum
     invalid = 0
     head = 1
@@ -131,6 +134,26 @@ type
     chinese_simplified = 130
     japanese = 131
     unknown = 2147483646
+  BiowareCommon_BiowareLipVisemeId* = enum
+    neutral = 0
+    ee = 1
+    eh = 2
+    ah = 3
+    oh = 4
+    ooh = 5
+    y = 6
+    sts = 7
+    fv = 8
+    ng = 9
+    th = 10
+    mpb = 11
+    td = 12
+    sh = 13
+    l = 14
+    kg = 15
+  BiowareCommon_BiowareLtrAlphabetLength* = enum
+    neverwinter_nights = 26
+    kotor = 28
   BiowareCommon_BiowareObjectTypeId* = enum
     invalid = 0
     creature = 1
@@ -144,6 +167,27 @@ type
     area = 9
     sound = 10
     camera = 11
+  BiowareCommon_BiowarePccCompressionCodec* = enum
+    none = 0
+    zlib = 1
+    lzo = 2
+  BiowareCommon_BiowarePccPackageKind* = enum
+    normal_package = 0
+    patch_package = 1
+  BiowareCommon_BiowareTpcPixelFormatId* = enum
+    greyscale = 1
+    rgb_or_dxt1 = 2
+    rgba_or_dxt5 = 4
+    bgra_xbox_swizzle = 12
+  BiowareCommon_RiffWaveFormatTag* = enum
+    pcm = 1
+    adpcm_ms = 2
+    ieee_float = 3
+    alaw = 6
+    mulaw = 7
+    dvi_ima_adpcm = 17
+    mpeg_layer3 = 85
+    wave_format_extensible = 65534
   BiowareCommon_BiowareBinaryData* = ref object of KaitaiStruct
     `lenValue`*: uint32
     `value`*: seq[byte]
@@ -215,9 +259,9 @@ This file is intended to be imported by other `.ksy` files to avoid repeating:
 - The CExoLocString / LocalizedString binary layout
 
 References:
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
 - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
 - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
 
@@ -316,7 +360,7 @@ proc read*(_: typedesc[BiowareCommon_BiowareLocstring], io: KaitaiStream, root: 
   this.totalSize = totalSizeExpr
 
   ##[
-  StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+  StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
 
   ]##
   let stringRefExpr = this.io.readU4le()

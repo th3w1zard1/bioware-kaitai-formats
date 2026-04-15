@@ -20,7 +20,7 @@ class Tga(KaitaiStruct):
     
     
     .. seealso::
-       xoreos — TGA::readHeader - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/graphics/images/tga.cpp#L89-L177
+       xoreos — TGA::readHeader - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L89-L177
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Tga, self).__init__(_io)

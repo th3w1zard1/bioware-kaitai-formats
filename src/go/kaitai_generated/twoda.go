@@ -28,24 +28,26 @@ import (
  * storage of duplicate values (shared strings are stored once and referenced by offset).
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
  */
 type Twoda struct {
 	Header *Twoda_TwodaHeader
 	ColumnHeadersRaw string
 	RowCount uint32
 	RowLabelsSection *Twoda_RowLabelsSection
-	CellOffsetsArray *Twoda_CellOffsetsArray
+	CellOffsets []uint16
 	LenCellValuesSection uint16
 	CellValuesSection *Twoda_CellValuesSection
+	ColumnCount uint32
 	_io *kaitai.Stream
 	_root *Twoda
 	_parent kaitai.Struct
 	_raw_CellValuesSection []byte
 }
-func NewTwoda() *Twoda {
+func NewTwoda(columnCount uint32) *Twoda {
 	return &Twoda{
+		ColumnCount: columnCount,
 	}
 }
 
@@ -80,12 +82,14 @@ func (this *Twoda) Read(io *kaitai.Stream, parent kaitai.Struct, root *Twoda) (e
 		return err
 	}
 	this.RowLabelsSection = tmp4
-	tmp5 := NewTwoda_CellOffsetsArray()
-	err = tmp5.Read(this._io, this, this._root)
-	if err != nil {
-		return err
+	for i := 0; i < int(this.RowCount * this.ColumnCount); i++ {
+		_ = i
+		tmp5, err := this._io.ReadU2le()
+		if err != nil {
+			return err
+		}
+		this.CellOffsets = append(this.CellOffsets, tmp5)
 	}
-	this.CellOffsetsArray = tmp5
 	tmp6, err := this._io.ReadU2le()
 	if err != nil {
 		return err
@@ -128,9 +132,9 @@ func (this *Twoda) Read(io *kaitai.Stream, parent kaitai.Struct, root *Twoda) (e
  */
 
 /**
- * Array of cell value offsets (uint16 per cell).
- * Total entries = row_count * column_count (where column_count = number of tab-separated parts in column_headers_raw).
- * Each offset points to a null-terminated string in the cell values section.
+ * Array of cell value offsets (uint16 per cell). There are exactly row_count * column_count
+ * entries, in row-major order. Each offset is relative to the start of the cell values blob
+ * and points to a null-terminated string.
  */
 
 /**
@@ -141,67 +145,8 @@ func (this *Twoda) Read(io *kaitai.Stream, parent kaitai.Struct, root *Twoda) (e
 
 /**
  * Cell values data section containing all unique cell value strings.
- * Each string is null-terminated. Offsets from cell_offsets_array point into this section.
+ * Each string is null-terminated. Offsets from cell_offsets point into this section.
  * The section starts immediately after len_cell_values_section field and has size = len_cell_values_section bytes.
- */
-type Twoda_CellOffsetsArray struct {
-	Offsets []uint16
-	_io *kaitai.Stream
-	_root *Twoda
-	_parent *Twoda
-}
-func NewTwoda_CellOffsetsArray() *Twoda_CellOffsetsArray {
-	return &Twoda_CellOffsetsArray{
-	}
-}
-
-func (this Twoda_CellOffsetsArray) IO_() *kaitai.Stream {
-	return this._io
-}
-
-func (this *Twoda_CellOffsetsArray) Read(io *kaitai.Stream, parent *Twoda, root *Twoda) (err error) {
-	this._io = io
-	this._parent = parent
-	this._root = root
-
-	for i := 1;; i++ {
-		tmp9, err := this._io.ReadU2le()
-		if err != nil {
-			return err
-		}
-		_it := tmp9
-		this.Offsets = append(this.Offsets, _it)
-		tmp10, err := this._io.Pos()
-		if err != nil {
-			return err
-		}
-		tmp11, err := this._io.Size()
-		if err != nil {
-			return err
-		}
-		if tmp10 >= tmp11 - 2 {
-			break
-		}
-	}
-	return err
-}
-
-/**
- * Array of cell value offsets (uint16, little-endian).
- * Each offset points to a null-terminated string in the cell_values_section.
- * Offsets are relative to the start of cell_values_section.
- * 
- * Reading continues until we reach 2 bytes before end of file (where len_cell_values_section field is).
- * Then len_cell_values_section is read, followed by cell_values_section.
- * 
- * The actual count is: row_count * column_count
- * where column_count = number of tab-separated parts in column_headers_raw.
- * 
- * Cell access pattern:
- * - Cell at row i, column j = offsets[i * column_count + j]
- * - Value = read string at cell_values_section start + offsets[i * column_count + j]
- * 
- * Duplicate cell values share the same offset (string deduplication).
  */
 type Twoda_CellValuesSection struct {
 	RawData string
@@ -223,19 +168,19 @@ func (this *Twoda_CellValuesSection) Read(io *kaitai.Stream, parent *Twoda, root
 	this._parent = parent
 	this._root = root
 
-	tmp12, err := this._io.ReadBytes(int(this._root.LenCellValuesSection))
+	tmp9, err := this._io.ReadBytes(int(this._root.LenCellValuesSection))
 	if err != nil {
 		return err
 	}
-	tmp12 = tmp12
-	this.RawData = string(tmp12)
+	tmp9 = tmp9
+	this.RawData = string(tmp9)
 	return err
 }
 
 /**
  * Raw cell values data as a single string.
  * Contains all null-terminated cell value strings concatenated together.
- * Individual strings can be extracted using offsets from cell_offsets_array.
+ * Individual strings can be extracted using offsets from cell_offsets.
  * Note: To read a specific cell value, seek to (cell_values_section start + offset) and read a null-terminated string.
  */
 type Twoda_RowLabelEntry struct {
@@ -258,11 +203,11 @@ func (this *Twoda_RowLabelEntry) Read(io *kaitai.Stream, parent *Twoda_RowLabels
 	this._parent = parent
 	this._root = root
 
-	tmp13, err := this._io.ReadBytesTerm(9, false, true, false)
+	tmp10, err := this._io.ReadBytesTerm(9, false, true, false)
 	if err != nil {
 		return err
 	}
-	this.LabelValue = string(tmp13)
+	this.LabelValue = string(tmp10)
 	return err
 }
 
@@ -294,12 +239,12 @@ func (this *Twoda_RowLabelsSection) Read(io *kaitai.Stream, parent *Twoda, root 
 
 	for i := 0; i < int(this._root.RowCount); i++ {
 		_ = i
-		tmp14 := NewTwoda_RowLabelEntry()
-		err = tmp14.Read(this._io, this, this._root)
+		tmp11 := NewTwoda_RowLabelEntry()
+		err = tmp11.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.Labels = append(this.Labels, tmp14)
+		this.Labels = append(this.Labels, tmp11)
 	}
 	return err
 }
@@ -334,23 +279,23 @@ func (this *Twoda_TwodaHeader) Read(io *kaitai.Stream, parent *Twoda, root *Twod
 	this._parent = parent
 	this._root = root
 
-	tmp15, err := this._io.ReadBytes(int(4))
+	tmp12, err := this._io.ReadBytes(int(4))
 	if err != nil {
 		return err
 	}
-	tmp15 = tmp15
-	this.Magic = string(tmp15)
-	tmp16, err := this._io.ReadBytes(int(4))
+	tmp12 = tmp12
+	this.Magic = string(tmp12)
+	tmp13, err := this._io.ReadBytes(int(4))
 	if err != nil {
 		return err
 	}
-	tmp16 = tmp16
-	this.Version = string(tmp16)
-	tmp17, err := this._io.ReadU1()
+	tmp13 = tmp13
+	this.Version = string(tmp13)
+	tmp14, err := this._io.ReadU1()
 	if err != nil {
 		return err
 	}
-	this.Newline = tmp17
+	this.Newline = tmp14
 	return err
 }
 

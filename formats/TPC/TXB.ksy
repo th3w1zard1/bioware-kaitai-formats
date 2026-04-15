@@ -1,0 +1,35 @@
+meta:
+  id: txb
+  title: BioWare TXB Texture (TPC-shaped wire)
+  license: MIT
+  endian: le
+  file-extension: txb
+  imports:
+    - ../Common/bioware_type_ids
+    - tpc
+  xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools ↔ this spec; submodule section 0).
+    xoreos_types_kfiletype_txb: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L182
+    xoreos_tpc_cpp: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66
+    pykotor_tpc_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc
+    reone_tpcreader: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/tpcreader.cpp#L29-L105
+doc: |
+  **TXB** (`kFileTypeTXB` **3006**): xoreos classifies this as a texture alongside **TPC** / **TXB2**. Community loaders
+  (PyKotor / reone) route many TXB payloads through the same **128-byte TPC header** + tail layout as native **TPC**.
+
+  This capsule **reuses** `tpc::tpc_header` + opaque tail so emitters share one header struct. If a shipped TXB
+  variant diverges, split a dedicated header type and cite Ghidra / binary evidence (`TODO: VERIFY`).
+
+doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L182 xoreos — `kFileTypeTXB`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66 xoreos — `TPC::load` (texture family)"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc PyKotor wiki — texture family (cross-check TXB)"
+
+seq:
+  - id: header
+    type: tpc::tpc_header
+    doc: Shared 128-byte TPC-class header (see `TPC.ksy` / PyKotor `TPCBinaryReader`).
+  - id: body
+    size-eos: true
+    doc: Remaining bytes (mip chain / faces / optional TXI tail) — same consumption model as `TPC.ksy`.

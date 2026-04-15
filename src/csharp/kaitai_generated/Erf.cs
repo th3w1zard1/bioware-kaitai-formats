@@ -31,7 +31,7 @@ namespace Kaitai
     ///   - unused (u2): Padding/unused field (typically 0)
     /// - Resource List (8 bytes per entry): Resource offset and size. Each entry contains:
     ///   - offset_to_data (u4): Byte offset to resource data from beginning of file
-    ///   - resource_size (u4): Uncompressed size of resource data in bytes
+    ///   - len_data (u4): Uncompressed size of resource data in bytes (Kaitai id for byte size of `data`)
     /// - Resource Data (variable size): Raw binary data for each resource, stored at offsets specified
     ///   in resource_list
     /// 
@@ -39,16 +39,16 @@ namespace Kaitai
     /// 1. Read header to get entry_count and offsets
     /// 2. Read key_list to map ResRefs to resource_ids
     /// 3. Use resource_id to index into resource_list
-    /// 4. Read resource data from offset_to_data with size resource_size
+    /// 4. Read resource data from offset_to_data with byte length len_data
     /// 
     /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/wiki/ERF-File-Format.md - Complete ERF format documentation
-    /// - https://github.com/OldRepublicDevs/PyKotor/wiki/Bioware-Aurora-ERF.md - Official BioWare Aurora ERF specification
+    /// - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf - Complete ERF format documentation
+    /// - https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf - Official BioWare Aurora ERF specification
     /// - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/erfreader.cpp:24-106 - Complete C++ ERF reader implementation
     /// - https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp:44-229 - Generic Aurora ERF implementation (shared format)
     /// - https://github.com/NickHugi/Kotor.NET/blob/master/Formats/KotorERF/ERFBinaryStructure.cs:11-170 - .NET ERF reader/writer
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
     /// </summary>
     public partial class Erf : KaitaiStruct
     {
@@ -716,7 +716,7 @@ namespace Kaitai
             private void _read()
             {
                 _offsetToData = m_io.ReadU4le();
-                _resourceSize = m_io.ReadU4le();
+                _lenData = m_io.ReadU4le();
             }
             private bool f_data;
             private byte[] _data;
@@ -733,13 +733,13 @@ namespace Kaitai
                     f_data = true;
                     long _pos = m_io.Pos;
                     m_io.Seek(OffsetToData);
-                    _data = m_io.ReadBytes(ResourceSize);
+                    _data = m_io.ReadBytes(LenData);
                     m_io.Seek(_pos);
                     return _data;
                 }
             }
             private uint _offsetToData;
-            private uint _resourceSize;
+            private uint _lenData;
             private Erf m_root;
             private Erf.ResourceList m_parent;
 
@@ -753,7 +753,7 @@ namespace Kaitai
             /// Size of resource data in bytes.
             /// Uncompressed size of the resource.
             /// </summary>
-            public uint ResourceSize { get { return _resourceSize; } }
+            public uint LenData { get { return _lenData; } }
             public Erf M_Root { get { return m_root; } }
             public Erf.ResourceList M_Parent { get { return m_parent; } }
         }

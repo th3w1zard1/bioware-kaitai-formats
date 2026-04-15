@@ -7,6 +7,7 @@ class ltr_t;
 
 #include "kaitai/kaitaistruct.h"
 #include <stdint.h>
+#include "bioware_common.h"
 #include <vector>
 
 #if KAITAI_STRUCT_VERSION < 11000L
@@ -14,21 +15,11 @@ class ltr_t;
 #endif
 
 /**
- * LTR (Letter) resources store third-order Markov chain probability tables that the game uses
- * to procedurally generate NPC names. The data encodes likelihoods for characters appearing at
- * the start, middle, and end of names given zero, one, or two-character context.
- * 
- * KotOR always uses the 28-character alphabet (a-z plus ' and -). Neverwinter Nights (NWN) used
- * 26 characters; the header explicitly stores the count. This is a KotOR-specific difference from NWN.
- * 
- * LTR files are binary and consist of a short header followed by three probability tables
- * (singles, doubles, triples) stored as contiguous float arrays.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LTR-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/ltrreader.cpp:27-74
- * - https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp:135-168
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LTRObject.ts:61-117
+ * **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
+ * `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
+ * `bioware_common.ksy`. Use `.to_i` on that enum inside `valid`/`repeat-expr` (see Kaitai user guide: enums).
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format PyKotor wiki — LTR
+ * \sa https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168 xoreos — LTR::load
  */
 
 class ltr_t : public kaitai::kstruct {
@@ -207,7 +198,7 @@ public:
 private:
     std::string m_file_type;
     std::string m_file_version;
-    uint8_t m_letter_count;
+    bioware_common_t::bioware_ltr_alphabet_length_t m_letter_count;
     letter_block_t* m_single_letter_block;
     double_letter_blocks_array_t* m_double_letter_blocks;
     triple_letter_blocks_array_t* m_triple_letter_blocks;
@@ -227,11 +218,10 @@ public:
     std::string file_version() const { return m_file_version; }
 
     /**
-     * Number of characters in the alphabet. Must be 26 (NWN) or 28 (KotOR).
-     * KotOR uses 28 characters: "abcdefghijklmnopqrstuvwxyz'-"
-     * NWN uses 26 characters: "abcdefghijklmnopqrstuvwxyz"
+     * Alphabet size (`u1`). Canonical enum: `formats/Common/bioware_common.ksy` → `bioware_ltr_alphabet_length`
+     * (26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide §6.4.5).
      */
-    uint8_t letter_count() const { return m_letter_count; }
+    bioware_common_t::bioware_ltr_alphabet_length_t letter_count() const { return m_letter_count; }
 
     /**
      * Single-letter probability block (no context).

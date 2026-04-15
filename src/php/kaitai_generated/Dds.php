@@ -2,17 +2,10 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 /**
- * DDS (DirectDraw Surface) files appear in two variants in KotOR:
+ * **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+ * (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
  * 
- * 1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
- * 2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
- * 
- * DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
- * and various other pixel formats. They can include mipmaps and cube maps.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
- * - Standard DirectX DDS format specification
+ * BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
  */
 
 namespace {
@@ -33,12 +26,7 @@ namespace {
             if ($this->magic() != "DDS ") {
                 $this->_m_biowareHeader = new \Dds\BiowareDdsHeader($this->_io, $this, $this->_root);
             }
-            $this->_m_pixelData = [];
-            $i = 0;
-            while (!$this->_io->isEof()) {
-                $this->_m_pixelData[] = $this->_io->readU1();
-                $i++;
-            }
+            $this->_m_pixelData = $this->_io->readBytesFull();
         }
         protected $_m_magic;
         protected $_m_header;
@@ -62,9 +50,9 @@ namespace {
         public function biowareHeader() { return $this->_m_biowareHeader; }
 
         /**
-         * Pixel data (compressed or uncompressed).
-         * For standard DDS: Format determined by DDPIXELFORMAT
-         * For BioWare DDS: DXT1 or DXT5 compressed data
+         * Pixel data (compressed or uncompressed); single blob to EOF.
+         * For standard DDS: format determined by DDPIXELFORMAT.
+         * For BioWare DDS: DXT1 or DXT5 compressed data.
          */
         public function pixelData() { return $this->_m_pixelData; }
     }
@@ -101,9 +89,7 @@ namespace Dds {
         public function height() { return $this->_m_height; }
 
         /**
-         * Bytes per pixel:
-         * - 3 = DXT1 compression
-         * - 4 = DXT5 compression
+         * BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
          */
         public function bytesPerPixel() { return $this->_m_bytesPerPixel; }
 

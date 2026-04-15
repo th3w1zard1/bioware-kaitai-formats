@@ -40,7 +40,7 @@ class erf_t;
  *   - unused (u2): Padding/unused field (typically 0)
  * - Resource List (8 bytes per entry): Resource offset and size. Each entry contains:
  *   - offset_to_data (u4): Byte offset to resource data from beginning of file
- *   - resource_size (u4): Uncompressed size of resource data in bytes
+ *   - len_data (u4): Uncompressed size of resource data in bytes (Kaitai id for byte size of `data`)
  * - Resource Data (variable size): Raw binary data for each resource, stored at offsets specified
  *   in resource_list
  * 
@@ -48,16 +48,16 @@ class erf_t;
  * 1. Read header to get entry_count and offsets
  * 2. Read key_list to map ResRefs to resource_ids
  * 3. Use resource_id to index into resource_list
- * 4. Read resource data from offset_to_data with size resource_size
+ * 4. Read resource data from offset_to_data with byte length len_data
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/ERF-File-Format.md - Complete ERF format documentation
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/Bioware-Aurora-ERF.md - Official BioWare Aurora ERF specification
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf - Complete ERF format documentation
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf - Official BioWare Aurora ERF specification
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/erfreader.cpp:24-106 - Complete C++ ERF reader implementation
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp:44-229 - Generic Aurora ERF implementation (shared format)
  * - https://github.com/NickHugi/Kotor.NET/blob/master/Formats/KotorERF/ERFBinaryStructure.cs:11-170 - .NET ERF reader/writer
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
  */
 
 class erf_t : public kaitai::kstruct {
@@ -702,7 +702,7 @@ public:
 
     private:
         uint32_t m_offset_to_data;
-        uint32_t m_resource_size;
+        uint32_t m_len_data;
         erf_t* m__root;
         erf_t::resource_list_t* m__parent;
 
@@ -718,7 +718,7 @@ public:
          * Size of resource data in bytes.
          * Uncompressed size of the resource.
          */
-        uint32_t resource_size() const { return m_resource_size; }
+        uint32_t len_data() const { return m_len_data; }
         erf_t* _root() const { return m__root; }
         erf_t::resource_list_t* _parent() const { return m__parent; }
     };

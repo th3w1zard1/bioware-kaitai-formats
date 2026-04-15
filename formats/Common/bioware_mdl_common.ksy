@@ -4,12 +4,30 @@ meta:
   license: MIT
   endian: le
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
+    ghidra_odyssey_k1:
+      note: "Shared MDL/MDX wire enums — mesh Ghidra notes on `formats/MDL/MDL.ksy` / `MDX.ksy`; `user-agdec-http` per AGENTS.md."
     pykotor_wiki_mdl: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
-    pykotor_mdlops: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm
+    pykotor_mdl_formats_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
+    pykotor_vendor_mdopsm: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407
     xoreos_model_kotor: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267
+    xoreos_types_kfiletype_mdl: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L73
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
     xoreos_docs_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format PyKotor wiki — MDL/MDX"
+  - "https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/ PyKotor — MDL package"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267 xoreos — `Model_KotOR::load`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L73 xoreos — `kFileTypeMDL`"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl (controller IDs)"
+  - "https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407 Community MDLOps — `MDLOpsM.pm` controller name table (legacy PyKotor `vendor/MDLOps` path 404 on current default branch)"
 doc: |
-  Wire enums shared by `formats/MDL/MDL.ksy` (and tooling aligned with PyKotor / MDLOps / xoreos).
+  Wire enums shared by `formats/MDL/MDL.ksy` (imported there as `bioware_mdl_common`; field-bound on `model_type` and
+  `controller.type`; `node_header.node_type` is a bitmask so MDL.ksy keeps it as raw `u2` and references this enum for docs).
+  Tooling alignment: PyKotor / MDLOps / xoreos.
 
   - `model_classification` — `model_header.model_type` (`u1`).
   - `node_type_value` — primary node discriminator in `node_header.node_type` (`u2`); bitmask flags on the same field are documented in MDL.ksy.

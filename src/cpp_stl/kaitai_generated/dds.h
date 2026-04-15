@@ -7,6 +7,7 @@ class dds_t;
 
 #include "kaitai/kaitaistruct.h"
 #include <stdint.h>
+#include "bioware_common.h"
 #include <vector>
 
 #if KAITAI_STRUCT_VERSION < 11000L
@@ -14,17 +15,12 @@ class dds_t;
 #endif
 
 /**
- * DDS (DirectDraw Surface) files appear in two variants in KotOR:
+ * **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+ * (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
  * 
- * 1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
- * 2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
- * 
- * DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
- * and various other pixel formats. They can include mipmaps and cube maps.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
- * - Standard DirectX DDS format specification
+ * BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds PyKotor wiki — DDS
+ * \sa https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130 PyKotor — TPCDDSReader
  */
 
 class dds_t : public kaitai::kstruct {
@@ -59,7 +55,7 @@ public:
     private:
         uint32_t m_width;
         uint32_t m_height;
-        uint32_t m_bytes_per_pixel;
+        bioware_common_t::bioware_dds_variant_bytes_per_pixel_t m_bytes_per_pixel;
         uint32_t m_data_size;
         float m_unused_float;
         dds_t* m__root;
@@ -78,11 +74,9 @@ public:
         uint32_t height() const { return m_height; }
 
         /**
-         * Bytes per pixel:
-         * - 3 = DXT1 compression
-         * - 4 = DXT5 compression
+         * BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
          */
-        uint32_t bytes_per_pixel() const { return m_bytes_per_pixel; }
+        bioware_common_t::bioware_dds_variant_bytes_per_pixel_t bytes_per_pixel() const { return m_bytes_per_pixel; }
 
         /**
          * Total compressed data size.
@@ -308,7 +302,7 @@ public:
     bool _is_null_bioware_header() { bioware_header(); return n_bioware_header; };
 
 private:
-    std::vector<uint8_t>* m_pixel_data;
+    std::string m_pixel_data;
     dds_t* m__root;
     kaitai::kstruct* m__parent;
 
@@ -331,11 +325,11 @@ public:
     bioware_dds_header_t* bioware_header() const { return m_bioware_header; }
 
     /**
-     * Pixel data (compressed or uncompressed).
-     * For standard DDS: Format determined by DDPIXELFORMAT
-     * For BioWare DDS: DXT1 or DXT5 compressed data
+     * Pixel data (compressed or uncompressed); single blob to EOF.
+     * For standard DDS: format determined by DDPIXELFORMAT.
+     * For BioWare DDS: DXT1 or DXT5 compressed data.
      */
-    std::vector<uint8_t>* pixel_data() const { return m_pixel_data; }
+    std::string pixel_data() const { return m_pixel_data; }
     dds_t* _root() const { return m__root; }
     kaitai::kstruct* _parent() const { return m__parent; }
 };

@@ -36,23 +36,23 @@ class Gff(KaitaiStruct):
     
     
     .. seealso::
-       xoreos — GFF3File::Header::read - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/gff3file.cpp#L50-L63
+       xoreos — GFF3File::Header::read - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63
     
     
     .. seealso::
-       xoreos — GFF4File::Header::read - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/gff4file.cpp#L48-L72
+       xoreos — GFF4File::Header::read - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L48-L72
     
     
     .. seealso::
-       PyKotor — GFFBinaryReader.load - https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114
+       PyKotor — GFFBinaryReader.load - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114
     
     
     .. seealso::
-       reone — GffReader - https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L27-L225
+       reone — GffReader - https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L225
     
     
     .. seealso::
-       KotOR.js — GFFObject.parse - https://github.com/th3w1zard1/KotOR.js/blob/a9fc837cede88fc50bea7b675cda4f1f8e891264/src/resource/GFFObject.ts#L152-L221
+       KotOR.js — GFFObject.parse - https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/GFFObject.ts#L152-L221
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Gff, self).__init__(_io)
@@ -70,7 +70,7 @@ class Gff(KaitaiStruct):
 
     class FieldArray(KaitaiStruct):
         """Table of `GFFFieldData` rows (`field_count` × 12 bytes at `field_offset`). Indexed by struct metadata and `field_indices_array`.
-        Cross-check: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L163-L180 (`_load_fields_batch` reads 12-byte headers via `struct.unpack_from` L176–L178); single-field path `_load_field` L188–L191 — https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L68-L72
+        Cross-check: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L163-L180 (`_load_fields_batch` reads 12-byte headers via `struct.unpack_from` L176–L178); single-field path `_load_field` L188–L191 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L68-L72
         """
         def __init__(self, _io, _parent=None, _root=None):
             super(Gff.FieldArray, self).__init__(_io)
@@ -113,7 +113,7 @@ class Gff(KaitaiStruct):
     class FieldEntry(KaitaiStruct):
         """One `GFFFieldData` row: `field_type` (+0, `GFFFieldTypes`), `label_index` (+4), `data_or_data_offset` (+8).
         `CResGFF::GetField` @ `0x00410990` walks these with 12-byte stride.
-        Dispatch table (inline vs `field_data` vs struct/list): https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L208-L273 — https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L78-L146
+        Dispatch table (inline vs `field_data` vs struct/list): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L208-L273 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L78-L146
         """
         def __init__(self, _io, _parent=None, _root=None):
             super(Gff.FieldEntry, self).__init__(_io)
@@ -167,7 +167,7 @@ class Gff(KaitaiStruct):
         def is_simple_type(self):
             """Derived: inline scalars — payload lives in the 4-byte `GFFFieldData.data_or_data_offset` word (`+0x8` in the 12-byte record).
             Matches readers that widen to 32-bit in-memory (see `ReadField*` callers).
-            **PyKotor `GFFBinaryReader`:** type **18 is not handled** after the float branch — see https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L268-L273 (wire layout for 18 is still per wiki + this `.ksy`).
+            **PyKotor `GFFBinaryReader`:** type **18 is not handled** after the float branch — see https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L268-L273 (wire layout for 18 is still per wiki + this `.ksy`).
             """
             if hasattr(self, '_m_is_simple_type'):
                 return self._m_is_simple_type
@@ -293,7 +293,7 @@ class Gff(KaitaiStruct):
             """Field dictionary: `header.field_count` × 12 B at `header.field_offset`. Ghidra: `GFFFieldData`.
             `CResGFF::GetField` @ `0x00410990` uses 12-byte stride on this table.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-array
-            PyKotor `_load_fields_batch` / `_load_field`: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L145-L180 — https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L182-L195 — reone `readField`: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L67-L149
+                PyKotor `_load_fields_batch` / `_load_field`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L145-L180 — https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L182-L195 — reone `readField`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L67-L149
             """
             if hasattr(self, '_m_field_array'):
                 return self._m_field_array
@@ -311,7 +311,7 @@ class Gff(KaitaiStruct):
         def field_data(self):
             """Complex-type payload heap. Ghidra: `field_data_offset` @ +0x20, size `field_data_count` @ +0x24.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-data
-            PyKotor seeks `field_data_offset + offset` for “complex” IDs: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L211-L213 — reone helpers from `_fieldDataOffset`: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L160-L216
+                PyKotor seeks `field_data_offset + offset` for “complex” IDs: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L211-L213 — reone helpers from `_fieldDataOffset`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L160-L216
             """
             if hasattr(self, '_m_field_data'):
                 return self._m_field_data
@@ -330,7 +330,7 @@ class Gff(KaitaiStruct):
             """Flat `u4` stream (`field_indices_count` elements). Multi-field structs slice via `GFFStructData.data_or_data_offset`.
             Ghidra: `field_indices_offset` @ +0x28, `field_indices_count` @ +0x2C.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-indices-multiple-element-map--multimap
-            PyKotor batch read: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L135-L139 — reone: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L156-L158 — Torlack MultiMap context: https://github.com/th3w1zard1/xoreos-docs/blob/c7f12b09788a331499ce15b1283b630b4feb5163/specs/torlack/itp.html#L44-L49
+                PyKotor batch read: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L135-L139 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L156-L158 — Torlack MultiMap context: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html#L44-L49
             """
             if hasattr(self, '_m_field_indices_array'):
                 return self._m_field_indices_array
@@ -349,7 +349,7 @@ class Gff(KaitaiStruct):
             """Label table: `header.label_count` entries ×16 bytes at `header.label_offset`.
             Ghidra: slots indexed by `GFFFieldData.label_index` (+0x4); header fields `label_offset` / `label_count` @ +0x18 / +0x1C.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#label-array
-            PyKotor load: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L108-L111 — reone `readLabel`: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L151-L154
+                PyKotor load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L108-L111 — reone `readLabel`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L151-L154
             """
             if hasattr(self, '_m_label_array'):
                 return self._m_label_array
@@ -368,7 +368,7 @@ class Gff(KaitaiStruct):
             """Packed list nodes (`u4` count + `u4` struct indices). List fields store byte offsets from this arena base.
             Ghidra: `list_indices_offset` @ +0x30; `list_indices_count` @ +0x34 = span length in bytes (this `.ksy` `raw_data` size).
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices
-            PyKotor `_load_list`: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L275-L294 — reone `readList`: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L218-L223
+                PyKotor `_load_list`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L275-L294 — reone `readList`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L223
             """
             if hasattr(self, '_m_list_indices_array'):
                 return self._m_list_indices_array
@@ -398,7 +398,7 @@ class Gff(KaitaiStruct):
         def struct_array(self):
             """Struct table: `header.struct_count` × 12 B at `header.struct_offset`. Ghidra: `GFFStructData` rows.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#struct-array
-            PyKotor `_load_struct`: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L116-L143 — reone `readStruct`: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L46-L65
+                PyKotor `_load_struct`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L116-L143 — reone `readStruct`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L46-L65
             """
             if hasattr(self, '_m_struct_array'):
                 return self._m_struct_array
@@ -505,10 +505,10 @@ class Gff(KaitaiStruct):
         Offset” through “List Indices Count”. Ghidra `/K1/k1_win_gog_swkotor.exe`: `GFFHeaderInfo` @ +0x8 … +0x34.
         
         Sources (same DWORD order on disk after the 8-byte signature):
-        - https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114 (`file_type`/`file_version` L79–L80 then twelve header `u32`s L93–L106)
-        - https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L27-L44 (`GffReader::load` — skips 8-byte signature, reads twelve header `u32`s L30–L41)
-        - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/gff3file.cpp#L50-L63 (`GFF3File::Header::read` — Aurora GFF3 header DWORD layout)
-        - https://github.com/th3w1zard1/xoreos-docs/blob/c7f12b09788a331499ce15b1283b630b4feb5163/specs/torlack/itp.html#L44-L49 (Aurora/GFF-family background; MultiMap wording)
+        - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114 (`file_type`/`file_version` L79–L80 then twelve header `u32`s L93–L106)
+        - https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L44 (`GffReader::load` — skips 8-byte signature, reads twelve header `u32`s L30–L41)
+        - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63 (`GFF3File::Header::read` — Aurora GFF3 header DWORD layout)
+        - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html#L44-L49 (Aurora/GFF-family background; MultiMap wording)
         """
         def __init__(self, _io, _parent=None, _root=None):
             super(Gff.GffHeaderTail, self).__init__(_io)
@@ -633,7 +633,7 @@ class Gff(KaitaiStruct):
 
     class ListEntry(KaitaiStruct):
         """One list node on disk: leading cardinality then struct row indices. Used when `GFFFieldTypes` = list (15).
-        Mirrors: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L278-L285 — https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L218-L223
+        Mirrors: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L278-L285 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L223
         """
         def __init__(self, _io, _parent=None, _root=None):
             super(Gff.ListEntry, self).__init__(_io)
@@ -1011,9 +1011,9 @@ class Gff(KaitaiStruct):
         def value_str_ref(self):
             """`GFFFieldTypes` 18 — TLK StrRef inline (same 4-byte width as type 5; distinct meaning).
             `0xFFFFFFFF` often unset. Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types and https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#string-references-strref
-            **reone** implements `StrRef` as **`field_data`-relative** (`readStrRefFieldData`), not as an inline dword at +8: https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L141-L143 — https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L199-L204 (treat as cross-engine / cross-tool variance when porting assets).
+            **reone** implements `StrRef` as **`field_data`-relative** (`readStrRefFieldData`), not as an inline dword at +8: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L141-L143 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L199-L204 (treat as cross-engine / cross-tool variance when porting assets).
             Historical KotOR editor discussion (type list / StrRef): https://www.lucasforumsarchive.com/thread/149407 — https://deadlystream.com/files/file/719-k-gff/
-            PyKotor reader gap (no `elif` for 18): https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L273
+            PyKotor reader gap (no `elif` for 18): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L273
             """
             if hasattr(self, '_m_value_str_ref'):
                 return self._m_value_str_ref
@@ -1261,7 +1261,7 @@ class Gff(KaitaiStruct):
 
     class StructArray(KaitaiStruct):
         """Table of `GFFStructData` rows (`struct_count` × 12 bytes at `struct_offset`). Ghidra name `GFFStructData`.
-        Cross-check: https://github.com/th3w1zard1/PyKotor/blob/cfb5bb5070aff80ce9542f6968beb5fa5342bb33/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L122-L127 (seek row base L122; three `u32` L123–L127) — https://github.com/th3w1zard1/reone/blob/72e7f615a5790adfa2a12105d2570211e1c233b2/src/libs/resource/format/gffreader.cpp#L47-L51
+        Cross-check: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L122-L127 (seek row base L122; three `u32` L123–L127) — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L47-L51
         """
         def __init__(self, _io, _parent=None, _root=None):
             super(Gff.StructArray, self).__init__(_io)

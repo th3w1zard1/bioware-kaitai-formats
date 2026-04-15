@@ -14,9 +14,9 @@ local str_decode = require("string_decode")
 -- The ASCII format represents the model structure using plain text with keyword-based syntax.
 -- Lines are parsed sequentially, with keywords indicating sections, nodes, properties, and data arrays.
 -- 
--- Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md - ASCII MDL Format section
--- Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:3916-4698 - readasciimdl function implementation
--- See also: Source (https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md#ascii-mdl-format)
+-- Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - ASCII MDL Format section
+-- Reference: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:3916-4698 - readasciimdl function implementation
+-- See also: Source (https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#ascii-mdl-format)
 MdlAscii = class.class(KaitaiStruct)
 
 MdlAscii.ControllerTypeCommon = enum.Enum {

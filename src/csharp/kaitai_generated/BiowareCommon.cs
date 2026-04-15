@@ -15,9 +15,9 @@ namespace Kaitai
     /// - The CExoLocString / LocalizedString binary layout
     /// 
     /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
     /// - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
     /// - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
     /// </summary>
@@ -28,6 +28,12 @@ namespace Kaitai
             return new BiowareCommon(new KaitaiStream(fileName));
         }
 
+
+        public enum BiowareDdsVariantBytesPerPixel
+        {
+            Dxt1 = 3,
+            Dxt5 = 4,
+        }
 
         public enum BiowareEquipmentSlotFlag
         {
@@ -168,6 +174,32 @@ namespace Kaitai
             Unknown = 2147483646,
         }
 
+        public enum BiowareLipVisemeId
+        {
+            Neutral = 0,
+            Ee = 1,
+            Eh = 2,
+            Ah = 3,
+            Oh = 4,
+            Ooh = 5,
+            Y = 6,
+            Sts = 7,
+            Fv = 8,
+            Ng = 9,
+            Th = 10,
+            Mpb = 11,
+            Td = 12,
+            Sh = 13,
+            L = 14,
+            Kg = 15,
+        }
+
+        public enum BiowareLtrAlphabetLength
+        {
+            NeverwinterNights = 26,
+            Kotor = 28,
+        }
+
         public enum BiowareObjectTypeId
         {
             Invalid = 0,
@@ -182,6 +214,39 @@ namespace Kaitai
             Area = 9,
             Sound = 10,
             Camera = 11,
+        }
+
+        public enum BiowarePccCompressionCodec
+        {
+            None = 0,
+            Zlib = 1,
+            Lzo = 2,
+        }
+
+        public enum BiowarePccPackageKind
+        {
+            NormalPackage = 0,
+            PatchPackage = 1,
+        }
+
+        public enum BiowareTpcPixelFormatId
+        {
+            Greyscale = 1,
+            RgbOrDxt1 = 2,
+            RgbaOrDxt5 = 4,
+            BgraXboxSwizzle = 12,
+        }
+
+        public enum RiffWaveFormatTag
+        {
+            Pcm = 1,
+            AdpcmMs = 2,
+            IeeeFloat = 3,
+            Alaw = 6,
+            Mulaw = 7,
+            DviImaAdpcm = 17,
+            MpegLayer3 = 85,
+            WaveFormatExtensible = 65534,
         }
         public BiowareCommon(KaitaiStream p__io, KaitaiStruct p__parent = null, BiowareCommon p__root = null) : base(p__io)
         {
@@ -332,7 +397,7 @@ namespace Kaitai
             public uint TotalSize { get { return _totalSize; } }
 
             /// <summary>
-            /// StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+            /// StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
             /// </summary>
             public uint StringRef { get { return _stringRef; } }
 

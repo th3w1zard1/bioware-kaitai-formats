@@ -38,7 +38,7 @@ use std::rc::{Rc, Weak};
  *   - unused (u2): Padding/unused field (typically 0)
  * - Resource List (8 bytes per entry): Resource offset and size. Each entry contains:
  *   - offset_to_data (u4): Byte offset to resource data from beginning of file
- *   - resource_size (u4): Uncompressed size of resource data in bytes
+ *   - len_data (u4): Uncompressed size of resource data in bytes (Kaitai id for byte size of `data`)
  * - Resource Data (variable size): Raw binary data for each resource, stored at offsets specified
  *   in resource_list
  * 
@@ -46,16 +46,16 @@ use std::rc::{Rc, Weak};
  * 1. Read header to get entry_count and offsets
  * 2. Read key_list to map ResRefs to resource_ids
  * 3. Use resource_id to index into resource_list
- * 4. Read resource data from offset_to_data with size resource_size
+ * 4. Read resource data from offset_to_data with byte length len_data
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/ERF-File-Format.md - Complete ERF format documentation
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/Bioware-Aurora-ERF.md - Official BioWare Aurora ERF specification
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf - Complete ERF format documentation
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf - Official BioWare Aurora ERF specification
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/erfreader.cpp:24-106 - Complete C++ ERF reader implementation
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp:44-229 - Generic Aurora ERF implementation (shared format)
  * - https://github.com/NickHugi/Kotor.NET/blob/master/Formats/KotorERF/ERFBinaryStructure.cs:11-170 - .NET ERF reader/writer
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
  */
 
 #[derive(Default, Debug, Clone)]
@@ -1591,7 +1591,7 @@ pub struct Erf_ResourceEntry {
     pub _parent: SharedType<Erf_ResourceList>,
     pub _self: SharedType<Self>,
     offset_to_data: RefCell<u32>,
-    resource_size: RefCell<u32>,
+    len_data: RefCell<u32>,
     _io: RefCell<BytesReader>,
     f_data: Cell<bool>,
     data: RefCell<Vec<u8>>,
@@ -1614,7 +1614,7 @@ impl KStruct for Erf_ResourceEntry {
         let _prc = self_rc._parent.get_value().borrow().upgrade();
         let _r = _rrc.as_ref().unwrap();
         *self_rc.offset_to_data.borrow_mut() = _io.read_u4le()?.into();
-        *self_rc.resource_size.borrow_mut() = _io.read_u4le()?.into();
+        *self_rc.len_data.borrow_mut() = _io.read_u4le()?.into();
         Ok(())
     }
 }
@@ -1636,7 +1636,7 @@ impl Erf_ResourceEntry {
         self.f_data.set(true);
         let _pos = _io.pos();
         _io.seek(*self.offset_to_data() as usize)?;
-        *self.data.borrow_mut() = _io.read_bytes(*self.resource_size() as usize)?.into();
+        *self.data.borrow_mut() = _io.read_bytes(*self.len_data() as usize)?.into();
         _io.seek(_pos)?;
         Ok(self.data.borrow())
     }
@@ -1657,8 +1657,8 @@ impl Erf_ResourceEntry {
  * Uncompressed size of the resource.
  */
 impl Erf_ResourceEntry {
-    pub fn resource_size(&self) -> Ref<'_, u32> {
-        self.resource_size.borrow()
+    pub fn len_data(&self) -> Ref<'_, u32> {
+        self.len_data.borrow()
     }
 }
 impl Erf_ResourceEntry {

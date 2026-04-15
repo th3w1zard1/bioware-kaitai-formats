@@ -1,10 +1,6 @@
 from construct import *
 from construct.lib import *
 
-twoda__cell_offsets_array = Struct(
-	'offsets' / RepeatUntil(lambda obj_, list_, this: stream_tell(_io) >= stream_size(_io) - 2, Int16ul),
-)
-
 twoda__cell_values_section = Struct(
 	'raw_data' / FixedSized(this._root.len_cell_values_section, GreedyString(encoding='ASCII')),
 )
@@ -29,7 +25,7 @@ twoda = Struct(
 	'column_headers_raw' / NullTerminated(GreedyString(encoding='ASCII'), term=b"\x00", include=False, consume=True),
 	'row_count' / Int32ul,
 	'row_labels_section' / LazyBound(lambda: twoda__row_labels_section),
-	'cell_offsets_array' / LazyBound(lambda: twoda__cell_offsets_array),
+	'cell_offsets' / Array(this.row_count * this.column_count, Int16ul),
 	'len_cell_values_section' / Int16ul,
 	'cell_values_section' / FixedSized(this.len_cell_values_section, LazyBound(lambda: twoda__cell_values_section)),
 )

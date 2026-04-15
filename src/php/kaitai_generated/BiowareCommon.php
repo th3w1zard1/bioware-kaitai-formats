@@ -11,9 +11,9 @@
  * - The CExoLocString / LocalizedString binary layout
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
  * - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
  * - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
  */
@@ -136,7 +136,7 @@ namespace BiowareCommon {
         public function totalSize() { return $this->_m_totalSize; }
 
         /**
-         * StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+         * StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
          */
         public function stringRef() { return $this->_m_stringRef; }
 
@@ -349,6 +349,19 @@ namespace BiowareCommon {
 }
 
 namespace BiowareCommon {
+    class BiowareDdsVariantBytesPerPixel {
+        const DXT1 = 3;
+        const DXT5 = 4;
+
+        private const _VALUES = [3 => true, 4 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareCommon {
     class BiowareEquipmentSlotFlag {
         const INVALID = 0;
         const HEAD = 1;
@@ -516,6 +529,46 @@ namespace BiowareCommon {
 }
 
 namespace BiowareCommon {
+    class BiowareLipVisemeId {
+        const NEUTRAL = 0;
+        const EE = 1;
+        const EH = 2;
+        const AH = 3;
+        const OH = 4;
+        const OOH = 5;
+        const Y = 6;
+        const STS = 7;
+        const FV = 8;
+        const NG = 9;
+        const TH = 10;
+        const MPB = 11;
+        const TD = 12;
+        const SH = 13;
+        const L = 14;
+        const KG = 15;
+
+        private const _VALUES = [0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true, 6 => true, 7 => true, 8 => true, 9 => true, 10 => true, 11 => true, 12 => true, 13 => true, 14 => true, 15 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareCommon {
+    class BiowareLtrAlphabetLength {
+        const NEVERWINTER_NIGHTS = 26;
+        const KOTOR = 28;
+
+        private const _VALUES = [26 => true, 28 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareCommon {
     class BiowareObjectTypeId {
         const INVALID = 0;
         const CREATURE = 1;
@@ -531,6 +584,67 @@ namespace BiowareCommon {
         const CAMERA = 11;
 
         private const _VALUES = [0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true, 6 => true, 7 => true, 8 => true, 9 => true, 10 => true, 11 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareCommon {
+    class BiowarePccCompressionCodec {
+        const NONE = 0;
+        const ZLIB = 1;
+        const LZO = 2;
+
+        private const _VALUES = [0 => true, 1 => true, 2 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareCommon {
+    class BiowarePccPackageKind {
+        const NORMAL_PACKAGE = 0;
+        const PATCH_PACKAGE = 1;
+
+        private const _VALUES = [0 => true, 1 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareCommon {
+    class BiowareTpcPixelFormatId {
+        const GREYSCALE = 1;
+        const RGB_OR_DXT1 = 2;
+        const RGBA_OR_DXT5 = 4;
+        const BGRA_XBOX_SWIZZLE = 12;
+
+        private const _VALUES = [1 => true, 2 => true, 4 => true, 12 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareCommon {
+    class RiffWaveFormatTag {
+        const PCM = 1;
+        const ADPCM_MS = 2;
+        const IEEE_FLOAT = 3;
+        const ALAW = 6;
+        const MULAW = 7;
+        const DVI_IMA_ADPCM = 17;
+        const MPEG_LAYER3 = 85;
+        const WAVE_FORMAT_EXTENSIBLE = 65534;
+
+        private const _VALUES = [1 => true, 2 => true, 3 => true, 6 => true, 7 => true, 17 => true, 85 => true, 65534 => true];
 
         public static function isDefined(int $v): bool {
             return isset(self::_VALUES[$v]);

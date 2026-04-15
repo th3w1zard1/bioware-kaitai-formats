@@ -16,16 +16,16 @@ wav__fact_chunk_body = Struct(
 )
 
 wav__format_chunk_body = Struct(
-	'audio_format' / Int16ul,
+	'audio_format' / Enum(Int16ul, bioware_common__riff_wave_format_tag),
 	'channels' / Int16ul,
 	'sample_rate' / Int32ul,
 	'bytes_per_sec' / Int32ul,
 	'block_align' / Int16ul,
 	'bits_per_sample' / Int16ul,
 	'extra_format_bytes' / If(this._.size > 16, FixedSized(this._.size - 16, GreedyBytes)),
-	'is_ima_adpcm' / Computed(lambda this: this.audio_format == 17),
-	'is_mp3' / Computed(lambda this: this.audio_format == 85),
-	'is_pcm' / Computed(lambda this: this.audio_format == 1),
+	'is_ima_adpcm' / Computed(lambda this: this.audio_format == 'dvi_ima_adpcm'),
+	'is_mp3' / Computed(lambda this: this.audio_format == 'mpeg_layer3'),
+	'is_pcm' / Computed(lambda this: this.audio_format == 'pcm'),
 )
 
 wav__riff_header = Struct(

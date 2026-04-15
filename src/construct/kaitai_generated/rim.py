@@ -318,22 +318,20 @@ rim__resource_entry_table = Struct(
 	'entries' / Array(this._root.header.resource_count, LazyBound(lambda: rim__resource_entry)),
 )
 
-rim__rim_extended_header = Struct(
-	'reserved_padding' / FixedSized(100, GreedyString(encoding='ASCII')),
-)
-
 rim__rim_header = Struct(
 	'file_type' / FixedSized(4, GreedyString(encoding='ASCII')),
 	'file_version' / FixedSized(4, GreedyString(encoding='ASCII')),
 	'reserved' / Int32ul,
 	'resource_count' / Int32ul,
 	'offset_to_resource_table' / Int32ul,
+	'offset_to_resources' / Int32ul,
 	'has_resources' / Computed(lambda this: this.resource_count > 0),
 )
 
 rim = Struct(
 	'header' / LazyBound(lambda: rim__rim_header),
-	'extended_header' / LazyBound(lambda: rim__rim_extended_header),
+	'gap_before_key_table_implicit' / If(this.header.offset_to_resource_table == 0, FixedSized(96, GreedyBytes)),
+	'gap_before_key_table_explicit' / If(this.header.offset_to_resource_table != 0, FixedSized(this.header.offset_to_resource_table - 24, GreedyBytes)),
 	'resource_entry_table' / If(this.header.resource_count > 0, LazyBound(lambda: rim__resource_entry_table)),
 )
 

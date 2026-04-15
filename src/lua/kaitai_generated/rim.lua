@@ -17,14 +17,14 @@ local str_decode = require("string_decode")
 -- - Standard RIM: Basic module template files
 -- - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
 -- 
--- Binary Format:
--- - Header (20 bytes): File type, version, resource count, offset to resource table
--- - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
--- - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
--- - Resource Data (variable size): Raw binary data for each resource
+-- Binary Format (KotOR / PyKotor):
+-- - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+-- - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+-- - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+-- - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
 -- 
 -- References:
--- - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+-- - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
 -- - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
 -- - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
 -- - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -344,16 +344,25 @@ end
 
 function Rim:_read()
   self.header = Rim.RimHeader(self._io, self, self._root)
-  self.extended_header = Rim.RimExtendedHeader(self._io, self, self._root)
+  if self.header.offset_to_resource_table == 0 then
+    self.gap_before_key_table_implicit = self._io:read_bytes(96)
+  end
+  if self.header.offset_to_resource_table ~= 0 then
+    self.gap_before_key_table_explicit = self._io:read_bytes(self.header.offset_to_resource_table - 24)
+  end
   if self.header.resource_count > 0 then
     self.resource_entry_table = Rim.ResourceEntryTable(self._io, self, self._root)
   end
 end
 
 -- 
--- RIM file header (20 bytes).
+-- RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit).
 -- 
--- Extended header padding (100 bytes, total header = 120 bytes).
+-- When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+-- After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
+-- 
+-- When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+-- Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
 -- 
 -- Array of resource entries mapping ResRefs to resource data.
 
@@ -371,7 +380,7 @@ function Rim.ResourceEntry:_read()
   self.resource_type = Rim.XoreosFileTypeId(self._io:read_u4le())
   self.resource_id = self._io:read_u4le()
   self.offset_to_data = self._io:read_u4le()
-  self.resource_size = self._io:read_u4le()
+  self.num_data = self._io:read_u4le()
 end
 
 -- 
@@ -385,7 +394,7 @@ function Rim.ResourceEntry.property.data:get()
   local _pos = self._io:pos()
   self._io:seek(self.offset_to_data)
   self._m_data = {}
-  for i = 0, self.resource_size - 1 do
+  for i = 0, self.num_data - 1 do
     self._m_data[i + 1] = self._io:read_u1()
   end
   self._io:seek(_pos)
@@ -408,7 +417,7 @@ end
 -- Byte offset to resource data from the beginning of the file.
 -- Points to the actual binary data for this resource in resource_data_section.
 -- 
--- Size of resource data in bytes.
+-- Size of resource data in bytes (repeat count for raw `data` bytes).
 -- Uncompressed size of the resource.
 
 Rim.ResourceEntryTable = class.class(KaitaiStruct)
@@ -429,27 +438,6 @@ end
 
 -- 
 -- Array of resource entries, one per resource in the archive.
-
-Rim.RimExtendedHeader = class.class(KaitaiStruct)
-
-function Rim.RimExtendedHeader:_init(io, parent, root)
-  KaitaiStruct._init(self, io)
-  self._parent = parent
-  self._root = root
-  self:_read()
-end
-
-function Rim.RimExtendedHeader:_read()
-  self.reserved_padding = str_decode.decode(self._io:read_bytes(100), "ASCII")
-end
-
--- 
--- Reserved padding bytes (typically all zeros).
--- Total header size is 120 bytes:
--- header (20) + extended_header (100) = 120 bytes
--- 
--- In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
--- may contain an IsExtension flag, but this is not consistently used.
 
 Rim.RimHeader = class.class(KaitaiStruct)
 
@@ -472,6 +460,7 @@ function Rim.RimHeader:_read()
   self.reserved = self._io:read_u4le()
   self.resource_count = self._io:read_u4le()
   self.offset_to_resource_table = self._io:read_u4le()
+  self.offset_to_resources = self._io:read_u4le()
 end
 
 -- 
@@ -500,7 +489,10 @@ end
 -- - Number of entries in resource_entry_table
 -- - Number of resources in resource_data_section
 -- 
--- Byte offset to the resource entry table from the beginning of the file.
--- Typically 120 (right after header + extended header) if resources are present.
--- Points to the start of the resource_entry_table.
+-- Byte offset to the key / resource entry table from the beginning of the file.
+-- 0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+-- When non-zero, this offset is used directly (commonly 120).
+-- 
+-- Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+-- taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
 

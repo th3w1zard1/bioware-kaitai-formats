@@ -1,8 +1,16 @@
 {
-  "version": 1,
   "transcripts": {
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\39cc3bf5-fc7b-4ba7-80c1-4060835fb66d\\39cc3bf5-fc7b-4ba7-80c1-4060835fb66d.jsonl": {
+      "mtimeMs": 1776242325149
+    },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\39cc3bf5-fc7b-4ba7-80c1-4060835fb66d\\subagents\\a054cb70-077d-43b9-b187-8f61d4c13680.jsonl": {
+      "mtimeMs": 1776236397512
+    },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\39cc3bf5-fc7b-4ba7-80c1-4060835fb66d\\subagents\\eae1e95a-8753-4916-b862-c54b9b0b1356.jsonl": {
+      "mtimeMs": 1776236614324
+    },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\3aabb816-66dd-409e-8605-a9146968e1f4\\3aabb816-66dd-409e-8605-a9146968e1f4.jsonl": {
-      "mtimeMs": 1776224847925
+      "mtimeMs": 1776235683427
     },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\3aabb816-66dd-409e-8605-a9146968e1f4\\subagents\\0430747f-bb97-4cc2-b595-153860bd741c.jsonl": {
       "mtimeMs": 1776224047706
@@ -47,10 +55,10 @@
       "mtimeMs": 1776227021871
     },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\57fafdd3-c520-4922-8344-d654d92ed705\\57fafdd3-c520-4922-8344-d654d92ed705.jsonl": {
-      "mtimeMs": 1776232849573
+      "mtimeMs": 1776235540950
     },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\57fafdd3-c520-4922-8344-d654d92ed705\\subagents\\1440e3ab-0daa-4c4d-8638-144387f3e288.jsonl": {
-      "mtimeMs": 1776232912305
+      "mtimeMs": 1776233177777
     },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\5db62e86-c79e-456d-93f0-d81bd219abd8\\5db62e86-c79e-456d-93f0-d81bd219abd8.jsonl": {
       "mtimeMs": 1776232244428
@@ -61,14 +69,32 @@
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\7db8e988-1f88-497b-a664-fdb9cd7f3f99\\7db8e988-1f88-497b-a664-fdb9cd7f3f99.jsonl": {
       "mtimeMs": 1776227020561
     },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8447b7bf-55e1-42f7-823f-1f33a902e6fb\\8447b7bf-55e1-42f7-823f-1f33a902e6fb.jsonl": {
+      "mtimeMs": 1776249005899
+    },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d6d6ded-37ba-4bdf-ba26-353928421f61\\8d6d6ded-37ba-4bdf-ba26-353928421f61.jsonl": {
+      "mtimeMs": 1776249016849
+    },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d6d6ded-37ba-4bdf-ba26-353928421f61\\subagents\\75c503b0-ac25-4e46-b778-e73c7c6121ff.jsonl": {
+      "mtimeMs": 1776249062753
+    },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d736849-6ba2-4081-b1c3-d5220b9f47f3\\8d736849-6ba2-4081-b1c3-d5220b9f47f3.jsonl": {
-      "mtimeMs": 1776232470308
+      "mtimeMs": 1776248318621
     },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d736849-6ba2-4081-b1c3-d5220b9f47f3\\subagents\\35fc9b81-31a3-497e-ae82-11ee80944331.jsonl": {
       "mtimeMs": 1776224188969
     },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d736849-6ba2-4081-b1c3-d5220b9f47f3\\subagents\\4380d9dd-e9c4-46c4-9914-59167d49ac2b.jsonl": {
+      "mtimeMs": 1776233901322
+    },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d736849-6ba2-4081-b1c3-d5220b9f47f3\\subagents\\63218c6d-2ccb-4b07-b1bd-52b74ceeec42.jsonl": {
+      "mtimeMs": 1776234337418
+    },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d736849-6ba2-4081-b1c3-d5220b9f47f3\\subagents\\abeb1195-02bc-4926-833d-13bad4417ddb.jsonl": {
       "mtimeMs": 1776224152922
+    },
+    "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\8d736849-6ba2-4081-b1c3-d5220b9f47f3\\subagents\\d05b4261-80a2-489d-905c-41b2208c1bdd.jsonl": {
+      "mtimeMs": 1776248975678
     },
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\9c0b2d56-1a9f-43f3-8b8f-495db6bcf2e7\\9c0b2d56-1a9f-43f3-8b8f-495db6bcf2e7.jsonl": {
       "mtimeMs": 1776227756988
@@ -76,5 +102,6 @@
     "C:\\Users\\boden\\.cursor\\projects\\c-GitHub-bioware-kaitai-formats\\agent-transcripts\\f1702d83-b14f-4d79-b765-061973a5ddf7\\f1702d83-b14f-4d79-b765-061973a5ddf7.jsonl": {
       "mtimeMs": 1776223193937
     }
-  }
+  },
+  "version": 1
 }

@@ -4,7 +4,8 @@ import options
 type
   Rim* = ref object of KaitaiStruct
     `header`*: Rim_RimHeader
-    `extendedHeader`*: Rim_RimExtendedHeader
+    `gapBeforeKeyTableImplicit`*: seq[byte]
+    `gapBeforeKeyTableExplicit`*: seq[byte]
     `resourceEntryTable`*: Rim_ResourceEntryTable
     `parent`*: KaitaiStruct
   Rim_XoreosFileTypeId* = enum
@@ -314,15 +315,12 @@ type
     `resourceType`*: Rim_XoreosFileTypeId
     `resourceId`*: uint32
     `offsetToData`*: uint32
-    `resourceSize`*: uint32
+    `numData`*: uint32
     `parent`*: Rim_ResourceEntryTable
     `dataInst`: seq[uint8]
     `dataInstFlag`: bool
   Rim_ResourceEntryTable* = ref object of KaitaiStruct
     `entries`*: seq[Rim_ResourceEntry]
-    `parent`*: Rim
-  Rim_RimExtendedHeader* = ref object of KaitaiStruct
-    `reservedPadding`*: string
     `parent`*: Rim
   Rim_RimHeader* = ref object of KaitaiStruct
     `fileType`*: string
@@ -330,6 +328,7 @@ type
     `reserved`*: uint32
     `resourceCount`*: uint32
     `offsetToResourceTable`*: uint32
+    `offsetToResources`*: uint32
     `parent`*: Rim
     `hasResourcesInst`: bool
     `hasResourcesInstFlag`: bool
@@ -337,7 +336,6 @@ type
 proc read*(_: typedesc[Rim], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Rim
 proc read*(_: typedesc[Rim_ResourceEntry], io: KaitaiStream, root: KaitaiStruct, parent: Rim_ResourceEntryTable): Rim_ResourceEntry
 proc read*(_: typedesc[Rim_ResourceEntryTable], io: KaitaiStream, root: KaitaiStruct, parent: Rim): Rim_ResourceEntryTable
-proc read*(_: typedesc[Rim_RimExtendedHeader], io: KaitaiStream, root: KaitaiStruct, parent: Rim): Rim_RimExtendedHeader
 proc read*(_: typedesc[Rim_RimHeader], io: KaitaiStream, root: KaitaiStruct, parent: Rim): Rim_RimHeader
 
 proc data*(this: Rim_ResourceEntry): seq[uint8]
@@ -354,14 +352,14 @@ Format Variants:
 - Standard RIM: Basic module template files
 - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
 
-Binary Format:
-- Header (20 bytes): File type, version, resource count, offset to resource table
-- Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
-- Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
-- Resource Data (variable size): Raw binary data for each resource
+Binary Format (KotOR / PyKotor):
+- Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+- Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+- Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+- Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
 
 References:
-- https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+- https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
 - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
 - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
 - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -378,16 +376,28 @@ proc read*(_: typedesc[Rim], io: KaitaiStream, root: KaitaiStruct, parent: Kaita
 
 
   ##[
-  RIM file header (20 bytes)
+  RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
   ]##
   let headerExpr = Rim_RimHeader.read(this.io, this.root, this)
   this.header = headerExpr
 
   ##[
-  Extended header padding (100 bytes, total header = 120 bytes)
+  When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
+
   ]##
-  let extendedHeaderExpr = Rim_RimExtendedHeader.read(this.io, this.root, this)
-  this.extendedHeader = extendedHeaderExpr
+  if this.header.offsetToResourceTable == 0:
+    let gapBeforeKeyTableImplicitExpr = this.io.readBytes(int(96))
+    this.gapBeforeKeyTableImplicit = gapBeforeKeyTableImplicitExpr
+
+  ##[
+  When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
+
+  ]##
+  if this.header.offsetToResourceTable != 0:
+    let gapBeforeKeyTableExplicitExpr = this.io.readBytes(int(this.header.offsetToResourceTable - 24))
+    this.gapBeforeKeyTableExplicit = gapBeforeKeyTableExplicitExpr
 
   ##[
   Array of resource entries mapping ResRefs to resource data
@@ -444,12 +454,12 @@ Points to the actual binary data for this resource in resource_data_section.
   this.offsetToData = offsetToDataExpr
 
   ##[
-  Size of resource data in bytes.
+  Size of resource data in bytes (repeat count for raw `data` bytes).
 Uncompressed size of the resource.
 
   ]##
-  let resourceSizeExpr = this.io.readU4le()
-  this.resourceSize = resourceSizeExpr
+  let numDataExpr = this.io.readU4le()
+  this.numData = numDataExpr
 
 proc data(this: Rim_ResourceEntry): seq[uint8] = 
 
@@ -460,7 +470,7 @@ proc data(this: Rim_ResourceEntry): seq[uint8] =
     return this.dataInst
   let pos = this.io.pos()
   this.io.seek(int(this.offsetToData))
-  for i in 0 ..< int(this.resourceSize):
+  for i in 0 ..< int(this.numData):
     let it = this.io.readU1()
     this.dataInst.add(it)
   this.io.seek(pos)
@@ -488,30 +498,6 @@ proc read*(_: typedesc[Rim_ResourceEntryTable], io: KaitaiStream, root: KaitaiSt
 
 proc fromFile*(_: typedesc[Rim_ResourceEntryTable], filename: string): Rim_ResourceEntryTable =
   Rim_ResourceEntryTable.read(newKaitaiFileStream(filename), nil, nil)
-
-proc read*(_: typedesc[Rim_RimExtendedHeader], io: KaitaiStream, root: KaitaiStruct, parent: Rim): Rim_RimExtendedHeader =
-  template this: untyped = result
-  this = new(Rim_RimExtendedHeader)
-  let root = if root == nil: cast[Rim](this) else: cast[Rim](root)
-  this.io = io
-  this.root = root
-  this.parent = parent
-
-
-  ##[
-  Reserved padding bytes (typically all zeros).
-Total header size is 120 bytes:
-header (20) + extended_header (100) = 120 bytes
-
-In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
-may contain an IsExtension flag, but this is not consistently used.
-
-  ]##
-  let reservedPaddingExpr = encode(this.io.readBytes(int(100)), "ASCII")
-  this.reservedPadding = reservedPaddingExpr
-
-proc fromFile*(_: typedesc[Rim_RimExtendedHeader], filename: string): Rim_RimExtendedHeader =
-  Rim_RimExtendedHeader.read(newKaitaiFileStream(filename), nil, nil)
 
 proc read*(_: typedesc[Rim_RimHeader], io: KaitaiStream, root: KaitaiStruct, parent: Rim): Rim_RimHeader =
   template this: untyped = result
@@ -556,13 +542,21 @@ Unknown purpose, but always set to 0 in practice.
   this.resourceCount = resourceCountExpr
 
   ##[
-  Byte offset to the resource entry table from the beginning of the file.
-Typically 120 (right after header + extended header) if resources are present.
-Points to the start of the resource_entry_table.
+  Byte offset to the key / resource entry table from the beginning of the file.
+0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+When non-zero, this offset is used directly (commonly 120).
 
   ]##
   let offsetToResourceTableExpr = this.io.readU4le()
   this.offsetToResourceTable = offsetToResourceTableExpr
+
+  ##[
+  Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
+
+  ]##
+  let offsetToResourcesExpr = this.io.readU4le()
+  this.offsetToResources = offsetToResourcesExpr
 
 proc hasResources(this: Rim_RimHeader): bool = 
 

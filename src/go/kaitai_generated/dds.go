@@ -4,23 +4,18 @@ import "github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
 
 
 /**
- * DDS (DirectDraw Surface) files appear in two variants in KotOR:
+ * **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+ * (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
  * 
- * 1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
- * 2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
- * 
- * DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
- * and various other pixel formats. They can include mipmaps and cube maps.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
- * - Standard DirectX DDS format specification
+ * BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds">PyKotor wiki — DDS</a>
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130">PyKotor — TPCDDSReader</a>
  */
 type Dds struct {
 	Magic string
 	Header *Dds_DdsHeader
 	BiowareHeader *Dds_BiowareDdsHeader
-	PixelData []uint8
+	PixelData []byte
 	_io *kaitai.Stream
 	_root *Dds
 	_parent kaitai.Struct
@@ -64,20 +59,12 @@ func (this *Dds) Read(io *kaitai.Stream, parent kaitai.Struct, root *Dds) (err e
 		}
 		this.BiowareHeader = tmp3
 	}
-	for i := 0;; i++ {
-		tmp4, err := this._io.EOF()
-		if err != nil {
-			return err
-		}
-		if tmp4 {
-			break
-		}
-		tmp5, err := this._io.ReadU1()
-		if err != nil {
-			return err
-		}
-		this.PixelData = append(this.PixelData, tmp5)
+	tmp4, err := this._io.ReadBytesFull()
+	if err != nil {
+		return err
 	}
+	tmp4 = tmp4
+	this.PixelData = tmp4
 	return err
 }
 
@@ -95,14 +82,14 @@ func (this *Dds) Read(io *kaitai.Stream, parent kaitai.Struct, root *Dds) (err e
  */
 
 /**
- * Pixel data (compressed or uncompressed).
- * For standard DDS: Format determined by DDPIXELFORMAT
- * For BioWare DDS: DXT1 or DXT5 compressed data
+ * Pixel data (compressed or uncompressed); single blob to EOF.
+ * For standard DDS: format determined by DDPIXELFORMAT.
+ * For BioWare DDS: DXT1 or DXT5 compressed data.
  */
 type Dds_BiowareDdsHeader struct {
 	Width uint32
 	Height uint32
-	BytesPerPixel uint32
+	BytesPerPixel BiowareCommon_BiowareDdsVariantBytesPerPixel
 	DataSize uint32
 	UnusedFloat float32
 	_io *kaitai.Stream
@@ -123,31 +110,31 @@ func (this *Dds_BiowareDdsHeader) Read(io *kaitai.Stream, parent *Dds, root *Dds
 	this._parent = parent
 	this._root = root
 
+	tmp5, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.Width = uint32(tmp5)
 	tmp6, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Width = uint32(tmp6)
+	this.Height = uint32(tmp6)
 	tmp7, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Height = uint32(tmp7)
+	this.BytesPerPixel = BiowareCommon_BiowareDdsVariantBytesPerPixel(tmp7)
 	tmp8, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.BytesPerPixel = uint32(tmp8)
-	tmp9, err := this._io.ReadU4le()
+	this.DataSize = uint32(tmp8)
+	tmp9, err := this._io.ReadF4le()
 	if err != nil {
 		return err
 	}
-	this.DataSize = uint32(tmp9)
-	tmp10, err := this._io.ReadF4le()
-	if err != nil {
-		return err
-	}
-	this.UnusedFloat = float32(tmp10)
+	this.UnusedFloat = float32(tmp9)
 	return err
 }
 
@@ -160,9 +147,7 @@ func (this *Dds_BiowareDdsHeader) Read(io *kaitai.Stream, parent *Dds, root *Dds
  */
 
 /**
- * Bytes per pixel:
- * - 3 = DXT1 compression
- * - 4 = DXT5 compression
+ * BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
  */
 
 /**
@@ -200,50 +185,50 @@ func (this *Dds_Ddpixelformat) Read(io *kaitai.Stream, parent *Dds_DdsHeader, ro
 	this._parent = parent
 	this._root = root
 
+	tmp10, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.Size = uint32(tmp10)
+	if !(this.Size == 32) {
+		return kaitai.NewValidationNotEqualError(32, this.Size, this._io, "/types/ddpixelformat/seq/0")
+	}
 	tmp11, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Size = uint32(tmp11)
-	if !(this.Size == 32) {
-		return kaitai.NewValidationNotEqualError(32, this.Size, this._io, "/types/ddpixelformat/seq/0")
-	}
-	tmp12, err := this._io.ReadU4le()
+	this.Flags = uint32(tmp11)
+	tmp12, err := this._io.ReadBytes(int(4))
 	if err != nil {
 		return err
 	}
-	this.Flags = uint32(tmp12)
-	tmp13, err := this._io.ReadBytes(int(4))
+	tmp12 = tmp12
+	this.Fourcc = string(tmp12)
+	tmp13, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	tmp13 = tmp13
-	this.Fourcc = string(tmp13)
+	this.RgbBitCount = uint32(tmp13)
 	tmp14, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.RgbBitCount = uint32(tmp14)
+	this.RBitMask = uint32(tmp14)
 	tmp15, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.RBitMask = uint32(tmp15)
+	this.GBitMask = uint32(tmp15)
 	tmp16, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.GBitMask = uint32(tmp16)
+	this.BBitMask = uint32(tmp16)
 	tmp17, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.BBitMask = uint32(tmp17)
-	tmp18, err := this._io.ReadU4le()
-	if err != nil {
-		return err
-	}
-	this.ABitMask = uint32(tmp18)
+	this.ABitMask = uint32(tmp17)
 	return err
 }
 
@@ -321,83 +306,83 @@ func (this *Dds_DdsHeader) Read(io *kaitai.Stream, parent *Dds, root *Dds) (err 
 	this._parent = parent
 	this._root = root
 
+	tmp18, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.Size = uint32(tmp18)
+	if !(this.Size == 124) {
+		return kaitai.NewValidationNotEqualError(124, this.Size, this._io, "/types/dds_header/seq/0")
+	}
 	tmp19, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Size = uint32(tmp19)
-	if !(this.Size == 124) {
-		return kaitai.NewValidationNotEqualError(124, this.Size, this._io, "/types/dds_header/seq/0")
-	}
+	this.Flags = uint32(tmp19)
 	tmp20, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Flags = uint32(tmp20)
+	this.Height = uint32(tmp20)
 	tmp21, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Height = uint32(tmp21)
+	this.Width = uint32(tmp21)
 	tmp22, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Width = uint32(tmp22)
+	this.PitchOrLinearSize = uint32(tmp22)
 	tmp23, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.PitchOrLinearSize = uint32(tmp23)
+	this.Depth = uint32(tmp23)
 	tmp24, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Depth = uint32(tmp24)
-	tmp25, err := this._io.ReadU4le()
-	if err != nil {
-		return err
-	}
-	this.MipmapCount = uint32(tmp25)
+	this.MipmapCount = uint32(tmp24)
 	for i := 0; i < int(11); i++ {
 		_ = i
-		tmp26, err := this._io.ReadU4le()
+		tmp25, err := this._io.ReadU4le()
 		if err != nil {
 			return err
 		}
-		this.Reserved1 = append(this.Reserved1, tmp26)
+		this.Reserved1 = append(this.Reserved1, tmp25)
 	}
-	tmp27 := NewDds_Ddpixelformat()
-	err = tmp27.Read(this._io, this, this._root)
+	tmp26 := NewDds_Ddpixelformat()
+	err = tmp26.Read(this._io, this, this._root)
 	if err != nil {
 		return err
 	}
-	this.PixelFormat = tmp27
+	this.PixelFormat = tmp26
+	tmp27, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.Caps = uint32(tmp27)
 	tmp28, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Caps = uint32(tmp28)
+	this.Caps2 = uint32(tmp28)
 	tmp29, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Caps2 = uint32(tmp29)
+	this.Caps3 = uint32(tmp29)
 	tmp30, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Caps3 = uint32(tmp30)
+	this.Caps4 = uint32(tmp30)
 	tmp31, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.Caps4 = uint32(tmp31)
-	tmp32, err := this._io.ReadU4le()
-	if err != nil {
-		return err
-	}
-	this.Reserved2 = uint32(tmp32)
+	this.Reserved2 = uint32(tmp31)
 	return err
 }
 

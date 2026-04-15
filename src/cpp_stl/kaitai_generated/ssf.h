@@ -18,11 +18,11 @@ class ssf_t;
  * Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
  * 
  * Binary Format:
- * - Header (12 bytes): File type signature, version, and offset to sounds array
- * - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
- * - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+ * - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+ * - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
  * 
- * Total file size: 136 bytes (12 + 112 + 12)
+ * Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+ * of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
  * 
  * Sound Slots (in order):
  * 0-5: Battle Cry 1-6
@@ -45,14 +45,13 @@ class ssf_t;
  * 27: Poisoned
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
  */
 
 class ssf_t : public kaitai::kstruct {
 
 public:
-    class padding_t;
     class sound_array_t;
     class sound_entry_t;
 
@@ -64,37 +63,6 @@ private:
 
 public:
     ~ssf_t();
-
-    class padding_t : public kaitai::kstruct {
-
-    public:
-
-        padding_t(kaitai::kstream* p__io, ssf_t* p__parent = 0, ssf_t* p__root = 0);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~padding_t();
-
-    private:
-        std::vector<uint32_t>* m_padding_bytes;
-        ssf_t* m__root;
-        ssf_t* m__parent;
-
-    public:
-
-        /**
-         * Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
-         * Total size: 12 bytes (3 * 4 bytes).
-         * These bytes are unused but must be present for format compatibility.
-         * Each padding byte should be 0xFFFFFFFF (4294967295).
-         */
-        std::vector<uint32_t>* padding_bytes() const { return m_padding_bytes; }
-        ssf_t* _root() const { return m__root; }
-        ssf_t* _parent() const { return m__parent; }
-    };
 
     class sound_array_t : public kaitai::kstruct {
 
@@ -204,7 +172,6 @@ private:
     std::string m_file_type;
     std::string m_file_version;
     uint32_t m_sounds_offset;
-    padding_t* m_padding;
     ssf_t* m__root;
     kaitai::kstruct* m__parent;
 
@@ -224,15 +191,10 @@ public:
 
     /**
      * Byte offset to the sounds array from the beginning of the file.
-     * Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
-     * This field exists for format consistency, though it's always the same value.
+     * KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+     * field is a real offset; readers must seek here instead of assuming 12.
      */
     uint32_t sounds_offset() const { return m_sounds_offset; }
-
-    /**
-     * Reserved padding bytes (12 bytes of 0xFFFFFFFF)
-     */
-    padding_t* padding() const { return m_padding; }
     ssf_t* _root() const { return m__root; }
     kaitai::kstruct* _parent() const { return m__parent; }
 };

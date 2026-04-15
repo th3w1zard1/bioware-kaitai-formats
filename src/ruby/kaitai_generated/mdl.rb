@@ -19,8 +19,8 @@ end
 # 
 # Reference implementations:
 # - https://github.com/th3w1zard1/MDLOpsM.pm
-# - https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md
-# @see https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md Source
+# - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
+# @see https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format Source
 class Mdl < Kaitai::Struct::Struct
 
   CONTROLLER_TYPE = {
@@ -334,8 +334,8 @@ class Mdl < Kaitai::Struct::Struct
     # - 100: SelfIllumColor (self-illumination color, 3 floats: R, G, B)
     # - 128: Alpha (transparency/opacity, 1 float)
     # 
-    # Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md - Additional Controller Types section
-    # Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:342-407 - Controller type definitions
+    # Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - Additional Controller Types section
+    # Reference: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:342-407 - Controller type definitions
     # Reference: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html - Comprehensive controller list
     attr_reader :type
 

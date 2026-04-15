@@ -8,7 +8,6 @@ dds_t::dds_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, dds_t* p__root)
     m__root = p__root ? p__root : this;
     m_header = 0;
     m_bioware_header = 0;
-    m_pixel_data = 0;
 
     try {
         _read();
@@ -33,14 +32,7 @@ void dds_t::_read() {
         n_bioware_header = false;
         m_bioware_header = new bioware_dds_header_t(m__io, this, m__root);
     }
-    m_pixel_data = new std::vector<uint8_t>();
-    {
-        int i = 0;
-        while (!m__io->is_eof()) {
-            m_pixel_data->push_back(m__io->read_u1());
-            i++;
-        }
-    }
+    m_pixel_data = m__io->read_bytes_full();
 }
 
 dds_t::~dds_t() {
@@ -57,9 +49,6 @@ void dds_t::_clean_up() {
         if (m_bioware_header) {
             delete m_bioware_header; m_bioware_header = 0;
         }
-    }
-    if (m_pixel_data) {
-        delete m_pixel_data; m_pixel_data = 0;
     }
 }
 
@@ -78,7 +67,7 @@ dds_t::bioware_dds_header_t::bioware_dds_header_t(kaitai::kstream* p__io, dds_t*
 void dds_t::bioware_dds_header_t::_read() {
     m_width = m__io->read_u4le();
     m_height = m__io->read_u4le();
-    m_bytes_per_pixel = m__io->read_u4le();
+    m_bytes_per_pixel = static_cast<bioware_common_t::bioware_dds_variant_bytes_per_pixel_t>(m__io->read_u4le());
     m_data_size = m__io->read_u4le();
     m_unused_float = m__io->read_f4le();
 }

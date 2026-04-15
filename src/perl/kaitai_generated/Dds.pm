@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use IO::KaitaiStruct 0.011_000;
+use BiowareCommon;
 use Encode;
 
 ########################################################################
@@ -42,10 +43,7 @@ sub _read {
     if ($self->magic() ne "DDS ") {
         $self->{bioware_header} = Dds::BiowareDdsHeader->new($self->{_io}, $self, $self->{_root});
     }
-    $self->{pixel_data} = [];
-    while (!$self->{_io}->is_eof()) {
-        push @{$self->{pixel_data}}, $self->{_io}->read_u1();
-    }
+    $self->{pixel_data} = $self->{_io}->read_bytes_full();
 }
 
 sub magic {

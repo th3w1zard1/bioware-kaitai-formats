@@ -7,12 +7,18 @@ meta:
   imports:
     - ../Common/bioware_common
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_mcp_odyssey_program_paths: |
       Odyssey shared Ghidra (user-agdec-http): use `sync-project` then `checkout-program` with these repository paths.
       Programs used for DDS/TPC wiring below: `/K1/k1_win_gog_swkotor.exe` (x86 LE), `/TSL/k2_win_gog_aspyr_swkotor2.exe` (x86 LE),
       `/Other BioWare Engines/Aurora/nwmain.exe` (x64 LE). Jade Empire (`/JE/JadeEmpire.exe`) and Eclipse `daorigins.exe`
       were also checked out for diversity; JE had no demangled `CResDDS` / `CResTPC` function names in a function-table sweep,
       and a broad `search-everything` on `daorigins.exe` returned an MCP transport error (retry separately if needed).
+    ghidra_odyssey_k1: |
+      KotOR PC **DDS** consumption (`CResDDS`, type id **2033**): long-form Ghidra slices live in `ghidra_k1_*` / `ghidra_nwmain_*` /
+        `ghidra_tsl_*` xrefs below; MCP checkout paths are in `ghidra_mcp_odyssey_program_paths` (`AGENTS.md`).
     ghidra_k1_win_gog_swkotor_exe: |
       Binary: `/K1/k1_win_gog_swkotor.exe` — `.text` 00401000–0073cfff, `.rdata` 0073d000–0078cfff.
       `CResHelper<class_CResDDS,2033>` dtor `~CResHelper<CResDDS,2033>` at `007104d0`; `CResDDS` ctor `00710ea0` stores vtable pointer `0x0075fbe4`
@@ -58,16 +64,16 @@ meta:
       **Forge UI pixel readback:** `src/apps/forge/states/tabs/TabImageViewerState.tsx` **122–155**; `src/apps/forge/components/TextureCanvas/TextureCanvas.tsx` **24–56** (same `getDDS(false)` pattern).
       **Forge tree icon for `.dds`:** `src/apps/forge/components/treeview/ListItemNode.tsx` **124** (`case 'dds': return 'fa-file-image';` alongside `tpc`).
       **Three.js note on embedded mips (DDS convention):** `src/three/odyssey/OdysseyCompressedTexture.ts` **28–31** (`// mips must be embedded in DDS files`, `generateMipmaps = false`).
+    github_lachjames_northernlights_upstream: https://github.com/lachjames/NorthernLights
     github_th3w1zard1_northernlights_dds_tpc: |
-      https://github.com/th3w1zard1/NorthernLights (fork of `lachjames/NorthernLights`) — pinned commit `e9a6cdedb9414de5ee89fe1cd766f1d1711fa247`.
-      **`ResourceType` table (xoreos-aligned comment):** `Assets/Scripts/ResourceLoader/Resources.cs` line **28** cites `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h`; **`DDS = 2033`** with comment **Texture, DirectDraw Surface** at line **72**; **`TPC = 3007`** at line **157** (`// Texture.`).
+      https://github.com/th3w1zard1/NorthernLights (fork of `lachjames/NorthernLights` — upstream: `meta.xref.github_lachjames_northernlights_upstream`) — pinned commit `e9a6cdedb9414de5ee89fe1cd766f1d1711fa247`.
+      **`ResourceType` table (xoreos-aligned comment):** `Assets/Scripts/ResourceLoader/Resources.cs` line **28** cites `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394` (`enum FileType`); **`DDS = 2033`** with comment **Texture, DirectDraw Surface** at line **72**; **`TPC = 3007`** at line **157** (`// Texture.`).
       **Runtime loader (TPC then TGA; DDS enum present but not used in this function):** same file **`LoadTexture2D`** **388–415** — `GetStream(resref, ResourceType.TPC)` **394–405** builds `TPCObject` and `LoadRawTextureData`, else **`ResourceType.TGA`** **406–409**; no `ResourceType.DDS` branch (DDS wire parsing not implemented on this path).
       **TPC on-disk → Unity `TextureFormat` (DXT1/DXT5 block sizes = DDS DXT payload rules):** `Assets/Scripts/FileObjects/TPCObject.cs` — **`HEADER_SIZE = 128`** **36**; **`readHeader`** **71–176** (`dataSize` at **75–76** drives compressed vs uncompressed, **83** encoding byte, **86** mip count, **95–116** sets `TextureFormat.DXT1`/`DXT5` vs RGB/RGBA, **`getDataSize`** **219–233** DXT mip footprint `((w+3)/4)*((h+3)/4)*8|16` with `Math.Max(8|16, …)`).
       **Legacy / commented binary TPC sketch (DXT branches):** `Assets/Scripts/AuroraBinary/Types/TPC.cs` (entire file commented) lines **35–55** show the same compressed/uncompressed DXT1/DXT5 split.
     pykotor_wiki_dds: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds
     pykotor_io_dds_reader: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
     xoreos_tools_dds: https://github.com/xoreos/xoreos-tools/blob/master/src/images/dds.cpp#L69-L158
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp
     xoreos_types_kfiletype_dds: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L98
     xoreos_dds_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L55-L67
     xoreos_dds_read_bioware_header: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210
@@ -81,7 +87,13 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds PyKotor wiki — DDS"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130 PyKotor — TPCDDSReader"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130 PyKotor — `TPCDDSReader` / `io_dds`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L98 xoreos — `kFileTypeDDS`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L55-L67 xoreos — `dds.cpp` load entry"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210 xoreos — BioWare headerless / Microsoft DDS branches"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/dds.cpp#L69-L158 xoreos-tools — `dds.cpp` (image tooling)"
+  - "https://github.com/lachjames/NorthernLights lachjames/NorthernLights — upstream Unity Aurora sample (fork: `th3w1zard1/NorthernLights` in `meta.xref`)"
+  - "https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L57 reone — `ResourceType::Dds` (type id; TPC path in `tpcreader.cpp`)"
 
 seq:
   - id: magic
@@ -250,7 +262,7 @@ types:
         type: u4
         enum: bioware_common::bioware_dds_variant_bytes_per_pixel
         doc: |
-          BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
+          BioWare variant "bytes per pixel" (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
       
       - id: data_size
         type: u4

@@ -2,23 +2,10 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 /**
- * LIP (LIP Synchronization) files drive mouth animation for voiced dialogue in BioWare games.
- * Each file contains a compact series of keyframes that map timestamps to discrete viseme
- * (mouth shape) indices so that the engine can interpolate character lip movement while
- * playing the companion WAV audio line.
+ * **LIP** (lip sync): sorted `(timestamp_f32, viseme_u8)` keyframes (`LIP ` / `V1.0`). Viseme ids 0–15 map through
+ * `bioware_lip_viseme_id` in `bioware_common.ksy`. Pair with a **WAV** of matching duration.
  * 
- * LIP files are always binary and contain only animation data. They are paired with WAV
- * voice-over resources of identical duration; the LIP length field must match the WAV
- * playback time for glitch-free animation.
- * 
- * Keyframes are sorted chronologically and store a timestamp (float seconds) plus a
- * 1-byte viseme index (0-15). The format uses the 16-shape Preston Blair phoneme set.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LIP-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/lipreader.cpp:27-42
- * - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/lipfile.cpp
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LIPObject.ts:93-146
+ * xoreos does not ship a standalone `lipfile.cpp` reader — use PyKotor / reone / KotOR.js (`meta.xref`).
  */
 
 namespace {
@@ -102,36 +89,9 @@ namespace Lip {
         public function timestamp() { return $this->_m_timestamp; }
 
         /**
-         * Viseme index (0-15) indicating which mouth shape to use at this timestamp.
-         * Uses the 16-shape Preston Blair phoneme set. See lip_shapes enum for details.
+         * Viseme index (0–15). Canonical names: `formats/Common/bioware_common.ksy` →
+         * `bioware_lip_viseme_id` (PyKotor `LIPShape` / Preston Blair set).
          */
         public function shape() { return $this->_m_shape; }
-    }
-}
-
-namespace Lip {
-    class LipShapes {
-        const NEUTRAL = 0;
-        const EE = 1;
-        const EH = 2;
-        const AH = 3;
-        const OH = 4;
-        const OOH = 5;
-        const Y = 6;
-        const STS = 7;
-        const FV = 8;
-        const NG = 9;
-        const TH = 10;
-        const MPB = 11;
-        const TD = 12;
-        const SH = 13;
-        const L = 14;
-        const KG = 15;
-
-        private const _VALUES = [0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true, 6 => true, 7 => true, 8 => true, 9 => true, 10 => true, 11 => true, 12 => true, 13 => true, 14 => true, 15 => true];
-
-        public static function isDefined(int $v): bool {
-            return isset(self::_VALUES[$v]);
-        }
     }
 }

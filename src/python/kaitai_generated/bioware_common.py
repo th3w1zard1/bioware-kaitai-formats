@@ -19,38 +19,12 @@ class BiowareCommon(KaitaiStruct):
     - The CExoLocString / LocalizedString binary layout
     
     References:
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
     - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
     - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
     """
-
-    class BiowareBwmFaceMaterialId(IntEnum):
-        undefined = 0
-        dirt = 1
-        obscuring = 2
-        grass = 3
-        stone = 4
-        wood = 5
-        water = 6
-        nonwalk = 7
-        transparent = 8
-        carpet = 9
-        metal = 10
-        puddles = 11
-        swamp = 12
-        mud = 13
-        leaves = 14
-        lava = 15
-        bottomless_pit = 16
-        deep_water = 17
-        door = 18
-        snow_or_non_walk_grass = 19
-
-    class BiowareBwmWalkmeshKind(IntEnum):
-        placeable_or_door = 0
-        area_wok = 1
 
     class BiowareDdsVariantBytesPerPixel(IntEnum):
         dxt1 = 3
@@ -208,18 +182,6 @@ class BiowareCommon(KaitaiStruct):
     class BiowareLtrAlphabetLength(IntEnum):
         neverwinter_nights = 26
         kotor = 28
-
-    class BiowareNwnPltPaletteGroupId(IntEnum):
-        skin = 0
-        hair = 1
-        metal1 = 2
-        metal2 = 3
-        cloth1 = 4
-        cloth2 = 5
-        leather1 = 6
-        leather2 = 7
-        tattoo1 = 8
-        tattoo2 = 9
 
     class BiowareObjectTypeId(IntEnum):
         invalid = 0

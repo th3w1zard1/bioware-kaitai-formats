@@ -4,64 +4,22 @@ import io.kaitai.struct.ByteBufferKaitaiStream;
 import io.kaitai.struct.KaitaiStruct;
 import io.kaitai.struct.KaitaiStream;
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * LIP (LIP Synchronization) files drive mouth animation for voiced dialogue in BioWare games.
- * Each file contains a compact series of keyframes that map timestamps to discrete viseme
- * (mouth shape) indices so that the engine can interpolate character lip movement while
- * playing the companion WAV audio line.
+ * **LIP** (lip sync): sorted `(timestamp_f32, viseme_u8)` keyframes (`LIP ` / `V1.0`). Viseme ids 0–15 map through
+ * `bioware_lip_viseme_id` in `bioware_common.ksy`. Pair with a **WAV** of matching duration.
  * 
- * LIP files are always binary and contain only animation data. They are paired with WAV
- * voice-over resources of identical duration; the LIP length field must match the WAV
- * playback time for glitch-free animation.
- * 
- * Keyframes are sorted chronologically and store a timestamp (float seconds) plus a
- * 1-byte viseme index (0-15). The format uses the 16-shape Preston Blair phoneme set.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LIP-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/lipreader.cpp:27-42
- * - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/lipfile.cpp
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LIPObject.ts:93-146
+ * xoreos does not ship a standalone `lipfile.cpp` reader — use PyKotor / reone / KotOR.js (`meta.xref`).
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip">PyKotor wiki — LIP</a>
+ * @see <a href="https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L42">reone — LIPReader</a>
  */
 public class Lip extends KaitaiStruct {
     public static Lip fromFile(String fileName) throws IOException {
         return new Lip(new ByteBufferKaitaiStream(fileName));
-    }
-
-    public enum LipShapes {
-        NEUTRAL(0),
-        EE(1),
-        EH(2),
-        AH(3),
-        OH(4),
-        OOH(5),
-        Y(6),
-        STS(7),
-        FV(8),
-        NG(9),
-        TH(10),
-        MPB(11),
-        TD(12),
-        SH(13),
-        L(14),
-        KG(15);
-
-        private final long id;
-        LipShapes(long id) { this.id = id; }
-        public long id() { return id; }
-        private static final Map<Long, LipShapes> byId = new HashMap<Long, LipShapes>(16);
-        static {
-            for (LipShapes e : LipShapes.values())
-                byId.put(e.id(), e);
-        }
-        public static LipShapes byId(long id) { return byId.get(id); }
     }
 
     public Lip(KaitaiStream _io) {
@@ -121,13 +79,13 @@ public class Lip extends KaitaiStruct {
         }
         private void _read() {
             this.timestamp = this._io.readF4le();
-            this.shape = Lip.LipShapes.byId(this._io.readU1());
+            this.shape = BiowareCommon.BiowareLipVisemeId.byId(this._io.readU1());
         }
 
         public void _fetchInstances() {
         }
         private float timestamp;
-        private LipShapes shape;
+        private BiowareCommon.BiowareLipVisemeId shape;
         private Lip _root;
         private Lip _parent;
 
@@ -138,10 +96,10 @@ public class Lip extends KaitaiStruct {
         public float timestamp() { return timestamp; }
 
         /**
-         * Viseme index (0-15) indicating which mouth shape to use at this timestamp.
-         * Uses the 16-shape Preston Blair phoneme set. See lip_shapes enum for details.
+         * Viseme index (0–15). Canonical names: `formats/Common/bioware_common.ksy` →
+         * `bioware_lip_viseme_id` (PyKotor `LIPShape` / Preston Blair set).
          */
-        public LipShapes shape() { return shape; }
+        public BiowareCommon.BiowareLipVisemeId shape() { return shape; }
         public Lip _root() { return _root; }
         public Lip _parent() { return _parent; }
     }

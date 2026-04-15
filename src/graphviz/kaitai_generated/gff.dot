@@ -7,41 +7,7 @@ digraph {
 
 		gff__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">56</TD><TD>GffHeader</TD><TD PORT="header_type">header</TD></TR>
-		</TABLE>>];
-		gff__inst__field_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="field_array_pos">header.field_offset</TD><TD PORT="field_array_size">...</TD><TD>FieldArray</TD><TD PORT="field_array_type">field_array</TD></TR>
-			<TR><TD COLSPAN="4" PORT="field_array__if">if header.field_count &gt; 0</TD></TR>
-		</TABLE>>];
-		gff__inst__field_data [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="field_data_pos">header.field_data_offset</TD><TD PORT="field_data_size">...</TD><TD>FieldData</TD><TD PORT="field_data_type">field_data</TD></TR>
-			<TR><TD COLSPAN="4" PORT="field_data__if">if header.field_data_count &gt; 0</TD></TR>
-		</TABLE>>];
-		gff__inst__field_indices_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="field_indices_array_pos">header.field_indices_offset</TD><TD PORT="field_indices_array_size">...</TD><TD>FieldIndicesArray</TD><TD PORT="field_indices_array_type">field_indices_array</TD></TR>
-			<TR><TD COLSPAN="4" PORT="field_indices_array__if">if header.field_indices_count &gt; 0</TD></TR>
-		</TABLE>>];
-		gff__inst__label_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="label_array_pos">header.label_offset</TD><TD PORT="label_array_size">...</TD><TD>LabelArray</TD><TD PORT="label_array_type">label_array</TD></TR>
-			<TR><TD COLSPAN="4" PORT="label_array__if">if header.label_count &gt; 0</TD></TR>
-		</TABLE>>];
-		gff__inst__list_indices_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="list_indices_array_pos">header.list_indices_offset</TD><TD PORT="list_indices_array_size">...</TD><TD>ListIndicesArray</TD><TD PORT="list_indices_array_type">list_indices_array</TD></TR>
-			<TR><TD COLSPAN="4" PORT="list_indices_array__if">if header.list_indices_count &gt; 0</TD></TR>
-		</TABLE>>];
-		gff__inst__root_struct_resolved [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="root_struct_resolved_pos">...</TD><TD PORT="root_struct_resolved_size">0</TD><TD>ResolvedStruct</TD><TD PORT="root_struct_resolved_type">root_struct_resolved</TD></TR>
-		</TABLE>>];
-		gff__inst__struct_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-			<TR><TD PORT="struct_array_pos">header.struct_offset</TD><TD PORT="struct_array_size">...</TD><TD>StructArray</TD><TD PORT="struct_array_type">struct_array</TD></TR>
-			<TR><TD COLSPAN="4" PORT="struct_array__if">if header.struct_count &gt; 0</TD></TR>
+			<TR><TD PORT="file_pos">0</TD><TD PORT="file_size">...</TD><TD>GffUnionFile</TD><TD PORT="file_type">file</TD></TR>
 		</TABLE>>];
 		subgraph cluster__field_array {
 			label="Gff::FieldArray";
@@ -50,7 +16,7 @@ digraph {
 			field_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">12</TD><TD>FieldEntry</TD><TD PORT="entries_type">entries</TD></TR>
-				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.header.field_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.file.gff3.header.field_count times</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__field_data {
@@ -59,7 +25,7 @@ digraph {
 
 			field_data__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="raw_data_pos">0</TD><TD PORT="raw_data_size">_root.header.field_data_count</TD><TD></TD><TD PORT="raw_data_type">raw_data</TD></TR>
+				<TR><TD PORT="raw_data_pos">0</TD><TD PORT="raw_data_size">_root.file.gff3.header.field_data_count</TD><TD></TD><TD PORT="raw_data_type">raw_data</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__field_entry {
@@ -68,13 +34,13 @@ digraph {
 
 			field_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="field_type_pos">0</TD><TD PORT="field_type_size">4</TD><TD>u4le→GffFieldType</TD><TD PORT="field_type_type">field_type</TD></TR>
+				<TR><TD PORT="field_type_pos">0</TD><TD PORT="field_type_size">4</TD><TD>u4le→BiowareGffCommon::GffFieldType</TD><TD PORT="field_type_type">field_type</TD></TR>
 				<TR><TD PORT="label_index_pos">4</TD><TD PORT="label_index_size">4</TD><TD>u4le</TD><TD PORT="label_index_type">label_index</TD></TR>
 				<TR><TD PORT="data_or_offset_pos">8</TD><TD PORT="data_or_offset_size">4</TD><TD>u4le</TD><TD PORT="data_or_offset_type">data_or_offset</TD></TR>
 			</TABLE>>];
 			field_entry__inst__field_data_offset_value [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
-				<TR><TD>field_data_offset_value</TD><TD>_root.header.field_data_offset + data_or_offset</TD></TR>
+				<TR><TD>field_data_offset_value</TD><TD>_root.file.gff3.header.field_data_offset + data_or_offset</TD></TR>
 			</TABLE>>];
 			field_entry__inst__is_complex_type [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
@@ -86,7 +52,7 @@ digraph {
 			</TABLE>>];
 			field_entry__inst__is_simple_type [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
-				<TR><TD>is_simple_type</TD><TD> ((field_type == :gff_field_type_uint8) || (field_type == :gff_field_type_int8) || (field_type == :gff_field_type_uint16) || (field_type == :gff_field_type_int16) || (field_type == :gff_field_type_uint32) || (field_type == :gff_field_type_int32) || (field_type == :gff_field_type_single)) </TD></TR>
+				<TR><TD>is_simple_type</TD><TD> ((field_type == :gff_field_type_uint8) || (field_type == :gff_field_type_int8) || (field_type == :gff_field_type_uint16) || (field_type == :gff_field_type_int16) || (field_type == :gff_field_type_uint32) || (field_type == :gff_field_type_int32) || (field_type == :gff_field_type_single) || (field_type == :gff_field_type_str_ref)) </TD></TR>
 			</TABLE>>];
 			field_entry__inst__is_struct_type [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
@@ -94,7 +60,7 @@ digraph {
 			</TABLE>>];
 			field_entry__inst__list_indices_offset_value [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
-				<TR><TD>list_indices_offset_value</TD><TD>_root.header.list_indices_offset + data_or_offset</TD></TR>
+				<TR><TD>list_indices_offset_value</TD><TD>_root.file.gff3.header.list_indices_offset + data_or_offset</TD></TR>
 			</TABLE>>];
 			field_entry__inst__struct_index_value [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
@@ -108,29 +74,127 @@ digraph {
 			field_indices_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="indices_pos">0</TD><TD PORT="indices_size">4</TD><TD>u4le</TD><TD PORT="indices_type">indices</TD></TR>
-				<TR><TD COLSPAN="4" PORT="indices__repeat">repeat _root.header.field_indices_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="indices__repeat">repeat _root.file.gff3.header.field_indices_count times</TD></TR>
 			</TABLE>>];
 		}
-		subgraph cluster__gff_header {
-			label="Gff::GffHeader";
+		subgraph cluster__gff3_after_aurora {
+			label="Gff::Gff3AfterAurora";
 			graph[style=dotted];
 
-			gff_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			gff3_after_aurora__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="file_type_pos">0</TD><TD PORT="file_type_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_type_type">file_type</TD></TR>
-				<TR><TD PORT="file_version_pos">4</TD><TD PORT="file_version_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_version_type">file_version</TD></TR>
-				<TR><TD PORT="struct_offset_pos">8</TD><TD PORT="struct_offset_size">4</TD><TD>u4le</TD><TD PORT="struct_offset_type">struct_offset</TD></TR>
-				<TR><TD PORT="struct_count_pos">12</TD><TD PORT="struct_count_size">4</TD><TD>u4le</TD><TD PORT="struct_count_type">struct_count</TD></TR>
-				<TR><TD PORT="field_offset_pos">16</TD><TD PORT="field_offset_size">4</TD><TD>u4le</TD><TD PORT="field_offset_type">field_offset</TD></TR>
-				<TR><TD PORT="field_count_pos">20</TD><TD PORT="field_count_size">4</TD><TD>u4le</TD><TD PORT="field_count_type">field_count</TD></TR>
-				<TR><TD PORT="label_offset_pos">24</TD><TD PORT="label_offset_size">4</TD><TD>u4le</TD><TD PORT="label_offset_type">label_offset</TD></TR>
-				<TR><TD PORT="label_count_pos">28</TD><TD PORT="label_count_size">4</TD><TD>u4le</TD><TD PORT="label_count_type">label_count</TD></TR>
-				<TR><TD PORT="field_data_offset_pos">32</TD><TD PORT="field_data_offset_size">4</TD><TD>u4le</TD><TD PORT="field_data_offset_type">field_data_offset</TD></TR>
-				<TR><TD PORT="field_data_count_pos">36</TD><TD PORT="field_data_count_size">4</TD><TD>u4le</TD><TD PORT="field_data_count_type">field_data_count</TD></TR>
-				<TR><TD PORT="field_indices_offset_pos">40</TD><TD PORT="field_indices_offset_size">4</TD><TD>u4le</TD><TD PORT="field_indices_offset_type">field_indices_offset</TD></TR>
-				<TR><TD PORT="field_indices_count_pos">44</TD><TD PORT="field_indices_count_size">4</TD><TD>u4le</TD><TD PORT="field_indices_count_type">field_indices_count</TD></TR>
-				<TR><TD PORT="list_indices_offset_pos">48</TD><TD PORT="list_indices_offset_size">4</TD><TD>u4le</TD><TD PORT="list_indices_offset_type">list_indices_offset</TD></TR>
-				<TR><TD PORT="list_indices_count_pos">52</TD><TD PORT="list_indices_count_size">4</TD><TD>u4le</TD><TD PORT="list_indices_count_type">list_indices_count</TD></TR>
+				<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">48</TD><TD>GffHeaderTail</TD><TD PORT="header_type">header</TD></TR>
+			</TABLE>>];
+			gff3_after_aurora__inst__field_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="field_array_pos">header.field_offset</TD><TD PORT="field_array_size">...</TD><TD>FieldArray</TD><TD PORT="field_array_type">field_array</TD></TR>
+				<TR><TD COLSPAN="4" PORT="field_array__if">if header.field_count &gt; 0</TD></TR>
+			</TABLE>>];
+			gff3_after_aurora__inst__field_data [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="field_data_pos">header.field_data_offset</TD><TD PORT="field_data_size">...</TD><TD>FieldData</TD><TD PORT="field_data_type">field_data</TD></TR>
+				<TR><TD COLSPAN="4" PORT="field_data__if">if header.field_data_count &gt; 0</TD></TR>
+			</TABLE>>];
+			gff3_after_aurora__inst__field_indices_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="field_indices_array_pos">header.field_indices_offset</TD><TD PORT="field_indices_array_size">...</TD><TD>FieldIndicesArray</TD><TD PORT="field_indices_array_type">field_indices_array</TD></TR>
+				<TR><TD COLSPAN="4" PORT="field_indices_array__if">if header.field_indices_count &gt; 0</TD></TR>
+			</TABLE>>];
+			gff3_after_aurora__inst__label_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="label_array_pos">header.label_offset</TD><TD PORT="label_array_size">...</TD><TD>LabelArray</TD><TD PORT="label_array_type">label_array</TD></TR>
+				<TR><TD COLSPAN="4" PORT="label_array__if">if header.label_count &gt; 0</TD></TR>
+			</TABLE>>];
+			gff3_after_aurora__inst__list_indices_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="list_indices_array_pos">header.list_indices_offset</TD><TD PORT="list_indices_array_size">...</TD><TD>ListIndicesArray</TD><TD PORT="list_indices_array_type">list_indices_array</TD></TR>
+				<TR><TD COLSPAN="4" PORT="list_indices_array__if">if header.list_indices_count &gt; 0</TD></TR>
+			</TABLE>>];
+			gff3_after_aurora__inst__root_struct_resolved [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="root_struct_resolved_pos">...</TD><TD PORT="root_struct_resolved_size">0</TD><TD>ResolvedStruct</TD><TD PORT="root_struct_resolved_type">root_struct_resolved</TD></TR>
+			</TABLE>>];
+			gff3_after_aurora__inst__struct_array [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="struct_array_pos">header.struct_offset</TD><TD PORT="struct_array_size">...</TD><TD>StructArray</TD><TD PORT="struct_array_type">struct_array</TD></TR>
+				<TR><TD COLSPAN="4" PORT="struct_array__if">if header.struct_count &gt; 0</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__gff4_after_aurora {
+			label="Gff::Gff4AfterAurora";
+			graph[style=dotted];
+
+			gff4_after_aurora__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="platform_id_pos">0</TD><TD PORT="platform_id_size">4</TD><TD>u4be</TD><TD PORT="platform_id_type">platform_id</TD></TR>
+				<TR><TD PORT="file_type_pos">4</TD><TD PORT="file_type_size">4</TD><TD>u4be</TD><TD PORT="file_type_type">file_type</TD></TR>
+				<TR><TD PORT="type_version_pos">8</TD><TD PORT="type_version_size">4</TD><TD>u4be</TD><TD PORT="type_version_type">type_version</TD></TR>
+				<TR><TD PORT="num_struct_templates_pos">12</TD><TD PORT="num_struct_templates_size">4</TD><TD>u4le</TD><TD PORT="num_struct_templates_type">num_struct_templates</TD></TR>
+				<TR><TD PORT="string_count_pos">16</TD><TD PORT="string_count_size">4</TD><TD>u4le</TD><TD PORT="string_count_type">string_count</TD></TR>
+				<TR><TD COLSPAN="4" PORT="string_count__if">if aurora_version == 1446260273</TD></TR>
+				<TR><TD PORT="string_offset_pos">20</TD><TD PORT="string_offset_size">4</TD><TD>u4le</TD><TD PORT="string_offset_type">string_offset</TD></TR>
+				<TR><TD COLSPAN="4" PORT="string_offset__if">if aurora_version == 1446260273</TD></TR>
+				<TR><TD PORT="data_offset_pos">24</TD><TD PORT="data_offset_size">4</TD><TD>u4le</TD><TD PORT="data_offset_type">data_offset</TD></TR>
+				<TR><TD PORT="struct_templates_pos">28</TD><TD PORT="struct_templates_size">16</TD><TD>Gff4StructTemplateHeader</TD><TD PORT="struct_templates_type">struct_templates</TD></TR>
+				<TR><TD COLSPAN="4" PORT="struct_templates__repeat">repeat num_struct_templates times</TD></TR>
+				<TR><TD PORT="tail_pos">...</TD><TD PORT="tail_size">⇲</TD><TD></TD><TD PORT="tail_type">tail</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__gff4_file {
+			label="Gff::Gff4File";
+			graph[style=dotted];
+
+			gff4_file__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="aurora_magic_pos">0</TD><TD PORT="aurora_magic_size">4</TD><TD>u4be</TD><TD PORT="aurora_magic_type">aurora_magic</TD></TR>
+				<TR><TD PORT="aurora_version_pos">4</TD><TD PORT="aurora_version_size">4</TD><TD>u4be</TD><TD PORT="aurora_version_type">aurora_version</TD></TR>
+				<TR><TD PORT="gff4_pos">8</TD><TD PORT="gff4_size">...</TD><TD>Gff4AfterAurora</TD><TD PORT="gff4_type">gff4</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__gff4_struct_template_header {
+			label="Gff::Gff4StructTemplateHeader";
+			graph[style=dotted];
+
+			gff4_struct_template_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="struct_label_pos">0</TD><TD PORT="struct_label_size">4</TD><TD>u4be</TD><TD PORT="struct_label_type">struct_label</TD></TR>
+				<TR><TD PORT="field_count_pos">4</TD><TD PORT="field_count_size">4</TD><TD>u4le</TD><TD PORT="field_count_type">field_count</TD></TR>
+				<TR><TD PORT="field_offset_pos">8</TD><TD PORT="field_offset_size">4</TD><TD>u4le</TD><TD PORT="field_offset_type">field_offset</TD></TR>
+				<TR><TD PORT="struct_size_pos">12</TD><TD PORT="struct_size_size">4</TD><TD>u4le</TD><TD PORT="struct_size_type">struct_size</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__gff_header_tail {
+			label="Gff::GffHeaderTail";
+			graph[style=dotted];
+
+			gff_header_tail__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="struct_offset_pos">0</TD><TD PORT="struct_offset_size">4</TD><TD>u4le</TD><TD PORT="struct_offset_type">struct_offset</TD></TR>
+				<TR><TD PORT="struct_count_pos">4</TD><TD PORT="struct_count_size">4</TD><TD>u4le</TD><TD PORT="struct_count_type">struct_count</TD></TR>
+				<TR><TD PORT="field_offset_pos">8</TD><TD PORT="field_offset_size">4</TD><TD>u4le</TD><TD PORT="field_offset_type">field_offset</TD></TR>
+				<TR><TD PORT="field_count_pos">12</TD><TD PORT="field_count_size">4</TD><TD>u4le</TD><TD PORT="field_count_type">field_count</TD></TR>
+				<TR><TD PORT="label_offset_pos">16</TD><TD PORT="label_offset_size">4</TD><TD>u4le</TD><TD PORT="label_offset_type">label_offset</TD></TR>
+				<TR><TD PORT="label_count_pos">20</TD><TD PORT="label_count_size">4</TD><TD>u4le</TD><TD PORT="label_count_type">label_count</TD></TR>
+				<TR><TD PORT="field_data_offset_pos">24</TD><TD PORT="field_data_offset_size">4</TD><TD>u4le</TD><TD PORT="field_data_offset_type">field_data_offset</TD></TR>
+				<TR><TD PORT="field_data_count_pos">28</TD><TD PORT="field_data_count_size">4</TD><TD>u4le</TD><TD PORT="field_data_count_type">field_data_count</TD></TR>
+				<TR><TD PORT="field_indices_offset_pos">32</TD><TD PORT="field_indices_offset_size">4</TD><TD>u4le</TD><TD PORT="field_indices_offset_type">field_indices_offset</TD></TR>
+				<TR><TD PORT="field_indices_count_pos">36</TD><TD PORT="field_indices_count_size">4</TD><TD>u4le</TD><TD PORT="field_indices_count_type">field_indices_count</TD></TR>
+				<TR><TD PORT="list_indices_offset_pos">40</TD><TD PORT="list_indices_offset_size">4</TD><TD>u4le</TD><TD PORT="list_indices_offset_type">list_indices_offset</TD></TR>
+				<TR><TD PORT="list_indices_count_pos">44</TD><TD PORT="list_indices_count_size">4</TD><TD>u4le</TD><TD PORT="list_indices_count_type">list_indices_count</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__gff_union_file {
+			label="Gff::GffUnionFile";
+			graph[style=dotted];
+
+			gff_union_file__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="aurora_magic_pos">0</TD><TD PORT="aurora_magic_size">4</TD><TD>u4be</TD><TD PORT="aurora_magic_type">aurora_magic</TD></TR>
+				<TR><TD PORT="aurora_version_pos">4</TD><TD PORT="aurora_version_size">4</TD><TD>u4be</TD><TD PORT="aurora_version_type">aurora_version</TD></TR>
+				<TR><TD PORT="gff3_pos">8</TD><TD PORT="gff3_size">48</TD><TD>Gff3AfterAurora</TD><TD PORT="gff3_type">gff3</TD></TR>
+				<TR><TD COLSPAN="4" PORT="gff3__if">if  ((aurora_version != 1446260272) &amp;&amp; (aurora_version != 1446260273)) </TD></TR>
+				<TR><TD PORT="gff4_pos">56</TD><TD PORT="gff4_size">...</TD><TD>Gff4AfterAurora</TD><TD PORT="gff4_type">gff4</TD></TR>
+				<TR><TD COLSPAN="4" PORT="gff4__if">if  ((aurora_version == 1446260272) || (aurora_version == 1446260273)) </TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__label_array {
@@ -140,7 +204,7 @@ digraph {
 			label_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="labels_pos">0</TD><TD PORT="labels_size">16</TD><TD>LabelEntry</TD><TD PORT="labels_type">labels</TD></TR>
-				<TR><TD COLSPAN="4" PORT="labels__repeat">repeat _root.header.label_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="labels__repeat">repeat _root.file.gff3.header.label_count times</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__label_entry {
@@ -178,7 +242,7 @@ digraph {
 
 			list_indices_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="raw_data_pos">0</TD><TD PORT="raw_data_size">_root.header.list_indices_count</TD><TD></TD><TD PORT="raw_data_type">raw_data</TD></TR>
+				<TR><TD PORT="raw_data_pos">0</TD><TD PORT="raw_data_size">_root.file.gff3.header.list_indices_count</TD><TD></TD><TD PORT="raw_data_type">raw_data</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__resolved_field {
@@ -190,19 +254,19 @@ digraph {
 			</TABLE>>];
 			resolved_field__inst__entry [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="entry_pos">_root.header.field_offset + field_index * 12</TD><TD PORT="entry_size">12</TD><TD>FieldEntry</TD><TD PORT="entry_type">entry</TD></TR>
+				<TR><TD PORT="entry_pos">_root.file.gff3.header.field_offset + field_index * 12</TD><TD PORT="entry_size">12</TD><TD>FieldEntry</TD><TD PORT="entry_type">entry</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__field_entry_pos [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
-				<TR><TD>field_entry_pos</TD><TD>_root.header.field_offset + field_index * 12</TD></TR>
+				<TR><TD>field_entry_pos</TD><TD>_root.file.gff3.header.field_offset + field_index * 12</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__label [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="label_pos">_root.header.label_offset + entry.label_index * 16</TD><TD PORT="label_size">16</TD><TD>LabelEntryTerminated</TD><TD PORT="label_type">label</TD></TR>
+				<TR><TD PORT="label_pos">_root.file.gff3.header.label_offset + entry.label_index * 16</TD><TD PORT="label_size">16</TD><TD>LabelEntryTerminated</TD><TD PORT="label_type">label</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__list_entry [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="list_entry_pos">_root.header.list_indices_offset + entry.data_or_offset</TD><TD PORT="list_entry_size">...</TD><TD>ListEntry</TD><TD PORT="list_entry_type">list_entry</TD></TR>
+				<TR><TD PORT="list_entry_pos">_root.file.gff3.header.list_indices_offset + entry.data_or_offset</TD><TD PORT="list_entry_size">...</TD><TD>ListEntry</TD><TD PORT="list_entry_type">list_entry</TD></TR>
 				<TR><TD COLSPAN="4" PORT="list_entry__if">if entry.field_type == :gff_field_type_list</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__list_structs [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
@@ -213,12 +277,12 @@ digraph {
 			</TABLE>>];
 			resolved_field__inst__value_binary [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_binary_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_binary_size">...</TD><TD>BiowareCommon::BiowareBinaryData</TD><TD PORT="value_binary_type">value_binary</TD></TR>
+				<TR><TD PORT="value_binary_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_binary_size">...</TD><TD>BiowareCommon::BiowareBinaryData</TD><TD PORT="value_binary_type">value_binary</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_binary__if">if entry.field_type == :gff_field_type_binary</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_double [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_double_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_double_size">8</TD><TD>f8le</TD><TD PORT="value_double_type">value_double</TD></TR>
+				<TR><TD PORT="value_double_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_double_size">8</TD><TD>f8le</TD><TD PORT="value_double_type">value_double</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_double__if">if entry.field_type == :gff_field_type_double</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_int16 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
@@ -233,7 +297,7 @@ digraph {
 			</TABLE>>];
 			resolved_field__inst__value_int64 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_int64_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_int64_size">8</TD><TD>s8le</TD><TD PORT="value_int64_type">value_int64</TD></TR>
+				<TR><TD PORT="value_int64_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_int64_size">8</TD><TD>s8le</TD><TD PORT="value_int64_type">value_int64</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_int64__if">if entry.field_type == :gff_field_type_int64</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_int8 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
@@ -243,12 +307,12 @@ digraph {
 			</TABLE>>];
 			resolved_field__inst__value_localized_string [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_localized_string_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_localized_string_size">...</TD><TD>BiowareCommon::BiowareLocstring</TD><TD PORT="value_localized_string_type">value_localized_string</TD></TR>
+				<TR><TD PORT="value_localized_string_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_localized_string_size">...</TD><TD>BiowareCommon::BiowareLocstring</TD><TD PORT="value_localized_string_type">value_localized_string</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_localized_string__if">if entry.field_type == :gff_field_type_localized_string</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_resref [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_resref_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_resref_size">...</TD><TD>BiowareCommon::BiowareResref</TD><TD PORT="value_resref_type">value_resref</TD></TR>
+				<TR><TD PORT="value_resref_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_resref_size">...</TD><TD>BiowareCommon::BiowareResref</TD><TD PORT="value_resref_type">value_resref</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_resref__if">if entry.field_type == :gff_field_type_resref</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_single [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
@@ -256,9 +320,14 @@ digraph {
 				<TR><TD PORT="value_single_pos">field_entry_pos + 8</TD><TD PORT="value_single_size">4</TD><TD>f4le</TD><TD PORT="value_single_type">value_single</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_single__if">if entry.field_type == :gff_field_type_single</TD></TR>
 			</TABLE>>];
+			resolved_field__inst__value_str_ref [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="value_str_ref_pos">field_entry_pos + 8</TD><TD PORT="value_str_ref_size">4</TD><TD>u4le</TD><TD PORT="value_str_ref_type">value_str_ref</TD></TR>
+				<TR><TD COLSPAN="4" PORT="value_str_ref__if">if entry.field_type == :gff_field_type_str_ref</TD></TR>
+			</TABLE>>];
 			resolved_field__inst__value_string [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_string_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_string_size">...</TD><TD>BiowareCommon::BiowareCexoString</TD><TD PORT="value_string_type">value_string</TD></TR>
+				<TR><TD PORT="value_string_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_string_size">...</TD><TD>BiowareCommon::BiowareCexoString</TD><TD PORT="value_string_type">value_string</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_string__if">if entry.field_type == :gff_field_type_string</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_struct [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
@@ -278,7 +347,7 @@ digraph {
 			</TABLE>>];
 			resolved_field__inst__value_uint64 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_uint64_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_uint64_size">8</TD><TD>u8le</TD><TD PORT="value_uint64_type">value_uint64</TD></TR>
+				<TR><TD PORT="value_uint64_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_uint64_size">8</TD><TD>u8le</TD><TD PORT="value_uint64_type">value_uint64</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_uint64__if">if entry.field_type == :gff_field_type_uint64</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_uint8 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
@@ -288,12 +357,12 @@ digraph {
 			</TABLE>>];
 			resolved_field__inst__value_vector3 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_vector3_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_vector3_size">12</TD><TD>BiowareCommon::BiowareVector3</TD><TD PORT="value_vector3_type">value_vector3</TD></TR>
+				<TR><TD PORT="value_vector3_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_vector3_size">12</TD><TD>BiowareCommon::BiowareVector3</TD><TD PORT="value_vector3_type">value_vector3</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_vector3__if">if entry.field_type == :gff_field_type_vector3</TD></TR>
 			</TABLE>>];
 			resolved_field__inst__value_vector4 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="value_vector4_pos">_root.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_vector4_size">16</TD><TD>BiowareCommon::BiowareVector4</TD><TD PORT="value_vector4_type">value_vector4</TD></TR>
+				<TR><TD PORT="value_vector4_pos">_root.file.gff3.header.field_data_offset + entry.data_or_offset</TD><TD PORT="value_vector4_size">16</TD><TD>BiowareCommon::BiowareVector4</TD><TD PORT="value_vector4_type">value_vector4</TD></TR>
 				<TR><TD COLSPAN="4" PORT="value_vector4__if">if entry.field_type == :gff_field_type_vector4</TD></TR>
 			</TABLE>>];
 		}
@@ -306,11 +375,11 @@ digraph {
 			</TABLE>>];
 			resolved_struct__inst__entry [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="entry_pos">_root.header.struct_offset + struct_index * 12</TD><TD PORT="entry_size">12</TD><TD>StructEntry</TD><TD PORT="entry_type">entry</TD></TR>
+				<TR><TD PORT="entry_pos">_root.file.gff3.header.struct_offset + struct_index * 12</TD><TD PORT="entry_size">12</TD><TD>StructEntry</TD><TD PORT="entry_type">entry</TD></TR>
 			</TABLE>>];
 			resolved_struct__inst__field_indices [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="field_indices_pos">_root.header.field_indices_offset + entry.data_or_offset</TD><TD PORT="field_indices_size">4</TD><TD>u4le</TD><TD PORT="field_indices_type">field_indices</TD></TR>
+				<TR><TD PORT="field_indices_pos">_root.file.gff3.header.field_indices_offset + entry.data_or_offset</TD><TD PORT="field_indices_size">4</TD><TD>u4le</TD><TD PORT="field_indices_type">field_indices</TD></TR>
 				<TR><TD COLSPAN="4" PORT="field_indices__repeat">repeat entry.field_count times</TD></TR>
 				<TR><TD COLSPAN="4" PORT="field_indices__if">if entry.field_count &gt; 1</TD></TR>
 			</TABLE>>];
@@ -333,7 +402,7 @@ digraph {
 			struct_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">12</TD><TD>StructEntry</TD><TD PORT="entries_type">entries</TD></TR>
-				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.header.struct_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.file.gff3.header.struct_count times</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__struct_entry {
@@ -342,7 +411,7 @@ digraph {
 
 			struct_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="struct_id_pos">0</TD><TD PORT="struct_id_size">4</TD><TD>s4le</TD><TD PORT="struct_id_type">struct_id</TD></TR>
+				<TR><TD PORT="struct_id_pos">0</TD><TD PORT="struct_id_size">4</TD><TD>u4le</TD><TD PORT="struct_id_type">struct_id</TD></TR>
 				<TR><TD PORT="data_or_offset_pos">4</TD><TD PORT="data_or_offset_size">4</TD><TD>u4le</TD><TD PORT="data_or_offset_type">data_or_offset</TD></TR>
 				<TR><TD PORT="field_count_pos">8</TD><TD PORT="field_count_size">4</TD><TD>u4le</TD><TD PORT="field_count_type">field_count</TD></TR>
 			</TABLE>>];
@@ -364,85 +433,97 @@ digraph {
 			</TABLE>>];
 		}
 	}
-	gff__seq:header_type -> gff_header__seq [style=bold];
-	gff_header__seq:field_offset_type -> gff__inst__field_array:field_array_pos [color="#404040"];
-	gff__inst__field_array:field_array_type -> field_array__seq [style=bold];
-	gff_header__seq:field_count_type -> gff__inst__field_array:field_array__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> gff__inst__field_data:field_data_pos [color="#404040"];
-	gff__inst__field_data:field_data_type -> field_data__seq [style=bold];
-	gff_header__seq:field_data_count_type -> gff__inst__field_data:field_data__if [color="#404040"];
-	gff_header__seq:field_indices_offset_type -> gff__inst__field_indices_array:field_indices_array_pos [color="#404040"];
-	gff__inst__field_indices_array:field_indices_array_type -> field_indices_array__seq [style=bold];
-	gff_header__seq:field_indices_count_type -> gff__inst__field_indices_array:field_indices_array__if [color="#404040"];
-	gff_header__seq:label_offset_type -> gff__inst__label_array:label_array_pos [color="#404040"];
-	gff__inst__label_array:label_array_type -> label_array__seq [style=bold];
-	gff_header__seq:label_count_type -> gff__inst__label_array:label_array__if [color="#404040"];
-	gff_header__seq:list_indices_offset_type -> gff__inst__list_indices_array:list_indices_array_pos [color="#404040"];
-	gff__inst__list_indices_array:list_indices_array_type -> list_indices_array__seq [style=bold];
-	gff_header__seq:list_indices_count_type -> gff__inst__list_indices_array:list_indices_array__if [color="#404040"];
-	gff__inst__root_struct_resolved:root_struct_resolved_type -> resolved_struct__seq [style=bold];
-	gff_header__seq:struct_offset_type -> gff__inst__struct_array:struct_array_pos [color="#404040"];
-	gff__inst__struct_array:struct_array_type -> struct_array__seq [style=bold];
-	gff_header__seq:struct_count_type -> gff__inst__struct_array:struct_array__if [color="#404040"];
+	gff__seq:file_type -> gff_union_file__seq [style=bold];
 	field_array__seq:entries_type -> field_entry__seq [style=bold];
-	gff_header__seq:field_count_type -> field_array__seq:entries__repeat [color="#404040"];
-	gff_header__seq:field_data_count_type -> field_data__seq:raw_data_size [color="#404040"];
-	gff_header__seq:field_data_offset_type -> field_entry__inst__field_data_offset_value [color="#404040"];
+	gff_header_tail__seq:field_count_type -> field_array__seq:entries__repeat [color="#404040"];
+	gff_header_tail__seq:field_data_count_type -> field_data__seq:raw_data_size [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> field_entry__inst__field_data_offset_value [color="#404040"];
 	field_entry__seq:data_or_offset_type -> field_entry__inst__field_data_offset_value [color="#404040"];
 	field_entry__seq:field_type_type -> field_entry__inst__is_complex_type [color="#404040"];
 	field_entry__seq:field_type_type -> field_entry__inst__is_list_type [color="#404040"];
 	field_entry__seq:field_type_type -> field_entry__inst__is_simple_type [color="#404040"];
 	field_entry__seq:field_type_type -> field_entry__inst__is_struct_type [color="#404040"];
-	gff_header__seq:list_indices_offset_type -> field_entry__inst__list_indices_offset_value [color="#404040"];
+	gff_header_tail__seq:list_indices_offset_type -> field_entry__inst__list_indices_offset_value [color="#404040"];
 	field_entry__seq:data_or_offset_type -> field_entry__inst__list_indices_offset_value [color="#404040"];
 	field_entry__seq:data_or_offset_type -> field_entry__inst__struct_index_value [color="#404040"];
-	gff_header__seq:field_indices_count_type -> field_indices_array__seq:indices__repeat [color="#404040"];
+	gff_header_tail__seq:field_indices_count_type -> field_indices_array__seq:indices__repeat [color="#404040"];
+	gff3_after_aurora__seq:header_type -> gff_header_tail__seq [style=bold];
+	gff_header_tail__seq:field_offset_type -> gff3_after_aurora__inst__field_array:field_array_pos [color="#404040"];
+	gff3_after_aurora__inst__field_array:field_array_type -> field_array__seq [style=bold];
+	gff_header_tail__seq:field_count_type -> gff3_after_aurora__inst__field_array:field_array__if [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> gff3_after_aurora__inst__field_data:field_data_pos [color="#404040"];
+	gff3_after_aurora__inst__field_data:field_data_type -> field_data__seq [style=bold];
+	gff_header_tail__seq:field_data_count_type -> gff3_after_aurora__inst__field_data:field_data__if [color="#404040"];
+	gff_header_tail__seq:field_indices_offset_type -> gff3_after_aurora__inst__field_indices_array:field_indices_array_pos [color="#404040"];
+	gff3_after_aurora__inst__field_indices_array:field_indices_array_type -> field_indices_array__seq [style=bold];
+	gff_header_tail__seq:field_indices_count_type -> gff3_after_aurora__inst__field_indices_array:field_indices_array__if [color="#404040"];
+	gff_header_tail__seq:label_offset_type -> gff3_after_aurora__inst__label_array:label_array_pos [color="#404040"];
+	gff3_after_aurora__inst__label_array:label_array_type -> label_array__seq [style=bold];
+	gff_header_tail__seq:label_count_type -> gff3_after_aurora__inst__label_array:label_array__if [color="#404040"];
+	gff_header_tail__seq:list_indices_offset_type -> gff3_after_aurora__inst__list_indices_array:list_indices_array_pos [color="#404040"];
+	gff3_after_aurora__inst__list_indices_array:list_indices_array_type -> list_indices_array__seq [style=bold];
+	gff_header_tail__seq:list_indices_count_type -> gff3_after_aurora__inst__list_indices_array:list_indices_array__if [color="#404040"];
+	gff3_after_aurora__inst__root_struct_resolved:root_struct_resolved_type -> resolved_struct__seq [style=bold];
+	gff_header_tail__seq:struct_offset_type -> gff3_after_aurora__inst__struct_array:struct_array_pos [color="#404040"];
+	gff3_after_aurora__inst__struct_array:struct_array_type -> struct_array__seq [style=bold];
+	gff_header_tail__seq:struct_count_type -> gff3_after_aurora__inst__struct_array:struct_array__if [color="#404040"];
+	gff4_after_aurora__params:aurora_version_type -> gff4_after_aurora__seq:string_count__if [color="#404040"];
+	gff4_after_aurora__params:aurora_version_type -> gff4_after_aurora__seq:string_offset__if [color="#404040"];
+	gff4_after_aurora__seq:struct_templates_type -> gff4_struct_template_header__seq [style=bold];
+	gff4_after_aurora__seq:num_struct_templates_type -> gff4_after_aurora__seq:struct_templates__repeat [color="#404040"];
+	gff4_file__seq:gff4_type -> gff4_after_aurora__seq [style=bold];
+	gff_union_file__seq:gff3_type -> gff3_after_aurora__seq [style=bold];
+	gff_union_file__seq:aurora_version_type -> gff_union_file__seq:gff3__if [color="#404040"];
+	gff_union_file__seq:gff4_type -> gff4_after_aurora__seq [style=bold];
+	gff_union_file__seq:aurora_version_type -> gff_union_file__seq:gff4__if [color="#404040"];
 	label_array__seq:labels_type -> label_entry__seq [style=bold];
-	gff_header__seq:label_count_type -> label_array__seq:labels__repeat [color="#404040"];
+	gff_header_tail__seq:label_count_type -> label_array__seq:labels__repeat [color="#404040"];
 	list_entry__seq:num_struct_indices_type -> list_entry__seq:struct_indices__repeat [color="#404040"];
-	gff_header__seq:list_indices_count_type -> list_indices_array__seq:raw_data_size [color="#404040"];
-	gff_header__seq:field_offset_type -> resolved_field__inst__entry:entry_pos [color="#404040"];
+	gff_header_tail__seq:list_indices_count_type -> list_indices_array__seq:raw_data_size [color="#404040"];
+	gff_header_tail__seq:field_offset_type -> resolved_field__inst__entry:entry_pos [color="#404040"];
 	resolved_field__params:field_index_type -> resolved_field__inst__entry:entry_pos [color="#404040"];
 	resolved_field__inst__entry:entry_type -> field_entry__seq [style=bold];
-	gff_header__seq:field_offset_type -> resolved_field__inst__field_entry_pos [color="#404040"];
+	gff_header_tail__seq:field_offset_type -> resolved_field__inst__field_entry_pos [color="#404040"];
 	resolved_field__params:field_index_type -> resolved_field__inst__field_entry_pos [color="#404040"];
-	gff_header__seq:label_offset_type -> resolved_field__inst__label:label_pos [color="#404040"];
+	gff_header_tail__seq:label_offset_type -> resolved_field__inst__label:label_pos [color="#404040"];
 	field_entry__seq:label_index_type -> resolved_field__inst__label:label_pos [color="#404040"];
 	resolved_field__inst__label:label_type -> label_entry_terminated__seq [style=bold];
-	gff_header__seq:list_indices_offset_type -> resolved_field__inst__list_entry:list_entry_pos [color="#404040"];
+	gff_header_tail__seq:list_indices_offset_type -> resolved_field__inst__list_entry:list_entry_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__list_entry:list_entry_pos [color="#404040"];
 	resolved_field__inst__list_entry:list_entry_type -> list_entry__seq [style=bold];
 	field_entry__seq:field_type_type -> resolved_field__inst__list_entry:list_entry__if [color="#404040"];
 	resolved_field__inst__list_structs:list_structs_type -> resolved_struct__seq [style=bold];
 	list_entry__seq:num_struct_indices_type -> resolved_field__inst__list_structs:list_structs__repeat [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__list_structs:list_structs__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_binary:value_binary_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_binary:value_binary_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_binary:value_binary_pos [color="#404040"];
 	resolved_field__inst__value_binary:value_binary_type -> bioware_binary_data__seq [style=bold];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_binary:value_binary__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_double:value_double_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_double:value_double_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_double:value_double_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_double:value_double__if [color="#404040"];
 	resolved_field__inst__field_entry_pos:field_entry_pos_type -> resolved_field__inst__value_int16:value_int16_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_int16:value_int16__if [color="#404040"];
 	resolved_field__inst__field_entry_pos:field_entry_pos_type -> resolved_field__inst__value_int32:value_int32_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_int32:value_int32__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_int64:value_int64_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_int64:value_int64_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_int64:value_int64_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_int64:value_int64__if [color="#404040"];
 	resolved_field__inst__field_entry_pos:field_entry_pos_type -> resolved_field__inst__value_int8:value_int8_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_int8:value_int8__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_localized_string:value_localized_string_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_localized_string:value_localized_string_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_localized_string:value_localized_string_pos [color="#404040"];
 	resolved_field__inst__value_localized_string:value_localized_string_type -> bioware_locstring__seq [style=bold];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_localized_string:value_localized_string__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_resref:value_resref_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_resref:value_resref_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_resref:value_resref_pos [color="#404040"];
 	resolved_field__inst__value_resref:value_resref_type -> bioware_resref__seq [style=bold];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_resref:value_resref__if [color="#404040"];
 	resolved_field__inst__field_entry_pos:field_entry_pos_type -> resolved_field__inst__value_single:value_single_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_single:value_single__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_string:value_string_pos [color="#404040"];
+	resolved_field__inst__field_entry_pos:field_entry_pos_type -> resolved_field__inst__value_str_ref:value_str_ref_pos [color="#404040"];
+	field_entry__seq:field_type_type -> resolved_field__inst__value_str_ref:value_str_ref__if [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_string:value_string_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_string:value_string_pos [color="#404040"];
 	resolved_field__inst__value_string:value_string_type -> bioware_cexo_string__seq [style=bold];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_string:value_string__if [color="#404040"];
@@ -452,23 +533,23 @@ digraph {
 	field_entry__seq:field_type_type -> resolved_field__inst__value_uint16:value_uint16__if [color="#404040"];
 	resolved_field__inst__field_entry_pos:field_entry_pos_type -> resolved_field__inst__value_uint32:value_uint32_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_uint32:value_uint32__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_uint64:value_uint64_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_uint64:value_uint64_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_uint64:value_uint64_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_uint64:value_uint64__if [color="#404040"];
 	resolved_field__inst__field_entry_pos:field_entry_pos_type -> resolved_field__inst__value_uint8:value_uint8_pos [color="#404040"];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_uint8:value_uint8__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_vector3:value_vector3_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_vector3:value_vector3_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_vector3:value_vector3_pos [color="#404040"];
 	resolved_field__inst__value_vector3:value_vector3_type -> bioware_vector3__seq [style=bold];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_vector3:value_vector3__if [color="#404040"];
-	gff_header__seq:field_data_offset_type -> resolved_field__inst__value_vector4:value_vector4_pos [color="#404040"];
+	gff_header_tail__seq:field_data_offset_type -> resolved_field__inst__value_vector4:value_vector4_pos [color="#404040"];
 	field_entry__seq:data_or_offset_type -> resolved_field__inst__value_vector4:value_vector4_pos [color="#404040"];
 	resolved_field__inst__value_vector4:value_vector4_type -> bioware_vector4__seq [style=bold];
 	field_entry__seq:field_type_type -> resolved_field__inst__value_vector4:value_vector4__if [color="#404040"];
-	gff_header__seq:struct_offset_type -> resolved_struct__inst__entry:entry_pos [color="#404040"];
+	gff_header_tail__seq:struct_offset_type -> resolved_struct__inst__entry:entry_pos [color="#404040"];
 	resolved_struct__params:struct_index_type -> resolved_struct__inst__entry:entry_pos [color="#404040"];
 	resolved_struct__inst__entry:entry_type -> struct_entry__seq [style=bold];
-	gff_header__seq:field_indices_offset_type -> resolved_struct__inst__field_indices:field_indices_pos [color="#404040"];
+	gff_header_tail__seq:field_indices_offset_type -> resolved_struct__inst__field_indices:field_indices_pos [color="#404040"];
 	struct_entry__seq:data_or_offset_type -> resolved_struct__inst__field_indices:field_indices_pos [color="#404040"];
 	struct_entry__seq:field_count_type -> resolved_struct__inst__field_indices:field_indices__repeat [color="#404040"];
 	struct_entry__seq:field_count_type -> resolved_struct__inst__field_indices:field_indices__if [color="#404040"];
@@ -478,7 +559,7 @@ digraph {
 	resolved_struct__inst__single_field:single_field_type -> resolved_field__seq [style=bold];
 	struct_entry__seq:field_count_type -> resolved_struct__inst__single_field:single_field__if [color="#404040"];
 	struct_array__seq:entries_type -> struct_entry__seq [style=bold];
-	gff_header__seq:struct_count_type -> struct_array__seq:entries__repeat [color="#404040"];
+	gff_header_tail__seq:struct_count_type -> struct_array__seq:entries__repeat [color="#404040"];
 	struct_entry__seq:data_or_offset_type -> struct_entry__inst__field_indices_offset [color="#404040"];
 	struct_entry__seq:field_count_type -> struct_entry__inst__has_multiple_fields [color="#404040"];
 	struct_entry__seq:field_count_type -> struct_entry__inst__has_single_field [color="#404040"];

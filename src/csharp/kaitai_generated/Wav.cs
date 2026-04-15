@@ -6,23 +6,18 @@ namespace Kaitai
 {
 
     /// <summary>
-    /// WAV (Waveform Audio Format) files used in KotOR. KotOR stores both standard WAV voice-over lines
-    /// and Bioware-obfuscated sound-effect files. Voice-over assets are regular RIFF containers with PCM
-    /// headers, while SFX assets prepend a 470-byte custom block before the RIFF data.
+    /// **KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
+    /// MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
+    /// 20-byte VO prefixes are application-level.
     /// 
-    /// Format Types:
-    /// - VO (Voice-over): Plain RIFF/WAVE PCM files readable by any media player
-    /// - SFX (Sound effects): Contains a Bioware 470-byte obfuscation header followed by RIFF data
-    /// - MP3-in-WAV: Special RIFF container with MP3 data (RIFF size = 50)
-    /// 
-    /// Note: This Kaitai Struct definition documents the core RIFF/WAVE structure. SFX and VO headers
-    /// (470-byte and 20-byte prefixes respectively) are handled by application-level deobfuscation.
-    /// 
-    /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
-    /// - https://github.com/seedhartha/reone/blob/master/src/libs/audio/format/wavreader.cpp:30-56
-    /// - https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:34-84
+    /// `wFormatTag` / PCM layout notes: `bioware_common.ksy` → `riff_wave_format_tag`.
     /// </summary>
+    /// <remarks>
+    /// Reference: <a href="https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav">PyKotor wiki — WAV</a>
+    /// </remarks>
+    /// <remarks>
+    /// Reference: <a href="https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106">xoreos — wave decoder</a>
+    /// </remarks>
     public partial class Wav : KaitaiStruct
     {
         public static Wav FromFile(string fileName)
@@ -95,14 +90,14 @@ namespace Kaitai
             /// <summary>
             /// Chunk ID (4-character ASCII string)
             /// Common values: &quot;fmt &quot;, &quot;data&quot;, &quot;fact&quot;, &quot;LIST&quot;, etc.
-            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:58-72
+            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L58-L72
             /// </summary>
             public string Id { get { return _id; } }
 
             /// <summary>
             /// Chunk size in bytes (chunk data only, excluding ID and size fields)
             /// Chunks are word-aligned (even byte boundaries)
-            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
             /// </summary>
             public uint Size { get { return _size; } }
 
@@ -136,7 +131,7 @@ namespace Kaitai
 
             /// <summary>
             /// Raw audio data (PCM samples or compressed audio)
-            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:79-80
+            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L79-L80
             /// </summary>
             public byte[] Data { get { return _data; } }
             public Wav M_Root { get { return m_root; } }
@@ -166,7 +161,7 @@ namespace Kaitai
             /// <summary>
             /// Sample count (number of samples in compressed audio)
             /// Used for compressed formats like ADPCM
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:189-192
+            /// Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L234-L236 (`fact` chunk skip — sample count lives in chunk body)
             /// </summary>
             public uint SampleCount { get { return _sampleCount; } }
             public Wav M_Root { get { return m_root; } }
@@ -190,7 +185,7 @@ namespace Kaitai
             }
             private void _read()
             {
-                _audioFormat = m_io.ReadU2le();
+                _audioFormat = ((BiowareCommon.RiffWaveFormatTag) m_io.ReadU2le());
                 _channels = m_io.ReadU2le();
                 _sampleRate = m_io.ReadU4le();
                 _bytesPerSec = m_io.ReadU4le();
@@ -213,7 +208,7 @@ namespace Kaitai
                     if (f_isImaAdpcm)
                         return _isImaAdpcm;
                     f_isImaAdpcm = true;
-                    _isImaAdpcm = (bool) (AudioFormat == 17);
+                    _isImaAdpcm = (bool) (AudioFormat == BiowareCommon.RiffWaveFormatTag.DviImaAdpcm);
                     return _isImaAdpcm;
                 }
             }
@@ -230,7 +225,7 @@ namespace Kaitai
                     if (f_isMp3)
                         return _isMp3;
                     f_isMp3 = true;
-                    _isMp3 = (bool) (AudioFormat == 85);
+                    _isMp3 = (bool) (AudioFormat == BiowareCommon.RiffWaveFormatTag.MpegLayer3);
                     return _isMp3;
                 }
             }
@@ -247,11 +242,11 @@ namespace Kaitai
                     if (f_isPcm)
                         return _isPcm;
                     f_isPcm = true;
-                    _isPcm = (bool) (AudioFormat == 1);
+                    _isPcm = (bool) (AudioFormat == BiowareCommon.RiffWaveFormatTag.Pcm);
                     return _isPcm;
                 }
             }
-            private ushort _audioFormat;
+            private BiowareCommon.RiffWaveFormatTag _audioFormat;
             private ushort _channels;
             private uint _sampleRate;
             private uint _bytesPerSec;
@@ -262,22 +257,16 @@ namespace Kaitai
             private Wav.Chunk m_parent;
 
             /// <summary>
-            /// Audio format code:
-            /// - 0x0001 = PCM (Linear PCM, uncompressed)
-            /// - 0x0002 = Microsoft ADPCM
-            /// - 0x0006 = A-Law companded
-            /// - 0x0007 = μ-Law companded
-            /// - 0x0011 = IMA ADPCM (DVI ADPCM)
-            /// - 0x0055 = MPEG Layer 3 (MP3)
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+            /// RIFF `fmt ` / `WAVEFORMATEX.wFormatTag` (`u2` LE). Canonical: `formats/Common/bioware_common.ksy` → `riff_wave_format_tag`
+            /// (Microsoft `WAVEFORMATEX`; KotOR usage: PyKotor WAV wiki, xoreos `wave.cpp`).
             /// </summary>
-            public ushort AudioFormat { get { return _audioFormat; } }
+            public BiowareCommon.RiffWaveFormatTag AudioFormat { get { return _audioFormat; } }
 
             /// <summary>
             /// Number of audio channels:
             /// - 1 = mono
             /// - 2 = stereo
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+            /// Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
             /// </summary>
             public ushort Channels { get { return _channels; } }
 
@@ -286,21 +275,21 @@ namespace Kaitai
             /// Typical values:
             /// - 22050 Hz for SFX
             /// - 44100 Hz for VO
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+            /// Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
             /// </summary>
             public uint SampleRate { get { return _sampleRate; } }
 
             /// <summary>
             /// Byte rate (average bytes per second)
             /// Formula: sample_rate × block_align
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+            /// Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
             /// </summary>
             public uint BytesPerSec { get { return _bytesPerSec; } }
 
             /// <summary>
             /// Block alignment (bytes per sample frame)
             /// Formula for PCM: channels × (bits_per_sample / 8)
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+            /// Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
             /// </summary>
             public ushort BlockAlign { get { return _blockAlign; } }
 
@@ -308,7 +297,7 @@ namespace Kaitai
             /// Bits per sample
             /// Common values: 8, 16
             /// For PCM: typically 16-bit
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+            /// Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
             /// </summary>
             public ushort BitsPerSample { get { return _bitsPerSample; } }
 
@@ -317,7 +306,7 @@ namespace Kaitai
             /// For IMA ADPCM and other compressed formats, contains:
             /// - Extra format size (u2)
             /// - Format-specific data (e.g., ADPCM coefficients)
-            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
             /// </summary>
             public byte[] ExtraFormatBytes { get { return _extraFormatBytes; } }
             public Wav M_Root { get { return m_root; } }
@@ -356,7 +345,7 @@ namespace Kaitai
 
             /// <summary>
             /// MP3-in-WAV format detected when RIFF size = 50
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py:60-64
+            /// Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
             /// </summary>
             public bool IsMp3InWav
             {
@@ -383,7 +372,7 @@ namespace Kaitai
             /// <summary>
             /// File size minus 8 bytes (RIFF_ID + RIFF_SIZE itself)
             /// For MP3-in-WAV format, this is 50
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+            /// Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
             /// </summary>
             public uint RiffSize { get { return _riffSize; } }
 
@@ -421,14 +410,14 @@ namespace Kaitai
 
             /// <summary>
             /// Unknown chunk body (skip for compatibility)
-            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:53-54
+            /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L53-L54
             /// </summary>
             public byte[] Data { get { return _data; } }
 
             /// <summary>
             /// Padding byte to align to word boundary (only if chunk size is odd)
             /// RIFF chunks must be aligned to 2-byte boundaries
-            /// Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:153-156
+            /// Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L243-L245 (unknown chunk skip + optional 1-byte word alignment)
             /// </summary>
             public byte? Padding { get { return _padding; } }
             public Wav M_Root { get { return m_root; } }
@@ -447,7 +436,7 @@ namespace Kaitai
         /// <summary>
         /// RIFF chunks in sequence (fmt, fact, data, etc.)
         /// Parsed until end of file
-        /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:46-55
+        /// Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L46-L55
         /// </summary>
         public List<Chunk> Chunks { get { return _chunks; } }
         public Wav M_Root { get { return m_root; } }

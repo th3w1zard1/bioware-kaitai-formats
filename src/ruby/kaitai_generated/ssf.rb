@@ -12,11 +12,11 @@ end
 # Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
 # 
 # Binary Format:
-# - Header (12 bytes): File type signature, version, and offset to sounds array
-# - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
-# - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+# - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+# - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
 # 
-# Total file size: 136 bytes (12 + 112 + 12)
+# Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+# of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
 # 
 # Sound Slots (in order):
 # 0-5: Battle Cry 1-6
@@ -39,8 +39,8 @@ end
 # 27: Poisoned
 # 
 # References:
-# - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
-# - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+# - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+# - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
 class Ssf < Kaitai::Struct::Struct
   def initialize(_io, _parent = nil, _root = nil)
     super(_io, _parent, _root || self)
@@ -53,30 +53,7 @@ class Ssf < Kaitai::Struct::Struct
     @file_version = (@_io.read_bytes(4)).force_encoding("ASCII").encode('UTF-8')
     raise Kaitai::Struct::ValidationNotEqualError.new("V1.1", @file_version, @_io, "/seq/1") if not @file_version == "V1.1"
     @sounds_offset = @_io.read_u4le
-    raise Kaitai::Struct::ValidationNotEqualError.new(12, @sounds_offset, @_io, "/seq/2") if not @sounds_offset == 12
-    @padding = Padding.new(@_io, self, @_root)
     self
-  end
-  class Padding < Kaitai::Struct::Struct
-    def initialize(_io, _parent = nil, _root = nil)
-      super(_io, _parent, _root)
-      _read
-    end
-
-    def _read
-      @padding_bytes = []
-      (3).times { |i|
-        @padding_bytes << @_io.read_u4le
-      }
-      self
-    end
-
-    ##
-    # Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
-    # Total size: 12 bytes (3 * 4 bytes).
-    # These bytes are unused but must be present for format compatibility.
-    # Each padding byte should be 0xFFFFFFFF (4294967295).
-    attr_reader :padding_bytes
   end
   class SoundArray < Kaitai::Struct::Struct
     def initialize(_io, _parent = nil, _root = nil)
@@ -169,11 +146,7 @@ class Ssf < Kaitai::Struct::Struct
 
   ##
   # Byte offset to the sounds array from the beginning of the file.
-  # Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
-  # This field exists for format consistency, though it's always the same value.
+  # KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+  # field is a real offset; readers must seek here instead of assuming 12.
   attr_reader :sounds_offset
-
-  ##
-  # Reserved padding bytes (12 bytes of 0xFFFFFFFF)
-  attr_reader :padding
 end

@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use IO::KaitaiStruct 0.011_000;
+use BiowareCommon;
 use Encode;
 
 ########################################################################
@@ -18,23 +19,6 @@ sub from_file {
     binmode($fd);
     return new($class, IO::KaitaiStruct::Stream->new($fd));
 }
-
-our $LIP_SHAPES_NEUTRAL = 0;
-our $LIP_SHAPES_EE = 1;
-our $LIP_SHAPES_EH = 2;
-our $LIP_SHAPES_AH = 3;
-our $LIP_SHAPES_OH = 4;
-our $LIP_SHAPES_OOH = 5;
-our $LIP_SHAPES_Y = 6;
-our $LIP_SHAPES_STS = 7;
-our $LIP_SHAPES_FV = 8;
-our $LIP_SHAPES_NG = 9;
-our $LIP_SHAPES_TH = 10;
-our $LIP_SHAPES_MPB = 11;
-our $LIP_SHAPES_TD = 12;
-our $LIP_SHAPES_SH = 13;
-our $LIP_SHAPES_L = 14;
-our $LIP_SHAPES_KG = 15;
 
 sub new {
     my ($class, $_io, $_parent, $_root) = @_;

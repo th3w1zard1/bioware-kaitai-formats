@@ -1,11 +1,12 @@
 import kaitai_struct_nim_runtime
 import options
+import bioware_common
 
 type
   Ltr* = ref object of KaitaiStruct
     `fileType`*: string
     `fileVersion`*: string
-    `letterCount`*: uint8
+    `letterCount`*: BiowareCommon_BiowareLtrAlphabetLength
     `singleLetterBlock`*: Ltr_LetterBlock
     `doubleLetterBlocks`*: Ltr_DoubleLetterBlocksArray
     `tripleLetterBlocks`*: Ltr_TripleLetterBlocksArray
@@ -34,22 +35,12 @@ proc read*(_: typedesc[Ltr_TripleLetterRow], io: KaitaiStream, root: KaitaiStruc
 
 
 ##[
-LTR (Letter) resources store third-order Markov chain probability tables that the game uses
-to procedurally generate NPC names. The data encodes likelihoods for characters appearing at
-the start, middle, and end of names given zero, one, or two-character context.
+**LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
+`letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
+`bioware_common.ksy`. Use `.to_i` on that enum inside `valid`/`repeat-expr` (see Kaitai user guide: enums).
 
-KotOR always uses the 28-character alphabet (a-z plus ' and -). Neverwinter Nights (NWN) used
-26 characters; the header explicitly stores the count. This is a KotOR-specific difference from NWN.
-
-LTR files are binary and consist of a short header followed by three probability tables
-(singles, doubles, triples) stored as contiguous float arrays.
-
-References:
-- https://github.com/OldRepublicDevs/PyKotor/wiki/LTR-File-Format.md
-- https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/ltrreader.cpp:27-74
-- https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp:135-168
-- https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LTRObject.ts:61-117
-
+@see <a href="https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format">PyKotor wiki — LTR</a>
+@see <a href="https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168">xoreos — LTR::load</a>
 ]##
 proc read*(_: typedesc[Ltr], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Ltr =
   template this: untyped = result
@@ -73,12 +64,11 @@ proc read*(_: typedesc[Ltr], io: KaitaiStream, root: KaitaiStruct, parent: Kaita
   this.fileVersion = fileVersionExpr
 
   ##[
-  Number of characters in the alphabet. Must be 26 (NWN) or 28 (KotOR).
-KotOR uses 28 characters: "abcdefghijklmnopqrstuvwxyz'-"
-NWN uses 26 characters: "abcdefghijklmnopqrstuvwxyz"
+  Alphabet size (`u1`). Canonical enum: `formats/Common/bioware_common.ksy` → `bioware_ltr_alphabet_length`
+(26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide §6.4.5).
 
   ]##
-  let letterCountExpr = this.io.readU1()
+  let letterCountExpr = BiowareCommon_BiowareLtrAlphabetLength(this.io.readU1())
   this.letterCount = letterCountExpr
 
   ##[
@@ -137,7 +127,7 @@ proc read*(_: typedesc[Ltr_DoubleLetterBlocksArray], io: KaitaiStream, root: Kai
 Block index corresponds to the previous character in the alphabet.
 
   ]##
-  for i in 0 ..< int(Ltr(this.root).letterCount):
+  for i in 0 ..< int(ord(Ltr(this.root).letterCount)):
     let it = Ltr_LetterBlock.read(this.io, this.root, this)
     this.blocks.add(it)
 
@@ -169,7 +159,7 @@ Probability of each letter starting a name (no context for singles,
 after previous character for doubles, after previous two for triples).
 
   ]##
-  for i in 0 ..< int(Ltr(this.root).letterCount):
+  for i in 0 ..< int(ord(Ltr(this.root).letterCount)):
     let it = this.io.readF4le()
     this.startProbabilities.add(it)
 
@@ -178,7 +168,7 @@ after previous character for doubles, after previous two for triples).
 Probability of each letter appearing in the middle of a name.
 
   ]##
-  for i in 0 ..< int(Ltr(this.root).letterCount):
+  for i in 0 ..< int(ord(Ltr(this.root).letterCount)):
     let it = this.io.readF4le()
     this.middleProbabilities.add(it)
 
@@ -187,7 +177,7 @@ Probability of each letter appearing in the middle of a name.
 Probability of each letter ending a name.
 
   ]##
-  for i in 0 ..< int(Ltr(this.root).letterCount):
+  for i in 0 ..< int(ord(Ltr(this.root).letterCount)):
     let it = this.io.readF4le()
     this.endProbabilities.add(it)
 
@@ -215,7 +205,7 @@ First index corresponds to the second-to-last character.
 Second index corresponds to the last character.
 
   ]##
-  for i in 0 ..< int(Ltr(this.root).letterCount):
+  for i in 0 ..< int(ord(Ltr(this.root).letterCount)):
     let it = Ltr_TripleLetterRow.read(this.io, this.root, this)
     this.rows.add(it)
 
@@ -242,7 +232,7 @@ proc read*(_: typedesc[Ltr_TripleLetterRow], io: KaitaiStream, root: KaitaiStruc
 Block index corresponds to the last character in the two-character context.
 
   ]##
-  for i in 0 ..< int(Ltr(this.root).letterCount):
+  for i in 0 ..< int(ord(Ltr(this.root).letterCount)):
     let it = Ltr_LetterBlock.read(this.io, this.root, this)
     this.blocks.add(it)
 

@@ -30,11 +30,7 @@ digraph {
 				<TR><TD PORT="resource_id_pos">0</TD><TD PORT="resource_id_size">4</TD><TD>u4le</TD><TD PORT="resource_id_type">resource_id</TD></TR>
 				<TR><TD PORT="offset_pos">4</TD><TD PORT="offset_size">4</TD><TD>u4le</TD><TD PORT="offset_type">offset</TD></TR>
 				<TR><TD PORT="file_size_pos">8</TD><TD PORT="file_size_size">4</TD><TD>u4le</TD><TD PORT="file_size_type">file_size</TD></TR>
-				<TR><TD PORT="resource_type_pos">12</TD><TD PORT="resource_type_size">4</TD><TD>u4le→XoreosFileTypeId</TD><TD PORT="resource_type_type">resource_type</TD></TR>
-			</TABLE>>];
-			var_resource_entry__inst__data [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="data_pos">offset</TD><TD PORT="data_size">file_size</TD><TD></TD><TD PORT="data_type">data</TD></TR>
+				<TR><TD PORT="resource_type_pos">12</TD><TD PORT="resource_type_size">4</TD><TD>u4le→BiowareTypeIds::XoreosFileTypeId</TD><TD PORT="resource_type_type">resource_type</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__var_resource_table {
@@ -51,8 +47,6 @@ digraph {
 	bif__seq:var_table_offset_type -> bif__inst__var_resource_table:var_resource_table_pos [color="#404040"];
 	bif__inst__var_resource_table:var_resource_table_type -> var_resource_table__seq [style=bold];
 	bif__seq:var_res_count_type -> bif__inst__var_resource_table:var_resource_table__if [color="#404040"];
-	var_resource_entry__seq:offset_type -> var_resource_entry__inst__data:data_pos [color="#404040"];
-	var_resource_entry__seq:file_size_type -> var_resource_entry__inst__data:data_size [color="#404040"];
 	var_resource_table__seq:entries_type -> var_resource_entry__seq [style=bold];
 	bif__seq:var_res_count_type -> var_resource_table__seq:entries__repeat [color="#404040"];
 }

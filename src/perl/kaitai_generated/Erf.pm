@@ -709,7 +709,7 @@ sub _read {
     my ($self) = @_;
 
     $self->{offset_to_data} = $self->{_io}->read_u4le();
-    $self->{resource_size} = $self->{_io}->read_u4le();
+    $self->{len_data} = $self->{_io}->read_u4le();
 }
 
 sub data {
@@ -717,7 +717,7 @@ sub data {
     return $self->{data} if ($self->{data});
     my $_pos = $self->{_io}->pos();
     $self->{_io}->seek($self->offset_to_data());
-    $self->{data} = $self->{_io}->read_bytes($self->resource_size());
+    $self->{data} = $self->{_io}->read_bytes($self->len_data());
     $self->{_io}->seek($_pos);
     return $self->{data};
 }
@@ -727,9 +727,9 @@ sub offset_to_data {
     return $self->{offset_to_data};
 }
 
-sub resource_size {
+sub len_data {
     my ($self) = @_;
-    return $self->{resource_size};
+    return $self->{len_data};
 }
 
 ########################################################################

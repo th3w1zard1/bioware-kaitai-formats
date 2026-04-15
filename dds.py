@@ -20,7 +20,31 @@ class Dds(KaitaiStruct):
     
     
     .. seealso::
-       PyKotor — TPCDDSReader - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
+       PyKotor — `TPCDDSReader` / `io_dds` - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeDDS` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L98
+    
+    
+    .. seealso::
+       xoreos — `dds.cpp` load entry - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L55-L67
+    
+    
+    .. seealso::
+       xoreos — BioWare headerless / Microsoft DDS branches - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210
+    
+    
+    .. seealso::
+       xoreos-tools — `dds.cpp` (image tooling) - https://github.com/xoreos/xoreos-tools/blob/master/src/images/dds.cpp#L69-L158
+    
+    
+    .. seealso::
+       lachjames/NorthernLights — upstream Unity Aurora sample (fork: `th3w1zard1/NorthernLights` in `meta.xref`) - https://github.com/lachjames/NorthernLights
+    
+    
+    .. seealso::
+       reone — `ResourceType::Dds` (type id; TPC path in `tpcreader.cpp`) - https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L57
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Dds, self).__init__(_io)

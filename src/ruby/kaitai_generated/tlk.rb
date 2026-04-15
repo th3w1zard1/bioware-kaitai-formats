@@ -25,7 +25,7 @@ end
 # the first entry, StrRef 1 to the second, etc. StrRef -1 indicates no string reference.
 # 
 # References:
-# - https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
+# - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
 # - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/tlkreader.cpp:31-84
 # - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp:42-176
 # - https://github.com/TSLPatcher/TSLPatcher/blob/master/lib/site/Bioware/TLK.pm:1-533

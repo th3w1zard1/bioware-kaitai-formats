@@ -17,11 +17,11 @@ use std::rc::{Rc, Weak};
  * Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
  * 
  * Binary Format:
- * - Header (12 bytes): File type signature, version, and offset to sounds array
- * - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
- * - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+ * - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+ * - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
  * 
- * Total file size: 136 bytes (12 + 112 + 12)
+ * Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+ * of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
  * 
  * Sound Slots (in order):
  * 0-5: Battle Cry 1-6
@@ -44,8 +44,8 @@ use std::rc::{Rc, Weak};
  * 27: Poisoned
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
  */
 
 #[derive(Default, Debug, Clone)]
@@ -56,7 +56,6 @@ pub struct Ssf {
     file_type: RefCell<String>,
     file_version: RefCell<String>,
     sounds_offset: RefCell<u32>,
-    padding: RefCell<OptRc<Ssf_Padding>>,
     _io: RefCell<BytesReader>,
     f_sounds: Cell<bool>,
     sounds: RefCell<OptRc<Ssf_SoundArray>>,
@@ -87,11 +86,6 @@ impl KStruct for Ssf {
             return Err(KError::ValidationFailed(ValidationFailedError { kind: ValidationKind::NotEqual, src_path: "/seq/1".to_string() }));
         }
         *self_rc.sounds_offset.borrow_mut() = _io.read_u4le()?.into();
-        if !(((*self_rc.sounds_offset() as u32) == (12 as u32))) {
-            return Err(KError::ValidationFailed(ValidationFailedError { kind: ValidationKind::NotEqual, src_path: "/seq/2".to_string() }));
-        }
-        let t = Self::read_into::<_, Ssf_Padding>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
-        *self_rc.padding.borrow_mut() = t;
         Ok(())
     }
 }
@@ -141,77 +135,15 @@ impl Ssf {
 
 /**
  * Byte offset to the sounds array from the beginning of the file.
- * Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
- * This field exists for format consistency, though it's always the same value.
+ * KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+ * field is a real offset; readers must seek here instead of assuming 12.
  */
 impl Ssf {
     pub fn sounds_offset(&self) -> Ref<'_, u32> {
         self.sounds_offset.borrow()
     }
 }
-
-/**
- * Reserved padding bytes (12 bytes of 0xFFFFFFFF)
- */
 impl Ssf {
-    pub fn padding(&self) -> Ref<'_, OptRc<Ssf_Padding>> {
-        self.padding.borrow()
-    }
-}
-impl Ssf {
-    pub fn _io(&self) -> Ref<'_, BytesReader> {
-        self._io.borrow()
-    }
-}
-
-#[derive(Default, Debug, Clone)]
-pub struct Ssf_Padding {
-    pub _root: SharedType<Ssf>,
-    pub _parent: SharedType<Ssf>,
-    pub _self: SharedType<Self>,
-    padding_bytes: RefCell<Vec<u32>>,
-    _io: RefCell<BytesReader>,
-}
-impl KStruct for Ssf_Padding {
-    type Root = Ssf;
-    type Parent = Ssf;
-
-    fn read<S: KStream>(
-        self_rc: &OptRc<Self>,
-        _io: &S,
-        _root: SharedType<Self::Root>,
-        _parent: SharedType<Self::Parent>,
-    ) -> KResult<()> {
-        *self_rc._io.borrow_mut() = _io.clone();
-        self_rc._root.set(_root.get());
-        self_rc._parent.set(_parent.get());
-        self_rc._self.set(Ok(self_rc.clone()));
-        let _rrc = self_rc._root.get_value().borrow().upgrade();
-        let _prc = self_rc._parent.get_value().borrow().upgrade();
-        let _r = _rrc.as_ref().unwrap();
-        *self_rc.padding_bytes.borrow_mut() = Vec::new();
-        let l_padding_bytes = 3;
-        for _i in 0..l_padding_bytes {
-            self_rc.padding_bytes.borrow_mut().push(_io.read_u4le()?.into());
-        }
-        Ok(())
-    }
-}
-impl Ssf_Padding {
-}
-
-/**
- * Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
- * Total size: 12 bytes (3 * 4 bytes).
- * These bytes are unused but must be present for format compatibility.
- * Each padding byte should be 0xFFFFFFFF (4294967295).
- */
-impl Ssf_Padding {
-    pub fn padding_bytes(&self) -> Ref<'_, Vec<u32>> {
-        self.padding_bytes.borrow()
-    }
-}
-impl Ssf_Padding {
     pub fn _io(&self) -> Ref<'_, BytesReader> {
         self._io.borrow()
     }

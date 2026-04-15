@@ -35,20 +35,19 @@ class twoda_t;
  * storage of duplicate values (shared strings are stored once and referenced by offset).
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
  */
 
 class twoda_t : public kaitai::kstruct {
 
 public:
-    class cell_offsets_array_t;
     class cell_values_section_t;
     class row_label_entry_t;
     class row_labels_section_t;
     class twoda_header_t;
 
-    twoda_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = 0, twoda_t* p__root = 0);
+    twoda_t(uint32_t p_column_count, kaitai::kstream* p__io, kaitai::kstruct* p__parent = 0, twoda_t* p__root = 0);
 
 private:
     void _read();
@@ -56,48 +55,6 @@ private:
 
 public:
     ~twoda_t();
-
-    class cell_offsets_array_t : public kaitai::kstruct {
-
-    public:
-
-        cell_offsets_array_t(kaitai::kstream* p__io, twoda_t* p__parent = 0, twoda_t* p__root = 0);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~cell_offsets_array_t();
-
-    private:
-        std::vector<uint16_t>* m_offsets;
-        twoda_t* m__root;
-        twoda_t* m__parent;
-
-    public:
-
-        /**
-         * Array of cell value offsets (uint16, little-endian).
-         * Each offset points to a null-terminated string in the cell_values_section.
-         * Offsets are relative to the start of cell_values_section.
-         * 
-         * Reading continues until we reach 2 bytes before end of file (where len_cell_values_section field is).
-         * Then len_cell_values_section is read, followed by cell_values_section.
-         * 
-         * The actual count is: row_count * column_count
-         * where column_count = number of tab-separated parts in column_headers_raw.
-         * 
-         * Cell access pattern:
-         * - Cell at row i, column j = offsets[i * column_count + j]
-         * - Value = read string at cell_values_section start + offsets[i * column_count + j]
-         * 
-         * Duplicate cell values share the same offset (string deduplication).
-         */
-        std::vector<uint16_t>* offsets() const { return m_offsets; }
-        twoda_t* _root() const { return m__root; }
-        twoda_t* _parent() const { return m__parent; }
-    };
 
     class cell_values_section_t : public kaitai::kstruct {
 
@@ -122,7 +79,7 @@ public:
         /**
          * Raw cell values data as a single string.
          * Contains all null-terminated cell value strings concatenated together.
-         * Individual strings can be extracted using offsets from cell_offsets_array.
+         * Individual strings can be extracted using offsets from cell_offsets.
          * Note: To read a specific cell value, seek to (cell_values_section start + offset) and read a null-terminated string.
          */
         std::string raw_data() const { return m_raw_data; }
@@ -254,9 +211,10 @@ private:
     std::string m_column_headers_raw;
     uint32_t m_row_count;
     row_labels_section_t* m_row_labels_section;
-    cell_offsets_array_t* m_cell_offsets_array;
+    std::vector<uint16_t>* m_cell_offsets;
     uint16_t m_len_cell_values_section;
     cell_values_section_t* m_cell_values_section;
+    uint32_t m_column_count;
     twoda_t* m__root;
     kaitai::kstruct* m__parent;
     std::string m__raw_cell_values_section;
@@ -289,11 +247,11 @@ public:
     row_labels_section_t* row_labels_section() const { return m_row_labels_section; }
 
     /**
-     * Array of cell value offsets (uint16 per cell).
-     * Total entries = row_count * column_count (where column_count = number of tab-separated parts in column_headers_raw).
-     * Each offset points to a null-terminated string in the cell values section.
+     * Array of cell value offsets (uint16 per cell). There are exactly row_count * column_count
+     * entries, in row-major order. Each offset is relative to the start of the cell values blob
+     * and points to a null-terminated string.
      */
-    cell_offsets_array_t* cell_offsets_array() const { return m_cell_offsets_array; }
+    std::vector<uint16_t>* cell_offsets() const { return m_cell_offsets; }
 
     /**
      * Total size in bytes of the cell values data section.
@@ -304,10 +262,18 @@ public:
 
     /**
      * Cell values data section containing all unique cell value strings.
-     * Each string is null-terminated. Offsets from cell_offsets_array point into this section.
+     * Each string is null-terminated. Offsets from cell_offsets point into this section.
      * The section starts immediately after len_cell_values_section field and has size = len_cell_values_section bytes.
      */
     cell_values_section_t* cell_values_section() const { return m_cell_values_section; }
+
+    /**
+     * Number of tab-separated column headers in the file (excluding the trailing null terminator).
+     * Kaitai expressions cannot derive this from the header blob, so callers must pre-scan the
+     * column header section (same rule as PyKotor: count tab characters between the newline after
+     * V2.b and the first 0x00) and pass it into the parser.
+     */
+    uint32_t column_count() const { return m_column_count; }
     twoda_t* _root() const { return m__root; }
     kaitai::kstruct* _parent() const { return m__parent; }
     std::string _raw_cell_values_section() const { return m__raw_cell_values_section; }

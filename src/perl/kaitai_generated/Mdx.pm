@@ -34,10 +34,7 @@ sub new {
 sub _read {
     my ($self) = @_;
 
-    $self->{vertex_data} = [];
-    while (!$self->{_io}->is_eof()) {
-        push @{$self->{vertex_data}}, $self->{_io}->read_u1();
-    }
+    $self->{vertex_data} = $self->{_io}->read_bytes_full();
 }
 
 sub vertex_data {

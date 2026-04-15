@@ -16,7 +16,7 @@ class Gda(KaitaiStruct):
     G2DA column/row list field ids: `meta.xref.xoreos_gff4_g2da_fields`. Classic Aurora `.2da` binary: `formats/TwoDA/TwoDA.ksy`.
     
     .. seealso::
-       xoreos — GDAFile::load - https://github.com/th3w1zard1/xoreos/blob/f36b681b2a38799ddd6fce0f252b6d7fa781dfc2/src/aurora/gdafile.cpp#L275-L305
+       xoreos — GDAFile::load - https://github.com/xoreos/xoreos/blob/master/src/aurora/gdafile.cpp#L275-L305
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Gda, self).__init__(_io)

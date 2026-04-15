@@ -9,7 +9,7 @@ digraph {
 			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 			<TR><TD PORT="file_type_pos">0</TD><TD PORT="file_type_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_type_type">file_type</TD></TR>
 			<TR><TD PORT="file_version_pos">4</TD><TD PORT="file_version_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_version_type">file_version</TD></TR>
-			<TR><TD PORT="letter_count_pos">8</TD><TD PORT="letter_count_size">1</TD><TD>u1</TD><TD PORT="letter_count_type">letter_count</TD></TR>
+			<TR><TD PORT="letter_count_pos">8</TD><TD PORT="letter_count_size">1</TD><TD>u1→BiowareCommon::BiowareLtrAlphabetLength</TD><TD PORT="letter_count_type">letter_count</TD></TR>
 			<TR><TD PORT="single_letter_block_pos">9</TD><TD PORT="single_letter_block_size">...</TD><TD>LetterBlock</TD><TD PORT="single_letter_block_type">single_letter_block</TD></TR>
 			<TR><TD PORT="double_letter_blocks_pos">...</TD><TD PORT="double_letter_blocks_size">...</TD><TD>DoubleLetterBlocksArray</TD><TD PORT="double_letter_blocks_type">double_letter_blocks</TD></TR>
 			<TR><TD PORT="triple_letter_blocks_pos">...</TD><TD PORT="triple_letter_blocks_size">...</TD><TD>TripleLetterBlocksArray</TD><TD PORT="triple_letter_blocks_type">triple_letter_blocks</TD></TR>
@@ -21,7 +21,7 @@ digraph {
 			double_letter_blocks_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="blocks_pos">0</TD><TD PORT="blocks_size">...</TD><TD>LetterBlock</TD><TD PORT="blocks_type">blocks</TD></TR>
-				<TR><TD COLSPAN="4" PORT="blocks__repeat">repeat _root.letter_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="blocks__repeat">repeat (BiowareCommon::I__BIOWARE_LTR_ALPHABET_LENGTH[_root.letter_count] || _root.letter_count) times</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__letter_block {
@@ -31,11 +31,11 @@ digraph {
 			letter_block__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="start_probabilities_pos">0</TD><TD PORT="start_probabilities_size">4</TD><TD>f4le</TD><TD PORT="start_probabilities_type">start_probabilities</TD></TR>
-				<TR><TD COLSPAN="4" PORT="start_probabilities__repeat">repeat _root.letter_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="start_probabilities__repeat">repeat (BiowareCommon::I__BIOWARE_LTR_ALPHABET_LENGTH[_root.letter_count] || _root.letter_count) times</TD></TR>
 				<TR><TD PORT="middle_probabilities_pos">...</TD><TD PORT="middle_probabilities_size">4</TD><TD>f4le</TD><TD PORT="middle_probabilities_type">middle_probabilities</TD></TR>
-				<TR><TD COLSPAN="4" PORT="middle_probabilities__repeat">repeat _root.letter_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="middle_probabilities__repeat">repeat (BiowareCommon::I__BIOWARE_LTR_ALPHABET_LENGTH[_root.letter_count] || _root.letter_count) times</TD></TR>
 				<TR><TD PORT="end_probabilities_pos">...</TD><TD PORT="end_probabilities_size">4</TD><TD>f4le</TD><TD PORT="end_probabilities_type">end_probabilities</TD></TR>
-				<TR><TD COLSPAN="4" PORT="end_probabilities__repeat">repeat _root.letter_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="end_probabilities__repeat">repeat (BiowareCommon::I__BIOWARE_LTR_ALPHABET_LENGTH[_root.letter_count] || _root.letter_count) times</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__triple_letter_blocks_array {
@@ -45,7 +45,7 @@ digraph {
 			triple_letter_blocks_array__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="rows_pos">0</TD><TD PORT="rows_size">...</TD><TD>TripleLetterRow</TD><TD PORT="rows_type">rows</TD></TR>
-				<TR><TD COLSPAN="4" PORT="rows__repeat">repeat _root.letter_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="rows__repeat">repeat (BiowareCommon::I__BIOWARE_LTR_ALPHABET_LENGTH[_root.letter_count] || _root.letter_count) times</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__triple_letter_row {
@@ -55,7 +55,7 @@ digraph {
 			triple_letter_row__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="blocks_pos">0</TD><TD PORT="blocks_size">...</TD><TD>LetterBlock</TD><TD PORT="blocks_type">blocks</TD></TR>
-				<TR><TD COLSPAN="4" PORT="blocks__repeat">repeat _root.letter_count times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="blocks__repeat">repeat (BiowareCommon::I__BIOWARE_LTR_ALPHABET_LENGTH[_root.letter_count] || _root.letter_count) times</TD></TR>
 			</TABLE>>];
 		}
 	}

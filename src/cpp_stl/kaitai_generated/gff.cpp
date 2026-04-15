@@ -1,37 +1,225 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 #include "gff.h"
-std::set<gff_t::gff_field_type_t> gff_t::_build_values_gff_field_type_t() {
-    std::set<gff_t::gff_field_type_t> _t;
-    _t.insert(gff_t::GFF_FIELD_TYPE_UINT8);
-    _t.insert(gff_t::GFF_FIELD_TYPE_INT8);
-    _t.insert(gff_t::GFF_FIELD_TYPE_UINT16);
-    _t.insert(gff_t::GFF_FIELD_TYPE_INT16);
-    _t.insert(gff_t::GFF_FIELD_TYPE_UINT32);
-    _t.insert(gff_t::GFF_FIELD_TYPE_INT32);
-    _t.insert(gff_t::GFF_FIELD_TYPE_UINT64);
-    _t.insert(gff_t::GFF_FIELD_TYPE_INT64);
-    _t.insert(gff_t::GFF_FIELD_TYPE_SINGLE);
-    _t.insert(gff_t::GFF_FIELD_TYPE_DOUBLE);
-    _t.insert(gff_t::GFF_FIELD_TYPE_STRING);
-    _t.insert(gff_t::GFF_FIELD_TYPE_RESREF);
-    _t.insert(gff_t::GFF_FIELD_TYPE_LOCALIZED_STRING);
-    _t.insert(gff_t::GFF_FIELD_TYPE_BINARY);
-    _t.insert(gff_t::GFF_FIELD_TYPE_STRUCT);
-    _t.insert(gff_t::GFF_FIELD_TYPE_LIST);
-    _t.insert(gff_t::GFF_FIELD_TYPE_VECTOR4);
-    _t.insert(gff_t::GFF_FIELD_TYPE_VECTOR3);
-    _t.insert(gff_t::GFF_FIELD_TYPE_STR_REF);
-    return _t;
-}
-const std::set<gff_t::gff_field_type_t> gff_t::_values_gff_field_type_t = gff_t::_build_values_gff_field_type_t();
-bool gff_t::_is_defined_gff_field_type_t(gff_t::gff_field_type_t v) {
-    return gff_t::_values_gff_field_type_t.find(v) != gff_t::_values_gff_field_type_t.end();
-}
 
 gff_t::gff_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root ? p__root : this;
+    m_file = 0;
+
+    try {
+        _read();
+    } catch(...) {
+        _clean_up();
+        throw;
+    }
+}
+
+void gff_t::_read() {
+    m_file = new gff_union_file_t(m__io, this, m__root);
+}
+
+gff_t::~gff_t() {
+    _clean_up();
+}
+
+void gff_t::_clean_up() {
+    if (m_file) {
+        delete m_file; m_file = 0;
+    }
+}
+
+gff_t::field_array_t::field_array_t(kaitai::kstream* p__io, gff_t::gff3_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    m_entries = 0;
+
+    try {
+        _read();
+    } catch(...) {
+        _clean_up();
+        throw;
+    }
+}
+
+void gff_t::field_array_t::_read() {
+    m_entries = new std::vector<field_entry_t*>();
+    const int l_entries = _root()->file()->gff3()->header()->field_count();
+    for (int i = 0; i < l_entries; i++) {
+        m_entries->push_back(new field_entry_t(m__io, this, m__root));
+    }
+}
+
+gff_t::field_array_t::~field_array_t() {
+    _clean_up();
+}
+
+void gff_t::field_array_t::_clean_up() {
+    if (m_entries) {
+        for (std::vector<field_entry_t*>::iterator it = m_entries->begin(); it != m_entries->end(); ++it) {
+            delete *it;
+        }
+        delete m_entries; m_entries = 0;
+    }
+}
+
+gff_t::field_data_t::field_data_t(kaitai::kstream* p__io, gff_t::gff3_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+
+    try {
+        _read();
+    } catch(...) {
+        _clean_up();
+        throw;
+    }
+}
+
+void gff_t::field_data_t::_read() {
+    m_raw_data = m__io->read_bytes(_root()->file()->gff3()->header()->field_data_count());
+}
+
+gff_t::field_data_t::~field_data_t() {
+    _clean_up();
+}
+
+void gff_t::field_data_t::_clean_up() {
+}
+
+gff_t::field_entry_t::field_entry_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    f_field_data_offset_value = false;
+    f_is_complex_type = false;
+    f_is_list_type = false;
+    f_is_simple_type = false;
+    f_is_struct_type = false;
+    f_list_indices_offset_value = false;
+    f_struct_index_value = false;
+
+    try {
+        _read();
+    } catch(...) {
+        _clean_up();
+        throw;
+    }
+}
+
+void gff_t::field_entry_t::_read() {
+    m_field_type = static_cast<bioware_gff_common_t::gff_field_type_t>(m__io->read_u4le());
+    m_label_index = m__io->read_u4le();
+    m_data_or_offset = m__io->read_u4le();
+}
+
+gff_t::field_entry_t::~field_entry_t() {
+    _clean_up();
+}
+
+void gff_t::field_entry_t::_clean_up() {
+}
+
+int32_t gff_t::field_entry_t::field_data_offset_value() {
+    if (f_field_data_offset_value)
+        return m_field_data_offset_value;
+    f_field_data_offset_value = true;
+    n_field_data_offset_value = true;
+    if (is_complex_type()) {
+        n_field_data_offset_value = false;
+        m_field_data_offset_value = _root()->file()->gff3()->header()->field_data_offset() + data_or_offset();
+    }
+    return m_field_data_offset_value;
+}
+
+bool gff_t::field_entry_t::is_complex_type() {
+    if (f_is_complex_type)
+        return m_is_complex_type;
+    f_is_complex_type = true;
+    m_is_complex_type =  ((field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT64) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT64) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_DOUBLE) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_STRING) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_RESREF) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_LOCALIZED_STRING) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_BINARY) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_VECTOR4) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_VECTOR3)) ;
+    return m_is_complex_type;
+}
+
+bool gff_t::field_entry_t::is_list_type() {
+    if (f_is_list_type)
+        return m_is_list_type;
+    f_is_list_type = true;
+    m_is_list_type = field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_LIST;
+    return m_is_list_type;
+}
+
+bool gff_t::field_entry_t::is_simple_type() {
+    if (f_is_simple_type)
+        return m_is_simple_type;
+    f_is_simple_type = true;
+    m_is_simple_type =  ((field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT8) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT8) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT16) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT16) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT32) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT32) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_SINGLE) || (field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_STR_REF)) ;
+    return m_is_simple_type;
+}
+
+bool gff_t::field_entry_t::is_struct_type() {
+    if (f_is_struct_type)
+        return m_is_struct_type;
+    f_is_struct_type = true;
+    m_is_struct_type = field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_STRUCT;
+    return m_is_struct_type;
+}
+
+int32_t gff_t::field_entry_t::list_indices_offset_value() {
+    if (f_list_indices_offset_value)
+        return m_list_indices_offset_value;
+    f_list_indices_offset_value = true;
+    n_list_indices_offset_value = true;
+    if (is_list_type()) {
+        n_list_indices_offset_value = false;
+        m_list_indices_offset_value = _root()->file()->gff3()->header()->list_indices_offset() + data_or_offset();
+    }
+    return m_list_indices_offset_value;
+}
+
+uint32_t gff_t::field_entry_t::struct_index_value() {
+    if (f_struct_index_value)
+        return m_struct_index_value;
+    f_struct_index_value = true;
+    n_struct_index_value = true;
+    if (is_struct_type()) {
+        n_struct_index_value = false;
+        m_struct_index_value = data_or_offset();
+    }
+    return m_struct_index_value;
+}
+
+gff_t::field_indices_array_t::field_indices_array_t(kaitai::kstream* p__io, gff_t::gff3_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    m_indices = 0;
+
+    try {
+        _read();
+    } catch(...) {
+        _clean_up();
+        throw;
+    }
+}
+
+void gff_t::field_indices_array_t::_read() {
+    m_indices = new std::vector<uint32_t>();
+    const int l_indices = _root()->file()->gff3()->header()->field_indices_count();
+    for (int i = 0; i < l_indices; i++) {
+        m_indices->push_back(m__io->read_u4le());
+    }
+}
+
+gff_t::field_indices_array_t::~field_indices_array_t() {
+    _clean_up();
+}
+
+void gff_t::field_indices_array_t::_clean_up() {
+    if (m_indices) {
+        delete m_indices; m_indices = 0;
+    }
+}
+
+gff_t::gff3_after_aurora_t::gff3_after_aurora_t(kaitai::kstream* p__io, gff_t::gff_union_file_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
     m_header = 0;
     m_field_array = 0;
     m_field_data = 0;
@@ -56,15 +244,15 @@ gff_t::gff_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, gff_t* p__root)
     }
 }
 
-void gff_t::_read() {
-    m_header = new gff_header_t(m__io, this, m__root);
+void gff_t::gff3_after_aurora_t::_read() {
+    m_header = new gff_header_tail_t(m__io, this, m__root);
 }
 
-gff_t::~gff_t() {
+gff_t::gff3_after_aurora_t::~gff3_after_aurora_t() {
     _clean_up();
 }
 
-void gff_t::_clean_up() {
+void gff_t::gff3_after_aurora_t::_clean_up() {
     if (m_header) {
         delete m_header; m_header = 0;
     }
@@ -105,10 +293,109 @@ void gff_t::_clean_up() {
     }
 }
 
-gff_t::field_array_t::field_array_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+gff_t::field_array_t* gff_t::gff3_after_aurora_t::field_array() {
+    if (f_field_array)
+        return m_field_array;
+    f_field_array = true;
+    n_field_array = true;
+    if (header()->field_count() > 0) {
+        n_field_array = false;
+        std::streampos _pos = m__io->pos();
+        m__io->seek(header()->field_offset());
+        m_field_array = new field_array_t(m__io, this, m__root);
+        m__io->seek(_pos);
+    }
+    return m_field_array;
+}
+
+gff_t::field_data_t* gff_t::gff3_after_aurora_t::field_data() {
+    if (f_field_data)
+        return m_field_data;
+    f_field_data = true;
+    n_field_data = true;
+    if (header()->field_data_count() > 0) {
+        n_field_data = false;
+        std::streampos _pos = m__io->pos();
+        m__io->seek(header()->field_data_offset());
+        m_field_data = new field_data_t(m__io, this, m__root);
+        m__io->seek(_pos);
+    }
+    return m_field_data;
+}
+
+gff_t::field_indices_array_t* gff_t::gff3_after_aurora_t::field_indices_array() {
+    if (f_field_indices_array)
+        return m_field_indices_array;
+    f_field_indices_array = true;
+    n_field_indices_array = true;
+    if (header()->field_indices_count() > 0) {
+        n_field_indices_array = false;
+        std::streampos _pos = m__io->pos();
+        m__io->seek(header()->field_indices_offset());
+        m_field_indices_array = new field_indices_array_t(m__io, this, m__root);
+        m__io->seek(_pos);
+    }
+    return m_field_indices_array;
+}
+
+gff_t::label_array_t* gff_t::gff3_after_aurora_t::label_array() {
+    if (f_label_array)
+        return m_label_array;
+    f_label_array = true;
+    n_label_array = true;
+    if (header()->label_count() > 0) {
+        n_label_array = false;
+        std::streampos _pos = m__io->pos();
+        m__io->seek(header()->label_offset());
+        m_label_array = new label_array_t(m__io, this, m__root);
+        m__io->seek(_pos);
+    }
+    return m_label_array;
+}
+
+gff_t::list_indices_array_t* gff_t::gff3_after_aurora_t::list_indices_array() {
+    if (f_list_indices_array)
+        return m_list_indices_array;
+    f_list_indices_array = true;
+    n_list_indices_array = true;
+    if (header()->list_indices_count() > 0) {
+        n_list_indices_array = false;
+        std::streampos _pos = m__io->pos();
+        m__io->seek(header()->list_indices_offset());
+        m_list_indices_array = new list_indices_array_t(m__io, this, m__root);
+        m__io->seek(_pos);
+    }
+    return m_list_indices_array;
+}
+
+gff_t::resolved_struct_t* gff_t::gff3_after_aurora_t::root_struct_resolved() {
+    if (f_root_struct_resolved)
+        return m_root_struct_resolved;
+    f_root_struct_resolved = true;
+    m_root_struct_resolved = new resolved_struct_t(0, m__io, this, m__root);
+    return m_root_struct_resolved;
+}
+
+gff_t::struct_array_t* gff_t::gff3_after_aurora_t::struct_array() {
+    if (f_struct_array)
+        return m_struct_array;
+    f_struct_array = true;
+    n_struct_array = true;
+    if (header()->struct_count() > 0) {
+        n_struct_array = false;
+        std::streampos _pos = m__io->pos();
+        m__io->seek(header()->struct_offset());
+        m_struct_array = new struct_array_t(m__io, this, m__root);
+        m__io->seek(_pos);
+    }
+    return m_struct_array;
+}
+
+gff_t::gff4_after_aurora_t::gff4_after_aurora_t(uint32_t p_aurora_version, kaitai::kstream* p__io, kaitai::kstruct* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
-    m_entries = 0;
+    m_aurora_version = p_aurora_version;
+    m_struct_templates = 0;
 
     try {
         _read();
@@ -118,30 +405,51 @@ gff_t::field_array_t::field_array_t(kaitai::kstream* p__io, gff_t* p__parent, gf
     }
 }
 
-void gff_t::field_array_t::_read() {
-    m_entries = new std::vector<field_entry_t*>();
-    const int l_entries = _root()->header()->field_count();
-    for (int i = 0; i < l_entries; i++) {
-        m_entries->push_back(new field_entry_t(m__io, this, m__root));
+void gff_t::gff4_after_aurora_t::_read() {
+    m_platform_id = m__io->read_u4be();
+    m_file_type = m__io->read_u4be();
+    m_type_version = m__io->read_u4be();
+    m_num_struct_templates = m__io->read_u4le();
+    n_string_count = true;
+    if (aurora_version() == 1446260273) {
+        n_string_count = false;
+        m_string_count = m__io->read_u4le();
     }
+    n_string_offset = true;
+    if (aurora_version() == 1446260273) {
+        n_string_offset = false;
+        m_string_offset = m__io->read_u4le();
+    }
+    m_data_offset = m__io->read_u4le();
+    m_struct_templates = new std::vector<gff4_struct_template_header_t*>();
+    const int l_struct_templates = num_struct_templates();
+    for (int i = 0; i < l_struct_templates; i++) {
+        m_struct_templates->push_back(new gff4_struct_template_header_t(m__io, this, m__root));
+    }
+    m_tail = m__io->read_bytes_full();
 }
 
-gff_t::field_array_t::~field_array_t() {
+gff_t::gff4_after_aurora_t::~gff4_after_aurora_t() {
     _clean_up();
 }
 
-void gff_t::field_array_t::_clean_up() {
-    if (m_entries) {
-        for (std::vector<field_entry_t*>::iterator it = m_entries->begin(); it != m_entries->end(); ++it) {
+void gff_t::gff4_after_aurora_t::_clean_up() {
+    if (!n_string_count) {
+    }
+    if (!n_string_offset) {
+    }
+    if (m_struct_templates) {
+        for (std::vector<gff4_struct_template_header_t*>::iterator it = m_struct_templates->begin(); it != m_struct_templates->end(); ++it) {
             delete *it;
         }
-        delete m_entries; m_entries = 0;
+        delete m_struct_templates; m_struct_templates = 0;
     }
 }
 
-gff_t::field_data_t::field_data_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+gff_t::gff4_file_t::gff4_file_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
+    m_gff4 = 0;
 
     try {
         _read();
@@ -151,27 +459,25 @@ gff_t::field_data_t::field_data_t(kaitai::kstream* p__io, gff_t* p__parent, gff_
     }
 }
 
-void gff_t::field_data_t::_read() {
-    m_raw_data = m__io->read_bytes(_root()->header()->field_data_count());
+void gff_t::gff4_file_t::_read() {
+    m_aurora_magic = m__io->read_u4be();
+    m_aurora_version = m__io->read_u4be();
+    m_gff4 = new gff4_after_aurora_t(aurora_version(), m__io, this, m__root);
 }
 
-gff_t::field_data_t::~field_data_t() {
+gff_t::gff4_file_t::~gff4_file_t() {
     _clean_up();
 }
 
-void gff_t::field_data_t::_clean_up() {
+void gff_t::gff4_file_t::_clean_up() {
+    if (m_gff4) {
+        delete m_gff4; m_gff4 = 0;
+    }
 }
 
-gff_t::field_entry_t::field_entry_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+gff_t::gff4_struct_template_header_t::gff4_struct_template_header_t(kaitai::kstream* p__io, gff_t::gff4_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
-    f_field_data_offset_value = false;
-    f_is_complex_type = false;
-    f_is_list_type = false;
-    f_is_simple_type = false;
-    f_is_struct_type = false;
-    f_list_indices_offset_value = false;
-    f_struct_index_value = false;
 
     try {
         _read();
@@ -181,119 +487,21 @@ gff_t::field_entry_t::field_entry_t(kaitai::kstream* p__io, kaitai::kstruct* p__
     }
 }
 
-void gff_t::field_entry_t::_read() {
-    m_field_type = static_cast<gff_t::gff_field_type_t>(m__io->read_u4le());
-    m_label_index = m__io->read_u4le();
-    m_data_or_offset = m__io->read_u4le();
+void gff_t::gff4_struct_template_header_t::_read() {
+    m_struct_label = m__io->read_u4be();
+    m_field_count = m__io->read_u4le();
+    m_field_offset = m__io->read_u4le();
+    m_struct_size = m__io->read_u4le();
 }
 
-gff_t::field_entry_t::~field_entry_t() {
+gff_t::gff4_struct_template_header_t::~gff4_struct_template_header_t() {
     _clean_up();
 }
 
-void gff_t::field_entry_t::_clean_up() {
+void gff_t::gff4_struct_template_header_t::_clean_up() {
 }
 
-int32_t gff_t::field_entry_t::field_data_offset_value() {
-    if (f_field_data_offset_value)
-        return m_field_data_offset_value;
-    f_field_data_offset_value = true;
-    n_field_data_offset_value = true;
-    if (is_complex_type()) {
-        n_field_data_offset_value = false;
-        m_field_data_offset_value = _root()->header()->field_data_offset() + data_or_offset();
-    }
-    return m_field_data_offset_value;
-}
-
-bool gff_t::field_entry_t::is_complex_type() {
-    if (f_is_complex_type)
-        return m_is_complex_type;
-    f_is_complex_type = true;
-    m_is_complex_type =  ((field_type() == gff_t::GFF_FIELD_TYPE_UINT64) || (field_type() == gff_t::GFF_FIELD_TYPE_INT64) || (field_type() == gff_t::GFF_FIELD_TYPE_DOUBLE) || (field_type() == gff_t::GFF_FIELD_TYPE_STRING) || (field_type() == gff_t::GFF_FIELD_TYPE_RESREF) || (field_type() == gff_t::GFF_FIELD_TYPE_LOCALIZED_STRING) || (field_type() == gff_t::GFF_FIELD_TYPE_BINARY) || (field_type() == gff_t::GFF_FIELD_TYPE_VECTOR4) || (field_type() == gff_t::GFF_FIELD_TYPE_VECTOR3)) ;
-    return m_is_complex_type;
-}
-
-bool gff_t::field_entry_t::is_list_type() {
-    if (f_is_list_type)
-        return m_is_list_type;
-    f_is_list_type = true;
-    m_is_list_type = field_type() == gff_t::GFF_FIELD_TYPE_LIST;
-    return m_is_list_type;
-}
-
-bool gff_t::field_entry_t::is_simple_type() {
-    if (f_is_simple_type)
-        return m_is_simple_type;
-    f_is_simple_type = true;
-    m_is_simple_type =  ((field_type() == gff_t::GFF_FIELD_TYPE_UINT8) || (field_type() == gff_t::GFF_FIELD_TYPE_INT8) || (field_type() == gff_t::GFF_FIELD_TYPE_UINT16) || (field_type() == gff_t::GFF_FIELD_TYPE_INT16) || (field_type() == gff_t::GFF_FIELD_TYPE_UINT32) || (field_type() == gff_t::GFF_FIELD_TYPE_INT32) || (field_type() == gff_t::GFF_FIELD_TYPE_SINGLE) || (field_type() == gff_t::GFF_FIELD_TYPE_STR_REF)) ;
-    return m_is_simple_type;
-}
-
-bool gff_t::field_entry_t::is_struct_type() {
-    if (f_is_struct_type)
-        return m_is_struct_type;
-    f_is_struct_type = true;
-    m_is_struct_type = field_type() == gff_t::GFF_FIELD_TYPE_STRUCT;
-    return m_is_struct_type;
-}
-
-int32_t gff_t::field_entry_t::list_indices_offset_value() {
-    if (f_list_indices_offset_value)
-        return m_list_indices_offset_value;
-    f_list_indices_offset_value = true;
-    n_list_indices_offset_value = true;
-    if (is_list_type()) {
-        n_list_indices_offset_value = false;
-        m_list_indices_offset_value = _root()->header()->list_indices_offset() + data_or_offset();
-    }
-    return m_list_indices_offset_value;
-}
-
-uint32_t gff_t::field_entry_t::struct_index_value() {
-    if (f_struct_index_value)
-        return m_struct_index_value;
-    f_struct_index_value = true;
-    n_struct_index_value = true;
-    if (is_struct_type()) {
-        n_struct_index_value = false;
-        m_struct_index_value = data_or_offset();
-    }
-    return m_struct_index_value;
-}
-
-gff_t::field_indices_array_t::field_indices_array_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
-    m__parent = p__parent;
-    m__root = p__root;
-    m_indices = 0;
-
-    try {
-        _read();
-    } catch(...) {
-        _clean_up();
-        throw;
-    }
-}
-
-void gff_t::field_indices_array_t::_read() {
-    m_indices = new std::vector<uint32_t>();
-    const int l_indices = _root()->header()->field_indices_count();
-    for (int i = 0; i < l_indices; i++) {
-        m_indices->push_back(m__io->read_u4le());
-    }
-}
-
-gff_t::field_indices_array_t::~field_indices_array_t() {
-    _clean_up();
-}
-
-void gff_t::field_indices_array_t::_clean_up() {
-    if (m_indices) {
-        delete m_indices; m_indices = 0;
-    }
-}
-
-gff_t::gff_header_t::gff_header_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+gff_t::gff_header_tail_t::gff_header_tail_t(kaitai::kstream* p__io, gff_t::gff3_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
 
@@ -305,9 +513,7 @@ gff_t::gff_header_t::gff_header_t(kaitai::kstream* p__io, gff_t* p__parent, gff_
     }
 }
 
-void gff_t::gff_header_t::_read() {
-    m_file_type = kaitai::kstream::bytes_to_str(m__io->read_bytes(4), "ASCII");
-    m_file_version = kaitai::kstream::bytes_to_str(m__io->read_bytes(4), "ASCII");
+void gff_t::gff_header_tail_t::_read() {
     m_struct_offset = m__io->read_u4le();
     m_struct_count = m__io->read_u4le();
     m_field_offset = m__io->read_u4le();
@@ -322,14 +528,60 @@ void gff_t::gff_header_t::_read() {
     m_list_indices_count = m__io->read_u4le();
 }
 
-gff_t::gff_header_t::~gff_header_t() {
+gff_t::gff_header_tail_t::~gff_header_tail_t() {
     _clean_up();
 }
 
-void gff_t::gff_header_t::_clean_up() {
+void gff_t::gff_header_tail_t::_clean_up() {
 }
 
-gff_t::label_array_t::label_array_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+gff_t::gff_union_file_t::gff_union_file_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    m_gff3 = 0;
+    m_gff4 = 0;
+
+    try {
+        _read();
+    } catch(...) {
+        _clean_up();
+        throw;
+    }
+}
+
+void gff_t::gff_union_file_t::_read() {
+    m_aurora_magic = m__io->read_u4be();
+    m_aurora_version = m__io->read_u4be();
+    n_gff3 = true;
+    if ( ((aurora_version() != 1446260272) && (aurora_version() != 1446260273)) ) {
+        n_gff3 = false;
+        m_gff3 = new gff3_after_aurora_t(m__io, this, m__root);
+    }
+    n_gff4 = true;
+    if ( ((aurora_version() == 1446260272) || (aurora_version() == 1446260273)) ) {
+        n_gff4 = false;
+        m_gff4 = new gff4_after_aurora_t(aurora_version(), m__io, this, m__root);
+    }
+}
+
+gff_t::gff_union_file_t::~gff_union_file_t() {
+    _clean_up();
+}
+
+void gff_t::gff_union_file_t::_clean_up() {
+    if (!n_gff3) {
+        if (m_gff3) {
+            delete m_gff3; m_gff3 = 0;
+        }
+    }
+    if (!n_gff4) {
+        if (m_gff4) {
+            delete m_gff4; m_gff4 = 0;
+        }
+    }
+}
+
+gff_t::label_array_t::label_array_t(kaitai::kstream* p__io, gff_t::gff3_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
     m_labels = 0;
@@ -344,7 +596,7 @@ gff_t::label_array_t::label_array_t(kaitai::kstream* p__io, gff_t* p__parent, gf
 
 void gff_t::label_array_t::_read() {
     m_labels = new std::vector<label_entry_t*>();
-    const int l_labels = _root()->header()->label_count();
+    const int l_labels = _root()->file()->gff3()->header()->label_count();
     for (int i = 0; i < l_labels; i++) {
         m_labels->push_back(new label_entry_t(m__io, this, m__root));
     }
@@ -441,7 +693,7 @@ void gff_t::list_entry_t::_clean_up() {
     }
 }
 
-gff_t::list_indices_array_t::list_indices_array_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+gff_t::list_indices_array_t::list_indices_array_t(kaitai::kstream* p__io, gff_t::gff3_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
 
@@ -454,7 +706,7 @@ gff_t::list_indices_array_t::list_indices_array_t(kaitai::kstream* p__io, gff_t*
 }
 
 void gff_t::list_indices_array_t::_read() {
-    m_raw_data = m__io->read_bytes(_root()->header()->list_indices_count());
+    m_raw_data = m__io->read_bytes(_root()->file()->gff3()->header()->list_indices_count());
 }
 
 gff_t::list_indices_array_t::~list_indices_array_t() {
@@ -606,7 +858,7 @@ gff_t::field_entry_t* gff_t::resolved_field_t::entry() {
         return m_entry;
     f_entry = true;
     std::streampos _pos = m__io->pos();
-    m__io->seek(_root()->header()->field_offset() + field_index() * 12);
+    m__io->seek(_root()->file()->gff3()->header()->field_offset() + field_index() * 12);
     m_entry = new field_entry_t(m__io, this, m__root);
     m__io->seek(_pos);
     return m_entry;
@@ -616,7 +868,7 @@ int32_t gff_t::resolved_field_t::field_entry_pos() {
     if (f_field_entry_pos)
         return m_field_entry_pos;
     f_field_entry_pos = true;
-    m_field_entry_pos = _root()->header()->field_offset() + field_index() * 12;
+    m_field_entry_pos = _root()->file()->gff3()->header()->field_offset() + field_index() * 12;
     return m_field_entry_pos;
 }
 
@@ -625,7 +877,7 @@ gff_t::label_entry_terminated_t* gff_t::resolved_field_t::label() {
         return m_label;
     f_label = true;
     std::streampos _pos = m__io->pos();
-    m__io->seek(_root()->header()->label_offset() + entry()->label_index() * 16);
+    m__io->seek(_root()->file()->gff3()->header()->label_offset() + entry()->label_index() * 16);
     m_label = new label_entry_terminated_t(m__io, this, m__root);
     m__io->seek(_pos);
     return m_label;
@@ -636,10 +888,10 @@ gff_t::list_entry_t* gff_t::resolved_field_t::list_entry() {
         return m_list_entry;
     f_list_entry = true;
     n_list_entry = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_LIST) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_LIST) {
         n_list_entry = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->list_indices_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->list_indices_offset() + entry()->data_or_offset());
         m_list_entry = new list_entry_t(m__io, this, m__root);
         m__io->seek(_pos);
     }
@@ -651,7 +903,7 @@ std::vector<gff_t::resolved_struct_t*>* gff_t::resolved_field_t::list_structs() 
         return m_list_structs;
     f_list_structs = true;
     n_list_structs = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_LIST) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_LIST) {
         n_list_structs = false;
         m_list_structs = new std::vector<resolved_struct_t*>();
         const int l_list_structs = list_entry()->num_struct_indices();
@@ -667,10 +919,10 @@ bioware_common_t::bioware_binary_data_t* gff_t::resolved_field_t::value_binary()
         return m_value_binary;
     f_value_binary = true;
     n_value_binary = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_BINARY) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_BINARY) {
         n_value_binary = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_binary = new bioware_common_t::bioware_binary_data_t(m__io);
         m__io->seek(_pos);
     }
@@ -682,10 +934,10 @@ double gff_t::resolved_field_t::value_double() {
         return m_value_double;
     f_value_double = true;
     n_value_double = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_DOUBLE) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_DOUBLE) {
         n_value_double = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_double = m__io->read_f8le();
         m__io->seek(_pos);
     }
@@ -697,7 +949,7 @@ int16_t gff_t::resolved_field_t::value_int16() {
         return m_value_int16;
     f_value_int16 = true;
     n_value_int16 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_INT16) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT16) {
         n_value_int16 = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -712,7 +964,7 @@ int32_t gff_t::resolved_field_t::value_int32() {
         return m_value_int32;
     f_value_int32 = true;
     n_value_int32 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_INT32) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT32) {
         n_value_int32 = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -727,10 +979,10 @@ int64_t gff_t::resolved_field_t::value_int64() {
         return m_value_int64;
     f_value_int64 = true;
     n_value_int64 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_INT64) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT64) {
         n_value_int64 = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_int64 = m__io->read_s8le();
         m__io->seek(_pos);
     }
@@ -742,7 +994,7 @@ int8_t gff_t::resolved_field_t::value_int8() {
         return m_value_int8;
     f_value_int8 = true;
     n_value_int8 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_INT8) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_INT8) {
         n_value_int8 = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -757,10 +1009,10 @@ bioware_common_t::bioware_locstring_t* gff_t::resolved_field_t::value_localized_
         return m_value_localized_string;
     f_value_localized_string = true;
     n_value_localized_string = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_LOCALIZED_STRING) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_LOCALIZED_STRING) {
         n_value_localized_string = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_localized_string = new bioware_common_t::bioware_locstring_t(m__io);
         m__io->seek(_pos);
     }
@@ -772,10 +1024,10 @@ bioware_common_t::bioware_resref_t* gff_t::resolved_field_t::value_resref() {
         return m_value_resref;
     f_value_resref = true;
     n_value_resref = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_RESREF) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_RESREF) {
         n_value_resref = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_resref = new bioware_common_t::bioware_resref_t(m__io);
         m__io->seek(_pos);
     }
@@ -787,7 +1039,7 @@ float gff_t::resolved_field_t::value_single() {
         return m_value_single;
     f_value_single = true;
     n_value_single = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_SINGLE) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_SINGLE) {
         n_value_single = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -802,7 +1054,7 @@ uint32_t gff_t::resolved_field_t::value_str_ref() {
         return m_value_str_ref;
     f_value_str_ref = true;
     n_value_str_ref = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_STR_REF) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_STR_REF) {
         n_value_str_ref = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -817,10 +1069,10 @@ bioware_common_t::bioware_cexo_string_t* gff_t::resolved_field_t::value_string()
         return m_value_string;
     f_value_string = true;
     n_value_string = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_STRING) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_STRING) {
         n_value_string = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_string = new bioware_common_t::bioware_cexo_string_t(m__io);
         m__io->seek(_pos);
     }
@@ -832,7 +1084,7 @@ gff_t::resolved_struct_t* gff_t::resolved_field_t::value_struct() {
         return m_value_struct;
     f_value_struct = true;
     n_value_struct = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_STRUCT) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_STRUCT) {
         n_value_struct = false;
         m_value_struct = new resolved_struct_t(entry()->data_or_offset(), m__io, this, m__root);
     }
@@ -844,7 +1096,7 @@ uint16_t gff_t::resolved_field_t::value_uint16() {
         return m_value_uint16;
     f_value_uint16 = true;
     n_value_uint16 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_UINT16) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT16) {
         n_value_uint16 = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -859,7 +1111,7 @@ uint32_t gff_t::resolved_field_t::value_uint32() {
         return m_value_uint32;
     f_value_uint32 = true;
     n_value_uint32 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_UINT32) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT32) {
         n_value_uint32 = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -874,10 +1126,10 @@ uint64_t gff_t::resolved_field_t::value_uint64() {
         return m_value_uint64;
     f_value_uint64 = true;
     n_value_uint64 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_UINT64) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT64) {
         n_value_uint64 = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_uint64 = m__io->read_u8le();
         m__io->seek(_pos);
     }
@@ -889,7 +1141,7 @@ uint8_t gff_t::resolved_field_t::value_uint8() {
         return m_value_uint8;
     f_value_uint8 = true;
     n_value_uint8 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_UINT8) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_UINT8) {
         n_value_uint8 = false;
         std::streampos _pos = m__io->pos();
         m__io->seek(field_entry_pos() + 8);
@@ -904,10 +1156,10 @@ bioware_common_t::bioware_vector3_t* gff_t::resolved_field_t::value_vector3() {
         return m_value_vector3;
     f_value_vector3 = true;
     n_value_vector3 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_VECTOR3) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_VECTOR3) {
         n_value_vector3 = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_vector3 = new bioware_common_t::bioware_vector3_t(m__io);
         m__io->seek(_pos);
     }
@@ -919,10 +1171,10 @@ bioware_common_t::bioware_vector4_t* gff_t::resolved_field_t::value_vector4() {
         return m_value_vector4;
     f_value_vector4 = true;
     n_value_vector4 = true;
-    if (entry()->field_type() == gff_t::GFF_FIELD_TYPE_VECTOR4) {
+    if (entry()->field_type() == bioware_gff_common_t::GFF_FIELD_TYPE_VECTOR4) {
         n_value_vector4 = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_data_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_data_offset() + entry()->data_or_offset());
         m_value_vector4 = new bioware_common_t::bioware_vector4_t(m__io);
         m__io->seek(_pos);
     }
@@ -988,7 +1240,7 @@ gff_t::struct_entry_t* gff_t::resolved_struct_t::entry() {
         return m_entry;
     f_entry = true;
     std::streampos _pos = m__io->pos();
-    m__io->seek(_root()->header()->struct_offset() + struct_index() * 12);
+    m__io->seek(_root()->file()->gff3()->header()->struct_offset() + struct_index() * 12);
     m_entry = new struct_entry_t(m__io, this, m__root);
     m__io->seek(_pos);
     return m_entry;
@@ -1002,7 +1254,7 @@ std::vector<uint32_t>* gff_t::resolved_struct_t::field_indices() {
     if (entry()->field_count() > 1) {
         n_field_indices = false;
         std::streampos _pos = m__io->pos();
-        m__io->seek(_root()->header()->field_indices_offset() + entry()->data_or_offset());
+        m__io->seek(_root()->file()->gff3()->header()->field_indices_offset() + entry()->data_or_offset());
         m_field_indices = new std::vector<uint32_t>();
         const int l_field_indices = entry()->field_count();
         for (int i = 0; i < l_field_indices; i++) {
@@ -1041,7 +1293,7 @@ gff_t::resolved_field_t* gff_t::resolved_struct_t::single_field() {
     return m_single_field;
 }
 
-gff_t::struct_array_t::struct_array_t(kaitai::kstream* p__io, gff_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
+gff_t::struct_array_t::struct_array_t(kaitai::kstream* p__io, gff_t::gff3_after_aurora_t* p__parent, gff_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
     m_entries = 0;
@@ -1056,7 +1308,7 @@ gff_t::struct_array_t::struct_array_t(kaitai::kstream* p__io, gff_t* p__parent, 
 
 void gff_t::struct_array_t::_read() {
     m_entries = new std::vector<struct_entry_t*>();
-    const int l_entries = _root()->header()->struct_count();
+    const int l_entries = _root()->file()->gff3()->header()->struct_count();
     for (int i = 0; i < l_entries; i++) {
         m_entries->push_back(new struct_entry_t(m__io, this, m__root));
     }
@@ -1142,102 +1394,4 @@ uint32_t gff_t::struct_entry_t::single_field_index() {
         m_single_field_index = data_or_offset();
     }
     return m_single_field_index;
-}
-
-gff_t::field_array_t* gff_t::field_array() {
-    if (f_field_array)
-        return m_field_array;
-    f_field_array = true;
-    n_field_array = true;
-    if (header()->field_count() > 0) {
-        n_field_array = false;
-        std::streampos _pos = m__io->pos();
-        m__io->seek(header()->field_offset());
-        m_field_array = new field_array_t(m__io, this, m__root);
-        m__io->seek(_pos);
-    }
-    return m_field_array;
-}
-
-gff_t::field_data_t* gff_t::field_data() {
-    if (f_field_data)
-        return m_field_data;
-    f_field_data = true;
-    n_field_data = true;
-    if (header()->field_data_count() > 0) {
-        n_field_data = false;
-        std::streampos _pos = m__io->pos();
-        m__io->seek(header()->field_data_offset());
-        m_field_data = new field_data_t(m__io, this, m__root);
-        m__io->seek(_pos);
-    }
-    return m_field_data;
-}
-
-gff_t::field_indices_array_t* gff_t::field_indices_array() {
-    if (f_field_indices_array)
-        return m_field_indices_array;
-    f_field_indices_array = true;
-    n_field_indices_array = true;
-    if (header()->field_indices_count() > 0) {
-        n_field_indices_array = false;
-        std::streampos _pos = m__io->pos();
-        m__io->seek(header()->field_indices_offset());
-        m_field_indices_array = new field_indices_array_t(m__io, this, m__root);
-        m__io->seek(_pos);
-    }
-    return m_field_indices_array;
-}
-
-gff_t::label_array_t* gff_t::label_array() {
-    if (f_label_array)
-        return m_label_array;
-    f_label_array = true;
-    n_label_array = true;
-    if (header()->label_count() > 0) {
-        n_label_array = false;
-        std::streampos _pos = m__io->pos();
-        m__io->seek(header()->label_offset());
-        m_label_array = new label_array_t(m__io, this, m__root);
-        m__io->seek(_pos);
-    }
-    return m_label_array;
-}
-
-gff_t::list_indices_array_t* gff_t::list_indices_array() {
-    if (f_list_indices_array)
-        return m_list_indices_array;
-    f_list_indices_array = true;
-    n_list_indices_array = true;
-    if (header()->list_indices_count() > 0) {
-        n_list_indices_array = false;
-        std::streampos _pos = m__io->pos();
-        m__io->seek(header()->list_indices_offset());
-        m_list_indices_array = new list_indices_array_t(m__io, this, m__root);
-        m__io->seek(_pos);
-    }
-    return m_list_indices_array;
-}
-
-gff_t::resolved_struct_t* gff_t::root_struct_resolved() {
-    if (f_root_struct_resolved)
-        return m_root_struct_resolved;
-    f_root_struct_resolved = true;
-    m_root_struct_resolved = new resolved_struct_t(0, m__io, this, m__root);
-    return m_root_struct_resolved;
-}
-
-gff_t::struct_array_t* gff_t::struct_array() {
-    if (f_struct_array)
-        return m_struct_array;
-    f_struct_array = true;
-    n_struct_array = true;
-    if (header()->struct_count() > 0) {
-        n_struct_array = false;
-        std::streampos _pos = m__io->pos();
-        m__io->seek(header()->struct_offset());
-        m_struct_array = new struct_array_t(m__io, this, m__root);
-        m__io->seek(_pos);
-    }
-    return m_struct_array;
 }

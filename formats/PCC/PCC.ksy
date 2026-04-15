@@ -7,6 +7,9 @@ meta:
   imports:
     - ../Common/bioware_common
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1: |
       Mass Effect PCC format; not part of KotOR k1_win_gog_swkotor.exe (Odyssey). Do not treat as K1 engine-grounded.
     legendary_explorer_wiki: https://github.com/ME3Tweaks/LegendaryExplorer/wiki/PCC-File-Format
@@ -16,6 +19,10 @@ meta:
     xoreos_upstream_note: |
       Upstream xoreos does not implement Mass Effect / Unreal-style PCC packages; there is no `*pcc*.cpp` reader to cite.
       This `.ksy` documents the LegendaryExplorer / ME3Tweaks ecosystem, not xoreos runtime code.
+    repo_coverage_pcc_row: |
+      Maintainer matrix row for this spec (explicit **not** xoreos Aurora): `docs/XOREOS_FORMAT_COVERAGE.md` — `formats/PCC/PCC.ksy` → Runtime/Tools/Docs **not** xoreos KotOR stack.
+    pykotor_upstream_note_pcc: |
+      `OpenKotOR/PyKotor` `master` has **no** `formats/pcc/` (or similarly named) package under `Libraries/PyKotor/src/pykotor/resource/formats/` — treat **ME3Tweaks LegendaryExplorer** wiki + UEE-derived tooling as the primary wire narrative for this spec.
 doc: |
   **PCC** (Mass Effect–era Unreal package): BioWare variant of UE packages — `file_header`, name/import/export
   tables, then export blobs. May be zlib/LZO chunked (`bioware_pcc_compression_codec` in `bioware_common`).
@@ -24,6 +31,8 @@ doc: |
 
 doc-ref:
   - "https://github.com/ME3Tweaks/LegendaryExplorer/wiki/PCC-File-Format ME3Tweaks — PCC file format"
+  - "https://github.com/ME3Tweaks/LegendaryExplorer/wiki/Package-Handling ME3Tweaks — Package handling (export/import tables, UE3-era BioWare packages)"
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/docs/XOREOS_FORMAT_COVERAGE.md In-tree — coverage matrix (PCC is out-of-xoreos Aurora scope; see table)"
 
 seq:
   - id: header

@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use IO::KaitaiStruct 0.011_000;
+use BiowareCommon;
 use Encode;
 
 ########################################################################

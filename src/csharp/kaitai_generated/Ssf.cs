@@ -10,11 +10,11 @@ namespace Kaitai
     /// Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
     /// 
     /// Binary Format:
-    /// - Header (12 bytes): File type signature, version, and offset to sounds array
-    /// - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
-    /// - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+    /// - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+    /// - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
     /// 
-    /// Total file size: 136 bytes (12 + 112 + 12)
+    /// Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+    /// of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
     /// 
     /// Sound Slots (in order):
     /// 0-5: Battle Cry 1-6
@@ -37,8 +37,8 @@ namespace Kaitai
     /// 27: Poisoned
     /// 
     /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
     /// </summary>
     public partial class Ssf : KaitaiStruct
     {
@@ -67,46 +67,6 @@ namespace Kaitai
                 throw new ValidationNotEqualError("V1.1", _fileVersion, m_io, "/seq/1");
             }
             _soundsOffset = m_io.ReadU4le();
-            if (!(_soundsOffset == 12))
-            {
-                throw new ValidationNotEqualError(12, _soundsOffset, m_io, "/seq/2");
-            }
-            _padding = new Padding(m_io, this, m_root);
-        }
-        public partial class Padding : KaitaiStruct
-        {
-            public static Padding FromFile(string fileName)
-            {
-                return new Padding(new KaitaiStream(fileName));
-            }
-
-            public Padding(KaitaiStream p__io, Ssf p__parent = null, Ssf p__root = null) : base(p__io)
-            {
-                m_parent = p__parent;
-                m_root = p__root;
-                _read();
-            }
-            private void _read()
-            {
-                _paddingBytes = new List<uint>();
-                for (var i = 0; i < 3; i++)
-                {
-                    _paddingBytes.Add(m_io.ReadU4le());
-                }
-            }
-            private List<uint> _paddingBytes;
-            private Ssf m_root;
-            private Ssf m_parent;
-
-            /// <summary>
-            /// Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
-            /// Total size: 12 bytes (3 * 4 bytes).
-            /// These bytes are unused but must be present for format compatibility.
-            /// Each padding byte should be 0xFFFFFFFF (4294967295).
-            /// </summary>
-            public List<uint> PaddingBytes { get { return _paddingBytes; } }
-            public Ssf M_Root { get { return m_root; } }
-            public Ssf M_Parent { get { return m_parent; } }
         }
         public partial class SoundArray : KaitaiStruct
         {
@@ -235,7 +195,6 @@ namespace Kaitai
         private string _fileType;
         private string _fileVersion;
         private uint _soundsOffset;
-        private Padding _padding;
         private Ssf m_root;
         private KaitaiStruct m_parent;
 
@@ -253,15 +212,10 @@ namespace Kaitai
 
         /// <summary>
         /// Byte offset to the sounds array from the beginning of the file.
-        /// Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
-        /// This field exists for format consistency, though it's always the same value.
+        /// KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+        /// field is a real offset; readers must seek here instead of assuming 12.
         /// </summary>
         public uint SoundsOffset { get { return _soundsOffset; } }
-
-        /// <summary>
-        /// Reserved padding bytes (12 bytes of 0xFFFFFFFF)
-        /// </summary>
-        public Padding Padding { get { return _padding; } }
         public Ssf M_Root { get { return m_root; } }
         public KaitaiStruct M_Parent { get { return m_parent; } }
     }

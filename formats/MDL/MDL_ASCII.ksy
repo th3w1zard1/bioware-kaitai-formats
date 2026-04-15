@@ -7,10 +7,17 @@ meta:
   encoding: UTF-8
   ks-version: 0.11
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
       note: "ASCII MDL is mod-tool interchange text, not loaded directly by k1_win_gog_swkotor.exe binary MDL parser."
-    pykotor_mdlops: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm
+    pykotor_mdlops: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L3916-L4698
     pykotor_wiki_mdl: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
+    xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
+    bioware_mdl_common_wire_enums: |
+      Binary MDL/MDX wire enums: `formats/Common/bioware_mdl_common.ksy` (`model_classification`, `node_type_value`, `controller_type`).
+      ASCII keyword integers in MDLOps are a **tooling** namespace; compare wiki binary section + Torlack binmdl for semantics.
 doc: |
   MDL ASCII format is a human-readable ASCII text representation of MDL (Model) binary files.
   Used by modding tools for easier editing than binary MDL format.
@@ -18,10 +25,21 @@ doc: |
   The ASCII format represents the model structure using plain text with keyword-based syntax.
   Lines are parsed sequentially, with keywords indicating sections, nodes, properties, and data arrays.
 
-  Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - ASCII MDL Format section
-  Reference: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:3916-4698 - readasciimdl function implementation
+  Repository policy: NWScript source (`.nss`) and other plaintext interchange (including ASCII MDL) are
+  documented in `.ksy` only where a line-oriented schema is useful for tooling; see `AGENTS.md` for the
+  full binary-vs-text scope rule.
 
-doc-ref: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#ascii-mdl-format
+  Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format — ASCII MDL Format section
+  Reference: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L3916-L4698 — `readasciimdl` (Perl; line band matches former PyKotor vendor drop)
+  Binary wire IDs (for cross-checking ASCII integers): PyKotor wiki binary MDL section, xoreos-docs Torlack `binmdl.html`,
+  and `formats/Common/bioware_mdl_common.ksy` (canonical enum tables; this ASCII spec does not duplicate them as local `enums:`).
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#ascii-mdl-format PyKotor wiki — ASCII MDL"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#binary-mdl-format PyKotor wiki — binary MDL (wire vs ASCII)"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl"
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/Common/bioware_mdl_common.ksy In-tree — shared MDL/MDX wire enums (cross-check ASCII numeric keywords)"
+  - "https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L3916-L4698 Community MDLOps — readasciimdl"
 
 seq:
   - id: lines
@@ -363,92 +381,3 @@ types:
         size-eos: true
         encoding: UTF-8
         doc: "Space-separated values (3 times column_count floats: value, in_tangent, out_tangent for each column)"
-
-enums:
-  node_type:
-    1: dummy
-    3: light
-    5: emitter
-    17: reference
-    33: trimesh
-    97: skinmesh
-    161: animmesh
-    289: danglymesh
-    545: aabb
-    2081: lightsaber
-
-  model_classification:
-    0: other
-    1: effect
-    2: tile
-    4: character
-    8: door
-    16: lightsaber
-    32: placeable
-    64: flyer
-
-  controller_type_common:
-    8: position
-    20: orientation
-    36: scale
-    132: alpha
-
-  controller_type_light:
-    76: color
-    88: radius
-    96: shadowradius
-    100: verticaldisplacement
-    140: multiplier
-
-  controller_type_emitter:
-    80: alpha_end
-    84: alpha_start
-    88: birthrate
-    92: bounce_co
-    96: combinetime
-    100: drag
-    104: fps
-    108: frame_end
-    112: frame_start
-    116: grav
-    120: life_exp
-    124: mass
-    128: p2p_bezier2
-    132: p2p_bezier3
-    136: particle_rot
-    140: randvel
-    144: size_start
-    148: size_end
-    152: size_start_y
-    156: size_end_y
-    160: spread
-    164: threshold
-    168: velocity
-    172: xsize
-    176: ysize
-    180: blurlength
-    184: lightning_delay
-    188: lightning_radius
-    192: lightning_scale
-    196: lightning_sub_div
-    200: lightningzigzag
-    216: alpha_mid
-    220: percent_start
-    224: percent_mid
-    228: percent_end
-    232: size_mid
-    236: size_mid_y
-    240: m_f_random_birth_rate
-    252: targetsize
-    256: numcontrolpts
-    260: controlptradius
-    264: controlptdelay
-    268: tangentspread
-    272: tangentlength
-    284: color_mid
-    380: color_end
-    392: color_start
-    502: detonate
-
-  controller_type_mesh:
-    100: selfillumcolor

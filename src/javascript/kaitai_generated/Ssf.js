@@ -14,11 +14,11 @@
  * Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
  * 
  * Binary Format:
- * - Header (12 bytes): File type signature, version, and offset to sounds array
- * - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
- * - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+ * - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+ * - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
  * 
- * Total file size: 136 bytes (12 + 112 + 12)
+ * Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+ * of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
  * 
  * Sound Slots (in order):
  * 0-5: Battle Cry 1-6
@@ -41,8 +41,8 @@
  * 27: Poisoned
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
  */
 
 var Ssf = (function() {
@@ -63,36 +63,7 @@ var Ssf = (function() {
       throw new KaitaiStream.ValidationNotEqualError("V1.1", this.fileVersion, this._io, "/seq/1");
     }
     this.soundsOffset = this._io.readU4le();
-    if (!(this.soundsOffset == 12)) {
-      throw new KaitaiStream.ValidationNotEqualError(12, this.soundsOffset, this._io, "/seq/2");
-    }
-    this.padding = new Padding(this._io, this, this._root);
   }
-
-  var Padding = Ssf.Padding = (function() {
-    function Padding(_io, _parent, _root) {
-      this._io = _io;
-      this._parent = _parent;
-      this._root = _root;
-
-      this._read();
-    }
-    Padding.prototype._read = function() {
-      this.paddingBytes = [];
-      for (var i = 0; i < 3; i++) {
-        this.paddingBytes.push(this._io.readU4le());
-      }
-    }
-
-    /**
-     * Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
-     * Total size: 12 bytes (3 * 4 bytes).
-     * These bytes are unused but must be present for format compatibility.
-     * Each padding byte should be 0xFFFFFFFF (4294967295).
-     */
-
-    return Padding;
-  })();
 
   var SoundArray = Ssf.SoundArray = (function() {
     function SoundArray(_io, _parent, _root) {
@@ -200,12 +171,8 @@ var Ssf = (function() {
 
   /**
    * Byte offset to the sounds array from the beginning of the file.
-   * Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
-   * This field exists for format consistency, though it's always the same value.
-   */
-
-  /**
-   * Reserved padding bytes (12 bytes of 0xFFFFFFFF)
+   * KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+   * field is a real offset; readers must seek here instead of assuming 12.
    */
 
   return Ssf;

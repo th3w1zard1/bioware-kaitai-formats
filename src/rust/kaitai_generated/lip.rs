@@ -11,25 +11,15 @@ use kaitai::*;
 use std::convert::{TryFrom, TryInto};
 use std::cell::{Ref, Cell, RefCell};
 use std::rc::{Rc, Weak};
+use super::bioware_common::BiowareCommon_BiowareLipVisemeId;
 
 /**
- * LIP (LIP Synchronization) files drive mouth animation for voiced dialogue in BioWare games.
- * Each file contains a compact series of keyframes that map timestamps to discrete viseme
- * (mouth shape) indices so that the engine can interpolate character lip movement while
- * playing the companion WAV audio line.
+ * **LIP** (lip sync): sorted `(timestamp_f32, viseme_u8)` keyframes (`LIP ` / `V1.0`). Viseme ids 0–15 map through
+ * `bioware_lip_viseme_id` in `bioware_common.ksy`. Pair with a **WAV** of matching duration.
  * 
- * LIP files are always binary and contain only animation data. They are paired with WAV
- * voice-over resources of identical duration; the LIP length field must match the WAV
- * playback time for glitch-free animation.
- * 
- * Keyframes are sorted chronologically and store a timestamp (float seconds) plus a
- * 1-byte viseme index (0-15). The format uses the 16-shape Preston Blair phoneme set.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LIP-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/lipreader.cpp:27-42
- * - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/lipfile.cpp
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LIPObject.ts:93-146
+ * xoreos does not ship a standalone `lipfile.cpp` reader — use PyKotor / reone / KotOR.js (`meta.xref`).
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip PyKotor wiki — LIP
+ * \sa https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L42 reone — LIPReader
  */
 
 #[derive(Default, Debug, Clone)]
@@ -129,80 +119,6 @@ impl Lip {
         self._io.borrow()
     }
 }
-#[derive(Debug, PartialEq, Clone)]
-pub enum Lip_LipShapes {
-    Neutral,
-    Ee,
-    Eh,
-    Ah,
-    Oh,
-    Ooh,
-    Y,
-    Sts,
-    Fv,
-    Ng,
-    Th,
-    Mpb,
-    Td,
-    Sh,
-    L,
-    Kg,
-    Unknown(i64),
-}
-
-impl TryFrom<i64> for Lip_LipShapes {
-    type Error = KError;
-    fn try_from(flag: i64) -> KResult<Lip_LipShapes> {
-        match flag {
-            0 => Ok(Lip_LipShapes::Neutral),
-            1 => Ok(Lip_LipShapes::Ee),
-            2 => Ok(Lip_LipShapes::Eh),
-            3 => Ok(Lip_LipShapes::Ah),
-            4 => Ok(Lip_LipShapes::Oh),
-            5 => Ok(Lip_LipShapes::Ooh),
-            6 => Ok(Lip_LipShapes::Y),
-            7 => Ok(Lip_LipShapes::Sts),
-            8 => Ok(Lip_LipShapes::Fv),
-            9 => Ok(Lip_LipShapes::Ng),
-            10 => Ok(Lip_LipShapes::Th),
-            11 => Ok(Lip_LipShapes::Mpb),
-            12 => Ok(Lip_LipShapes::Td),
-            13 => Ok(Lip_LipShapes::Sh),
-            14 => Ok(Lip_LipShapes::L),
-            15 => Ok(Lip_LipShapes::Kg),
-            _ => Ok(Lip_LipShapes::Unknown(flag)),
-        }
-    }
-}
-
-impl From<&Lip_LipShapes> for i64 {
-    fn from(v: &Lip_LipShapes) -> Self {
-        match *v {
-            Lip_LipShapes::Neutral => 0,
-            Lip_LipShapes::Ee => 1,
-            Lip_LipShapes::Eh => 2,
-            Lip_LipShapes::Ah => 3,
-            Lip_LipShapes::Oh => 4,
-            Lip_LipShapes::Ooh => 5,
-            Lip_LipShapes::Y => 6,
-            Lip_LipShapes::Sts => 7,
-            Lip_LipShapes::Fv => 8,
-            Lip_LipShapes::Ng => 9,
-            Lip_LipShapes::Th => 10,
-            Lip_LipShapes::Mpb => 11,
-            Lip_LipShapes::Td => 12,
-            Lip_LipShapes::Sh => 13,
-            Lip_LipShapes::L => 14,
-            Lip_LipShapes::Kg => 15,
-            Lip_LipShapes::Unknown(v) => v
-        }
-    }
-}
-
-impl Default for Lip_LipShapes {
-    fn default() -> Self { Lip_LipShapes::Unknown(0) }
-}
-
 
 /**
  * A single keyframe entry mapping a timestamp to a viseme (mouth shape).
@@ -216,7 +132,7 @@ pub struct Lip_KeyframeEntry {
     pub _parent: SharedType<Lip>,
     pub _self: SharedType<Self>,
     timestamp: RefCell<f32>,
-    shape: RefCell<Lip_LipShapes>,
+    shape: RefCell<BiowareCommon_BiowareLipVisemeId>,
     _io: RefCell<BytesReader>,
 }
 impl KStruct for Lip_KeyframeEntry {
@@ -255,11 +171,11 @@ impl Lip_KeyframeEntry {
 }
 
 /**
- * Viseme index (0-15) indicating which mouth shape to use at this timestamp.
- * Uses the 16-shape Preston Blair phoneme set. See lip_shapes enum for details.
+ * Viseme index (0–15). Canonical names: `formats/Common/bioware_common.ksy` →
+ * `bioware_lip_viseme_id` (PyKotor `LIPShape` / Preston Blair set).
  */
 impl Lip_KeyframeEntry {
-    pub fn shape(&self) -> Ref<'_, Lip_LipShapes> {
+    pub fn shape(&self) -> Ref<'_, BiowareCommon_BiowareLipVisemeId> {
         self.shape.borrow()
     }
 }

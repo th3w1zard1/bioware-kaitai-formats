@@ -20,7 +20,7 @@ ltr_t::ltr_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, ltr_t* p__root)
 void ltr_t::_read() {
     m_file_type = kaitai::kstream::bytes_to_str(m__io->read_bytes(4), "ASCII");
     m_file_version = kaitai::kstream::bytes_to_str(m__io->read_bytes(4), "ASCII");
-    m_letter_count = m__io->read_u1();
+    m_letter_count = static_cast<bioware_common_t::bioware_ltr_alphabet_length_t>(m__io->read_u1());
     m_single_letter_block = new letter_block_t(m__io, this, m__root);
     m_double_letter_blocks = new double_letter_blocks_array_t(m__io, this, m__root);
     m_triple_letter_blocks = new triple_letter_blocks_array_t(m__io, this, m__root);

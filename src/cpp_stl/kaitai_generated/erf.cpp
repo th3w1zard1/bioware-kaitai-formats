@@ -543,7 +543,7 @@ erf_t::resource_entry_t::resource_entry_t(kaitai::kstream* p__io, erf_t::resourc
 
 void erf_t::resource_entry_t::_read() {
     m_offset_to_data = m__io->read_u4le();
-    m_resource_size = m__io->read_u4le();
+    m_len_data = m__io->read_u4le();
 }
 
 erf_t::resource_entry_t::~resource_entry_t() {
@@ -561,7 +561,7 @@ std::string erf_t::resource_entry_t::data() {
     f_data = true;
     std::streampos _pos = m__io->pos();
     m__io->seek(offset_to_data());
-    m_data = m__io->read_bytes(resource_size());
+    m_data = m__io->read_bytes(len_data());
     m__io->seek(_pos);
     return m_data;
 }

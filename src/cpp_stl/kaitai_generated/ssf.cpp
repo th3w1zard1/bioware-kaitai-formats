@@ -6,7 +6,6 @@
 ssf_t::ssf_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, ssf_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root ? p__root : this;
-    m_padding = 0;
     m_sounds = 0;
     f_sounds = false;
 
@@ -28,10 +27,6 @@ void ssf_t::_read() {
         throw kaitai::validation_not_equal_error<std::string>(std::string("V1.1"), m_file_version, m__io, std::string("/seq/1"));
     }
     m_sounds_offset = m__io->read_u4le();
-    if (!(m_sounds_offset == 12)) {
-        throw kaitai::validation_not_equal_error<uint32_t>(12, m_sounds_offset, m__io, std::string("/seq/2"));
-    }
-    m_padding = new padding_t(m__io, this, m__root);
 }
 
 ssf_t::~ssf_t() {
@@ -39,44 +34,10 @@ ssf_t::~ssf_t() {
 }
 
 void ssf_t::_clean_up() {
-    if (m_padding) {
-        delete m_padding; m_padding = 0;
-    }
     if (f_sounds) {
         if (m_sounds) {
             delete m_sounds; m_sounds = 0;
         }
-    }
-}
-
-ssf_t::padding_t::padding_t(kaitai::kstream* p__io, ssf_t* p__parent, ssf_t* p__root) : kaitai::kstruct(p__io) {
-    m__parent = p__parent;
-    m__root = p__root;
-    m_padding_bytes = 0;
-
-    try {
-        _read();
-    } catch(...) {
-        _clean_up();
-        throw;
-    }
-}
-
-void ssf_t::padding_t::_read() {
-    m_padding_bytes = new std::vector<uint32_t>();
-    const int l_padding_bytes = 3;
-    for (int i = 0; i < l_padding_bytes; i++) {
-        m_padding_bytes->push_back(m__io->read_u4le());
-    }
-}
-
-ssf_t::padding_t::~padding_t() {
-    _clean_up();
-}
-
-void ssf_t::padding_t::_clean_up() {
-    if (m_padding_bytes) {
-        delete m_padding_bytes; m_padding_bytes = 0;
     }
 }
 

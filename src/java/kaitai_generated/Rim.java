@@ -21,14 +21,14 @@ import java.util.ArrayList;
  * - Standard RIM: Basic module template files
  * - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
  * 
- * Binary Format:
- * - Header (20 bytes): File type, version, resource count, offset to resource table
- * - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
- * - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
- * - Resource Data (variable size): Raw binary data for each resource
+ * Binary Format (KotOR / PyKotor):
+ * - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+ * - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+ * - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+ * - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
  * - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -369,7 +369,12 @@ public class Rim extends KaitaiStruct {
     }
     private void _read() {
         this.header = new RimHeader(this._io, this, _root);
-        this.extendedHeader = new RimExtendedHeader(this._io, this, _root);
+        if (header().offsetToResourceTable() == 0) {
+            this.gapBeforeKeyTableImplicit = this._io.readBytes(96);
+        }
+        if (header().offsetToResourceTable() != 0) {
+            this.gapBeforeKeyTableExplicit = this._io.readBytes(header().offsetToResourceTable() - 24);
+        }
         if (header().resourceCount() > 0) {
             this.resourceEntryTable = new ResourceEntryTable(this._io, this, _root);
         }
@@ -377,7 +382,10 @@ public class Rim extends KaitaiStruct {
 
     public void _fetchInstances() {
         this.header._fetchInstances();
-        this.extendedHeader._fetchInstances();
+        if (header().offsetToResourceTable() == 0) {
+        }
+        if (header().offsetToResourceTable() != 0) {
+        }
         if (header().resourceCount() > 0) {
             this.resourceEntryTable._fetchInstances();
         }
@@ -406,7 +414,7 @@ public class Rim extends KaitaiStruct {
             this.resourceType = Rim.XoreosFileTypeId.byId(this._io.readU4le());
             this.resourceId = this._io.readU4le();
             this.offsetToData = this._io.readU4le();
-            this.resourceSize = this._io.readU4le();
+            this.numData = this._io.readU4le();
         }
 
         public void _fetchInstances() {
@@ -427,7 +435,7 @@ public class Rim extends KaitaiStruct {
             long _pos = this._io.pos();
             this._io.seek(offsetToData());
             this.data = new ArrayList<Integer>();
-            for (int i = 0; i < resourceSize(); i++) {
+            for (int i = 0; i < numData(); i++) {
                 this.data.add(this._io.readU1());
             }
             this._io.seek(_pos);
@@ -437,7 +445,7 @@ public class Rim extends KaitaiStruct {
         private XoreosFileTypeId resourceType;
         private long resourceId;
         private long offsetToData;
-        private long resourceSize;
+        private long numData;
         private Rim _root;
         private Rim.ResourceEntryTable _parent;
 
@@ -469,10 +477,10 @@ public class Rim extends KaitaiStruct {
         public long offsetToData() { return offsetToData; }
 
         /**
-         * Size of resource data in bytes.
+         * Size of resource data in bytes (repeat count for raw `data` bytes).
          * Uncompressed size of the resource.
          */
-        public long resourceSize() { return resourceSize; }
+        public long numData() { return numData; }
         public Rim _root() { return _root; }
         public Rim.ResourceEntryTable _parent() { return _parent; }
     }
@@ -518,47 +526,6 @@ public class Rim extends KaitaiStruct {
         public Rim _root() { return _root; }
         public Rim _parent() { return _parent; }
     }
-    public static class RimExtendedHeader extends KaitaiStruct {
-        public static RimExtendedHeader fromFile(String fileName) throws IOException {
-            return new RimExtendedHeader(new ByteBufferKaitaiStream(fileName));
-        }
-
-        public RimExtendedHeader(KaitaiStream _io) {
-            this(_io, null, null);
-        }
-
-        public RimExtendedHeader(KaitaiStream _io, Rim _parent) {
-            this(_io, _parent, null);
-        }
-
-        public RimExtendedHeader(KaitaiStream _io, Rim _parent, Rim _root) {
-            super(_io);
-            this._parent = _parent;
-            this._root = _root;
-            _read();
-        }
-        private void _read() {
-            this.reservedPadding = new String(this._io.readBytes(100), StandardCharsets.US_ASCII);
-        }
-
-        public void _fetchInstances() {
-        }
-        private String reservedPadding;
-        private Rim _root;
-        private Rim _parent;
-
-        /**
-         * Reserved padding bytes (typically all zeros).
-         * Total header size is 120 bytes:
-         * header (20) + extended_header (100) = 120 bytes
-         * 
-         * In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
-         * may contain an IsExtension flag, but this is not consistently used.
-         */
-        public String reservedPadding() { return reservedPadding; }
-        public Rim _root() { return _root; }
-        public Rim _parent() { return _parent; }
-    }
     public static class RimHeader extends KaitaiStruct {
         public static RimHeader fromFile(String fileName) throws IOException {
             return new RimHeader(new ByteBufferKaitaiStream(fileName));
@@ -590,6 +557,7 @@ public class Rim extends KaitaiStruct {
             this.reserved = this._io.readU4le();
             this.resourceCount = this._io.readU4le();
             this.offsetToResourceTable = this._io.readU4le();
+            this.offsetToResources = this._io.readU4le();
         }
 
         public void _fetchInstances() {
@@ -610,6 +578,7 @@ public class Rim extends KaitaiStruct {
         private long reserved;
         private long resourceCount;
         private long offsetToResourceTable;
+        private long offsetToResources;
         private Rim _root;
         private Rim _parent;
 
@@ -639,29 +608,43 @@ public class Rim extends KaitaiStruct {
         public long resourceCount() { return resourceCount; }
 
         /**
-         * Byte offset to the resource entry table from the beginning of the file.
-         * Typically 120 (right after header + extended header) if resources are present.
-         * Points to the start of the resource_entry_table.
+         * Byte offset to the key / resource entry table from the beginning of the file.
+         * 0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+         * When non-zero, this offset is used directly (commonly 120).
          */
         public long offsetToResourceTable() { return offsetToResourceTable; }
+
+        /**
+         * Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+         * taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
+         */
+        public long offsetToResources() { return offsetToResources; }
         public Rim _root() { return _root; }
         public Rim _parent() { return _parent; }
     }
     private RimHeader header;
-    private RimExtendedHeader extendedHeader;
+    private byte[] gapBeforeKeyTableImplicit;
+    private byte[] gapBeforeKeyTableExplicit;
     private ResourceEntryTable resourceEntryTable;
     private Rim _root;
     private KaitaiStruct _parent;
 
     /**
-     * RIM file header (20 bytes)
+     * RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
      */
     public RimHeader header() { return header; }
 
     /**
-     * Extended header padding (100 bytes, total header = 120 bytes)
+     * When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+     * After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
      */
-    public RimExtendedHeader extendedHeader() { return extendedHeader; }
+    public byte[] gapBeforeKeyTableImplicit() { return gapBeforeKeyTableImplicit; }
+
+    /**
+     * When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+     * Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
+     */
+    public byte[] gapBeforeKeyTableExplicit() { return gapBeforeKeyTableExplicit; }
 
     /**
      * Array of resource entries mapping ResRefs to resource data

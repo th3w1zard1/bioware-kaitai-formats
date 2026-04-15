@@ -11,11 +11,11 @@ import (
  * Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
  * 
  * Binary Format:
- * - Header (12 bytes): File type signature, version, and offset to sounds array
- * - Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
- * - Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+ * - Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+ * - Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
  * 
- * Total file size: 136 bytes (12 + 112 + 12)
+ * Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+ * of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
  * 
  * Sound Slots (in order):
  * 0-5: Battle Cry 1-6
@@ -38,14 +38,13 @@ import (
  * 27: Poisoned
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
  */
 type Ssf struct {
 	FileType string
 	FileVersion string
 	SoundsOffset uint32
-	Padding *Ssf_Padding
 	_io *kaitai.Stream
 	_root *Ssf
 	_parent kaitai.Struct
@@ -89,15 +88,6 @@ func (this *Ssf) Read(io *kaitai.Stream, parent kaitai.Struct, root *Ssf) (err e
 		return err
 	}
 	this.SoundsOffset = uint32(tmp3)
-	if !(this.SoundsOffset == 12) {
-		return kaitai.NewValidationNotEqualError(12, this.SoundsOffset, this._io, "/seq/2")
-	}
-	tmp4 := NewSsf_Padding()
-	err = tmp4.Read(this._io, this, this._root)
-	if err != nil {
-		return err
-	}
-	this.Padding = tmp4
 	return err
 }
 
@@ -117,12 +107,12 @@ func (this *Ssf) Sounds() (v *Ssf_SoundArray, err error) {
 	if err != nil {
 		return nil, err
 	}
-	tmp5 := NewSsf_SoundArray()
-	err = tmp5.Read(this._io, this, this._root)
+	tmp4 := NewSsf_SoundArray()
+	err = tmp4.Read(this._io, this, this._root)
 	if err != nil {
 		return nil, err
 	}
-	this.sounds = tmp5
+	this.sounds = tmp4
 	_, err = this._io.Seek(_pos, io.SeekStart)
 	if err != nil {
 		return nil, err
@@ -142,49 +132,8 @@ func (this *Ssf) Sounds() (v *Ssf_SoundArray, err error) {
 
 /**
  * Byte offset to the sounds array from the beginning of the file.
- * Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
- * This field exists for format consistency, though it's always the same value.
- */
-
-/**
- * Reserved padding bytes (12 bytes of 0xFFFFFFFF)
- */
-type Ssf_Padding struct {
-	PaddingBytes []uint32
-	_io *kaitai.Stream
-	_root *Ssf
-	_parent *Ssf
-}
-func NewSsf_Padding() *Ssf_Padding {
-	return &Ssf_Padding{
-	}
-}
-
-func (this Ssf_Padding) IO_() *kaitai.Stream {
-	return this._io
-}
-
-func (this *Ssf_Padding) Read(io *kaitai.Stream, parent *Ssf, root *Ssf) (err error) {
-	this._io = io
-	this._parent = parent
-	this._root = root
-
-	for i := 0; i < int(3); i++ {
-		_ = i
-		tmp6, err := this._io.ReadU4le()
-		if err != nil {
-			return err
-		}
-		this.PaddingBytes = append(this.PaddingBytes, tmp6)
-	}
-	return err
-}
-
-/**
- * Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
- * Total size: 12 bytes (3 * 4 bytes).
- * These bytes are unused but must be present for format compatibility.
- * Each padding byte should be 0xFFFFFFFF (4294967295).
+ * KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+ * field is a real offset; readers must seek here instead of assuming 12.
  */
 type Ssf_SoundArray struct {
 	Entries []*Ssf_SoundEntry
@@ -208,12 +157,12 @@ func (this *Ssf_SoundArray) Read(io *kaitai.Stream, parent *Ssf, root *Ssf) (err
 
 	for i := 0; i < int(28); i++ {
 		_ = i
-		tmp7 := NewSsf_SoundEntry()
-		err = tmp7.Read(this._io, this, this._root)
+		tmp5 := NewSsf_SoundEntry()
+		err = tmp5.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.Entries = append(this.Entries, tmp7)
+		this.Entries = append(this.Entries, tmp5)
 	}
 	return err
 }
@@ -265,11 +214,11 @@ func (this *Ssf_SoundEntry) Read(io *kaitai.Stream, parent *Ssf_SoundArray, root
 	this._parent = parent
 	this._root = root
 
-	tmp8, err := this._io.ReadU4le()
+	tmp6, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.StrrefRaw = uint32(tmp8)
+	this.StrrefRaw = uint32(tmp6)
 	return err
 }
 

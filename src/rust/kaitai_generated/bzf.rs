@@ -13,19 +13,9 @@ use std::cell::{Ref, Cell, RefCell};
 use std::rc::{Rc, Weak};
 
 /**
- * BZF (BioWare Zipped File) files are LZMA-compressed BIF files used primarily in iOS
- * (and maybe Android) ports of KotOR. The BZF header contains "BZF " + "V1.0", followed
- * by LZMA-compressed BIF data. Decompression reveals a standard BIF structure.
- * 
- * Format Structure:
- * - Header (8 bytes): File type signature "BZF " and version "V1.0"
- * - Compressed Data: LZMA-compressed BIF file data
- * 
- * After decompression, the data follows the standard BIF format structure.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/BIF-File-Format.md - BZF compression section
- * - BIF.ksy - Standard BIF format (decompressed BZF data matches this)
+ * **BZF**: `BZF ` + `V1.0` header, then **LZMA** payload that expands to a normal **BIF** (`BIF.ksy`). Common on
+ * mobile KotOR ports.
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bzf-compression PyKotor wiki — BZF (LZMA BIF)
  */
 
 #[derive(Default, Debug, Clone)]
@@ -63,14 +53,7 @@ impl KStruct for Bzf {
         if !(*self_rc.version() == "V1.0".to_string()) {
             return Err(KError::ValidationFailed(ValidationFailedError { kind: ValidationKind::NotEqual, src_path: "/seq/1".to_string() }));
         }
-        *self_rc.compressed_data.borrow_mut() = Vec::new();
-        {
-            let mut _i = 0;
-            while !_io.is_eof() {
-                self_rc.compressed_data.borrow_mut().push(_io.read_u1()?.into());
-                _i += 1;
-            }
-        }
+        *self_rc.compressed_data.borrow_mut() = _io.read_bytes_full()?.into();
         Ok(())
     }
 }
@@ -96,9 +79,8 @@ impl Bzf {
 }
 
 /**
- * LZMA-compressed BIF file data.
- * This data must be decompressed using LZMA algorithm to obtain the standard BIF structure.
- * After decompression, the data can be parsed using the BIF format definition.
+ * LZMA-compressed BIF file data (single blob to EOF).
+ * Decompress with LZMA to obtain the standard BIF structure (see BIF.ksy).
  */
 impl Bzf {
     pub fn compressed_data(&self) -> Ref<'_, Vec<u8>> {

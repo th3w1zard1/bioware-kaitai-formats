@@ -6,11 +6,32 @@ meta:
   ks-version: 0.11
   license: MIT
   title: BioWare MDL (Model) Binary Format
+  imports:
+    - ../Common/bioware_mdl_common
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
-      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: MDL mesh resources loaded by Aurora renderer; layout per PyKotor MDL-MDX wiki."
-    pykotor_mdlops: https://github.com/th3w1zard1/MDLOpsM.pm
+      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe--MDL mesh resources loaded by Aurora renderer; layout per PyKotor MDL-MDX wiki.
+    mdl_model_header_unknown_fields_policy: |
+      Several `model_header` u1/u4 slots and `offset_to_super_root` semantics still carry `TODO: VERIFY` in field `doc:` text.
+      They are retained for **PyKotor / MDLOps round-trip** compatibility until pinned with Odyssey **`user-agdec-http`** evidence
+      (see `AGENTS.md`). Treat unknowns as **opaque preserved fields**, not gameplay-authoritative layout.
     pykotor_wiki_mdl: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
+    pykotor_io_mdl_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
+    pykotor_io_mdl_binary_reader: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408
+    pykotor_io_mdl_kaitai_probe: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2332-L2338
+    pykotor_mdl_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/mdl_data.py
+    pykotor_vendor_mdlops: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407
+    pykotor_mdlops_upstream_mirror: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L4698
+    xoreos_model_kotor_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267
+    xoreos_model_kotor_parser_context: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L123-L140
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
+    xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
+    reone_mdlmdxreader_load: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118
+    kotor_js_mdl_loader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/MDLLoader.ts
+    kotor_js_odyssey_model_constructor: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModel.ts#L56-L170
 doc: |
   BioWare MDL Model Format
 
@@ -21,10 +42,24 @@ doc: |
   - Animation offset array + animation headers + animation nodes
   - Node hierarchy with geometry data
 
-  Reference implementations:
-  - https://github.com/th3w1zard1/MDLOpsM.pm
-  - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
-doc-ref: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
+  Authoritative cross-implementations: `meta.xref` (PyKotor `io_mdl` / `mdl_data`, xoreos `Model_KotOR::load`, reone `MdlMdxReader::load`, KotOR.js loaders) and `doc-ref`.
+
+  Unknown `model_header` fields marked `TODO: VERIFY` in `seq` docs: see `meta.xref.mdl_model_header_unknown_fields_policy`.
+
+  Shared wire enums: imported from `formats/Common/bioware_mdl_common.ksy` — `model_type` and `controller.type`
+  are field-bound to `model_classification` / `controller_type`. `node_type` is a bitmask (instances use `&`);
+  compare numeric values against `bioware_mdl_common::node_type_value` in docs / tooling, not as a Kaitai `enum:`.
+doc-ref:
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/Common/bioware_mdl_common.ksy In-tree — shared MDL/MDX wire enums (`bioware_mdl_common`)"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format PyKotor wiki — MDL/MDX"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408 PyKotor — MDLBinaryReader (binary MDL/MDX)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267 xoreos — Model_KotOR::load"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl (controller / Aurora background)"
+  - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118 reone — MdlMdxReader::load"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModel.ts#L56-L170 KotOR.js — OdysseyModel binary constructor"
+  - "https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407 Community MDLOps — controller name table"
+  - "https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L3916-L4698 Community MDLOps — `readasciimdl` (ASCII MDL ingest)"
 
 seq:
   - id: file_header
@@ -168,6 +203,7 @@ types:
         doc: Geometry header (80 bytes)
       - id: model_type
         type: u1
+        enum: bioware_mdl_common::model_classification
         doc: Model classification byte
       - id: unknown0
         type: u1
@@ -351,7 +387,8 @@ types:
       - id: node_type
         type: u2
         doc: |
-          Bitmask indicating node features:
+          Bitmask indicating node features (also carries the primary node kind in the composite values listed in
+          `bioware_mdl_common::node_type_value`; do not attach `enum:` here — instances below use bitwise `&` tests).
           - 0x0001: NODE_HAS_HEADER
           - 0x0002: NODE_HAS_LIGHT
           - 0x0004: NODE_HAS_EMITTER
@@ -946,6 +983,7 @@ types:
     seq:
       - id: type
         type: u4
+        enum: bioware_mdl_common::controller_type
         doc: |
           Controller type identifier. Controllers define animation data for node properties over time.
 
@@ -1016,7 +1054,7 @@ types:
           - 128: Alpha (transparency/opacity, 1 float)
 
           Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - Additional Controller Types section
-          Reference: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:342-407 - Controller type definitions
+          Reference: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407 — Controller type definitions
           Reference: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html - Comprehensive controller list
       - id: unknown
         type: u2
@@ -1044,37 +1082,3 @@ types:
       uses_bezier:
         value: (column_count & 0x10) != 0
         doc: True if controller uses Bezier interpolation
-
-enums:
-  model_classification:
-    0x00: other
-    0x01: effect
-    0x02: tile
-    0x04: character
-    0x08: door
-    0x10: lightsaber
-    0x20: placeable
-    0x40: flyer
-
-  node_type_value:
-    0x001: dummy
-    0x003: light
-    0x005: emitter
-    0x011: reference
-    0x021: trimesh
-    0x061: skinmesh
-    0x0a1: animmesh
-    0x121: danglymesh
-    0x221: aabb
-    0x821: lightsaber
-
-  controller_type:
-    8: position
-    20: orientation
-    36: scale
-    76: color
-    88: radius
-    96: shadow_radius
-    100: vertical_displacement_or_drag_or_selfillumcolor
-    132: alpha
-    140: multiplier_or_randvel

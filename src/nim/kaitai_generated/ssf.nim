@@ -6,13 +6,9 @@ type
     `fileType`*: string
     `fileVersion`*: string
     `soundsOffset`*: uint32
-    `padding`*: Ssf_Padding
     `parent`*: KaitaiStruct
     `soundsInst`: Ssf_SoundArray
     `soundsInstFlag`: bool
-  Ssf_Padding* = ref object of KaitaiStruct
-    `paddingBytes`*: seq[uint32]
-    `parent`*: Ssf
   Ssf_SoundArray* = ref object of KaitaiStruct
     `entries`*: seq[Ssf_SoundEntry]
     `parent`*: Ssf
@@ -23,7 +19,6 @@ type
     `isNoSoundInstFlag`: bool
 
 proc read*(_: typedesc[Ssf], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Ssf
-proc read*(_: typedesc[Ssf_Padding], io: KaitaiStream, root: KaitaiStruct, parent: Ssf): Ssf_Padding
 proc read*(_: typedesc[Ssf_SoundArray], io: KaitaiStream, root: KaitaiStruct, parent: Ssf): Ssf_SoundArray
 proc read*(_: typedesc[Ssf_SoundEntry], io: KaitaiStream, root: KaitaiStruct, parent: Ssf_SoundArray): Ssf_SoundEntry
 
@@ -36,11 +31,11 @@ SSF (Sound Set File) files store sound string references (StrRefs) for character
 Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
 
 Binary Format:
-- Header (12 bytes): File type signature, version, and offset to sounds array
-- Sounds Array (112 bytes): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
-- Padding (12 bytes): 3 uint32 values of 0xFFFFFFFF (reserved/unused)
+- Header (12 bytes): File type signature, version, and offset to sounds array (usually 12)
+- Sounds Array (112 bytes at sounds_offset): 28 uint32 values representing StrRefs (0xFFFFFFFF = -1 = no sound)
 
-Total file size: 136 bytes (12 + 112 + 12)
+Vanilla KotOR SSFs are typically 136 bytes total: after the 28 StrRefs, many files append 12 bytes
+of 0xFFFFFFFF padding; that trailer is not part of the header and is not modeled here.
 
 Sound Slots (in order):
 0-5: Battle Cry 1-6
@@ -63,8 +58,8 @@ Sound Slots (in order):
 27: Poisoned
 
 References:
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
 
 ]##
 proc read*(_: typedesc[Ssf], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Ssf =
@@ -94,18 +89,12 @@ Bytes: 0x56 0x31 0x2E 0x31
 
   ##[
   Byte offset to the sounds array from the beginning of the file.
-Always 12 (0x0C) in valid SSF files, as the sounds array immediately follows the header.
-This field exists for format consistency, though it's always the same value.
+KotOR files almost always use 12 (0x0C) so the table follows the header immediately, but the
+field is a real offset; readers must seek here instead of assuming 12.
 
   ]##
   let soundsOffsetExpr = this.io.readU4le()
   this.soundsOffset = soundsOffsetExpr
-
-  ##[
-  Reserved padding bytes (12 bytes of 0xFFFFFFFF)
-  ]##
-  let paddingExpr = Ssf_Padding.read(this.io, this.root, this)
-  this.padding = paddingExpr
 
 proc sounds(this: Ssf): Ssf_SoundArray = 
 
@@ -124,29 +113,6 @@ proc sounds(this: Ssf): Ssf_SoundArray =
 
 proc fromFile*(_: typedesc[Ssf], filename: string): Ssf =
   Ssf.read(newKaitaiFileStream(filename), nil, nil)
-
-proc read*(_: typedesc[Ssf_Padding], io: KaitaiStream, root: KaitaiStruct, parent: Ssf): Ssf_Padding =
-  template this: untyped = result
-  this = new(Ssf_Padding)
-  let root = if root == nil: cast[Ssf](this) else: cast[Ssf](root)
-  this.io = io
-  this.root = root
-  this.parent = parent
-
-
-  ##[
-  Reserved padding bytes. Always 3 uint32 values of 0xFFFFFFFF.
-Total size: 12 bytes (3 * 4 bytes).
-These bytes are unused but must be present for format compatibility.
-Each padding byte should be 0xFFFFFFFF (4294967295).
-
-  ]##
-  for i in 0 ..< int(3):
-    let it = this.io.readU4le()
-    this.paddingBytes.add(it)
-
-proc fromFile*(_: typedesc[Ssf_Padding], filename: string): Ssf_Padding =
-  Ssf_Padding.read(newKaitaiFileStream(filename), nil, nil)
 
 proc read*(_: typedesc[Ssf_SoundArray], io: KaitaiStream, root: KaitaiStruct, parent: Ssf): Ssf_SoundArray =
   template this: untyped = result

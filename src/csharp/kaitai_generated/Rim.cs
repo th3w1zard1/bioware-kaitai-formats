@@ -22,7 +22,7 @@ namespace Kaitai
     /// - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
     /// 
     /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+    /// - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
     /// - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
     /// - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
     /// - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121

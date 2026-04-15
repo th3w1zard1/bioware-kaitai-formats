@@ -146,8 +146,6 @@ std::set<bioware_type_ids_t::bioware_resource_type_id_t> bioware_type_ids_t::_bu
     _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_WAV_DEOB);
     _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_TLK_XML);
     _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_MDL_ASCII);
-    _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_GFF_XML);
-    _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_GFF_JSON);
     _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_IFO_XML);
     _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_GIT_XML);
     _t.insert(bioware_type_ids_t::BIOWARE_RESOURCE_TYPE_ID_UTI_XML);
@@ -176,6 +174,24 @@ std::set<bioware_type_ids_t::bioware_resource_type_id_t> bioware_type_ids_t::_bu
 const std::set<bioware_type_ids_t::bioware_resource_type_id_t> bioware_type_ids_t::_values_bioware_resource_type_id_t = bioware_type_ids_t::_build_values_bioware_resource_type_id_t();
 bool bioware_type_ids_t::_is_defined_bioware_resource_type_id_t(bioware_type_ids_t::bioware_resource_type_id_t v) {
     return bioware_type_ids_t::_values_bioware_resource_type_id_t.find(v) != bioware_type_ids_t::_values_bioware_resource_type_id_t.end();
+}
+std::set<bioware_type_ids_t::xoreos_archive_type_t> bioware_type_ids_t::_build_values_xoreos_archive_type_t() {
+    std::set<bioware_type_ids_t::xoreos_archive_type_t> _t;
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_KEY);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_BIF);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_ERF);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_RIM);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_ZIP);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_EXE);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_NDS);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_HERF);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_NSBTX);
+    _t.insert(bioware_type_ids_t::XOREOS_ARCHIVE_TYPE_MAX);
+    return _t;
+}
+const std::set<bioware_type_ids_t::xoreos_archive_type_t> bioware_type_ids_t::_values_xoreos_archive_type_t = bioware_type_ids_t::_build_values_xoreos_archive_type_t();
+bool bioware_type_ids_t::_is_defined_xoreos_archive_type_t(bioware_type_ids_t::xoreos_archive_type_t v) {
+    return bioware_type_ids_t::_values_xoreos_archive_type_t.find(v) != bioware_type_ids_t::_values_xoreos_archive_type_t.end();
 }
 std::set<bioware_type_ids_t::xoreos_file_type_id_t> bioware_type_ids_t::_build_values_xoreos_file_type_id_t() {
     std::set<bioware_type_ids_t::xoreos_file_type_id_t> _t;
@@ -485,6 +501,57 @@ std::set<bioware_type_ids_t::xoreos_file_type_id_t> bioware_type_ids_t::_build_v
 const std::set<bioware_type_ids_t::xoreos_file_type_id_t> bioware_type_ids_t::_values_xoreos_file_type_id_t = bioware_type_ids_t::_build_values_xoreos_file_type_id_t();
 bool bioware_type_ids_t::_is_defined_xoreos_file_type_id_t(bioware_type_ids_t::xoreos_file_type_id_t v) {
     return bioware_type_ids_t::_values_xoreos_file_type_id_t.find(v) != bioware_type_ids_t::_values_xoreos_file_type_id_t.end();
+}
+std::set<bioware_type_ids_t::xoreos_game_id_t> bioware_type_ids_t::_build_values_xoreos_game_id_t() {
+    std::set<bioware_type_ids_t::xoreos_game_id_t> _t;
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_UNKNOWN);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_NWN);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_NWN2);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_KOTOR);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_KOTOR2);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_JADE);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_WITCHER);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_SONIC);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_DRAGON_AGE);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_DRAGON_AGE2);
+    _t.insert(bioware_type_ids_t::XOREOS_GAME_ID_MAX);
+    return _t;
+}
+const std::set<bioware_type_ids_t::xoreos_game_id_t> bioware_type_ids_t::_values_xoreos_game_id_t = bioware_type_ids_t::_build_values_xoreos_game_id_t();
+bool bioware_type_ids_t::_is_defined_xoreos_game_id_t(bioware_type_ids_t::xoreos_game_id_t v) {
+    return bioware_type_ids_t::_values_xoreos_game_id_t.find(v) != bioware_type_ids_t::_values_xoreos_game_id_t.end();
+}
+std::set<bioware_type_ids_t::xoreos_platform_id_t> bioware_type_ids_t::_build_values_xoreos_platform_id_t() {
+    std::set<bioware_type_ids_t::xoreos_platform_id_t> _t;
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_WINDOWS);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_MAC_OSX);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_LINUX);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_XBOX);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_XBOX360);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_PS3);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_NDS);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_ANDROID);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_IOS);
+    _t.insert(bioware_type_ids_t::XOREOS_PLATFORM_ID_UNKNOWN);
+    return _t;
+}
+const std::set<bioware_type_ids_t::xoreos_platform_id_t> bioware_type_ids_t::_values_xoreos_platform_id_t = bioware_type_ids_t::_build_values_xoreos_platform_id_t();
+bool bioware_type_ids_t::_is_defined_xoreos_platform_id_t(bioware_type_ids_t::xoreos_platform_id_t v) {
+    return bioware_type_ids_t::_values_xoreos_platform_id_t.find(v) != bioware_type_ids_t::_values_xoreos_platform_id_t.end();
+}
+std::set<bioware_type_ids_t::xoreos_resource_category_t> bioware_type_ids_t::_build_values_xoreos_resource_category_t() {
+    std::set<bioware_type_ids_t::xoreos_resource_category_t> _t;
+    _t.insert(bioware_type_ids_t::XOREOS_RESOURCE_CATEGORY_IMAGE);
+    _t.insert(bioware_type_ids_t::XOREOS_RESOURCE_CATEGORY_VIDEO);
+    _t.insert(bioware_type_ids_t::XOREOS_RESOURCE_CATEGORY_SOUND);
+    _t.insert(bioware_type_ids_t::XOREOS_RESOURCE_CATEGORY_MUSIC);
+    _t.insert(bioware_type_ids_t::XOREOS_RESOURCE_CATEGORY_CURSOR);
+    _t.insert(bioware_type_ids_t::XOREOS_RESOURCE_CATEGORY_MAX);
+    return _t;
+}
+const std::set<bioware_type_ids_t::xoreos_resource_category_t> bioware_type_ids_t::_values_xoreos_resource_category_t = bioware_type_ids_t::_build_values_xoreos_resource_category_t();
+bool bioware_type_ids_t::_is_defined_xoreos_resource_category_t(bioware_type_ids_t::xoreos_resource_category_t v) {
+    return bioware_type_ids_t::_values_xoreos_resource_category_t.find(v) != bioware_type_ids_t::_values_xoreos_resource_category_t.end();
 }
 
 bioware_type_ids_t::bioware_type_ids_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, bioware_type_ids_t* p__root) : kaitai::kstruct(p__io) {

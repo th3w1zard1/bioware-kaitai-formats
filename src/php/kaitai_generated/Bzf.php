@@ -2,19 +2,8 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 /**
- * BZF (BioWare Zipped File) files are LZMA-compressed BIF files used primarily in iOS
- * (and maybe Android) ports of KotOR. The BZF header contains "BZF " + "V1.0", followed
- * by LZMA-compressed BIF data. Decompression reveals a standard BIF structure.
- * 
- * Format Structure:
- * - Header (8 bytes): File type signature "BZF " and version "V1.0"
- * - Compressed Data: LZMA-compressed BIF file data
- * 
- * After decompression, the data follows the standard BIF format structure.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/BIF-File-Format.md - BZF compression section
- * - BIF.ksy - Standard BIF format (decompressed BZF data matches this)
+ * **BZF**: `BZF ` + `V1.0` header, then **LZMA** payload that expands to a normal **BIF** (`BIF.ksy`). Common on
+ * mobile KotOR ports.
  */
 
 namespace {
@@ -33,12 +22,7 @@ namespace {
             if (!($this->_m_version == "V1.0")) {
                 throw new \Kaitai\Struct\Error\ValidationNotEqualError("V1.0", $this->_m_version, $this->_io, "/seq/1");
             }
-            $this->_m_compressedData = [];
-            $i = 0;
-            while (!$this->_io->isEof()) {
-                $this->_m_compressedData[] = $this->_io->readU1();
-                $i++;
-            }
+            $this->_m_compressedData = $this->_io->readBytesFull();
         }
         protected $_m_fileType;
         protected $_m_version;
@@ -55,9 +39,8 @@ namespace {
         public function version() { return $this->_m_version; }
 
         /**
-         * LZMA-compressed BIF file data.
-         * This data must be decompressed using LZMA algorithm to obtain the standard BIF structure.
-         * After decompression, the data can be parsed using the BIF format definition.
+         * LZMA-compressed BIF file data (single blob to EOF).
+         * Decompress with LZMA to obtain the standard BIF structure (see BIF.ksy).
          */
         public function compressedData() { return $this->_m_compressedData; }
     }

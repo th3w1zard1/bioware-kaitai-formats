@@ -17,12 +17,17 @@ local str_decode = require("string_decode")
 -- - The CExoLocString / LocalizedString binary layout
 -- 
 -- References:
--- - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
--- - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
--- - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+-- - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+-- - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+-- - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
 -- - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
 -- - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
 BiowareCommon = class.class(KaitaiStruct)
+
+BiowareCommon.BiowareDdsVariantBytesPerPixel = enum.Enum {
+  dxt1 = 3,
+  dxt5 = 4,
+}
 
 BiowareCommon.BiowareEquipmentSlotFlag = enum.Enum {
   invalid = 0,
@@ -159,6 +164,30 @@ BiowareCommon.BiowareLanguageId = enum.Enum {
   unknown = 2147483646,
 }
 
+BiowareCommon.BiowareLipVisemeId = enum.Enum {
+  neutral = 0,
+  ee = 1,
+  eh = 2,
+  ah = 3,
+  oh = 4,
+  ooh = 5,
+  y = 6,
+  sts = 7,
+  fv = 8,
+  ng = 9,
+  th = 10,
+  mpb = 11,
+  td = 12,
+  sh = 13,
+  l = 14,
+  kg = 15,
+}
+
+BiowareCommon.BiowareLtrAlphabetLength = enum.Enum {
+  neverwinter_nights = 26,
+  kotor = 28,
+}
+
 BiowareCommon.BiowareObjectTypeId = enum.Enum {
   invalid = 0,
   creature = 1,
@@ -172,6 +201,35 @@ BiowareCommon.BiowareObjectTypeId = enum.Enum {
   area = 9,
   sound = 10,
   camera = 11,
+}
+
+BiowareCommon.BiowarePccCompressionCodec = enum.Enum {
+  none = 0,
+  zlib = 1,
+  lzo = 2,
+}
+
+BiowareCommon.BiowarePccPackageKind = enum.Enum {
+  normal_package = 0,
+  patch_package = 1,
+}
+
+BiowareCommon.BiowareTpcPixelFormatId = enum.Enum {
+  greyscale = 1,
+  rgb_or_dxt1 = 2,
+  rgba_or_dxt5 = 4,
+  bgra_xbox_swizzle = 12,
+}
+
+BiowareCommon.RiffWaveFormatTag = enum.Enum {
+  pcm = 1,
+  adpcm_ms = 2,
+  ieee_float = 3,
+  alaw = 6,
+  mulaw = 7,
+  dvi_ima_adpcm = 17,
+  mpeg_layer3 = 85,
+  wave_format_extensible = 65534,
 }
 
 function BiowareCommon:_init(io, parent, root)
@@ -266,7 +324,7 @@ end
 -- 
 -- Total size of the structure in bytes (excluding this field).
 -- 
--- StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+-- StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
 -- 
 -- Number of substring entries that follow.
 -- 

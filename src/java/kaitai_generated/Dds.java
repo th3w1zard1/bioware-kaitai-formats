@@ -10,17 +10,12 @@ import java.util.List;
 
 
 /**
- * DDS (DirectDraw Surface) files appear in two variants in KotOR:
+ * **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+ * (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
  * 
- * 1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
- * 2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
- * 
- * DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
- * and various other pixel formats. They can include mipmaps and cube maps.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
- * - Standard DirectX DDS format specification
+ * BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds">PyKotor wiki — DDS</a>
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130">PyKotor — TPCDDSReader</a>
  */
 public class Dds extends KaitaiStruct {
     public static Dds fromFile(String fileName) throws IOException {
@@ -52,14 +47,7 @@ public class Dds extends KaitaiStruct {
         if (!magic().equals("DDS ")) {
             this.biowareHeader = new BiowareDdsHeader(this._io, this, _root);
         }
-        this.pixelData = new ArrayList<Integer>();
-        {
-            int i = 0;
-            while (!this._io.isEof()) {
-                this.pixelData.add(this._io.readU1());
-                i++;
-            }
-        }
+        this.pixelData = this._io.readBytesFull();
     }
 
     public void _fetchInstances() {
@@ -68,8 +56,6 @@ public class Dds extends KaitaiStruct {
         }
         if (!magic().equals("DDS ")) {
             this.biowareHeader._fetchInstances();
-        }
-        for (int i = 0; i < this.pixelData.size(); i++) {
         }
     }
     public static class BiowareDdsHeader extends KaitaiStruct {
@@ -94,7 +80,7 @@ public class Dds extends KaitaiStruct {
         private void _read() {
             this.width = this._io.readU4le();
             this.height = this._io.readU4le();
-            this.bytesPerPixel = this._io.readU4le();
+            this.bytesPerPixel = BiowareCommon.BiowareDdsVariantBytesPerPixel.byId(this._io.readU4le());
             this.dataSize = this._io.readU4le();
             this.unusedFloat = this._io.readF4le();
         }
@@ -103,7 +89,7 @@ public class Dds extends KaitaiStruct {
         }
         private long width;
         private long height;
-        private long bytesPerPixel;
+        private BiowareCommon.BiowareDdsVariantBytesPerPixel bytesPerPixel;
         private long dataSize;
         private float unusedFloat;
         private Dds _root;
@@ -120,11 +106,9 @@ public class Dds extends KaitaiStruct {
         public long height() { return height; }
 
         /**
-         * Bytes per pixel:
-         * - 3 = DXT1 compression
-         * - 4 = DXT5 compression
+         * BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
          */
-        public long bytesPerPixel() { return bytesPerPixel; }
+        public BiowareCommon.BiowareDdsVariantBytesPerPixel bytesPerPixel() { return bytesPerPixel; }
 
         /**
          * Total compressed data size.
@@ -384,7 +368,7 @@ public class Dds extends KaitaiStruct {
     private String magic;
     private DdsHeader header;
     private BiowareDdsHeader biowareHeader;
-    private List<Integer> pixelData;
+    private byte[] pixelData;
     private Dds _root;
     private KaitaiStruct _parent;
 
@@ -405,11 +389,11 @@ public class Dds extends KaitaiStruct {
     public BiowareDdsHeader biowareHeader() { return biowareHeader; }
 
     /**
-     * Pixel data (compressed or uncompressed).
-     * For standard DDS: Format determined by DDPIXELFORMAT
-     * For BioWare DDS: DXT1 or DXT5 compressed data
+     * Pixel data (compressed or uncompressed); single blob to EOF.
+     * For standard DDS: format determined by DDPIXELFORMAT.
+     * For BioWare DDS: DXT1 or DXT5 compressed data.
      */
-    public List<Integer> pixelData() { return pixelData; }
+    public byte[] pixelData() { return pixelData; }
     public Dds _root() { return _root; }
     public KaitaiStruct _parent() { return _parent; }
 }

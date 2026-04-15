@@ -24,14 +24,14 @@ class rim_t;
  * - Standard RIM: Basic module template files
  * - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
  * 
- * Binary Format:
- * - Header (20 bytes): File type, version, resource count, offset to resource table
- * - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
- * - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
- * - Resource Data (variable size): Raw binary data for each resource
+ * Binary Format (KotOR / PyKotor):
+ * - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+ * - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+ * - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+ * - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
  * - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -43,7 +43,6 @@ class rim_t : public kaitai::kstruct {
 public:
     class resource_entry_t;
     class resource_entry_table_t;
-    class rim_extended_header_t;
     class rim_header_t;
 
     enum xoreos_file_type_id_t {
@@ -395,7 +394,7 @@ public:
         xoreos_file_type_id_t m_resource_type;
         uint32_t m_resource_id;
         uint32_t m_offset_to_data;
-        uint32_t m_resource_size;
+        uint32_t m_num_data;
         rim_t* m__root;
         rim_t::resource_entry_table_t* m__parent;
 
@@ -429,10 +428,10 @@ public:
         uint32_t offset_to_data() const { return m_offset_to_data; }
 
         /**
-         * Size of resource data in bytes.
+         * Size of resource data in bytes (repeat count for raw `data` bytes).
          * Uncompressed size of the resource.
          */
-        uint32_t resource_size() const { return m_resource_size; }
+        uint32_t num_data() const { return m_num_data; }
         rim_t* _root() const { return m__root; }
         rim_t::resource_entry_table_t* _parent() const { return m__parent; }
     };
@@ -461,39 +460,6 @@ public:
          * Array of resource entries, one per resource in the archive
          */
         std::vector<resource_entry_t*>* entries() const { return m_entries; }
-        rim_t* _root() const { return m__root; }
-        rim_t* _parent() const { return m__parent; }
-    };
-
-    class rim_extended_header_t : public kaitai::kstruct {
-
-    public:
-
-        rim_extended_header_t(kaitai::kstream* p__io, rim_t* p__parent = 0, rim_t* p__root = 0);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~rim_extended_header_t();
-
-    private:
-        std::string m_reserved_padding;
-        rim_t* m__root;
-        rim_t* m__parent;
-
-    public:
-
-        /**
-         * Reserved padding bytes (typically all zeros).
-         * Total header size is 120 bytes:
-         * header (20) + extended_header (100) = 120 bytes
-         * 
-         * In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
-         * may contain an IsExtension flag, but this is not consistently used.
-         */
-        std::string reserved_padding() const { return m_reserved_padding; }
         rim_t* _root() const { return m__root; }
         rim_t* _parent() const { return m__parent; }
     };
@@ -528,6 +494,7 @@ public:
         uint32_t m_reserved;
         uint32_t m_resource_count;
         uint32_t m_offset_to_resource_table;
+        uint32_t m_offset_to_resources;
         rim_t* m__root;
         rim_t* m__parent;
 
@@ -559,18 +526,37 @@ public:
         uint32_t resource_count() const { return m_resource_count; }
 
         /**
-         * Byte offset to the resource entry table from the beginning of the file.
-         * Typically 120 (right after header + extended header) if resources are present.
-         * Points to the start of the resource_entry_table.
+         * Byte offset to the key / resource entry table from the beginning of the file.
+         * 0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+         * When non-zero, this offset is used directly (commonly 120).
          */
         uint32_t offset_to_resource_table() const { return m_offset_to_resource_table; }
+
+        /**
+         * Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+         * taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
+         */
+        uint32_t offset_to_resources() const { return m_offset_to_resources; }
         rim_t* _root() const { return m__root; }
         rim_t* _parent() const { return m__parent; }
     };
 
 private:
     rim_header_t* m_header;
-    rim_extended_header_t* m_extended_header;
+    std::string m_gap_before_key_table_implicit;
+    bool n_gap_before_key_table_implicit;
+
+public:
+    bool _is_null_gap_before_key_table_implicit() { gap_before_key_table_implicit(); return n_gap_before_key_table_implicit; };
+
+private:
+    std::string m_gap_before_key_table_explicit;
+    bool n_gap_before_key_table_explicit;
+
+public:
+    bool _is_null_gap_before_key_table_explicit() { gap_before_key_table_explicit(); return n_gap_before_key_table_explicit; };
+
+private:
     resource_entry_table_t* m_resource_entry_table;
     bool n_resource_entry_table;
 
@@ -584,14 +570,21 @@ private:
 public:
 
     /**
-     * RIM file header (20 bytes)
+     * RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
      */
     rim_header_t* header() const { return m_header; }
 
     /**
-     * Extended header padding (100 bytes, total header = 120 bytes)
+     * When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+     * After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
      */
-    rim_extended_header_t* extended_header() const { return m_extended_header; }
+    std::string gap_before_key_table_implicit() const { return m_gap_before_key_table_implicit; }
+
+    /**
+     * When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+     * Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
+     */
+    std::string gap_before_key_table_explicit() const { return m_gap_before_key_table_explicit; }
 
     /**
      * Array of resource entries mapping ResRefs to resource data

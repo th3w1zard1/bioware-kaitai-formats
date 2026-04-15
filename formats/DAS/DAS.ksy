@@ -5,15 +5,27 @@ meta:
   endian: le
   file-extension: das
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
       note: "Dragon Age: Origins save format (daorigins.exe in Odyssey), not KotOR k1_win_gog_swkotor.exe."
-    runtime: src/Andastra/Runtime/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs
+    github_oldrepublicdevs_andastra_dao_save_serializer: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs`:
+      **`SaveSignature = "DAS "`** **23**; **`SerializeSaveNfo`** **29–66**; **`DeserializeSaveNfo`** **71–114**; **`SerializeSaveArchive`** **119+**; **`DeserializeSaveArchive`** **168+**.
+    github_oldrepublicdevs_andastra_eclipse_save_base: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs`:
+      UTF-8 length-prefixed strings **`WriteString` / `ReadString`** **35–61**; **`ValidateSignature`** **67–75**; **`ValidateVersion`** **81–88**;
+      **`WriteCommonMetadata` / `ReadCommonMetadata`** **93–126**.
+    github_xoreos_types_game_id_dragon_age: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
 doc: |
   **DAS** (Dragon Age: Origins save): Eclipse binary save — `DAS ` signature, `version==1`, length-prefixed strings +
-  tagged blocks. **Not KotOR** — Andastra serializer paths + numeric `xoreos_game_id` live in `meta.xref`.
+  tagged blocks. **Not KotOR** — reference serializers live under **Andastra** `Game/Games/Eclipse/...` on GitHub (`meta.xref`), not `Runtime/...`.
 
 doc-ref:
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408 xoreos — game id enum (Dragon Age = 7)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408 xoreos — `GameID` (`kGameIDDragonAge` = 7)"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/master/src/Andastra/Game/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs#L23-L180 Andastra — `DragonAgeOriginsSaveSerializer` (signature + nfo + archive entrypoints)"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/master/src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs#L35-L126 Andastra — `EclipseSaveSerializer` string + metadata helpers"
 
 seq:
   - id: signature

@@ -316,7 +316,6 @@ rim_t::rim_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, rim_t* p__root)
     m__parent = p__parent;
     m__root = p__root ? p__root : this;
     m_header = 0;
-    m_extended_header = 0;
     m_resource_entry_table = 0;
 
     try {
@@ -329,7 +328,16 @@ rim_t::rim_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, rim_t* p__root)
 
 void rim_t::_read() {
     m_header = new rim_header_t(m__io, this, m__root);
-    m_extended_header = new rim_extended_header_t(m__io, this, m__root);
+    n_gap_before_key_table_implicit = true;
+    if (header()->offset_to_resource_table() == 0) {
+        n_gap_before_key_table_implicit = false;
+        m_gap_before_key_table_implicit = m__io->read_bytes(96);
+    }
+    n_gap_before_key_table_explicit = true;
+    if (header()->offset_to_resource_table() != 0) {
+        n_gap_before_key_table_explicit = false;
+        m_gap_before_key_table_explicit = m__io->read_bytes(header()->offset_to_resource_table() - 24);
+    }
     n_resource_entry_table = true;
     if (header()->resource_count() > 0) {
         n_resource_entry_table = false;
@@ -345,8 +353,9 @@ void rim_t::_clean_up() {
     if (m_header) {
         delete m_header; m_header = 0;
     }
-    if (m_extended_header) {
-        delete m_extended_header; m_extended_header = 0;
+    if (!n_gap_before_key_table_implicit) {
+    }
+    if (!n_gap_before_key_table_explicit) {
     }
     if (!n_resource_entry_table) {
         if (m_resource_entry_table) {
@@ -374,7 +383,7 @@ void rim_t::resource_entry_t::_read() {
     m_resource_type = static_cast<rim_t::xoreos_file_type_id_t>(m__io->read_u4le());
     m_resource_id = m__io->read_u4le();
     m_offset_to_data = m__io->read_u4le();
-    m_resource_size = m__io->read_u4le();
+    m_num_data = m__io->read_u4le();
 }
 
 rim_t::resource_entry_t::~resource_entry_t() {
@@ -396,7 +405,7 @@ std::vector<uint8_t>* rim_t::resource_entry_t::data() {
     std::streampos _pos = m__io->pos();
     m__io->seek(offset_to_data());
     m_data = new std::vector<uint8_t>();
-    const int l_data = resource_size();
+    const int l_data = num_data();
     for (int i = 0; i < l_data; i++) {
         m_data->push_back(m__io->read_u1());
     }
@@ -438,29 +447,6 @@ void rim_t::resource_entry_table_t::_clean_up() {
     }
 }
 
-rim_t::rim_extended_header_t::rim_extended_header_t(kaitai::kstream* p__io, rim_t* p__parent, rim_t* p__root) : kaitai::kstruct(p__io) {
-    m__parent = p__parent;
-    m__root = p__root;
-
-    try {
-        _read();
-    } catch(...) {
-        _clean_up();
-        throw;
-    }
-}
-
-void rim_t::rim_extended_header_t::_read() {
-    m_reserved_padding = kaitai::kstream::bytes_to_str(m__io->read_bytes(100), "ASCII");
-}
-
-rim_t::rim_extended_header_t::~rim_extended_header_t() {
-    _clean_up();
-}
-
-void rim_t::rim_extended_header_t::_clean_up() {
-}
-
 rim_t::rim_header_t::rim_header_t(kaitai::kstream* p__io, rim_t* p__parent, rim_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
@@ -486,6 +472,7 @@ void rim_t::rim_header_t::_read() {
     m_reserved = m__io->read_u4le();
     m_resource_count = m__io->read_u4le();
     m_offset_to_resource_table = m__io->read_u4le();
+    m_offset_to_resources = m__io->read_u4le();
 }
 
 rim_t::rim_header_t::~rim_header_t() {

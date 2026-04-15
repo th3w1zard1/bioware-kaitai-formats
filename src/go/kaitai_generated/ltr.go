@@ -4,26 +4,16 @@ import "github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
 
 
 /**
- * LTR (Letter) resources store third-order Markov chain probability tables that the game uses
- * to procedurally generate NPC names. The data encodes likelihoods for characters appearing at
- * the start, middle, and end of names given zero, one, or two-character context.
- * 
- * KotOR always uses the 28-character alphabet (a-z plus ' and -). Neverwinter Nights (NWN) used
- * 26 characters; the header explicitly stores the count. This is a KotOR-specific difference from NWN.
- * 
- * LTR files are binary and consist of a short header followed by three probability tables
- * (singles, doubles, triples) stored as contiguous float arrays.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LTR-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/ltrreader.cpp:27-74
- * - https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp:135-168
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LTRObject.ts:61-117
+ * **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
+ * `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
+ * `bioware_common.ksy`. Use `.to_i` on that enum inside `valid`/`repeat-expr` (see Kaitai user guide: enums).
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format">PyKotor wiki — LTR</a>
+ * @see <a href="https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168">xoreos — LTR::load</a>
  */
 type Ltr struct {
 	FileType string
 	FileVersion string
-	LetterCount uint8
+	LetterCount BiowareCommon_BiowareLtrAlphabetLength
 	SingleLetterBlock *Ltr_LetterBlock
 	DoubleLetterBlocks *Ltr_DoubleLetterBlocksArray
 	TripleLetterBlocks *Ltr_TripleLetterBlocksArray
@@ -61,7 +51,7 @@ func (this *Ltr) Read(io *kaitai.Stream, parent kaitai.Struct, root *Ltr) (err e
 	if err != nil {
 		return err
 	}
-	this.LetterCount = tmp3
+	this.LetterCount = BiowareCommon_BiowareLtrAlphabetLength(tmp3)
 	tmp4 := NewLtr_LetterBlock()
 	err = tmp4.Read(this._io, this, this._root)
 	if err != nil {
@@ -92,9 +82,8 @@ func (this *Ltr) Read(io *kaitai.Stream, parent kaitai.Struct, root *Ltr) (err e
  */
 
 /**
- * Number of characters in the alphabet. Must be 26 (NWN) or 28 (KotOR).
- * KotOR uses 28 characters: "abcdefghijklmnopqrstuvwxyz'-"
- * NWN uses 26 characters: "abcdefghijklmnopqrstuvwxyz"
+ * Alphabet size (`u1`). Canonical enum: `formats/Common/bioware_common.ksy` → `bioware_ltr_alphabet_length`
+ * (26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide §6.4.5).
  */
 
 /**

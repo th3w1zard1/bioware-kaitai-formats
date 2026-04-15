@@ -31,9 +31,10 @@ git add <file> && git commit -m "type(scope): message"  # NEVER git add . or -A;
 - `formats/` – ALL .ksy format definition files (organized by format type)
 - `scripts/` – ALL .ps1/.sh/.py/.bat helper scripts
 - `src/` – Generated code for each language (e.g., `src/csharp/`, `src/python/`)
-- `tests/` – ALL test files (organized by language, e.g., `tests/csharp/`)
+- `tests/` – optional language-specific tests when present (e.g., `tests/csharp/`)
+- `src/python/tests/` – Python **Kaitai compile smoke** (`pytest.ini` → `testpaths`)
 - `docs/` – ALL .md documentation except root `README.md`
-- Root files only allowed: `README.md`, `.gitignore`, `.cursorrules`, `LICENSE`
+- Root files only allowed: `README.md`, `AGENTS.md`, `.gitignore`, `.cursorrules`, `LICENSE`, `pytest.ini`
 - Root directories allowed: `.cursor/` (Cursor IDE configuration, roadmaps at `.cursor/roadmaps/*.md`)
 
 **Action**: If you see misplaced files → move them immediately → commit.
@@ -91,6 +92,7 @@ kaitai-struct-compiler -t csharp --dotnet-namespace <namespace> -d ./src/csharp 
 - **CRITICAL**: After ANY `.ksy` file change, always lint and fix all problems by referencing `include/ksy_schema.json`
 - The schema file defines the complete Kaitai Struct specification and must be used to validate syntax
 - Fix all validation errors, schema violations, and linting issues before committing
+- Under `meta.xref`, never use `some_key: >` with the next non-blank line starting `note:` — YAML treats that as one folded string; `python scripts/verify_ksy_urls.py` fails the repo if it appears
 
 ## 5. Generated Code Location
 
@@ -108,22 +110,20 @@ kaitai-struct-compiler -t csharp --dotnet-namespace <namespace> -d ./src/csharp 
 
 ## 6. Testing
 
-**Test Location**: `tests/<language>/` (e.g., `tests/csharp/`, `tests/python/`)
+**Python (required smoke)**: `src/python/tests/` — `test_kaitai_compile_smoke.py` compiles every `formats/**/*.ksy` to Python via `kaitai-struct-compiler` (see `pytest.ini`, `docs/XOREOS_FORMAT_COVERAGE.md` section 3, `AGENTS.md`).
 
-**Test Naming**: `FormatNameKaitaiCompilerTests.cs` or `FormatNameKaitaiStructTests.cs`
+**Other languages**: Prefer `tests/<language>/` when you add parser round-trips (e.g., `tests/csharp/`). Naming examples: `FormatNameKaitaiCompilerTests.cs` or `FormatNameKaitaiStructTests.cs`.
 
 **Test Requirements**:
 
-- Test that `.ksy` files compile successfully to target languages
-- Test parsing of sample files from BioWare games
-- Verify generated code correctness
-- Test multiple language targets when possible (aim for 12+ languages)
+- After `.ksy` edits: run the verification block in `AGENTS.md` (URL checker, optional vendor line checker, `pytest`)
+- When possible: test parsing of sample files from BioWare games; verify generated code correctness across language targets
 
 **When adding new formats**:
 
 1. Create/modify `.ksy` file in `formats/`
-2. Regenerate code using `scripts/generate_code.ps1`
-3. Add test file in `tests/<language>/`
+2. Regenerate code using `scripts/generate_code.ps1` (or CI)
+3. Extend smoke coverage automatically (all `.ksy` are compiled in `test_kaitai_compile_smoke.py`); add `tests/<language>/` cases when you need fixtures
 4. Test with real game files if available
 
 ## 7. Scripts

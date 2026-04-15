@@ -11,23 +11,14 @@ use kaitai::*;
 use std::convert::{TryFrom, TryInto};
 use std::cell::{Ref, Cell, RefCell};
 use std::rc::{Rc, Weak};
+use super::bioware_common::BiowareCommon_BiowareLtrAlphabetLength;
 
 /**
- * LTR (Letter) resources store third-order Markov chain probability tables that the game uses
- * to procedurally generate NPC names. The data encodes likelihoods for characters appearing at
- * the start, middle, and end of names given zero, one, or two-character context.
- * 
- * KotOR always uses the 28-character alphabet (a-z plus ' and -). Neverwinter Nights (NWN) used
- * 26 characters; the header explicitly stores the count. This is a KotOR-specific difference from NWN.
- * 
- * LTR files are binary and consist of a short header followed by three probability tables
- * (singles, doubles, triples) stored as contiguous float arrays.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LTR-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/ltrreader.cpp:27-74
- * - https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp:135-168
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LTRObject.ts:61-117
+ * **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
+ * `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
+ * `bioware_common.ksy`. Use `.to_i` on that enum inside `valid`/`repeat-expr` (see Kaitai user guide: enums).
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format PyKotor wiki — LTR
+ * \sa https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168 xoreos — LTR::load
  */
 
 #[derive(Default, Debug, Clone)]
@@ -37,7 +28,7 @@ pub struct Ltr {
     pub _self: SharedType<Self>,
     file_type: RefCell<String>,
     file_version: RefCell<String>,
-    letter_count: RefCell<u8>,
+    letter_count: RefCell<BiowareCommon_BiowareLtrAlphabetLength>,
     single_letter_block: RefCell<OptRc<Ltr_LetterBlock>>,
     double_letter_blocks: RefCell<OptRc<Ltr_DoubleLetterBlocksArray>>,
     triple_letter_blocks: RefCell<OptRc<Ltr_TripleLetterBlocksArray>>,
@@ -62,7 +53,7 @@ impl KStruct for Ltr {
         let _r = _rrc.as_ref().unwrap();
         *self_rc.file_type.borrow_mut() = bytes_to_str(&_io.read_bytes(4 as usize)?.into(), "ASCII")?;
         *self_rc.file_version.borrow_mut() = bytes_to_str(&_io.read_bytes(4 as usize)?.into(), "ASCII")?;
-        *self_rc.letter_count.borrow_mut() = _io.read_u1()?.into();
+        *self_rc.letter_count.borrow_mut() = (_io.read_u1()? as i64).try_into()?;
         let t = Self::read_into::<_, Ltr_LetterBlock>(&*_io, Some(self_rc._root.clone()), None)?.into();
         *self_rc.single_letter_block.borrow_mut() = t;
         let t = Self::read_into::<_, Ltr_DoubleLetterBlocksArray>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
@@ -94,12 +85,11 @@ impl Ltr {
 }
 
 /**
- * Number of characters in the alphabet. Must be 26 (NWN) or 28 (KotOR).
- * KotOR uses 28 characters: "abcdefghijklmnopqrstuvwxyz'-"
- * NWN uses 26 characters: "abcdefghijklmnopqrstuvwxyz"
+ * Alphabet size (`u1`). Canonical enum: `formats/Common/bioware_common.ksy` → `bioware_ltr_alphabet_length`
+ * (26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide §6.4.5).
  */
 impl Ltr {
-    pub fn letter_count(&self) -> Ref<'_, u8> {
+    pub fn letter_count(&self) -> Ref<'_, BiowareCommon_BiowareLtrAlphabetLength> {
         self.letter_count.borrow()
     }
 }
@@ -179,7 +169,7 @@ impl KStruct for Ltr_DoubleLetterBlocksArray {
         let _prc = self_rc._parent.get_value().borrow().upgrade();
         let _r = _rrc.as_ref().unwrap();
         *self_rc.blocks.borrow_mut() = Vec::new();
-        let l_blocks = *_r.letter_count();
+        let l_blocks = i64::from(&*_r.letter_count());
         for _i in 0..l_blocks {
             let t = Self::read_into::<_, Ltr_LetterBlock>(&*_io, Some(self_rc._root.clone()), None)?.into();
             self_rc.blocks.borrow_mut().push(t);
@@ -242,17 +232,17 @@ impl KStruct for Ltr_LetterBlock {
         let _prc = self_rc._parent.get_value().borrow().upgrade();
         let _r = _rrc.as_ref().unwrap();
         *self_rc.start_probabilities.borrow_mut() = Vec::new();
-        let l_start_probabilities = *_r.letter_count();
+        let l_start_probabilities = i64::from(&*_r.letter_count());
         for _i in 0..l_start_probabilities {
             self_rc.start_probabilities.borrow_mut().push(_io.read_f4le()?.into());
         }
         *self_rc.middle_probabilities.borrow_mut() = Vec::new();
-        let l_middle_probabilities = *_r.letter_count();
+        let l_middle_probabilities = i64::from(&*_r.letter_count());
         for _i in 0..l_middle_probabilities {
             self_rc.middle_probabilities.borrow_mut().push(_io.read_f4le()?.into());
         }
         *self_rc.end_probabilities.borrow_mut() = Vec::new();
-        let l_end_probabilities = *_r.letter_count();
+        let l_end_probabilities = i64::from(&*_r.letter_count());
         for _i in 0..l_end_probabilities {
             self_rc.end_probabilities.borrow_mut().push(_io.read_f4le()?.into());
         }
@@ -329,7 +319,7 @@ impl KStruct for Ltr_TripleLetterBlocksArray {
         let _prc = self_rc._parent.get_value().borrow().upgrade();
         let _r = _rrc.as_ref().unwrap();
         *self_rc.rows.borrow_mut() = Vec::new();
-        let l_rows = *_r.letter_count();
+        let l_rows = i64::from(&*_r.letter_count());
         for _i in 0..l_rows {
             let t = Self::read_into::<_, Ltr_TripleLetterRow>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
             self_rc.rows.borrow_mut().push(t);
@@ -387,7 +377,7 @@ impl KStruct for Ltr_TripleLetterRow {
         let _prc = self_rc._parent.get_value().borrow().upgrade();
         let _r = _rrc.as_ref().unwrap();
         *self_rc.blocks.borrow_mut() = Vec::new();
-        let l_blocks = *_r.letter_count();
+        let l_blocks = i64::from(&*_r.letter_count());
         for _i in 0..l_blocks {
             let t = Self::read_into::<_, Ltr_LetterBlock>(&*_io, Some(self_rc._root.clone()), None)?.into();
             self_rc.blocks.borrow_mut().push(t);

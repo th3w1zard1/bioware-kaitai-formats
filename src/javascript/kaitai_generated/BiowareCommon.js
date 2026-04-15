@@ -19,14 +19,22 @@
  * - The CExoLocString / LocalizedString binary layout
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
  * - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
  * - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
  */
 
 var BiowareCommon = (function() {
+  BiowareCommon.BiowareDdsVariantBytesPerPixel = Object.freeze({
+    DXT1: 3,
+    DXT5: 4,
+
+    3: "DXT1",
+    4: "DXT5",
+  });
+
   BiowareCommon.BiowareEquipmentSlotFlag = Object.freeze({
     INVALID: 0,
     HEAD: 1,
@@ -289,6 +297,50 @@ var BiowareCommon = (function() {
     2147483646: "UNKNOWN",
   });
 
+  BiowareCommon.BiowareLipVisemeId = Object.freeze({
+    NEUTRAL: 0,
+    EE: 1,
+    EH: 2,
+    AH: 3,
+    OH: 4,
+    OOH: 5,
+    Y: 6,
+    STS: 7,
+    FV: 8,
+    NG: 9,
+    TH: 10,
+    MPB: 11,
+    TD: 12,
+    SH: 13,
+    L: 14,
+    KG: 15,
+
+    0: "NEUTRAL",
+    1: "EE",
+    2: "EH",
+    3: "AH",
+    4: "OH",
+    5: "OOH",
+    6: "Y",
+    7: "STS",
+    8: "FV",
+    9: "NG",
+    10: "TH",
+    11: "MPB",
+    12: "TD",
+    13: "SH",
+    14: "L",
+    15: "KG",
+  });
+
+  BiowareCommon.BiowareLtrAlphabetLength = Object.freeze({
+    NEVERWINTER_NIGHTS: 26,
+    KOTOR: 28,
+
+    26: "NEVERWINTER_NIGHTS",
+    28: "KOTOR",
+  });
+
   BiowareCommon.BiowareObjectTypeId = Object.freeze({
     INVALID: 0,
     CREATURE: 1,
@@ -315,6 +367,56 @@ var BiowareCommon = (function() {
     9: "AREA",
     10: "SOUND",
     11: "CAMERA",
+  });
+
+  BiowareCommon.BiowarePccCompressionCodec = Object.freeze({
+    NONE: 0,
+    ZLIB: 1,
+    LZO: 2,
+
+    0: "NONE",
+    1: "ZLIB",
+    2: "LZO",
+  });
+
+  BiowareCommon.BiowarePccPackageKind = Object.freeze({
+    NORMAL_PACKAGE: 0,
+    PATCH_PACKAGE: 1,
+
+    0: "NORMAL_PACKAGE",
+    1: "PATCH_PACKAGE",
+  });
+
+  BiowareCommon.BiowareTpcPixelFormatId = Object.freeze({
+    GREYSCALE: 1,
+    RGB_OR_DXT1: 2,
+    RGBA_OR_DXT5: 4,
+    BGRA_XBOX_SWIZZLE: 12,
+
+    1: "GREYSCALE",
+    2: "RGB_OR_DXT1",
+    4: "RGBA_OR_DXT5",
+    12: "BGRA_XBOX_SWIZZLE",
+  });
+
+  BiowareCommon.RiffWaveFormatTag = Object.freeze({
+    PCM: 1,
+    ADPCM_MS: 2,
+    IEEE_FLOAT: 3,
+    ALAW: 6,
+    MULAW: 7,
+    DVI_IMA_ADPCM: 17,
+    MPEG_LAYER3: 85,
+    WAVE_FORMAT_EXTENSIBLE: 65534,
+
+    1: "PCM",
+    2: "ADPCM_MS",
+    3: "IEEE_FLOAT",
+    6: "ALAW",
+    7: "MULAW",
+    17: "DVI_IMA_ADPCM",
+    85: "MPEG_LAYER3",
+    65534: "WAVE_FORMAT_EXTENSIBLE",
   });
 
   function BiowareCommon(_io, _parent, _root) {
@@ -425,7 +527,7 @@ var BiowareCommon = (function() {
      */
 
     /**
-     * StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+     * StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
      */
 
     /**

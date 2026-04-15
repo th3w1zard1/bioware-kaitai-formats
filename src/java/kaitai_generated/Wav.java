@@ -10,22 +10,13 @@ import java.util.List;
 
 
 /**
- * WAV (Waveform Audio Format) files used in KotOR. KotOR stores both standard WAV voice-over lines
- * and Bioware-obfuscated sound-effect files. Voice-over assets are regular RIFF containers with PCM
- * headers, while SFX assets prepend a 470-byte custom block before the RIFF data.
+ * **KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
+ * MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
+ * 20-byte VO prefixes are application-level.
  * 
- * Format Types:
- * - VO (Voice-over): Plain RIFF/WAVE PCM files readable by any media player
- * - SFX (Sound effects): Contains a Bioware 470-byte obfuscation header followed by RIFF data
- * - MP3-in-WAV: Special RIFF container with MP3 data (RIFF size = 50)
- * 
- * Note: This Kaitai Struct definition documents the core RIFF/WAVE structure. SFX and VO headers
- * (470-byte and 20-byte prefixes respectively) are handled by application-level deobfuscation.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/audio/format/wavreader.cpp:30-56
- * - https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:34-84
+ * `wFormatTag` / PCM layout notes: `bioware_common.ksy` → `riff_wave_format_tag`.
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav">PyKotor wiki — WAV</a>
+ * @see <a href="https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106">xoreos — wave decoder</a>
  */
 public class Wav extends KaitaiStruct {
     public static Wav fromFile(String fileName) throws IOException {
@@ -137,14 +128,14 @@ public class Wav extends KaitaiStruct {
         /**
          * Chunk ID (4-character ASCII string)
          * Common values: "fmt ", "data", "fact", "LIST", etc.
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:58-72
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L58-L72
          */
         public String id() { return id; }
 
         /**
          * Chunk size in bytes (chunk data only, excluding ID and size fields)
          * Chunks are word-aligned (even byte boundaries)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
          */
         public long size() { return size; }
 
@@ -186,7 +177,7 @@ public class Wav extends KaitaiStruct {
 
         /**
          * Raw audio data (PCM samples or compressed audio)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:79-80
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L79-L80
          */
         public byte[] data() { return data; }
         public Wav _root() { return _root; }
@@ -224,7 +215,7 @@ public class Wav extends KaitaiStruct {
         /**
          * Sample count (number of samples in compressed audio)
          * Used for compressed formats like ADPCM
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:189-192
+         * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L234-L236 (`fact` chunk skip — sample count lives in chunk body)
          */
         public long sampleCount() { return sampleCount; }
         public Wav _root() { return _root; }
@@ -250,7 +241,7 @@ public class Wav extends KaitaiStruct {
             _read();
         }
         private void _read() {
-            this.audioFormat = this._io.readU2le();
+            this.audioFormat = BiowareCommon.RiffWaveFormatTag.byId(this._io.readU2le());
             this.channels = this._io.readU2le();
             this.sampleRate = this._io.readU4le();
             this.bytesPerSec = this._io.readU4le();
@@ -273,7 +264,7 @@ public class Wav extends KaitaiStruct {
         public Boolean isImaAdpcm() {
             if (this.isImaAdpcm != null)
                 return this.isImaAdpcm;
-            this.isImaAdpcm = audioFormat() == 17;
+            this.isImaAdpcm = audioFormat() == BiowareCommon.RiffWaveFormatTag.DVI_IMA_ADPCM;
             return this.isImaAdpcm;
         }
         private Boolean isMp3;
@@ -284,7 +275,7 @@ public class Wav extends KaitaiStruct {
         public Boolean isMp3() {
             if (this.isMp3 != null)
                 return this.isMp3;
-            this.isMp3 = audioFormat() == 85;
+            this.isMp3 = audioFormat() == BiowareCommon.RiffWaveFormatTag.MPEG_LAYER3;
             return this.isMp3;
         }
         private Boolean isPcm;
@@ -295,10 +286,10 @@ public class Wav extends KaitaiStruct {
         public Boolean isPcm() {
             if (this.isPcm != null)
                 return this.isPcm;
-            this.isPcm = audioFormat() == 1;
+            this.isPcm = audioFormat() == BiowareCommon.RiffWaveFormatTag.PCM;
             return this.isPcm;
         }
-        private int audioFormat;
+        private BiowareCommon.RiffWaveFormatTag audioFormat;
         private int channels;
         private long sampleRate;
         private long bytesPerSec;
@@ -309,22 +300,16 @@ public class Wav extends KaitaiStruct {
         private Wav.Chunk _parent;
 
         /**
-         * Audio format code:
-         * - 0x0001 = PCM (Linear PCM, uncompressed)
-         * - 0x0002 = Microsoft ADPCM
-         * - 0x0006 = A-Law companded
-         * - 0x0007 = μ-Law companded
-         * - 0x0011 = IMA ADPCM (DVI ADPCM)
-         * - 0x0055 = MPEG Layer 3 (MP3)
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * RIFF `fmt ` / `WAVEFORMATEX.wFormatTag` (`u2` LE). Canonical: `formats/Common/bioware_common.ksy` → `riff_wave_format_tag`
+         * (Microsoft `WAVEFORMATEX`; KotOR usage: PyKotor WAV wiki, xoreos `wave.cpp`).
          */
-        public int audioFormat() { return audioFormat; }
+        public BiowareCommon.RiffWaveFormatTag audioFormat() { return audioFormat; }
 
         /**
          * Number of audio channels:
          * - 1 = mono
          * - 2 = stereo
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public int channels() { return channels; }
 
@@ -333,21 +318,21 @@ public class Wav extends KaitaiStruct {
          * Typical values:
          * - 22050 Hz for SFX
          * - 44100 Hz for VO
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public long sampleRate() { return sampleRate; }
 
         /**
          * Byte rate (average bytes per second)
          * Formula: sample_rate × block_align
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public long bytesPerSec() { return bytesPerSec; }
 
         /**
          * Block alignment (bytes per sample frame)
          * Formula for PCM: channels × (bits_per_sample / 8)
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public int blockAlign() { return blockAlign; }
 
@@ -355,7 +340,7 @@ public class Wav extends KaitaiStruct {
          * Bits per sample
          * Common values: 8, 16
          * For PCM: typically 16-bit
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public int bitsPerSample() { return bitsPerSample; }
 
@@ -364,7 +349,7 @@ public class Wav extends KaitaiStruct {
          * For IMA ADPCM and other compressed formats, contains:
          * - Extra format size (u2)
          * - Format-specific data (e.g., ADPCM coefficients)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
          */
         public byte[] extraFormatBytes() { return extraFormatBytes; }
         public Wav _root() { return _root; }
@@ -407,7 +392,7 @@ public class Wav extends KaitaiStruct {
 
         /**
          * MP3-in-WAV format detected when RIFF size = 50
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py:60-64
+         * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
          */
         public Boolean isMp3InWav() {
             if (this.isMp3InWav != null)
@@ -429,7 +414,7 @@ public class Wav extends KaitaiStruct {
         /**
          * File size minus 8 bytes (RIFF_ID + RIFF_SIZE itself)
          * For MP3-in-WAV format, this is 50
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public long riffSize() { return riffSize; }
 
@@ -477,14 +462,14 @@ public class Wav extends KaitaiStruct {
 
         /**
          * Unknown chunk body (skip for compatibility)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:53-54
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L53-L54
          */
         public byte[] data() { return data; }
 
         /**
          * Padding byte to align to word boundary (only if chunk size is odd)
          * RIFF chunks must be aligned to 2-byte boundaries
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:153-156
+         * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L243-L245 (unknown chunk skip + optional 1-byte word alignment)
          */
         public Integer padding() { return padding; }
         public Wav _root() { return _root; }
@@ -503,7 +488,7 @@ public class Wav extends KaitaiStruct {
     /**
      * RIFF chunks in sequence (fmt, fact, data, etc.)
      * Parsed until end of file
-     * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:46-55
+     * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L46-L55
      */
     public List<Chunk> chunks() { return chunks; }
     public Wav _root() { return _root; }

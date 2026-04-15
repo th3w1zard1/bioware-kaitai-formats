@@ -42,7 +42,7 @@ digraph {
 			</TABLE>>];
 			file_entry__inst__filename [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="filename_pos">(_root.file_table_offset + _root.bif_count * 12) + filename_offset</TD><TD PORT="filename_size">filename_size</TD><TD>str(ASCII)</TD><TD PORT="filename_type">filename</TD></TR>
+				<TR><TD PORT="filename_pos">filename_offset</TD><TD PORT="filename_size">filename_size</TD><TD>str(ASCII)</TD><TD PORT="filename_type">filename</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__file_table {
@@ -71,7 +71,7 @@ digraph {
 			key_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="resref_pos">0</TD><TD PORT="resref_size">16</TD><TD>str(ASCII)</TD><TD PORT="resref_type">resref</TD></TR>
-				<TR><TD PORT="resource_type_pos">16</TD><TD PORT="resource_type_size">2</TD><TD>u2le→XoreosFileTypeId</TD><TD PORT="resource_type_type">resource_type</TD></TR>
+				<TR><TD PORT="resource_type_pos">16</TD><TD PORT="resource_type_size">2</TD><TD>u2le→BiowareTypeIds::XoreosFileTypeId</TD><TD PORT="resource_type_type">resource_type</TD></TR>
 				<TR><TD PORT="resource_id_pos">18</TD><TD PORT="resource_id_size">4</TD><TD>u4le</TD><TD PORT="resource_id_type">resource_id</TD></TR>
 			</TABLE>>];
 		}
@@ -92,8 +92,6 @@ digraph {
 	key__seq:key_table_offset_type -> key__inst__key_table:key_table_pos [color="#404040"];
 	key__inst__key_table:key_table_type -> key_table__seq [style=bold];
 	key__seq:key_count_type -> key__inst__key_table:key_table__if [color="#404040"];
-	key__seq:file_table_offset_type -> file_entry__inst__filename:filename_pos [color="#404040"];
-	key__seq:bif_count_type -> file_entry__inst__filename:filename_pos [color="#404040"];
 	file_entry__seq:filename_offset_type -> file_entry__inst__filename:filename_pos [color="#404040"];
 	file_entry__seq:filename_size_type -> file_entry__inst__filename:filename_size [color="#404040"];
 	file_table__seq:entries_type -> file_entry__seq [style=bold];

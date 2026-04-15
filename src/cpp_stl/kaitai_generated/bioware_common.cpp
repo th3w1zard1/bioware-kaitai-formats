@@ -2,6 +2,16 @@
 
 #include "bioware_common.h"
 #include "kaitai/exceptions.h"
+std::set<bioware_common_t::bioware_dds_variant_bytes_per_pixel_t> bioware_common_t::_build_values_bioware_dds_variant_bytes_per_pixel_t() {
+    std::set<bioware_common_t::bioware_dds_variant_bytes_per_pixel_t> _t;
+    _t.insert(bioware_common_t::BIOWARE_DDS_VARIANT_BYTES_PER_PIXEL_DXT1);
+    _t.insert(bioware_common_t::BIOWARE_DDS_VARIANT_BYTES_PER_PIXEL_DXT5);
+    return _t;
+}
+const std::set<bioware_common_t::bioware_dds_variant_bytes_per_pixel_t> bioware_common_t::_values_bioware_dds_variant_bytes_per_pixel_t = bioware_common_t::_build_values_bioware_dds_variant_bytes_per_pixel_t();
+bool bioware_common_t::_is_defined_bioware_dds_variant_bytes_per_pixel_t(bioware_common_t::bioware_dds_variant_bytes_per_pixel_t v) {
+    return bioware_common_t::_values_bioware_dds_variant_bytes_per_pixel_t.find(v) != bioware_common_t::_values_bioware_dds_variant_bytes_per_pixel_t.end();
+}
 std::set<bioware_common_t::bioware_equipment_slot_flag_t> bioware_common_t::_build_values_bioware_equipment_slot_flag_t() {
     std::set<bioware_common_t::bioware_equipment_slot_flag_t> _t;
     _t.insert(bioware_common_t::BIOWARE_EQUIPMENT_SLOT_FLAG_INVALID);
@@ -157,6 +167,40 @@ const std::set<bioware_common_t::bioware_language_id_t> bioware_common_t::_value
 bool bioware_common_t::_is_defined_bioware_language_id_t(bioware_common_t::bioware_language_id_t v) {
     return bioware_common_t::_values_bioware_language_id_t.find(v) != bioware_common_t::_values_bioware_language_id_t.end();
 }
+std::set<bioware_common_t::bioware_lip_viseme_id_t> bioware_common_t::_build_values_bioware_lip_viseme_id_t() {
+    std::set<bioware_common_t::bioware_lip_viseme_id_t> _t;
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_NEUTRAL);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_EE);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_EH);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_AH);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_OH);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_OOH);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_Y);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_STS);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_FV);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_NG);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_TH);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_MPB);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_TD);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_SH);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_L);
+    _t.insert(bioware_common_t::BIOWARE_LIP_VISEME_ID_KG);
+    return _t;
+}
+const std::set<bioware_common_t::bioware_lip_viseme_id_t> bioware_common_t::_values_bioware_lip_viseme_id_t = bioware_common_t::_build_values_bioware_lip_viseme_id_t();
+bool bioware_common_t::_is_defined_bioware_lip_viseme_id_t(bioware_common_t::bioware_lip_viseme_id_t v) {
+    return bioware_common_t::_values_bioware_lip_viseme_id_t.find(v) != bioware_common_t::_values_bioware_lip_viseme_id_t.end();
+}
+std::set<bioware_common_t::bioware_ltr_alphabet_length_t> bioware_common_t::_build_values_bioware_ltr_alphabet_length_t() {
+    std::set<bioware_common_t::bioware_ltr_alphabet_length_t> _t;
+    _t.insert(bioware_common_t::BIOWARE_LTR_ALPHABET_LENGTH_NEVERWINTER_NIGHTS);
+    _t.insert(bioware_common_t::BIOWARE_LTR_ALPHABET_LENGTH_KOTOR);
+    return _t;
+}
+const std::set<bioware_common_t::bioware_ltr_alphabet_length_t> bioware_common_t::_values_bioware_ltr_alphabet_length_t = bioware_common_t::_build_values_bioware_ltr_alphabet_length_t();
+bool bioware_common_t::_is_defined_bioware_ltr_alphabet_length_t(bioware_common_t::bioware_ltr_alphabet_length_t v) {
+    return bioware_common_t::_values_bioware_ltr_alphabet_length_t.find(v) != bioware_common_t::_values_bioware_ltr_alphabet_length_t.end();
+}
 std::set<bioware_common_t::bioware_object_type_id_t> bioware_common_t::_build_values_bioware_object_type_id_t() {
     std::set<bioware_common_t::bioware_object_type_id_t> _t;
     _t.insert(bioware_common_t::BIOWARE_OBJECT_TYPE_ID_INVALID);
@@ -176,6 +220,55 @@ std::set<bioware_common_t::bioware_object_type_id_t> bioware_common_t::_build_va
 const std::set<bioware_common_t::bioware_object_type_id_t> bioware_common_t::_values_bioware_object_type_id_t = bioware_common_t::_build_values_bioware_object_type_id_t();
 bool bioware_common_t::_is_defined_bioware_object_type_id_t(bioware_common_t::bioware_object_type_id_t v) {
     return bioware_common_t::_values_bioware_object_type_id_t.find(v) != bioware_common_t::_values_bioware_object_type_id_t.end();
+}
+std::set<bioware_common_t::bioware_pcc_compression_codec_t> bioware_common_t::_build_values_bioware_pcc_compression_codec_t() {
+    std::set<bioware_common_t::bioware_pcc_compression_codec_t> _t;
+    _t.insert(bioware_common_t::BIOWARE_PCC_COMPRESSION_CODEC_NONE);
+    _t.insert(bioware_common_t::BIOWARE_PCC_COMPRESSION_CODEC_ZLIB);
+    _t.insert(bioware_common_t::BIOWARE_PCC_COMPRESSION_CODEC_LZO);
+    return _t;
+}
+const std::set<bioware_common_t::bioware_pcc_compression_codec_t> bioware_common_t::_values_bioware_pcc_compression_codec_t = bioware_common_t::_build_values_bioware_pcc_compression_codec_t();
+bool bioware_common_t::_is_defined_bioware_pcc_compression_codec_t(bioware_common_t::bioware_pcc_compression_codec_t v) {
+    return bioware_common_t::_values_bioware_pcc_compression_codec_t.find(v) != bioware_common_t::_values_bioware_pcc_compression_codec_t.end();
+}
+std::set<bioware_common_t::bioware_pcc_package_kind_t> bioware_common_t::_build_values_bioware_pcc_package_kind_t() {
+    std::set<bioware_common_t::bioware_pcc_package_kind_t> _t;
+    _t.insert(bioware_common_t::BIOWARE_PCC_PACKAGE_KIND_NORMAL_PACKAGE);
+    _t.insert(bioware_common_t::BIOWARE_PCC_PACKAGE_KIND_PATCH_PACKAGE);
+    return _t;
+}
+const std::set<bioware_common_t::bioware_pcc_package_kind_t> bioware_common_t::_values_bioware_pcc_package_kind_t = bioware_common_t::_build_values_bioware_pcc_package_kind_t();
+bool bioware_common_t::_is_defined_bioware_pcc_package_kind_t(bioware_common_t::bioware_pcc_package_kind_t v) {
+    return bioware_common_t::_values_bioware_pcc_package_kind_t.find(v) != bioware_common_t::_values_bioware_pcc_package_kind_t.end();
+}
+std::set<bioware_common_t::bioware_tpc_pixel_format_id_t> bioware_common_t::_build_values_bioware_tpc_pixel_format_id_t() {
+    std::set<bioware_common_t::bioware_tpc_pixel_format_id_t> _t;
+    _t.insert(bioware_common_t::BIOWARE_TPC_PIXEL_FORMAT_ID_GREYSCALE);
+    _t.insert(bioware_common_t::BIOWARE_TPC_PIXEL_FORMAT_ID_RGB_OR_DXT1);
+    _t.insert(bioware_common_t::BIOWARE_TPC_PIXEL_FORMAT_ID_RGBA_OR_DXT5);
+    _t.insert(bioware_common_t::BIOWARE_TPC_PIXEL_FORMAT_ID_BGRA_XBOX_SWIZZLE);
+    return _t;
+}
+const std::set<bioware_common_t::bioware_tpc_pixel_format_id_t> bioware_common_t::_values_bioware_tpc_pixel_format_id_t = bioware_common_t::_build_values_bioware_tpc_pixel_format_id_t();
+bool bioware_common_t::_is_defined_bioware_tpc_pixel_format_id_t(bioware_common_t::bioware_tpc_pixel_format_id_t v) {
+    return bioware_common_t::_values_bioware_tpc_pixel_format_id_t.find(v) != bioware_common_t::_values_bioware_tpc_pixel_format_id_t.end();
+}
+std::set<bioware_common_t::riff_wave_format_tag_t> bioware_common_t::_build_values_riff_wave_format_tag_t() {
+    std::set<bioware_common_t::riff_wave_format_tag_t> _t;
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_PCM);
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_ADPCM_MS);
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_IEEE_FLOAT);
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_ALAW);
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_MULAW);
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_DVI_IMA_ADPCM);
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_MPEG_LAYER3);
+    _t.insert(bioware_common_t::RIFF_WAVE_FORMAT_TAG_WAVE_FORMAT_EXTENSIBLE);
+    return _t;
+}
+const std::set<bioware_common_t::riff_wave_format_tag_t> bioware_common_t::_values_riff_wave_format_tag_t = bioware_common_t::_build_values_riff_wave_format_tag_t();
+bool bioware_common_t::_is_defined_riff_wave_format_tag_t(bioware_common_t::riff_wave_format_tag_t v) {
+    return bioware_common_t::_values_riff_wave_format_tag_t.find(v) != bioware_common_t::_values_riff_wave_format_tag_t.end();
 }
 
 bioware_common_t::bioware_common_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, bioware_common_t* p__root) : kaitai::kstruct(p__io) {

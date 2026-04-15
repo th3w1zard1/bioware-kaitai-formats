@@ -2,12 +2,13 @@
 
 #include "twoda.h"
 
-twoda_t::twoda_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, twoda_t* p__root) : kaitai::kstruct(p__io) {
+twoda_t::twoda_t(uint32_t p_column_count, kaitai::kstream* p__io, kaitai::kstruct* p__parent, twoda_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root ? p__root : this;
+    m_column_count = p_column_count;
     m_header = 0;
     m_row_labels_section = 0;
-    m_cell_offsets_array = 0;
+    m_cell_offsets = 0;
     m_cell_values_section = 0;
     m__io__raw_cell_values_section = 0;
 
@@ -24,7 +25,11 @@ void twoda_t::_read() {
     m_column_headers_raw = kaitai::kstream::bytes_to_str(m__io->read_bytes_term(0, false, true, true), "ASCII");
     m_row_count = m__io->read_u4le();
     m_row_labels_section = new row_labels_section_t(m__io, this, m__root);
-    m_cell_offsets_array = new cell_offsets_array_t(m__io, this, m__root);
+    m_cell_offsets = new std::vector<uint16_t>();
+    const int l_cell_offsets = row_count() * column_count();
+    for (int i = 0; i < l_cell_offsets; i++) {
+        m_cell_offsets->push_back(m__io->read_u2le());
+    }
     m_len_cell_values_section = m__io->read_u2le();
     m__raw_cell_values_section = m__io->read_bytes(len_cell_values_section());
     m__io__raw_cell_values_section = new kaitai::kstream(m__raw_cell_values_section);
@@ -42,50 +47,14 @@ void twoda_t::_clean_up() {
     if (m_row_labels_section) {
         delete m_row_labels_section; m_row_labels_section = 0;
     }
-    if (m_cell_offsets_array) {
-        delete m_cell_offsets_array; m_cell_offsets_array = 0;
+    if (m_cell_offsets) {
+        delete m_cell_offsets; m_cell_offsets = 0;
     }
     if (m__io__raw_cell_values_section) {
         delete m__io__raw_cell_values_section; m__io__raw_cell_values_section = 0;
     }
     if (m_cell_values_section) {
         delete m_cell_values_section; m_cell_values_section = 0;
-    }
-}
-
-twoda_t::cell_offsets_array_t::cell_offsets_array_t(kaitai::kstream* p__io, twoda_t* p__parent, twoda_t* p__root) : kaitai::kstruct(p__io) {
-    m__parent = p__parent;
-    m__root = p__root;
-    m_offsets = 0;
-
-    try {
-        _read();
-    } catch(...) {
-        _clean_up();
-        throw;
-    }
-}
-
-void twoda_t::cell_offsets_array_t::_read() {
-    m_offsets = new std::vector<uint16_t>();
-    {
-        int i = 0;
-        uint16_t _;
-        do {
-            _ = m__io->read_u2le();
-            m_offsets->push_back(_);
-            i++;
-        } while (!(_io()->pos() >= _io()->size() - 2));
-    }
-}
-
-twoda_t::cell_offsets_array_t::~cell_offsets_array_t() {
-    _clean_up();
-}
-
-void twoda_t::cell_offsets_array_t::_clean_up() {
-    if (m_offsets) {
-        delete m_offsets; m_offsets = 0;
     }
 }
 

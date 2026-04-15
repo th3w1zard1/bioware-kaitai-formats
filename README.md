@@ -21,7 +21,7 @@ This repository provides Kaitai Struct (`.ksy`) format definitions for all major
 - **NCS/NSS** - NWScript bytecode and source
 - **WAV** - Audio format (with BioWare-specific extensions)
 - **BWM** - BioWare Walkmesh (navigation meshes)
-- **LYT/VIS** - Layout and Visibility (area layout)
+- **LYT/VIS** - Layout and Visibility (area layout; ASCII in shipped games — no dedicated binary `.ksy` in this repo; see coverage doc)
 
 ### Game-Specific Formats
 
@@ -149,18 +149,25 @@ These formats are used across multiple BioWare engine families:
 
 ```
 formats/
-├── BIF/          # BioWare Index Files
+├── BIF/          # BioWare Index Files (BIF, BZF, KEY)
 ├── BWM/          # Walkmesh files
+├── Common/       # Shared enums and primitives (imported by other .ksy)
+├── DA2S/ DAS/    # Dragon Age save serializers (out-of-KotOR stack)
 ├── ERF/          # Encapsulated Resource Format
-├── GFF/          # Generic File Format and variants
-│   ├── Generics/ # Game-specific GFF types (UTC, UTI, DLG, etc.)
-│   ├── JSON/     # JSON variants
-│   └── XML/      # XML variants
-├── MDL/          # Model files
-├── NSS/          # NWScript formats
-├── TPC/          # Texture formats
-├── TLK/          # Talk table formats
-└── ...           # Other formats
+├── GDA/          # Dragon Age G2DA (GFF4) tables
+├── GFF/          # Generic File Format (one canonical GFF.ksy; templates ARE/UTC/DLG are GFF instances)
+├── ITP/          # ITP XML interchange (policy; on-disk ITP is GFF-shaped → GFF.ksy)
+├── LIP/ LTR/     # Lip-sync, letter-combo tables
+├── MDL/          # Model files (binary MDL, MDX, MDL ASCII policy)
+├── NSS/          # NWScript (NCS bytecode + NSS plaintext policy)
+├── PCC/          # Mass Effect PCC (not xoreos Aurora KotOR)
+├── PLT/          # Packed layer texture (NWN-centric notes)
+├── RIM/          # Resource Information Module
+├── SSF/ TLK/    # Sound set, talk tables
+├── TPC/          # TPC, TGA, DDS (+ TXI plaintext sidecar policy)
+├── TwoDA/        # Two-dimensional array wire
+├── WAV/          # Wave audio (+ KotOR SFX prefix notes)
+└── ...           # See docs/XOREOS_FORMAT_COVERAGE.md for the full matrix
 ```
 
 ## Building from Source
@@ -168,6 +175,10 @@ formats/
 ### Requirements
 
 - [Kaitai Struct Compiler](https://kaitai.io/#download) 0.11 or later
+
+### Windows and uv
+
+Running `uv run .\scripts\compile_all_languages.ps1` fails with **Win32 error 193** (`%1 is not a valid Win32 application`) because `uv run` tries to spawn the `.ps1` as an executable. Use **`uv run pwsh -NoProfile -File .\scripts\compile_all_languages.ps1`**, or run the script from PowerShell directly. For Python entrypoints, prefer **`uv run python scripts/compile_all_ksy.py`**.
 
 ### Generate Code for Your Language
 
@@ -203,6 +214,17 @@ Workflows run on:
 - Pull requests
 - Manual workflow dispatch
 
+## Verification
+
+After editing `formats/**/*.ksy`, from the repository root:
+
+1. **`python scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges --also docs/XOREOS_FORMAT_COVERAGE.md`** — checks upstream `github.com/xoreos/*` `blob/master` line anchors against `raw.githubusercontent.com`.
+2. **`python scripts/check_vendor_xoreos_xref_lines.py --also docs/XOREOS_FORMAT_COVERAGE.md`** — same anchors against **local** `vendor/xoreos*` after `git submodule update --init vendor/xoreos vendor/xoreos-tools vendor/xoreos-docs` (optional; catches fork SHA drift).
+3. **`python scripts/report_filetype_ksy_coverage.py`** — compares `xoreos_file_type_id` in `formats/Common/bioware_type_ids.ksy` to [`formats/coverage/filetype_coverage.yaml`](formats/coverage/filetype_coverage.yaml) (`--write-default-coverage` (re)generates the YAML from heuristics).
+4. **`python -m pytest -q`** — smoke-compiles every `.ksy` to Python via `kaitai-struct-compiler` (see [`src/python/tests/test_kaitai_compile_smoke.py`](src/python/tests/test_kaitai_compile_smoke.py); [`pytest.ini`](pytest.ini) sets paths).
+
+Details and submodule notes: [`AGENTS.md`](AGENTS.md), [`docs/XOREOS_FORMAT_COVERAGE.md`](docs/XOREOS_FORMAT_COVERAGE.md).
+
 ## Contributing
 
 Contributions are welcome! Please:
@@ -210,7 +232,7 @@ Contributions are welcome! Please:
 1. Fork the repository
 2. Add or modify `.ksy` format definitions in `formats/`
 3. Ensure definitions follow Kaitai Struct best practices
-4. Test your changes with sample files from the games
+4. Run the checks in [Verification](#verification) (URL anchors, optional vendor trees, pytest smoke compile)
 5. Submit a pull request
 
 ## Documentation
@@ -225,10 +247,10 @@ Format definitions include inline documentation explaining:
 ## References
 
 - [Kaitai Struct Documentation](https://doc.kaitai.io/)
-- [PyKotor](https://github.com/OldRepublicDevs/PyKotor) - Python implementation reference
+- [PyKotor](https://github.com/OpenKotOR/PyKotor) - Python implementation reference
 - [Andastra](https://github.com/OldRepublicDevs/Andastra) - C# implementation reference
 - [Xoreos Main Website](https://xoreos.org/) - C/C++ implementation reference
-- [Reone Project](https://github.com/seedhartha/reone) - Additional C/C++ references
+- [reone](https://github.com/modawan/reone) - Additional C/C++ references (KotOR-family loaders; see `meta.xref` in each `.ksy`)
 
 ## License
 

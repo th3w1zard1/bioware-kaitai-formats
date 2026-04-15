@@ -28,14 +28,28 @@ This file is intended to be imported by other `.ksy` files to avoid repeating:
 - The CExoLocString / LocalizedString binary layout
 
 References:
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
 - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
 - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
 </p>
 <table class="table">
 <tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+</table>
+<a name='enum-bioware_common-bioware_dds_variant_bytes_per_pixel'></a>
+<h2>Enum: bioware_dds_variant_bytes_per_pixel</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>3</td><td>dxt1</td><td></td></tr>
+</tr>
+<tr>
+<td>4</td><td>dxt5</td><td></td></tr>
+</tr>
 </table>
 <a name='enum-bioware_common-bioware_equipment_slot_flag'></a>
 <h2>Enum: bioware_equipment_slot_flag</h2>
@@ -438,6 +452,76 @@ References:
 <td>2147483646</td><td>unknown</td><td></td></tr>
 </tr>
 </table>
+<a name='enum-bioware_common-bioware_lip_viseme_id'></a>
+<h2>Enum: bioware_lip_viseme_id</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>neutral</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>ee</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>eh</td><td></td></tr>
+</tr>
+<tr>
+<td>3</td><td>ah</td><td></td></tr>
+</tr>
+<tr>
+<td>4</td><td>oh</td><td></td></tr>
+</tr>
+<tr>
+<td>5</td><td>ooh</td><td></td></tr>
+</tr>
+<tr>
+<td>6</td><td>y</td><td></td></tr>
+</tr>
+<tr>
+<td>7</td><td>sts</td><td></td></tr>
+</tr>
+<tr>
+<td>8</td><td>fv</td><td></td></tr>
+</tr>
+<tr>
+<td>9</td><td>ng</td><td></td></tr>
+</tr>
+<tr>
+<td>10</td><td>th</td><td></td></tr>
+</tr>
+<tr>
+<td>11</td><td>mpb</td><td></td></tr>
+</tr>
+<tr>
+<td>12</td><td>td</td><td></td></tr>
+</tr>
+<tr>
+<td>13</td><td>sh</td><td></td></tr>
+</tr>
+<tr>
+<td>14</td><td>l</td><td></td></tr>
+</tr>
+<tr>
+<td>15</td><td>kg</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_common-bioware_ltr_alphabet_length'></a>
+<h2>Enum: bioware_ltr_alphabet_length</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>26</td><td>neverwinter_nights</td><td></td></tr>
+</tr>
+<tr>
+<td>28</td><td>kotor</td><td></td></tr>
+</tr>
+</table>
 <a name='enum-bioware_common-bioware_object_type_id'></a>
 <h2>Enum: bioware_object_type_id</h2>
 
@@ -480,6 +564,89 @@ References:
 </tr>
 <tr>
 <td>11</td><td>camera</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_common-bioware_pcc_compression_codec'></a>
+<h2>Enum: bioware_pcc_compression_codec</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>none</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>zlib</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>lzo</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_common-bioware_pcc_package_kind'></a>
+<h2>Enum: bioware_pcc_package_kind</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>normal_package</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>patch_package</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_common-bioware_tpc_pixel_format_id'></a>
+<h2>Enum: bioware_tpc_pixel_format_id</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>1</td><td>greyscale</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>rgb_or_dxt1</td><td></td></tr>
+</tr>
+<tr>
+<td>4</td><td>rgba_or_dxt5</td><td></td></tr>
+</tr>
+<tr>
+<td>12</td><td>bgra_xbox_swizzle</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_common-riff_wave_format_tag'></a>
+<h2>Enum: riff_wave_format_tag</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>1</td><td>pcm</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>adpcm_ms</td><td></td></tr>
+</tr>
+<tr>
+<td>3</td><td>ieee_float</td><td></td></tr>
+</tr>
+<tr>
+<td>6</td><td>alaw</td><td></td></tr>
+</tr>
+<tr>
+<td>7</td><td>mulaw</td><td></td></tr>
+</tr>
+<tr>
+<td>17</td><td>dvi_ima_adpcm</td><td></td></tr>
+</tr>
+<tr>
+<td>85</td><td>mpeg_layer3</td><td></td></tr>
+</tr>
+<tr>
+<td>65534</td><td>wave_format_extensible</td><td></td></tr>
 </tr>
 </table>
 <a name='type-bioware_common-bioware_binary_data'></a>
@@ -548,7 +715,7 @@ section for field type "LocalizedString".
 <td>...</td>
 <td>string_ref</td>
 <td>u4le</td>
-<td>StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+<td>StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
 </td>
 </tr>
 <tr>

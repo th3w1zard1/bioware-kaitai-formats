@@ -1,5 +1,10 @@
 #! /usr/bin/env pwsh
 # Compile all .ksy files to ALL supported languages
+#
+# Windows + uv: `uv run .\scripts\compile_all_languages.ps1` fails with Win32 error 193 because `uv run`
+# tries to execute the `.ps1` as a native binary. Use either:
+#   uv run pwsh -NoProfile -File .\scripts\compile_all_languages.ps1
+# or run this script directly from PowerShell (`.\scripts\compile_all_languages.ps1`).
 
 $ErrorActionPreference = "Continue"
 
@@ -32,13 +37,12 @@ $languages = @(
 Write-Host "Compiling all .ksy files to $($languages.Count) languages..."
 Write-Host ("=" * 80)
 
-$ksyFiles = Get-ChildItem -Path "formats" -Filter "*.ksy" -Recurse | Where-Object {
-    # Exclude failing formats (TODO: FIX LATER, EVERY SINGLE ONE OF THESE ARE HIGH PRIORITY!)
-    $_.Name -notin @("DA2S.ksy", "DAS.ksy", "PCC.ksy", "TGA.ksy", "TPC.ksy")
-}
+$ksyFiles = Get-ChildItem -Path "formats" -Filter "*.ksy" -Recurse
 
 Write-Host "Found $($ksyFiles.Count) .ksy files to compile"
 Write-Host ""
+
+$formatsBase = (Resolve-Path "formats").Path
 
 foreach ($lang in $languages) {
     Write-Host "Compiling to $lang..." -ForegroundColor Cyan
@@ -50,7 +54,18 @@ foreach ($lang in $languages) {
     $failures = 0
     
     foreach ($file in $ksyFiles) {
-        $output = & $script:kscExe -t $lang -d $outputDir $file.FullName 2>&1
+        $relativePath = $file.FullName.Substring($formatsBase.Length + 1)
+        $relativeDir = Split-Path -Parent $relativePath
+        if ($relativeDir) {
+            $targetDir = Join-Path $outputDir $relativeDir
+        } else {
+            $targetDir = $outputDir
+        }
+        if (-not (Test-Path $targetDir)) {
+            New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+        }
+
+        $output = & $script:kscExe -t $lang -d $targetDir $file.FullName 2>&1
         
         if ($LASTEXITCODE -eq 0) {
             $successes++
@@ -67,5 +82,5 @@ foreach ($lang in $languages) {
 Write-Host ""
 Write-Host ("=" * 80)
 Write-Host "Compilation complete for all languages!"
-Write-Host "Generated code in: src/<language>/kaitai_generated/"
+Write-Host "Generated code in: src/<language>/kaitai_generated/<relative path under formats/>"
 

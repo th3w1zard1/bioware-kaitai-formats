@@ -4,49 +4,13 @@ import "github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
 
 
 /**
- * LIP (LIP Synchronization) files drive mouth animation for voiced dialogue in BioWare games.
- * Each file contains a compact series of keyframes that map timestamps to discrete viseme
- * (mouth shape) indices so that the engine can interpolate character lip movement while
- * playing the companion WAV audio line.
+ * **LIP** (lip sync): sorted `(timestamp_f32, viseme_u8)` keyframes (`LIP ` / `V1.0`). Viseme ids 0–15 map through
+ * `bioware_lip_viseme_id` in `bioware_common.ksy`. Pair with a **WAV** of matching duration.
  * 
- * LIP files are always binary and contain only animation data. They are paired with WAV
- * voice-over resources of identical duration; the LIP length field must match the WAV
- * playback time for glitch-free animation.
- * 
- * Keyframes are sorted chronologically and store a timestamp (float seconds) plus a
- * 1-byte viseme index (0-15). The format uses the 16-shape Preston Blair phoneme set.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/LIP-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/lipreader.cpp:27-42
- * - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/lipfile.cpp
- * - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LIPObject.ts:93-146
+ * xoreos does not ship a standalone `lipfile.cpp` reader — use PyKotor / reone / KotOR.js (`meta.xref`).
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip">PyKotor wiki — LIP</a>
+ * @see <a href="https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L42">reone — LIPReader</a>
  */
-
-type Lip_LipShapes int
-const (
-	Lip_LipShapes__Neutral Lip_LipShapes = 0
-	Lip_LipShapes__Ee Lip_LipShapes = 1
-	Lip_LipShapes__Eh Lip_LipShapes = 2
-	Lip_LipShapes__Ah Lip_LipShapes = 3
-	Lip_LipShapes__Oh Lip_LipShapes = 4
-	Lip_LipShapes__Ooh Lip_LipShapes = 5
-	Lip_LipShapes__Y Lip_LipShapes = 6
-	Lip_LipShapes__Sts Lip_LipShapes = 7
-	Lip_LipShapes__Fv Lip_LipShapes = 8
-	Lip_LipShapes__Ng Lip_LipShapes = 9
-	Lip_LipShapes__Th Lip_LipShapes = 10
-	Lip_LipShapes__Mpb Lip_LipShapes = 11
-	Lip_LipShapes__Td Lip_LipShapes = 12
-	Lip_LipShapes__Sh Lip_LipShapes = 13
-	Lip_LipShapes__L Lip_LipShapes = 14
-	Lip_LipShapes__Kg Lip_LipShapes = 15
-)
-var values_Lip_LipShapes = map[Lip_LipShapes]struct{}{0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}, 13: {}, 14: {}, 15: {}}
-func (v Lip_LipShapes) isDefined() bool {
-	_, ok := values_Lip_LipShapes[v]
-	return ok
-}
 type Lip struct {
 	FileType string
 	FileVersion string
@@ -135,7 +99,7 @@ func (this *Lip) Read(io *kaitai.Stream, parent kaitai.Struct, root *Lip) (err e
  */
 type Lip_KeyframeEntry struct {
 	Timestamp float32
-	Shape Lip_LipShapes
+	Shape BiowareCommon_BiowareLipVisemeId
 	_io *kaitai.Stream
 	_root *Lip
 	_parent *Lip
@@ -163,7 +127,7 @@ func (this *Lip_KeyframeEntry) Read(io *kaitai.Stream, parent *Lip, root *Lip) (
 	if err != nil {
 		return err
 	}
-	this.Shape = Lip_LipShapes(tmp7)
+	this.Shape = BiowareCommon_BiowareLipVisemeId(tmp7)
 	return err
 }
 
@@ -173,6 +137,6 @@ func (this *Lip_KeyframeEntry) Read(io *kaitai.Stream, parent *Lip, root *Lip) (
  */
 
 /**
- * Viseme index (0-15) indicating which mouth shape to use at this timestamp.
- * Uses the 16-shape Preston Blair phoneme set. See lip_shapes enum for details.
+ * Viseme index (0–15). Canonical names: `formats/Common/bioware_common.ksy` →
+ * `bioware_lip_viseme_id` (PyKotor `LIPShape` / Preston Blair set).
  */

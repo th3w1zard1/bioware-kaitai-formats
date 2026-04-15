@@ -1,0 +1,1211 @@
+# Machine-maintained: regenerate with `python scripts/report_filetype_ksy_coverage.py --write-default-coverage`
+# Tiers: A=dedicated binary wire, B=GFF template capsule, C=archive container, D=plaintext/tooling, E=foreign standard, U=unclassified
+coverage:
+  -1:
+    tier: A
+    spec: "formats/Common/bioware_type_ids.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  0:
+    tier: B
+    spec: "formats/GFF/Generics/RES/RES.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  1:
+    tier: E
+    spec: ""
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2:
+    tier: E
+    spec: ""
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  3:
+    tier: A
+    spec: "formats/TPC/TGA.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  4:
+    tier: A
+    spec: "formats/WAV/WAV.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  6:
+    tier: A
+    spec: "formats/PLT/PLT.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  7:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  8:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  9:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  10:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  11:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  12:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  13:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  2000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2002:
+    tier: A
+    spec: "formats/MDL/MDL.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2007:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2008:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2009:
+    tier: D
+    spec: "formats/NSS/NSS.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2010:
+    tier: A
+    spec: "formats/NSS/NCS.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2011:
+    tier: C
+    spec: "formats/ERF/ERF.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2012:
+    tier: B
+    spec: "formats/GFF/Generics/ARE/ARE.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2013:
+    tier: B
+    spec: "formats/GFF/Generics/SET/SET.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2014:
+    tier: B
+    spec: "formats/GFF/Generics/IFO/IFO.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2015:
+    tier: B
+    spec: "formats/GFF/Generics/BIC/BIC.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2016:
+    tier: A
+    spec: "formats/BWM/BWM.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2017:
+    tier: A
+    spec: "formats/TwoDA/TwoDA.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2018:
+    tier: A
+    spec: "formats/TLK/TLK.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2022:
+    tier: D
+    spec: "formats/TPC/TXI.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2023:
+    tier: B
+    spec: "formats/GFF/Generics/GIT/GIT.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2024:
+    tier: B
+    spec: "formats/GFF/Generics/BTI/BTI.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2025:
+    tier: B
+    spec: "formats/GFF/Generics/UTI/UTI.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2026:
+    tier: B
+    spec: "formats/GFF/Generics/BTC/BTC.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2027:
+    tier: B
+    spec: "formats/GFF/Generics/UTC/UTC.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2029:
+    tier: B
+    spec: "formats/GFF/Generics/DLG/DLG.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2030:
+    tier: B
+    spec: "formats/GFF/Generics/ITP/ITP.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2031:
+    tier: B
+    spec: "formats/GFF/Generics/BTT/BTT.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2032:
+    tier: B
+    spec: "formats/GFF/Generics/UTT/UTT.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2033:
+    tier: A
+    spec: "formats/TPC/DDS.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2034:
+    tier: B
+    spec: "formats/GFF/Generics/BTS/BTS.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2035:
+    tier: B
+    spec: "formats/GFF/Generics/UTS/UTS.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2036:
+    tier: A
+    spec: "formats/LTR/LTR.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2037:
+    tier: A
+    spec: "formats/GFF/GFF.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2038:
+    tier: B
+    spec: "formats/GFF/Generics/FAC/FAC.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2039:
+    tier: B
+    spec: "formats/GFF/Generics/BTE/BTE.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2040:
+    tier: B
+    spec: "formats/GFF/Generics/UTE/UTE.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2041:
+    tier: B
+    spec: "formats/GFF/Generics/BTD/BTD.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2042:
+    tier: B
+    spec: "formats/GFF/Generics/UTD/UTD.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2043:
+    tier: B
+    spec: "formats/GFF/Generics/BTP/BTP.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2044:
+    tier: B
+    spec: "formats/GFF/Generics/UTP/UTP.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2045:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2046:
+    tier: B
+    spec: "formats/GFF/Generics/GIC/GIC.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2047:
+    tier: B
+    spec: "formats/GFF/Generics/GUI/GUI.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2048:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2049:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2050:
+    tier: B
+    spec: "formats/GFF/Generics/BTM/BTM.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2051:
+    tier: B
+    spec: "formats/GFF/Generics/UTM/UTM.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2052:
+    tier: A
+    spec: "formats/BWM/BWM.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2053:
+    tier: A
+    spec: "formats/BWM/BWM.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2054:
+    tier: B
+    spec: "formats/GFF/Generics/BTG/BTG.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2055:
+    tier: B
+    spec: "formats/GFF/Generics/UTG/UTG.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2056:
+    tier: B
+    spec: "formats/GFF/Generics/JRL/JRL.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2057:
+    tier: B
+    spec: "formats/GFF/Generics/SAV/SAV.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2058:
+    tier: B
+    spec: "formats/GFF/Generics/UTW/UTW.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2059:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2060:
+    tier: A
+    spec: "formats/SSF/SSF.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2061:
+    tier: C
+    spec: "formats/ERF/ERF.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2062:
+    tier: C
+    spec: "formats/ERF/ERF.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2063:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2064:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2065:
+    tier: B
+    spec: "formats/GFF/Generics/PTM/PTM.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2066:
+    tier: B
+    spec: "formats/GFF/Generics/PTT/PTT.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2067:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2068:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2069:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2070:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2071:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2072:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2073:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2074:
+    tier: B
+    spec: "formats/GFF/Generics/CUT/CUT.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2075:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2076:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  2077:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  2078:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  2079:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2080:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2081:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2082:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2083:
+    tier: B
+    spec: "formats/GFF/Generics/QDB/QDB.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2084:
+    tier: B
+    spec: "formats/GFF/Generics/QST/QST.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2085:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2086:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2087:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2088:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2089:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2090:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2091:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2092:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2093:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2094:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2095:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2096:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2097:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2098:
+    tier: A
+    spec: "formats/DAS/DAS.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  2099:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2100:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2101:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2103:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2104:
+    tier: B
+    spec: "formats/GFF/Generics/CAM/CAM.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  2105:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2106:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2107:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2108:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2109:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  2110:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  3000:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  3001:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  3002:
+    tier: C
+    spec: "formats/RIM/RIM.ksy"
+    notes: "Archive / index wire"
+  3003:
+    tier: B
+    spec: "formats/GFF/Generics/PTH/PTH.ksy"
+    notes: "GFF3 on-disk wire via GFF.ksy capsule"
+  3004:
+    tier: A
+    spec: "formats/LIP/LIP.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  3005:
+    tier: A
+    spec: "formats/BWM/BWM.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  3006:
+    tier: A
+    spec: "formats/TPC/TXB.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  3007:
+    tier: A
+    spec: "formats/TPC/TPC.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  3008:
+    tier: A
+    spec: "formats/MDL/MDX.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  3009:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3010:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3011:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3012:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3013:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3015:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3016:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3017:
+    tier: A
+    spec: "formats/TPC/TXB2.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  3022:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3023:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3024:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3025:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  3028:
+    tier: A
+    spec: "formats/LIP/BIP.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  4000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  4001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  4002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  4003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  4004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  4005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  4007:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  4008:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  9996:
+    tier: A
+    spec: "formats/TwoDA/TwoDA.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  9997:
+    tier: C
+    spec: "formats/ERF/ERF.ksy"
+    notes: "Archive / index wire"
+  9998:
+    tier: C
+    spec: "formats/BIF/BIF.ksy"
+    notes: "Archive / index wire"
+  9999:
+    tier: C
+    spec: "formats/BIF/KEY.ksy"
+    notes: "Archive / index wire"
+  19000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  19001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  19002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  19003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20003:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  20004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20006:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20007:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20008:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20009:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20010:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20011:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20012:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20013:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20014:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20015:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20016:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20017:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20018:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20019:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20020:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20021:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20022:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20023:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20024:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20025:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20026:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20027:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  20028:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21006:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21007:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21008:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21009:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21010:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21011:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21012:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21013:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21014:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21015:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21016:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21017:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21018:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21019:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21020:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21021:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21022:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21023:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21024:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21025:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  21026:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22006:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22007:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22008:
+    tier: A
+    spec: "formats/GDA/GDA.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  22009:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22010:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22011:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22012:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22013:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22014:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22015:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22016:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22017:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22018:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22019:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22020:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22021:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22022:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22023:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22024:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22025:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22026:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22027:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22028:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22029:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22030:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22031:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22032:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22033:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22034:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22035:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22036:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  22037:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  23000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  23001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  23002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  23003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  23004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24006:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24007:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  24008:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25002:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25003:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25006:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25007:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25008:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25009:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25010:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25011:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25012:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25013:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25014:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"
+  25015:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25016:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25017:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25018:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25019:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25020:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25021:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25022:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  25023:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  26000:
+    tier: C
+    spec: "formats/BIF/BZF.ksy"
+    notes: "Archive / index wire"
+  27000:
+    tier: A
+    spec: "formats/DA2S/DA2S.ksy"
+    notes: "Dedicated wire or standard-media placeholder (tier E may omit spec)"
+  28000:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  28001:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  28002:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  28003:
+    tier: D
+    spec: ""
+    notes: "Plaintext / tooling — see AGENTS.md scope"
+  28004:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  28005:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  29000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  29001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  30000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  30001:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  40000:
+    tier: U
+    spec: ""
+    notes: "TODO classify (A–E) and add owning spec or policy row"
+  41000:
+    tier: E
+    spec: ""
+    notes: "Standard or codec container — normative spec outside repo"

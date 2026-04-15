@@ -6,11 +6,33 @@ meta:
   file-extension: txi
   encoding: ASCII
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: TXI ASCII sidecars parsed with TPC textures (PyKotor wiki)."
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/
     pykotor_wiki_txi: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#txi
+    github_openkotor_pykotor_txi_io: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py`:
+      **`TXIReaderMode`** **20–26**; **`TXIBinaryReader`** **28–335** (`load` from **48**); **`TXIBinaryWriter`** **337–375** (`write` **343–375**).
+    github_openkotor_pykotor_txi_data: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py`:
+      **`TXI`** resource model **52+**; command dispatch / **`TXICommand`** enum members **117+** (full enum block **619–684** on current `master` — re-verify if upstream moves).
+    github_modawan_reone_txi: |
+      https://github.com/modawan/reone — `src/libs/graphics/format/txireader.cpp`:       **`TxiReader::load`** **28–38**,
+      **`parseProcedureType`** **41–53**, **`processLine`** **55–125** (ASCII line parser for TPC-attached TXI bytes; includes coord sub-states).
+    github_kobaltblu_kotor_js_txi: |
+      https://github.com/KobaltBlu/KotOR.js — `src/resource/TXI.ts`: class **`TXI`** **16–96**; **`ParseInfo`** switch **98–120** (continues for per-command branches).
+    xoreos_upstream_note_txi: |
+      Upstream **xoreos** does not ship a dedicated `txifile.cpp`; TXI is an **ASCII sidecar** paired with **`kFileTypeTPC`** / TPC loaders (`src/graphics/images/tpc.cpp`). Treat **`types.h`** `kFileTypeTXI` / **`2022`** as the numeric ID only (`formats/Common/bioware_type_ids.ksy`).
+    xoreos_tpc_read_txi: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L362-L373
+    xoreos_types_kfiletype_txi: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L88
 doc: |
+  **Policy:** TXI is **plaintext** (line-oriented ASCII). This `.ksy` models only an opaque string span for tooling;
+  authoritative command semantics live in PyKotor / reone parsers (`meta.xref`). xoreos consumes embedded TXI via **`TPC::readTXI`**
+  (`meta.xref.xoreos_tpc_read_txi`), not a standalone `txifile.cpp`.
+
   TXI (Texture Info) files are compact ASCII descriptors that attach metadata to TPC textures.
   They control mipmap usage, filtering, flipbook animation, environment mapping, font atlases,
   and platform-specific downsampling. Every TXI file is parsed at runtime to configure how
@@ -47,11 +69,15 @@ doc: |
   - spacingb, spacingr, speed, temporary, texturewidth, unique, upperleftcoords, wateralpha
   - waterheight, waterwidth, xbox_downsample
 
-  References:
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py - Complete parser
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py - Data structures
-  - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#txi - Format documentation
-  - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/txireader.cpp - C++ reference implementation
+  Index: `meta.xref` and `doc-ref`.
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#txi PyKotor wiki — TXI"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py#L20-L50 PyKotor — TXI reader (`TXIReaderMode`, `TXIBinaryReader.load` start)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py#L619-L684 PyKotor — `TXICommand` enum block"
+  - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/txireader.cpp#L28-L125 reone — `TxiReader` ASCII parse (`load` + `processLine`)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L362-L373 xoreos — `TPC::readTXI` (embedded TXI tail)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L88 xoreos — `kFileTypeTXI`"
 
 seq:
   - id: content

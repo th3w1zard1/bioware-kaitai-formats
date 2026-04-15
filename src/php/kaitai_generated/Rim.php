@@ -11,14 +11,14 @@
  * - Standard RIM: Basic module template files
  * - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
  * 
- * Binary Format:
- * - Header (20 bytes): File type, version, resource count, offset to resource table
- * - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
- * - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
- * - Resource Data (variable size): Raw binary data for each resource
+ * Binary Format (KotOR / PyKotor):
+ * - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+ * - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+ * - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+ * - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
  * - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -34,24 +34,37 @@ namespace {
 
         private function _read() {
             $this->_m_header = new \Rim\RimHeader($this->_io, $this, $this->_root);
-            $this->_m_extendedHeader = new \Rim\RimExtendedHeader($this->_io, $this, $this->_root);
+            if ($this->header()->offsetToResourceTable() == 0) {
+                $this->_m_gapBeforeKeyTableImplicit = $this->_io->readBytes(96);
+            }
+            if ($this->header()->offsetToResourceTable() != 0) {
+                $this->_m_gapBeforeKeyTableExplicit = $this->_io->readBytes($this->header()->offsetToResourceTable() - 24);
+            }
             if ($this->header()->resourceCount() > 0) {
                 $this->_m_resourceEntryTable = new \Rim\ResourceEntryTable($this->_io, $this, $this->_root);
             }
         }
         protected $_m_header;
-        protected $_m_extendedHeader;
+        protected $_m_gapBeforeKeyTableImplicit;
+        protected $_m_gapBeforeKeyTableExplicit;
         protected $_m_resourceEntryTable;
 
         /**
-         * RIM file header (20 bytes)
+         * RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
          */
         public function header() { return $this->_m_header; }
 
         /**
-         * Extended header padding (100 bytes, total header = 120 bytes)
+         * When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+         * After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
          */
-        public function extendedHeader() { return $this->_m_extendedHeader; }
+        public function gapBeforeKeyTableImplicit() { return $this->_m_gapBeforeKeyTableImplicit; }
+
+        /**
+         * When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+         * Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
+         */
+        public function gapBeforeKeyTableExplicit() { return $this->_m_gapBeforeKeyTableExplicit; }
 
         /**
          * Array of resource entries mapping ResRefs to resource data
@@ -72,7 +85,7 @@ namespace Rim {
             $this->_m_resourceType = $this->_io->readU4le();
             $this->_m_resourceId = $this->_io->readU4le();
             $this->_m_offsetToData = $this->_io->readU4le();
-            $this->_m_resourceSize = $this->_io->readU4le();
+            $this->_m_numData = $this->_io->readU4le();
         }
         protected $_m_data;
 
@@ -85,7 +98,7 @@ namespace Rim {
             $_pos = $this->_io->pos();
             $this->_io->seek($this->offsetToData());
             $this->_m_data = [];
-            $n = $this->resourceSize();
+            $n = $this->numData();
             for ($i = 0; $i < $n; $i++) {
                 $this->_m_data[] = $this->_io->readU1();
             }
@@ -96,7 +109,7 @@ namespace Rim {
         protected $_m_resourceType;
         protected $_m_resourceId;
         protected $_m_offsetToData;
-        protected $_m_resourceSize;
+        protected $_m_numData;
 
         /**
          * Resource filename (ResRef), null-padded to 16 bytes.
@@ -126,10 +139,10 @@ namespace Rim {
         public function offsetToData() { return $this->_m_offsetToData; }
 
         /**
-         * Size of resource data in bytes.
+         * Size of resource data in bytes (repeat count for raw `data` bytes).
          * Uncompressed size of the resource.
          */
-        public function resourceSize() { return $this->_m_resourceSize; }
+        public function numData() { return $this->_m_numData; }
     }
 }
 
@@ -157,30 +170,6 @@ namespace Rim {
 }
 
 namespace Rim {
-    class RimExtendedHeader extends \Kaitai\Struct\Struct {
-        public function __construct(\Kaitai\Struct\Stream $_io, ?\Rim $_parent = null, ?\Rim $_root = null) {
-            parent::__construct($_io, $_parent, $_root);
-            $this->_read();
-        }
-
-        private function _read() {
-            $this->_m_reservedPadding = \Kaitai\Struct\Stream::bytesToStr($this->_io->readBytes(100), "ASCII");
-        }
-        protected $_m_reservedPadding;
-
-        /**
-         * Reserved padding bytes (typically all zeros).
-         * Total header size is 120 bytes:
-         * header (20) + extended_header (100) = 120 bytes
-         * 
-         * In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
-         * may contain an IsExtension flag, but this is not consistently used.
-         */
-        public function reservedPadding() { return $this->_m_reservedPadding; }
-    }
-}
-
-namespace Rim {
     class RimHeader extends \Kaitai\Struct\Struct {
         public function __construct(\Kaitai\Struct\Stream $_io, ?\Rim $_parent = null, ?\Rim $_root = null) {
             parent::__construct($_io, $_parent, $_root);
@@ -199,6 +188,7 @@ namespace Rim {
             $this->_m_reserved = $this->_io->readU4le();
             $this->_m_resourceCount = $this->_io->readU4le();
             $this->_m_offsetToResourceTable = $this->_io->readU4le();
+            $this->_m_offsetToResources = $this->_io->readU4le();
         }
         protected $_m_hasResources;
 
@@ -216,6 +206,7 @@ namespace Rim {
         protected $_m_reserved;
         protected $_m_resourceCount;
         protected $_m_offsetToResourceTable;
+        protected $_m_offsetToResources;
 
         /**
          * File type signature. Must be "RIM " (0x52 0x49 0x4D 0x20).
@@ -243,11 +234,17 @@ namespace Rim {
         public function resourceCount() { return $this->_m_resourceCount; }
 
         /**
-         * Byte offset to the resource entry table from the beginning of the file.
-         * Typically 120 (right after header + extended header) if resources are present.
-         * Points to the start of the resource_entry_table.
+         * Byte offset to the key / resource entry table from the beginning of the file.
+         * 0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+         * When non-zero, this offset is used directly (commonly 120).
          */
         public function offsetToResourceTable() { return $this->_m_offsetToResourceTable; }
+
+        /**
+         * Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+         * taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
+         */
+        public function offsetToResources() { return $this->_m_offsetToResources; }
     }
 }
 

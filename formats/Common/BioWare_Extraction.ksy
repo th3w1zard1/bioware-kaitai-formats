@@ -4,16 +4,26 @@ meta:
   license: MIT
   endian: le
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
       note: |
         Tooling-only enums (not read from swkotor.exe resources). Kept separate from Odyssey Ghidra wire layouts.
     pykotor_ref: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+    pykotor_installation_search_location: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py#L67-L122
     andastra_ref: https://github.com/OldRepublicDevs/Andastra/blob/master/src/andastra/parsing/extract/installation.cs
 doc: |
   Enums and small helper types used by installation/extraction tooling.
 
   References:
   - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py#L67-L122 PyKotor — `SearchLocation` / `TexturePackNames` (maps to enums in this `.ksy`)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py PyKotor — installation / search helpers (full module)"
+  - "https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/ PyKotor — `extract/` package"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/master/src/andastra/parsing/extract/installation.cs Andastra — Eclipse extraction/installation model"
 
 types:
   bioware_texture_pack_name_str:

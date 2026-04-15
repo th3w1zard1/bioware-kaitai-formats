@@ -6,10 +6,15 @@ meta:
   file-extension: nss
   encoding: UTF-8
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (plaintext / tooling; submodule section 0).
+      Binary bytecode wire: `formats/NSS/NCS.ksy`.
     ghidra_odyssey_k1:
-      note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: NSS is tooling/source text compiled to NCS outside this binary wire spec."
+      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe--NSS is tooling/source text compiled to NCS outside this binary wire spec.
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
     pykotor_wiki_nss: https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
+    xoreos_tools_ncsfile: https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137
+    reone_nsswriter_save: https://github.com/modawan/reone/blob/master/src/libs/tools/script/format/nsswriter.cpp#L33-L45
 doc: |
   NSS (NWScript Source) files contain human-readable NWScript source code
   that compiles to NCS bytecode. NWScript is the scripting language used
@@ -26,10 +31,12 @@ doc: |
   - Comments: // for single-line, /* */ for multi-line
   - Preprocessor directives: #include, #define, etc.
   
-  References:
-  - https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
-  - https://github.com/xoreos/xoreos-tools/tree/master/src/nwscript/ (NWScript compiler)
-  - https://github.com/seedhartha/reone/blob/master/src/libs/script/ (Script execution engine)
+  Authoritative links: `meta.doc-ref` (PyKotor wiki, xoreos-tools `NCSFile`, reone `NssWriter`).
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format PyKotor wiki — NSS"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137 xoreos-tools — `NCSFile`"
+  - "https://github.com/modawan/reone/blob/master/src/libs/tools/script/format/nsswriter.cpp#L33-L45 reone — `NssWriter::save`"
 
 seq:
   - id: bom

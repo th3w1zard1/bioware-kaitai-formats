@@ -16,14 +16,14 @@ import (
  * - Standard RIM: Basic module template files
  * - Extension RIM: Files ending in 'x' (e.g., module001x.rim) that extend other RIMs
  * 
- * Binary Format:
- * - Header (20 bytes): File type, version, resource count, offset to resource table
- * - Extended Header (100 bytes): Reserved padding (total header = 120 bytes)
- * - Resource Entry Table (32 bytes per entry): ResRef, type, ID, offset, size
- * - Resource Data (variable size): Raw binary data for each resource
+ * Binary Format (KotOR / PyKotor):
+ * - Fixed header (24 bytes): File type, version, reserved, resource count, offset to key table, offset to resources
+ * - Padding to key table (96 bytes when offsets are implicit): total 120 bytes before the key table
+ * - Key / resource entry table (32 bytes per entry): ResRef, type, ID, offset, size
+ * - Resource data at per-entry offsets (variable size, with engine/tool-specific padding between resources)
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/RIM-File-Format.md
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
  * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/rimreader.cpp:24-100
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp:40-160
  * - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs:11-121
@@ -341,7 +341,8 @@ func (v Rim_XoreosFileTypeId) isDefined() bool {
 }
 type Rim struct {
 	Header *Rim_RimHeader
-	ExtendedHeader *Rim_RimExtendedHeader
+	GapBeforeKeyTableImplicit []byte
+	GapBeforeKeyTableExplicit []byte
 	ResourceEntryTable *Rim_ResourceEntryTable
 	_io *kaitai.Stream
 	_root *Rim
@@ -367,29 +368,45 @@ func (this *Rim) Read(io *kaitai.Stream, parent kaitai.Struct, root *Rim) (err e
 		return err
 	}
 	this.Header = tmp1
-	tmp2 := NewRim_RimExtendedHeader()
-	err = tmp2.Read(this._io, this, this._root)
-	if err != nil {
-		return err
-	}
-	this.ExtendedHeader = tmp2
-	if (this.Header.ResourceCount > 0) {
-		tmp3 := NewRim_ResourceEntryTable()
-		err = tmp3.Read(this._io, this, this._root)
+	if (this.Header.OffsetToResourceTable == 0) {
+		tmp2, err := this._io.ReadBytes(int(96))
 		if err != nil {
 			return err
 		}
-		this.ResourceEntryTable = tmp3
+		tmp2 = tmp2
+		this.GapBeforeKeyTableImplicit = tmp2
+	}
+	if (this.Header.OffsetToResourceTable != 0) {
+		tmp3, err := this._io.ReadBytes(int(this.Header.OffsetToResourceTable - 24))
+		if err != nil {
+			return err
+		}
+		tmp3 = tmp3
+		this.GapBeforeKeyTableExplicit = tmp3
+	}
+	if (this.Header.ResourceCount > 0) {
+		tmp4 := NewRim_ResourceEntryTable()
+		err = tmp4.Read(this._io, this, this._root)
+		if err != nil {
+			return err
+		}
+		this.ResourceEntryTable = tmp4
 	}
 	return err
 }
 
 /**
- * RIM file header (20 bytes)
+ * RIM file header (24 bytes) plus padding to the key table (PyKotor total 120 bytes when implicit)
  */
 
 /**
- * Extended header padding (100 bytes, total header = 120 bytes)
+ * When offset_to_resource_table is 0, the engine treats the key table as starting at byte 120.
+ * After the 24-byte header, skip 96 bytes of padding (24 + 96 = 120).
+ */
+
+/**
+ * When offset_to_resource_table is non-zero, skip until that byte offset (must be >= 24).
+ * Vanilla files often store 120 here, which yields the same 96 bytes of padding as the implicit case.
  */
 
 /**
@@ -400,7 +417,7 @@ type Rim_ResourceEntry struct {
 	ResourceType Rim_XoreosFileTypeId
 	ResourceId uint32
 	OffsetToData uint32
-	ResourceSize uint32
+	NumData uint32
 	_io *kaitai.Stream
 	_root *Rim
 	_parent *Rim_ResourceEntryTable
@@ -421,32 +438,32 @@ func (this *Rim_ResourceEntry) Read(io *kaitai.Stream, parent *Rim_ResourceEntry
 	this._parent = parent
 	this._root = root
 
-	tmp4, err := this._io.ReadBytes(int(16))
+	tmp5, err := this._io.ReadBytes(int(16))
 	if err != nil {
 		return err
 	}
-	tmp4 = tmp4
-	this.Resref = string(tmp4)
-	tmp5, err := this._io.ReadU4le()
-	if err != nil {
-		return err
-	}
-	this.ResourceType = Rim_XoreosFileTypeId(tmp5)
+	tmp5 = tmp5
+	this.Resref = string(tmp5)
 	tmp6, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.ResourceId = uint32(tmp6)
+	this.ResourceType = Rim_XoreosFileTypeId(tmp6)
 	tmp7, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.OffsetToData = uint32(tmp7)
+	this.ResourceId = uint32(tmp7)
 	tmp8, err := this._io.ReadU4le()
 	if err != nil {
 		return err
 	}
-	this.ResourceSize = uint32(tmp8)
+	this.OffsetToData = uint32(tmp8)
+	tmp9, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.NumData = uint32(tmp9)
 	return err
 }
 
@@ -466,13 +483,13 @@ func (this *Rim_ResourceEntry) Data() (v []uint8, err error) {
 	if err != nil {
 		return nil, err
 	}
-	for i := 0; i < int(this.ResourceSize); i++ {
+	for i := 0; i < int(this.NumData); i++ {
 		_ = i
-		tmp9, err := this._io.ReadU1()
+		tmp10, err := this._io.ReadU1()
 		if err != nil {
 			return nil, err
 		}
-		this.data = append(this.data, tmp9)
+		this.data = append(this.data, tmp10)
 	}
 	_, err = this._io.Seek(_pos, io.SeekStart)
 	if err != nil {
@@ -505,7 +522,7 @@ func (this *Rim_ResourceEntry) Data() (v []uint8, err error) {
  */
 
 /**
- * Size of resource data in bytes.
+ * Size of resource data in bytes (repeat count for raw `data` bytes).
  * Uncompressed size of the resource.
  */
 type Rim_ResourceEntryTable struct {
@@ -530,12 +547,12 @@ func (this *Rim_ResourceEntryTable) Read(io *kaitai.Stream, parent *Rim, root *R
 
 	for i := 0; i < int(this._root.Header.ResourceCount); i++ {
 		_ = i
-		tmp10 := NewRim_ResourceEntry()
-		err = tmp10.Read(this._io, this, this._root)
+		tmp11 := NewRim_ResourceEntry()
+		err = tmp11.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.Entries = append(this.Entries, tmp10)
+		this.Entries = append(this.Entries, tmp11)
 	}
 	return err
 }
@@ -543,49 +560,13 @@ func (this *Rim_ResourceEntryTable) Read(io *kaitai.Stream, parent *Rim, root *R
 /**
  * Array of resource entries, one per resource in the archive
  */
-type Rim_RimExtendedHeader struct {
-	ReservedPadding string
-	_io *kaitai.Stream
-	_root *Rim
-	_parent *Rim
-}
-func NewRim_RimExtendedHeader() *Rim_RimExtendedHeader {
-	return &Rim_RimExtendedHeader{
-	}
-}
-
-func (this Rim_RimExtendedHeader) IO_() *kaitai.Stream {
-	return this._io
-}
-
-func (this *Rim_RimExtendedHeader) Read(io *kaitai.Stream, parent *Rim, root *Rim) (err error) {
-	this._io = io
-	this._parent = parent
-	this._root = root
-
-	tmp11, err := this._io.ReadBytes(int(100))
-	if err != nil {
-		return err
-	}
-	tmp11 = tmp11
-	this.ReservedPadding = string(tmp11)
-	return err
-}
-
-/**
- * Reserved padding bytes (typically all zeros).
- * Total header size is 120 bytes:
- * header (20) + extended_header (100) = 120 bytes
- * 
- * In extension RIMs (files ending in 'x'), byte 0x14 (offset 20 in extended header)
- * may contain an IsExtension flag, but this is not consistently used.
- */
 type Rim_RimHeader struct {
 	FileType string
 	FileVersion string
 	Reserved uint32
 	ResourceCount uint32
 	OffsetToResourceTable uint32
+	OffsetToResources uint32
 	_io *kaitai.Stream
 	_root *Rim
 	_parent *Rim
@@ -639,6 +620,11 @@ func (this *Rim_RimHeader) Read(io *kaitai.Stream, parent *Rim, root *Rim) (err 
 		return err
 	}
 	this.OffsetToResourceTable = uint32(tmp16)
+	tmp17, err := this._io.ReadU4le()
+	if err != nil {
+		return err
+	}
+	this.OffsetToResources = uint32(tmp17)
 	return err
 }
 
@@ -676,7 +662,12 @@ func (this *Rim_RimHeader) HasResources() (v bool, err error) {
  */
 
 /**
- * Byte offset to the resource entry table from the beginning of the file.
- * Typically 120 (right after header + extended header) if resources are present.
- * Points to the start of the resource_entry_table.
+ * Byte offset to the key / resource entry table from the beginning of the file.
+ * 0 means implicit offset 120 (24-byte header + 96-byte padding), matching PyKotor and vanilla KotOR.
+ * When non-zero, this offset is used directly (commonly 120).
+ */
+
+/**
+ * Optional offset to resource data section. Vanilla module RIMs often store 0 here (offsets are
+ * taken only from per-entry offset_to_data). PyKotor writes 0 when serializing.
  */

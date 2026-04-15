@@ -21,15 +21,30 @@ import java.util.List;
  * - The CExoLocString / LocalizedString binary layout
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
  * - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
  * - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
  */
 public class BiowareCommon extends KaitaiStruct {
     public static BiowareCommon fromFile(String fileName) throws IOException {
         return new BiowareCommon(new ByteBufferKaitaiStream(fileName));
+    }
+
+    public enum BiowareDdsVariantBytesPerPixel {
+        DXT1(3),
+        DXT5(4);
+
+        private final long id;
+        BiowareDdsVariantBytesPerPixel(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, BiowareDdsVariantBytesPerPixel> byId = new HashMap<Long, BiowareDdsVariantBytesPerPixel>(2);
+        static {
+            for (BiowareDdsVariantBytesPerPixel e : BiowareDdsVariantBytesPerPixel.values())
+                byId.put(e.id(), e);
+        }
+        public static BiowareDdsVariantBytesPerPixel byId(long id) { return byId.get(id); }
     }
 
     public enum BiowareEquipmentSlotFlag {
@@ -207,6 +222,50 @@ public class BiowareCommon extends KaitaiStruct {
         public static BiowareLanguageId byId(long id) { return byId.get(id); }
     }
 
+    public enum BiowareLipVisemeId {
+        NEUTRAL(0),
+        EE(1),
+        EH(2),
+        AH(3),
+        OH(4),
+        OOH(5),
+        Y(6),
+        STS(7),
+        FV(8),
+        NG(9),
+        TH(10),
+        MPB(11),
+        TD(12),
+        SH(13),
+        L(14),
+        KG(15);
+
+        private final long id;
+        BiowareLipVisemeId(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, BiowareLipVisemeId> byId = new HashMap<Long, BiowareLipVisemeId>(16);
+        static {
+            for (BiowareLipVisemeId e : BiowareLipVisemeId.values())
+                byId.put(e.id(), e);
+        }
+        public static BiowareLipVisemeId byId(long id) { return byId.get(id); }
+    }
+
+    public enum BiowareLtrAlphabetLength {
+        NEVERWINTER_NIGHTS(26),
+        KOTOR(28);
+
+        private final long id;
+        BiowareLtrAlphabetLength(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, BiowareLtrAlphabetLength> byId = new HashMap<Long, BiowareLtrAlphabetLength>(2);
+        static {
+            for (BiowareLtrAlphabetLength e : BiowareLtrAlphabetLength.values())
+                byId.put(e.id(), e);
+        }
+        public static BiowareLtrAlphabetLength byId(long id) { return byId.get(id); }
+    }
+
     public enum BiowareObjectTypeId {
         INVALID(0),
         CREATURE(1),
@@ -230,6 +289,75 @@ public class BiowareCommon extends KaitaiStruct {
                 byId.put(e.id(), e);
         }
         public static BiowareObjectTypeId byId(long id) { return byId.get(id); }
+    }
+
+    public enum BiowarePccCompressionCodec {
+        NONE(0),
+        ZLIB(1),
+        LZO(2);
+
+        private final long id;
+        BiowarePccCompressionCodec(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, BiowarePccCompressionCodec> byId = new HashMap<Long, BiowarePccCompressionCodec>(3);
+        static {
+            for (BiowarePccCompressionCodec e : BiowarePccCompressionCodec.values())
+                byId.put(e.id(), e);
+        }
+        public static BiowarePccCompressionCodec byId(long id) { return byId.get(id); }
+    }
+
+    public enum BiowarePccPackageKind {
+        NORMAL_PACKAGE(0),
+        PATCH_PACKAGE(1);
+
+        private final long id;
+        BiowarePccPackageKind(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, BiowarePccPackageKind> byId = new HashMap<Long, BiowarePccPackageKind>(2);
+        static {
+            for (BiowarePccPackageKind e : BiowarePccPackageKind.values())
+                byId.put(e.id(), e);
+        }
+        public static BiowarePccPackageKind byId(long id) { return byId.get(id); }
+    }
+
+    public enum BiowareTpcPixelFormatId {
+        GREYSCALE(1),
+        RGB_OR_DXT1(2),
+        RGBA_OR_DXT5(4),
+        BGRA_XBOX_SWIZZLE(12);
+
+        private final long id;
+        BiowareTpcPixelFormatId(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, BiowareTpcPixelFormatId> byId = new HashMap<Long, BiowareTpcPixelFormatId>(4);
+        static {
+            for (BiowareTpcPixelFormatId e : BiowareTpcPixelFormatId.values())
+                byId.put(e.id(), e);
+        }
+        public static BiowareTpcPixelFormatId byId(long id) { return byId.get(id); }
+    }
+
+    public enum RiffWaveFormatTag {
+        PCM(1),
+        ADPCM_MS(2),
+        IEEE_FLOAT(3),
+        ALAW(6),
+        MULAW(7),
+        DVI_IMA_ADPCM(17),
+        MPEG_LAYER3(85),
+        WAVE_FORMAT_EXTENSIBLE(65534);
+
+        private final long id;
+        RiffWaveFormatTag(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, RiffWaveFormatTag> byId = new HashMap<Long, RiffWaveFormatTag>(8);
+        static {
+            for (RiffWaveFormatTag e : RiffWaveFormatTag.values())
+                byId.put(e.id(), e);
+        }
+        public static RiffWaveFormatTag byId(long id) { return byId.get(id); }
     }
 
     public BiowareCommon(KaitaiStream _io) {
@@ -410,7 +538,7 @@ public class BiowareCommon extends KaitaiStruct {
         public long totalSize() { return totalSize; }
 
         /**
-         * StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+         * StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
          */
         public long stringRef() { return stringRef; }
 

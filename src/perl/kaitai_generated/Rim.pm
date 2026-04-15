@@ -338,7 +338,12 @@ sub _read {
     my ($self) = @_;
 
     $self->{header} = Rim::RimHeader->new($self->{_io}, $self, $self->{_root});
-    $self->{extended_header} = Rim::RimExtendedHeader->new($self->{_io}, $self, $self->{_root});
+    if ($self->header()->offset_to_resource_table() == 0) {
+        $self->{gap_before_key_table_implicit} = $self->{_io}->read_bytes(96);
+    }
+    if ($self->header()->offset_to_resource_table() != 0) {
+        $self->{gap_before_key_table_explicit} = $self->{_io}->read_bytes($self->header()->offset_to_resource_table() - 24);
+    }
     if ($self->header()->resource_count() > 0) {
         $self->{resource_entry_table} = Rim::ResourceEntryTable->new($self->{_io}, $self, $self->{_root});
     }
@@ -349,9 +354,14 @@ sub header {
     return $self->{header};
 }
 
-sub extended_header {
+sub gap_before_key_table_implicit {
     my ($self) = @_;
-    return $self->{extended_header};
+    return $self->{gap_before_key_table_implicit};
+}
+
+sub gap_before_key_table_explicit {
+    my ($self) = @_;
+    return $self->{gap_before_key_table_explicit};
 }
 
 sub resource_entry_table {
@@ -393,7 +403,7 @@ sub _read {
     $self->{resource_type} = $self->{_io}->read_u4le();
     $self->{resource_id} = $self->{_io}->read_u4le();
     $self->{offset_to_data} = $self->{_io}->read_u4le();
-    $self->{resource_size} = $self->{_io}->read_u4le();
+    $self->{num_data} = $self->{_io}->read_u4le();
 }
 
 sub data {
@@ -402,7 +412,7 @@ sub data {
     my $_pos = $self->{_io}->pos();
     $self->{_io}->seek($self->offset_to_data());
     $self->{data} = [];
-    my $n_data = $self->resource_size();
+    my $n_data = $self->num_data();
     for (my $i = 0; $i < $n_data; $i++) {
         push @{$self->{data}}, $self->{_io}->read_u1();
     }
@@ -430,9 +440,9 @@ sub offset_to_data {
     return $self->{offset_to_data};
 }
 
-sub resource_size {
+sub num_data {
     my ($self) = @_;
-    return $self->{resource_size};
+    return $self->{num_data};
 }
 
 ########################################################################
@@ -478,44 +488,6 @@ sub entries {
 }
 
 ########################################################################
-package Rim::RimExtendedHeader;
-
-our @ISA = 'IO::KaitaiStruct::Struct';
-
-sub from_file {
-    my ($class, $filename) = @_;
-    my $fd;
-
-    open($fd, '<', $filename) or return undef;
-    binmode($fd);
-    return new($class, IO::KaitaiStruct::Stream->new($fd));
-}
-
-sub new {
-    my ($class, $_io, $_parent, $_root) = @_;
-    my $self = IO::KaitaiStruct::Struct->new($_io);
-
-    bless $self, $class;
-    $self->{_parent} = $_parent;
-    $self->{_root} = $_root;
-
-    $self->_read();
-
-    return $self;
-}
-
-sub _read {
-    my ($self) = @_;
-
-    $self->{reserved_padding} = Encode::decode("ASCII", $self->{_io}->read_bytes(100));
-}
-
-sub reserved_padding {
-    my ($self) = @_;
-    return $self->{reserved_padding};
-}
-
-########################################################################
 package Rim::RimHeader;
 
 our @ISA = 'IO::KaitaiStruct::Struct';
@@ -550,6 +522,7 @@ sub _read {
     $self->{reserved} = $self->{_io}->read_u4le();
     $self->{resource_count} = $self->{_io}->read_u4le();
     $self->{offset_to_resource_table} = $self->{_io}->read_u4le();
+    $self->{offset_to_resources} = $self->{_io}->read_u4le();
 }
 
 sub has_resources {
@@ -582,6 +555,11 @@ sub resource_count {
 sub offset_to_resource_table {
     my ($self) = @_;
     return $self->{offset_to_resource_table};
+}
+
+sub offset_to_resources {
+    my ($self) = @_;
+    return $self->{offset_to_resources};
 }
 
 1;

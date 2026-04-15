@@ -2,6 +2,10 @@ from construct import *
 from construct.lib import *
 import enum
 
+class bioware_common__bioware_dds_variant_bytes_per_pixel(enum.IntEnum):
+	dxt1 = 3
+	dxt5 = 4
+
 class bioware_common__bioware_equipment_slot_flag(enum.IntEnum):
 	invalid = 0
 	head = 1
@@ -133,6 +137,28 @@ class bioware_common__bioware_language_id(enum.IntEnum):
 	japanese = 131
 	unknown = 2147483646
 
+class bioware_common__bioware_lip_viseme_id(enum.IntEnum):
+	neutral = 0
+	ee = 1
+	eh = 2
+	ah = 3
+	oh = 4
+	ooh = 5
+	y = 6
+	sts = 7
+	fv = 8
+	ng = 9
+	th = 10
+	mpb = 11
+	td = 12
+	sh = 13
+	l = 14
+	kg = 15
+
+class bioware_common__bioware_ltr_alphabet_length(enum.IntEnum):
+	neverwinter_nights = 26
+	kotor = 28
+
 class bioware_common__bioware_object_type_id(enum.IntEnum):
 	invalid = 0
 	creature = 1
@@ -146,6 +172,31 @@ class bioware_common__bioware_object_type_id(enum.IntEnum):
 	area = 9
 	sound = 10
 	camera = 11
+
+class bioware_common__bioware_pcc_compression_codec(enum.IntEnum):
+	none = 0
+	zlib = 1
+	lzo = 2
+
+class bioware_common__bioware_pcc_package_kind(enum.IntEnum):
+	normal_package = 0
+	patch_package = 1
+
+class bioware_common__bioware_tpc_pixel_format_id(enum.IntEnum):
+	greyscale = 1
+	rgb_or_dxt1 = 2
+	rgba_or_dxt5 = 4
+	bgra_xbox_swizzle = 12
+
+class bioware_common__riff_wave_format_tag(enum.IntEnum):
+	pcm = 1
+	adpcm_ms = 2
+	ieee_float = 3
+	alaw = 6
+	mulaw = 7
+	dvi_ima_adpcm = 17
+	mpeg_layer3 = 85
+	wave_format_extensible = 65534
 
 bioware_common__bioware_binary_data = Struct(
 	'len_value' / Int32ul,

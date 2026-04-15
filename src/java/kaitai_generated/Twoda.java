@@ -31,26 +31,24 @@ import java.util.List;
  * storage of duplicate values (shared strings are stored once and referenced by offset).
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
  */
 public class Twoda extends KaitaiStruct {
-    public static Twoda fromFile(String fileName) throws IOException {
-        return new Twoda(new ByteBufferKaitaiStream(fileName));
+
+    public Twoda(KaitaiStream _io, long columnCount) {
+        this(_io, null, null, columnCount);
     }
 
-    public Twoda(KaitaiStream _io) {
-        this(_io, null, null);
+    public Twoda(KaitaiStream _io, KaitaiStruct _parent, long columnCount) {
+        this(_io, _parent, null, columnCount);
     }
 
-    public Twoda(KaitaiStream _io, KaitaiStruct _parent) {
-        this(_io, _parent, null);
-    }
-
-    public Twoda(KaitaiStream _io, KaitaiStruct _parent, Twoda _root) {
+    public Twoda(KaitaiStream _io, KaitaiStruct _parent, Twoda _root, long columnCount) {
         super(_io);
         this._parent = _parent;
         this._root = _root == null ? this : _root;
+        this.columnCount = columnCount;
         _read();
     }
     private void _read() {
@@ -58,7 +56,10 @@ public class Twoda extends KaitaiStruct {
         this.columnHeadersRaw = new String(this._io.readBytesTerm((byte) 0, false, true, true), StandardCharsets.US_ASCII);
         this.rowCount = this._io.readU4le();
         this.rowLabelsSection = new RowLabelsSection(this._io, this, _root);
-        this.cellOffsetsArray = new CellOffsetsArray(this._io, this, _root);
+        this.cellOffsets = new ArrayList<Integer>();
+        for (int i = 0; i < rowCount() * columnCount(); i++) {
+            this.cellOffsets.add(this._io.readU2le());
+        }
         this.lenCellValuesSection = this._io.readU2le();
         KaitaiStream _io_cellValuesSection = this._io.substream(lenCellValuesSection());
         this.cellValuesSection = new CellValuesSection(_io_cellValuesSection, this, _root);
@@ -67,69 +68,9 @@ public class Twoda extends KaitaiStruct {
     public void _fetchInstances() {
         this.header._fetchInstances();
         this.rowLabelsSection._fetchInstances();
-        this.cellOffsetsArray._fetchInstances();
+        for (int i = 0; i < this.cellOffsets.size(); i++) {
+        }
         this.cellValuesSection._fetchInstances();
-    }
-    public static class CellOffsetsArray extends KaitaiStruct {
-        public static CellOffsetsArray fromFile(String fileName) throws IOException {
-            return new CellOffsetsArray(new ByteBufferKaitaiStream(fileName));
-        }
-
-        public CellOffsetsArray(KaitaiStream _io) {
-            this(_io, null, null);
-        }
-
-        public CellOffsetsArray(KaitaiStream _io, Twoda _parent) {
-            this(_io, _parent, null);
-        }
-
-        public CellOffsetsArray(KaitaiStream _io, Twoda _parent, Twoda _root) {
-            super(_io);
-            this._parent = _parent;
-            this._root = _root;
-            _read();
-        }
-        private void _read() {
-            this.offsets = new ArrayList<Integer>();
-            {
-                int _it;
-                int i = 0;
-                do {
-                    _it = this._io.readU2le();
-                    this.offsets.add(_it);
-                    i++;
-                } while (!(_io().pos() >= _io().size() - 2));
-            }
-        }
-
-        public void _fetchInstances() {
-            for (int i = 0; i < this.offsets.size(); i++) {
-            }
-        }
-        private List<Integer> offsets;
-        private Twoda _root;
-        private Twoda _parent;
-
-        /**
-         * Array of cell value offsets (uint16, little-endian).
-         * Each offset points to a null-terminated string in the cell_values_section.
-         * Offsets are relative to the start of cell_values_section.
-         * 
-         * Reading continues until we reach 2 bytes before end of file (where len_cell_values_section field is).
-         * Then len_cell_values_section is read, followed by cell_values_section.
-         * 
-         * The actual count is: row_count * column_count
-         * where column_count = number of tab-separated parts in column_headers_raw.
-         * 
-         * Cell access pattern:
-         * - Cell at row i, column j = offsets[i * column_count + j]
-         * - Value = read string at cell_values_section start + offsets[i * column_count + j]
-         * 
-         * Duplicate cell values share the same offset (string deduplication).
-         */
-        public List<Integer> offsets() { return offsets; }
-        public Twoda _root() { return _root; }
-        public Twoda _parent() { return _parent; }
     }
     public static class CellValuesSection extends KaitaiStruct {
         public static CellValuesSection fromFile(String fileName) throws IOException {
@@ -163,7 +104,7 @@ public class Twoda extends KaitaiStruct {
         /**
          * Raw cell values data as a single string.
          * Contains all null-terminated cell value strings concatenated together.
-         * Individual strings can be extracted using offsets from cell_offsets_array.
+         * Individual strings can be extracted using offsets from cell_offsets.
          * Note: To read a specific cell value, seek to (cell_values_section start + offset) and read a null-terminated string.
          */
         public String rawData() { return rawData; }
@@ -325,9 +266,10 @@ public class Twoda extends KaitaiStruct {
     private String columnHeadersRaw;
     private long rowCount;
     private RowLabelsSection rowLabelsSection;
-    private CellOffsetsArray cellOffsetsArray;
+    private List<Integer> cellOffsets;
     private int lenCellValuesSection;
     private CellValuesSection cellValuesSection;
+    private long columnCount;
     private Twoda _root;
     private KaitaiStruct _parent;
 
@@ -356,11 +298,11 @@ public class Twoda extends KaitaiStruct {
     public RowLabelsSection rowLabelsSection() { return rowLabelsSection; }
 
     /**
-     * Array of cell value offsets (uint16 per cell).
-     * Total entries = row_count * column_count (where column_count = number of tab-separated parts in column_headers_raw).
-     * Each offset points to a null-terminated string in the cell values section.
+     * Array of cell value offsets (uint16 per cell). There are exactly row_count * column_count
+     * entries, in row-major order. Each offset is relative to the start of the cell values blob
+     * and points to a null-terminated string.
      */
-    public CellOffsetsArray cellOffsetsArray() { return cellOffsetsArray; }
+    public List<Integer> cellOffsets() { return cellOffsets; }
 
     /**
      * Total size in bytes of the cell values data section.
@@ -371,10 +313,18 @@ public class Twoda extends KaitaiStruct {
 
     /**
      * Cell values data section containing all unique cell value strings.
-     * Each string is null-terminated. Offsets from cell_offsets_array point into this section.
+     * Each string is null-terminated. Offsets from cell_offsets point into this section.
      * The section starts immediately after len_cell_values_section field and has size = len_cell_values_section bytes.
      */
     public CellValuesSection cellValuesSection() { return cellValuesSection; }
+
+    /**
+     * Number of tab-separated column headers in the file (excluding the trailing null terminator).
+     * Kaitai expressions cannot derive this from the header blob, so callers must pre-scan the
+     * column header section (same rule as PyKotor: count tab characters between the newline after
+     * V2.b and the first 0x00) and pass it into the parser.
+     */
+    public long columnCount() { return columnCount; }
     public Twoda _root() { return _root; }
     public KaitaiStruct _parent() { return _parent; }
 }

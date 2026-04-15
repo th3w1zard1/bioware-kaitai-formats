@@ -17,12 +17,18 @@ end
 # - The CExoLocString / LocalizedString binary layout
 # 
 # References:
-# - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-# - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-# - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+# - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+# - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+# - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
 # - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
 # - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
 class BiowareCommon < Kaitai::Struct::Struct
+
+  BIOWARE_DDS_VARIANT_BYTES_PER_PIXEL = {
+    3 => :bioware_dds_variant_bytes_per_pixel_dxt1,
+    4 => :bioware_dds_variant_bytes_per_pixel_dxt5,
+  }
+  I__BIOWARE_DDS_VARIANT_BYTES_PER_PIXEL = BIOWARE_DDS_VARIANT_BYTES_PER_PIXEL.invert
 
   BIOWARE_EQUIPMENT_SLOT_FLAG = {
     0 => :bioware_equipment_slot_flag_invalid,
@@ -163,6 +169,32 @@ class BiowareCommon < Kaitai::Struct::Struct
   }
   I__BIOWARE_LANGUAGE_ID = BIOWARE_LANGUAGE_ID.invert
 
+  BIOWARE_LIP_VISEME_ID = {
+    0 => :bioware_lip_viseme_id_neutral,
+    1 => :bioware_lip_viseme_id_ee,
+    2 => :bioware_lip_viseme_id_eh,
+    3 => :bioware_lip_viseme_id_ah,
+    4 => :bioware_lip_viseme_id_oh,
+    5 => :bioware_lip_viseme_id_ooh,
+    6 => :bioware_lip_viseme_id_y,
+    7 => :bioware_lip_viseme_id_sts,
+    8 => :bioware_lip_viseme_id_fv,
+    9 => :bioware_lip_viseme_id_ng,
+    10 => :bioware_lip_viseme_id_th,
+    11 => :bioware_lip_viseme_id_mpb,
+    12 => :bioware_lip_viseme_id_td,
+    13 => :bioware_lip_viseme_id_sh,
+    14 => :bioware_lip_viseme_id_l,
+    15 => :bioware_lip_viseme_id_kg,
+  }
+  I__BIOWARE_LIP_VISEME_ID = BIOWARE_LIP_VISEME_ID.invert
+
+  BIOWARE_LTR_ALPHABET_LENGTH = {
+    26 => :bioware_ltr_alphabet_length_neverwinter_nights,
+    28 => :bioware_ltr_alphabet_length_kotor,
+  }
+  I__BIOWARE_LTR_ALPHABET_LENGTH = BIOWARE_LTR_ALPHABET_LENGTH.invert
+
   BIOWARE_OBJECT_TYPE_ID = {
     0 => :bioware_object_type_id_invalid,
     1 => :bioware_object_type_id_creature,
@@ -178,6 +210,39 @@ class BiowareCommon < Kaitai::Struct::Struct
     11 => :bioware_object_type_id_camera,
   }
   I__BIOWARE_OBJECT_TYPE_ID = BIOWARE_OBJECT_TYPE_ID.invert
+
+  BIOWARE_PCC_COMPRESSION_CODEC = {
+    0 => :bioware_pcc_compression_codec_none,
+    1 => :bioware_pcc_compression_codec_zlib,
+    2 => :bioware_pcc_compression_codec_lzo,
+  }
+  I__BIOWARE_PCC_COMPRESSION_CODEC = BIOWARE_PCC_COMPRESSION_CODEC.invert
+
+  BIOWARE_PCC_PACKAGE_KIND = {
+    0 => :bioware_pcc_package_kind_normal_package,
+    1 => :bioware_pcc_package_kind_patch_package,
+  }
+  I__BIOWARE_PCC_PACKAGE_KIND = BIOWARE_PCC_PACKAGE_KIND.invert
+
+  BIOWARE_TPC_PIXEL_FORMAT_ID = {
+    1 => :bioware_tpc_pixel_format_id_greyscale,
+    2 => :bioware_tpc_pixel_format_id_rgb_or_dxt1,
+    4 => :bioware_tpc_pixel_format_id_rgba_or_dxt5,
+    12 => :bioware_tpc_pixel_format_id_bgra_xbox_swizzle,
+  }
+  I__BIOWARE_TPC_PIXEL_FORMAT_ID = BIOWARE_TPC_PIXEL_FORMAT_ID.invert
+
+  RIFF_WAVE_FORMAT_TAG = {
+    1 => :riff_wave_format_tag_pcm,
+    2 => :riff_wave_format_tag_adpcm_ms,
+    3 => :riff_wave_format_tag_ieee_float,
+    6 => :riff_wave_format_tag_alaw,
+    7 => :riff_wave_format_tag_mulaw,
+    17 => :riff_wave_format_tag_dvi_ima_adpcm,
+    85 => :riff_wave_format_tag_mpeg_layer3,
+    65534 => :riff_wave_format_tag_wave_format_extensible,
+  }
+  I__RIFF_WAVE_FORMAT_TAG = RIFF_WAVE_FORMAT_TAG.invert
   def initialize(_io, _parent = nil, _root = nil)
     super(_io, _parent, _root || self)
     _read
@@ -268,7 +333,7 @@ class BiowareCommon < Kaitai::Struct::Struct
     attr_reader :total_size
 
     ##
-    # StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+    # StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
     attr_reader :string_ref
 
     ##

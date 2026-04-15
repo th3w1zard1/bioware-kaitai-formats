@@ -151,7 +151,7 @@ wav_t::format_chunk_body_t::format_chunk_body_t(kaitai::kstream* p__io, wav_t::c
 }
 
 void wav_t::format_chunk_body_t::_read() {
-    m_audio_format = m__io->read_u2le();
+    m_audio_format = static_cast<bioware_common_t::riff_wave_format_tag_t>(m__io->read_u2le());
     m_channels = m__io->read_u2le();
     m_sample_rate = m__io->read_u4le();
     m_bytes_per_sec = m__io->read_u4le();
@@ -177,7 +177,7 @@ bool wav_t::format_chunk_body_t::is_ima_adpcm() {
     if (f_is_ima_adpcm)
         return m_is_ima_adpcm;
     f_is_ima_adpcm = true;
-    m_is_ima_adpcm = audio_format() == 17;
+    m_is_ima_adpcm = audio_format() == bioware_common_t::RIFF_WAVE_FORMAT_TAG_DVI_IMA_ADPCM;
     return m_is_ima_adpcm;
 }
 
@@ -185,7 +185,7 @@ bool wav_t::format_chunk_body_t::is_mp3() {
     if (f_is_mp3)
         return m_is_mp3;
     f_is_mp3 = true;
-    m_is_mp3 = audio_format() == 85;
+    m_is_mp3 = audio_format() == bioware_common_t::RIFF_WAVE_FORMAT_TAG_MPEG_LAYER3;
     return m_is_mp3;
 }
 
@@ -193,7 +193,7 @@ bool wav_t::format_chunk_body_t::is_pcm() {
     if (f_is_pcm)
         return m_is_pcm;
     f_is_pcm = true;
-    m_is_pcm = audio_format() == 1;
+    m_is_pcm = audio_format() == bioware_common_t::RIFF_WAVE_FORMAT_TAG_PCM;
     return m_is_pcm;
 }
 

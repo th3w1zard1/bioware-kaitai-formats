@@ -14,9 +14,9 @@ end
 # The ASCII format represents the model structure using plain text with keyword-based syntax.
 # Lines are parsed sequentially, with keywords indicating sections, nodes, properties, and data arrays.
 # 
-# Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md - ASCII MDL Format section
-# Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:3916-4698 - readasciimdl function implementation
-# @see https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md#ascii-mdl-format Source
+# Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - ASCII MDL Format section
+# Reference: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:3916-4698 - readasciimdl function implementation
+# @see https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#ascii-mdl-format Source
 class MdlAscii < Kaitai::Struct::Struct
 
   CONTROLLER_TYPE_COMMON = {

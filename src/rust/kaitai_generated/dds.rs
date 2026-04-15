@@ -11,19 +11,15 @@ use kaitai::*;
 use std::convert::{TryFrom, TryInto};
 use std::cell::{Ref, Cell, RefCell};
 use std::rc::{Rc, Weak};
+use super::bioware_common::BiowareCommon_BiowareDdsVariantBytesPerPixel;
 
 /**
- * DDS (DirectDraw Surface) files appear in two variants in KotOR:
+ * **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+ * (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
  * 
- * 1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
- * 2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
- * 
- * DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
- * and various other pixel formats. They can include mipmaps and cube maps.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
- * - Standard DirectX DDS format specification
+ * BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds PyKotor wiki — DDS
+ * \sa https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130 PyKotor — TPCDDSReader
  */
 
 #[derive(Default, Debug, Clone)]
@@ -66,14 +62,7 @@ impl KStruct for Dds {
             let t = Self::read_into::<_, Dds_BiowareDdsHeader>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
             *self_rc.bioware_header.borrow_mut() = t;
         }
-        *self_rc.pixel_data.borrow_mut() = Vec::new();
-        {
-            let mut _i = 0;
-            while !_io.is_eof() {
-                self_rc.pixel_data.borrow_mut().push(_io.read_u1()?.into());
-                _i += 1;
-            }
-        }
+        *self_rc.pixel_data.borrow_mut() = _io.read_bytes_full()?.into();
         Ok(())
     }
 }
@@ -109,9 +98,9 @@ impl Dds {
 }
 
 /**
- * Pixel data (compressed or uncompressed).
- * For standard DDS: Format determined by DDPIXELFORMAT
- * For BioWare DDS: DXT1 or DXT5 compressed data
+ * Pixel data (compressed or uncompressed); single blob to EOF.
+ * For standard DDS: format determined by DDPIXELFORMAT.
+ * For BioWare DDS: DXT1 or DXT5 compressed data.
  */
 impl Dds {
     pub fn pixel_data(&self) -> Ref<'_, Vec<u8>> {
@@ -131,7 +120,7 @@ pub struct Dds_BiowareDdsHeader {
     pub _self: SharedType<Self>,
     width: RefCell<u32>,
     height: RefCell<u32>,
-    bytes_per_pixel: RefCell<u32>,
+    bytes_per_pixel: RefCell<BiowareCommon_BiowareDdsVariantBytesPerPixel>,
     data_size: RefCell<u32>,
     unused_float: RefCell<f32>,
     _io: RefCell<BytesReader>,
@@ -155,7 +144,7 @@ impl KStruct for Dds_BiowareDdsHeader {
         let _r = _rrc.as_ref().unwrap();
         *self_rc.width.borrow_mut() = _io.read_u4le()?.into();
         *self_rc.height.borrow_mut() = _io.read_u4le()?.into();
-        *self_rc.bytes_per_pixel.borrow_mut() = _io.read_u4le()?.into();
+        *self_rc.bytes_per_pixel.borrow_mut() = (_io.read_u4le()? as i64).try_into()?;
         *self_rc.data_size.borrow_mut() = _io.read_u4le()?.into();
         *self_rc.unused_float.borrow_mut() = _io.read_f4le()?.into();
         Ok(())
@@ -183,12 +172,10 @@ impl Dds_BiowareDdsHeader {
 }
 
 /**
- * Bytes per pixel:
- * - 3 = DXT1 compression
- * - 4 = DXT5 compression
+ * BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
  */
 impl Dds_BiowareDdsHeader {
-    pub fn bytes_per_pixel(&self) -> Ref<'_, u32> {
+    pub fn bytes_per_pixel(&self) -> Ref<'_, BiowareCommon_BiowareDdsVariantBytesPerPixel> {
         self.bytes_per_pixel.borrow()
     }
 }

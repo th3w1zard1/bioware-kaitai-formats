@@ -6,22 +6,16 @@ namespace Kaitai
 {
 
     /// <summary>
-    /// LTR (Letter) resources store third-order Markov chain probability tables that the game uses
-    /// to procedurally generate NPC names. The data encodes likelihoods for characters appearing at
-    /// the start, middle, and end of names given zero, one, or two-character context.
-    /// 
-    /// KotOR always uses the 28-character alphabet (a-z plus ' and -). Neverwinter Nights (NWN) used
-    /// 26 characters; the header explicitly stores the count. This is a KotOR-specific difference from NWN.
-    /// 
-    /// LTR files are binary and consist of a short header followed by three probability tables
-    /// (singles, doubles, triples) stored as contiguous float arrays.
-    /// 
-    /// References:
-    /// - https://github.com/OldRepublicDevs/PyKotor/wiki/LTR-File-Format.md
-    /// - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/ltrreader.cpp:27-74
-    /// - https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp:135-168
-    /// - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/resource/LTRObject.ts:61-117
+    /// **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
+    /// `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
+    /// `bioware_common.ksy`. Use `.to_i` on that enum inside `valid`/`repeat-expr` (see Kaitai user guide: enums).
     /// </summary>
+    /// <remarks>
+    /// Reference: <a href="https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format">PyKotor wiki — LTR</a>
+    /// </remarks>
+    /// <remarks>
+    /// Reference: <a href="https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168">xoreos — LTR::load</a>
+    /// </remarks>
     public partial class Ltr : KaitaiStruct
     {
         public static Ltr FromFile(string fileName)
@@ -39,7 +33,7 @@ namespace Kaitai
         {
             _fileType = System.Text.Encoding.GetEncoding("ASCII").GetString(m_io.ReadBytes(4));
             _fileVersion = System.Text.Encoding.GetEncoding("ASCII").GetString(m_io.ReadBytes(4));
-            _letterCount = m_io.ReadU1();
+            _letterCount = ((BiowareCommon.BiowareLtrAlphabetLength) m_io.ReadU1());
             _singleLetterBlock = new LetterBlock(m_io, this, m_root);
             _doubleLetterBlocks = new DoubleLetterBlocksArray(m_io, this, m_root);
             _tripleLetterBlocks = new TripleLetterBlocksArray(m_io, this, m_root);
@@ -65,7 +59,7 @@ namespace Kaitai
             private void _read()
             {
                 _blocks = new List<LetterBlock>();
-                for (var i = 0; i < M_Root.LetterCount; i++)
+                for (var i = 0; i < ((int) M_Root.LetterCount); i++)
                 {
                     _blocks.Add(new LetterBlock(m_io, this, m_root));
                 }
@@ -107,17 +101,17 @@ namespace Kaitai
             private void _read()
             {
                 _startProbabilities = new List<float>();
-                for (var i = 0; i < M_Root.LetterCount; i++)
+                for (var i = 0; i < ((int) M_Root.LetterCount); i++)
                 {
                     _startProbabilities.Add(m_io.ReadF4le());
                 }
                 _middleProbabilities = new List<float>();
-                for (var i = 0; i < M_Root.LetterCount; i++)
+                for (var i = 0; i < ((int) M_Root.LetterCount); i++)
                 {
                     _middleProbabilities.Add(m_io.ReadF4le());
                 }
                 _endProbabilities = new List<float>();
-                for (var i = 0; i < M_Root.LetterCount; i++)
+                for (var i = 0; i < ((int) M_Root.LetterCount); i++)
                 {
                     _endProbabilities.Add(m_io.ReadF4le());
                 }
@@ -170,7 +164,7 @@ namespace Kaitai
             private void _read()
             {
                 _rows = new List<TripleLetterRow>();
-                for (var i = 0; i < M_Root.LetterCount; i++)
+                for (var i = 0; i < ((int) M_Root.LetterCount); i++)
                 {
                     _rows.Add(new TripleLetterRow(m_io, this, m_root));
                 }
@@ -209,7 +203,7 @@ namespace Kaitai
             private void _read()
             {
                 _blocks = new List<LetterBlock>();
-                for (var i = 0; i < M_Root.LetterCount; i++)
+                for (var i = 0; i < ((int) M_Root.LetterCount); i++)
                 {
                     _blocks.Add(new LetterBlock(m_io, this, m_root));
                 }
@@ -228,7 +222,7 @@ namespace Kaitai
         }
         private string _fileType;
         private string _fileVersion;
-        private byte _letterCount;
+        private BiowareCommon.BiowareLtrAlphabetLength _letterCount;
         private LetterBlock _singleLetterBlock;
         private DoubleLetterBlocksArray _doubleLetterBlocks;
         private TripleLetterBlocksArray _tripleLetterBlocks;
@@ -246,11 +240,10 @@ namespace Kaitai
         public string FileVersion { get { return _fileVersion; } }
 
         /// <summary>
-        /// Number of characters in the alphabet. Must be 26 (NWN) or 28 (KotOR).
-        /// KotOR uses 28 characters: &quot;abcdefghijklmnopqrstuvwxyz'-&quot;
-        /// NWN uses 26 characters: &quot;abcdefghijklmnopqrstuvwxyz&quot;
+        /// Alphabet size (`u1`). Canonical enum: `formats/Common/bioware_common.ksy` → `bioware_ltr_alphabet_length`
+        /// (26 = NWN `a-z`; 28 = KotOR `a-z` + `'` + `-`). For `repeat-expr` counts use `letter_count.to_i` (Kaitai: enum → int, user guide §6.4.5).
         /// </summary>
-        public byte LetterCount { get { return _letterCount; } }
+        public BiowareCommon.BiowareLtrAlphabetLength LetterCount { get { return _letterCount; } }
 
         /// <summary>
         /// Single-letter probability block (no context).

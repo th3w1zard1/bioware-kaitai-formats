@@ -4,7 +4,7 @@ from construct.lib import *
 dds__bioware_dds_header = Struct(
 	'width' / Int32ul,
 	'height' / Int32ul,
-	'bytes_per_pixel' / Int32ul,
+	'bytes_per_pixel' / Enum(Int32ul, bioware_common__bioware_dds_variant_bytes_per_pixel),
 	'data_size' / Int32ul,
 	'unused_float' / Float32l,
 )
@@ -41,7 +41,7 @@ dds = Struct(
 	'magic' / FixedSized(4, GreedyString(encoding='ASCII')),
 	'header' / If(this.magic == u"DDS ", LazyBound(lambda: dds__dds_header)),
 	'bioware_header' / If(this.magic != u"DDS ", LazyBound(lambda: dds__bioware_dds_header)),
-	'pixel_data' / GreedyRange(Int8ub),
+	'pixel_data' / GreedyBytes,
 )
 
 _schema = dds

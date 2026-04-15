@@ -8,6 +8,14 @@ meta:
     - ../Common/bioware_common
     - ../Common/bioware_gff_common
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
+    ghidra_odyssey_k1:
+      note: |
+        GFF arenas are consumed by many Aurora `CRes*` / template paths; game-specific Ghidra anchors belong on the owning
+        template or capsule spec when you add them. For KotOR PC, use **`user-agdec-http`** (`sync-project`, `checkout-program`,
+        `/K1/k1_win_gog_swkotor.exe`, …) per `AGENTS.md` — same Odyssey workflow as `formats/TPC/DDS.ksy` `ghidra_mcp_odyssey_program_paths`.
     # Flat scalar map (ksy schema): line-anchored authorities. Long reading lists live here (+ optional `doc-ref`), not in `meta.doc`.
     wiki_gff: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
     wiki_gff_file_header: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#file-header
@@ -35,7 +43,7 @@ meta:
     pykotor_gff_package: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff
     pykotor_io_gff_reader_load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114
     pykotor_io_gff_writer_write: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L331-L369
-    # Writer recursion: mirrors `_load_struct` / `_load_list` / `_load_field_value_by_id` (reader §4).
+    # Writer recursion: mirrors `_load_struct` / `_load_list` / `_load_field_value_by_id` (reader section 4).
     pykotor_io_gff_writer_build_struct_list_field: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L371-L478
     pykotor_gff_auto_read_json: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_auto.py#L341-L346
     pykotor_gff_data_from_json: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py#L654-L667
@@ -108,10 +116,16 @@ doc: |
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format PyKotor wiki — GFF binary format"
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63 xoreos — GFF3File::Header::read"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L110-L181 xoreos — GFF3File load (post-header struct/field arena wiring)"
   - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L48-L72 xoreos — GFF4File::Header::read"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L151-L164 xoreos — GFF4File::load entry"
   - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114 PyKotor — GFFBinaryReader.load"
   - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L225 reone — GffReader"
   - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/GFFObject.ts#L152-L221 KotOR.js — GFFObject.parse"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/aurora/gff3file.cpp#L86-L238 xoreos-tools — GFF3 load pipeline (shared with CLIs)"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp#L36-L176 xoreos-tools — `gffdumper`"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffcreator.cpp#L43-L60 xoreos-tools — `gffcreator`"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/GFF_Format.pdf xoreos-docs — GFF_Format.pdf"
 
 seq:
   - id: file

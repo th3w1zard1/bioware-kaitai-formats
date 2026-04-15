@@ -22,9 +22,9 @@ use std::rc::{Rc, Weak};
  * - The CExoLocString / LocalizedString binary layout
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
  * - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
  * - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
  */
@@ -63,6 +63,38 @@ impl BiowareCommon {
         self._io.borrow()
     }
 }
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareCommon_BiowareDdsVariantBytesPerPixel {
+    Dxt1,
+    Dxt5,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareCommon_BiowareDdsVariantBytesPerPixel {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareCommon_BiowareDdsVariantBytesPerPixel> {
+        match flag {
+            3 => Ok(BiowareCommon_BiowareDdsVariantBytesPerPixel::Dxt1),
+            4 => Ok(BiowareCommon_BiowareDdsVariantBytesPerPixel::Dxt5),
+            _ => Ok(BiowareCommon_BiowareDdsVariantBytesPerPixel::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareCommon_BiowareDdsVariantBytesPerPixel> for i64 {
+    fn from(v: &BiowareCommon_BiowareDdsVariantBytesPerPixel) -> Self {
+        match *v {
+            BiowareCommon_BiowareDdsVariantBytesPerPixel::Dxt1 => 3,
+            BiowareCommon_BiowareDdsVariantBytesPerPixel::Dxt5 => 4,
+            BiowareCommon_BiowareDdsVariantBytesPerPixel::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareCommon_BiowareDdsVariantBytesPerPixel {
+    fn default() -> Self { BiowareCommon_BiowareDdsVariantBytesPerPixel::Unknown(0) }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum BiowareCommon_BiowareEquipmentSlotFlag {
     Invalid,
@@ -537,6 +569,112 @@ impl Default for BiowareCommon_BiowareLanguageId {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+pub enum BiowareCommon_BiowareLipVisemeId {
+    Neutral,
+    Ee,
+    Eh,
+    Ah,
+    Oh,
+    Ooh,
+    Y,
+    Sts,
+    Fv,
+    Ng,
+    Th,
+    Mpb,
+    Td,
+    Sh,
+    L,
+    Kg,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareCommon_BiowareLipVisemeId {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareCommon_BiowareLipVisemeId> {
+        match flag {
+            0 => Ok(BiowareCommon_BiowareLipVisemeId::Neutral),
+            1 => Ok(BiowareCommon_BiowareLipVisemeId::Ee),
+            2 => Ok(BiowareCommon_BiowareLipVisemeId::Eh),
+            3 => Ok(BiowareCommon_BiowareLipVisemeId::Ah),
+            4 => Ok(BiowareCommon_BiowareLipVisemeId::Oh),
+            5 => Ok(BiowareCommon_BiowareLipVisemeId::Ooh),
+            6 => Ok(BiowareCommon_BiowareLipVisemeId::Y),
+            7 => Ok(BiowareCommon_BiowareLipVisemeId::Sts),
+            8 => Ok(BiowareCommon_BiowareLipVisemeId::Fv),
+            9 => Ok(BiowareCommon_BiowareLipVisemeId::Ng),
+            10 => Ok(BiowareCommon_BiowareLipVisemeId::Th),
+            11 => Ok(BiowareCommon_BiowareLipVisemeId::Mpb),
+            12 => Ok(BiowareCommon_BiowareLipVisemeId::Td),
+            13 => Ok(BiowareCommon_BiowareLipVisemeId::Sh),
+            14 => Ok(BiowareCommon_BiowareLipVisemeId::L),
+            15 => Ok(BiowareCommon_BiowareLipVisemeId::Kg),
+            _ => Ok(BiowareCommon_BiowareLipVisemeId::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareCommon_BiowareLipVisemeId> for i64 {
+    fn from(v: &BiowareCommon_BiowareLipVisemeId) -> Self {
+        match *v {
+            BiowareCommon_BiowareLipVisemeId::Neutral => 0,
+            BiowareCommon_BiowareLipVisemeId::Ee => 1,
+            BiowareCommon_BiowareLipVisemeId::Eh => 2,
+            BiowareCommon_BiowareLipVisemeId::Ah => 3,
+            BiowareCommon_BiowareLipVisemeId::Oh => 4,
+            BiowareCommon_BiowareLipVisemeId::Ooh => 5,
+            BiowareCommon_BiowareLipVisemeId::Y => 6,
+            BiowareCommon_BiowareLipVisemeId::Sts => 7,
+            BiowareCommon_BiowareLipVisemeId::Fv => 8,
+            BiowareCommon_BiowareLipVisemeId::Ng => 9,
+            BiowareCommon_BiowareLipVisemeId::Th => 10,
+            BiowareCommon_BiowareLipVisemeId::Mpb => 11,
+            BiowareCommon_BiowareLipVisemeId::Td => 12,
+            BiowareCommon_BiowareLipVisemeId::Sh => 13,
+            BiowareCommon_BiowareLipVisemeId::L => 14,
+            BiowareCommon_BiowareLipVisemeId::Kg => 15,
+            BiowareCommon_BiowareLipVisemeId::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareCommon_BiowareLipVisemeId {
+    fn default() -> Self { BiowareCommon_BiowareLipVisemeId::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareCommon_BiowareLtrAlphabetLength {
+    NeverwinterNights,
+    Kotor,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareCommon_BiowareLtrAlphabetLength {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareCommon_BiowareLtrAlphabetLength> {
+        match flag {
+            26 => Ok(BiowareCommon_BiowareLtrAlphabetLength::NeverwinterNights),
+            28 => Ok(BiowareCommon_BiowareLtrAlphabetLength::Kotor),
+            _ => Ok(BiowareCommon_BiowareLtrAlphabetLength::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareCommon_BiowareLtrAlphabetLength> for i64 {
+    fn from(v: &BiowareCommon_BiowareLtrAlphabetLength) -> Self {
+        match *v {
+            BiowareCommon_BiowareLtrAlphabetLength::NeverwinterNights => 26,
+            BiowareCommon_BiowareLtrAlphabetLength::Kotor => 28,
+            BiowareCommon_BiowareLtrAlphabetLength::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareCommon_BiowareLtrAlphabetLength {
+    fn default() -> Self { BiowareCommon_BiowareLtrAlphabetLength::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum BiowareCommon_BiowareObjectTypeId {
     Invalid,
     Creature,
@@ -596,6 +734,161 @@ impl From<&BiowareCommon_BiowareObjectTypeId> for i64 {
 
 impl Default for BiowareCommon_BiowareObjectTypeId {
     fn default() -> Self { BiowareCommon_BiowareObjectTypeId::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareCommon_BiowarePccCompressionCodec {
+    None,
+    Zlib,
+    Lzo,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareCommon_BiowarePccCompressionCodec {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareCommon_BiowarePccCompressionCodec> {
+        match flag {
+            0 => Ok(BiowareCommon_BiowarePccCompressionCodec::None),
+            1 => Ok(BiowareCommon_BiowarePccCompressionCodec::Zlib),
+            2 => Ok(BiowareCommon_BiowarePccCompressionCodec::Lzo),
+            _ => Ok(BiowareCommon_BiowarePccCompressionCodec::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareCommon_BiowarePccCompressionCodec> for i64 {
+    fn from(v: &BiowareCommon_BiowarePccCompressionCodec) -> Self {
+        match *v {
+            BiowareCommon_BiowarePccCompressionCodec::None => 0,
+            BiowareCommon_BiowarePccCompressionCodec::Zlib => 1,
+            BiowareCommon_BiowarePccCompressionCodec::Lzo => 2,
+            BiowareCommon_BiowarePccCompressionCodec::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareCommon_BiowarePccCompressionCodec {
+    fn default() -> Self { BiowareCommon_BiowarePccCompressionCodec::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareCommon_BiowarePccPackageKind {
+    NormalPackage,
+    PatchPackage,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareCommon_BiowarePccPackageKind {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareCommon_BiowarePccPackageKind> {
+        match flag {
+            0 => Ok(BiowareCommon_BiowarePccPackageKind::NormalPackage),
+            1 => Ok(BiowareCommon_BiowarePccPackageKind::PatchPackage),
+            _ => Ok(BiowareCommon_BiowarePccPackageKind::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareCommon_BiowarePccPackageKind> for i64 {
+    fn from(v: &BiowareCommon_BiowarePccPackageKind) -> Self {
+        match *v {
+            BiowareCommon_BiowarePccPackageKind::NormalPackage => 0,
+            BiowareCommon_BiowarePccPackageKind::PatchPackage => 1,
+            BiowareCommon_BiowarePccPackageKind::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareCommon_BiowarePccPackageKind {
+    fn default() -> Self { BiowareCommon_BiowarePccPackageKind::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareCommon_BiowareTpcPixelFormatId {
+    Greyscale,
+    RgbOrDxt1,
+    RgbaOrDxt5,
+    BgraXboxSwizzle,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareCommon_BiowareTpcPixelFormatId {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareCommon_BiowareTpcPixelFormatId> {
+        match flag {
+            1 => Ok(BiowareCommon_BiowareTpcPixelFormatId::Greyscale),
+            2 => Ok(BiowareCommon_BiowareTpcPixelFormatId::RgbOrDxt1),
+            4 => Ok(BiowareCommon_BiowareTpcPixelFormatId::RgbaOrDxt5),
+            12 => Ok(BiowareCommon_BiowareTpcPixelFormatId::BgraXboxSwizzle),
+            _ => Ok(BiowareCommon_BiowareTpcPixelFormatId::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareCommon_BiowareTpcPixelFormatId> for i64 {
+    fn from(v: &BiowareCommon_BiowareTpcPixelFormatId) -> Self {
+        match *v {
+            BiowareCommon_BiowareTpcPixelFormatId::Greyscale => 1,
+            BiowareCommon_BiowareTpcPixelFormatId::RgbOrDxt1 => 2,
+            BiowareCommon_BiowareTpcPixelFormatId::RgbaOrDxt5 => 4,
+            BiowareCommon_BiowareTpcPixelFormatId::BgraXboxSwizzle => 12,
+            BiowareCommon_BiowareTpcPixelFormatId::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareCommon_BiowareTpcPixelFormatId {
+    fn default() -> Self { BiowareCommon_BiowareTpcPixelFormatId::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareCommon_RiffWaveFormatTag {
+    Pcm,
+    AdpcmMs,
+    IeeeFloat,
+    Alaw,
+    Mulaw,
+    DviImaAdpcm,
+    MpegLayer3,
+    WaveFormatExtensible,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareCommon_RiffWaveFormatTag {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareCommon_RiffWaveFormatTag> {
+        match flag {
+            1 => Ok(BiowareCommon_RiffWaveFormatTag::Pcm),
+            2 => Ok(BiowareCommon_RiffWaveFormatTag::AdpcmMs),
+            3 => Ok(BiowareCommon_RiffWaveFormatTag::IeeeFloat),
+            6 => Ok(BiowareCommon_RiffWaveFormatTag::Alaw),
+            7 => Ok(BiowareCommon_RiffWaveFormatTag::Mulaw),
+            17 => Ok(BiowareCommon_RiffWaveFormatTag::DviImaAdpcm),
+            85 => Ok(BiowareCommon_RiffWaveFormatTag::MpegLayer3),
+            65534 => Ok(BiowareCommon_RiffWaveFormatTag::WaveFormatExtensible),
+            _ => Ok(BiowareCommon_RiffWaveFormatTag::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareCommon_RiffWaveFormatTag> for i64 {
+    fn from(v: &BiowareCommon_RiffWaveFormatTag) -> Self {
+        match *v {
+            BiowareCommon_RiffWaveFormatTag::Pcm => 1,
+            BiowareCommon_RiffWaveFormatTag::AdpcmMs => 2,
+            BiowareCommon_RiffWaveFormatTag::IeeeFloat => 3,
+            BiowareCommon_RiffWaveFormatTag::Alaw => 6,
+            BiowareCommon_RiffWaveFormatTag::Mulaw => 7,
+            BiowareCommon_RiffWaveFormatTag::DviImaAdpcm => 17,
+            BiowareCommon_RiffWaveFormatTag::MpegLayer3 => 85,
+            BiowareCommon_RiffWaveFormatTag::WaveFormatExtensible => 65534,
+            BiowareCommon_RiffWaveFormatTag::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareCommon_RiffWaveFormatTag {
+    fn default() -> Self { BiowareCommon_RiffWaveFormatTag::Unknown(0) }
 }
 
 
@@ -801,7 +1094,7 @@ impl BiowareCommon_BiowareLocstring {
 }
 
 /**
- * StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+ * StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
  */
 impl BiowareCommon_BiowareLocstring {
     pub fn string_ref(&self) -> Ref<'_, u32> {

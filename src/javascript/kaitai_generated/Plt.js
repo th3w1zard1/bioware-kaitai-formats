@@ -40,7 +40,7 @@
  * 6 = Leather 1, 7 = Leather 2, 8 = Tattoo 1, 9 = Tattoo 2
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/PLT-File-Format.md
+ * - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy
  * - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
  * - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp
  */

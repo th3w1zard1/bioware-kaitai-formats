@@ -22,3 +22,15 @@
 [submodule "vendor/MDLOps"]
 	path = vendor/MDLOps
 	url = https://github.com/ndixur/mdlops.git
+[submodule "_upstream_refs/kotor.js"]
+	path = _upstream_refs/kotor.js
+	url = https://github.com/kobaltblu/kotor.js.git
+[submodule "_upstream_refs/northernlights"]
+	path = _upstream_refs/northernlights
+	url = https://github.com/lachjames/northernlights.git
+[submodule "_upstream_refs/reone"]
+	path = _upstream_refs/reone
+	url = https://github.com/modawan/reone.git
+[submodule "reone_dds_scan"]
+	path = reone_dds_scan
+	url = https://github.com/modawan/reone.git

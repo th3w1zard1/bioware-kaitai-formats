@@ -1,30 +1,6 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 #include "lip.h"
-std::set<lip_t::lip_shapes_t> lip_t::_build_values_lip_shapes_t() {
-    std::set<lip_t::lip_shapes_t> _t;
-    _t.insert(lip_t::LIP_SHAPES_NEUTRAL);
-    _t.insert(lip_t::LIP_SHAPES_EE);
-    _t.insert(lip_t::LIP_SHAPES_EH);
-    _t.insert(lip_t::LIP_SHAPES_AH);
-    _t.insert(lip_t::LIP_SHAPES_OH);
-    _t.insert(lip_t::LIP_SHAPES_OOH);
-    _t.insert(lip_t::LIP_SHAPES_Y);
-    _t.insert(lip_t::LIP_SHAPES_STS);
-    _t.insert(lip_t::LIP_SHAPES_FV);
-    _t.insert(lip_t::LIP_SHAPES_NG);
-    _t.insert(lip_t::LIP_SHAPES_TH);
-    _t.insert(lip_t::LIP_SHAPES_MPB);
-    _t.insert(lip_t::LIP_SHAPES_TD);
-    _t.insert(lip_t::LIP_SHAPES_SH);
-    _t.insert(lip_t::LIP_SHAPES_L);
-    _t.insert(lip_t::LIP_SHAPES_KG);
-    return _t;
-}
-const std::set<lip_t::lip_shapes_t> lip_t::_values_lip_shapes_t = lip_t::_build_values_lip_shapes_t();
-bool lip_t::_is_defined_lip_shapes_t(lip_t::lip_shapes_t v) {
-    return lip_t::_values_lip_shapes_t.find(v) != lip_t::_values_lip_shapes_t.end();
-}
 
 lip_t::lip_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, lip_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
@@ -78,7 +54,7 @@ lip_t::keyframe_entry_t::keyframe_entry_t(kaitai::kstream* p__io, lip_t* p__pare
 
 void lip_t::keyframe_entry_t::_read() {
     m_timestamp = m__io->read_f4le();
-    m_shape = static_cast<lip_t::lip_shapes_t>(m__io->read_u1());
+    m_shape = static_cast<bioware_common_t::bioware_lip_viseme_id_t>(m__io->read_u1());
 }
 
 lip_t::keyframe_entry_t::~keyframe_entry_t() {

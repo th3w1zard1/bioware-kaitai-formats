@@ -4,16 +4,37 @@ meta:
   license: MIT
   endian: le
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
+    ghidra_odyssey_k1:
+      note: "Shared GFF field-type enums only — binary/Ghidra narrative for full GFF wire lives on `formats/GFF/GFF.ksy`; `user-agdec-http` per AGENTS.md."
     pykotor_wiki_gff_data_types: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types
     pykotor_gff_data_enum: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py#L347-L367
     pykotor_io_gff_field_dispatch: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L197-L273
     xoreos_gff3file_read_header: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63
+    xoreos_gff4file_header_read: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L59-L82
     reone_gffreader: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L225
+    xoreos_tools_gffdumper_identify: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp#L36-L176
+    xoreos_tools_gffcreator_create: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffcreator.cpp#L43-L60
 doc: |
   Canonical Aurora **GFF3** `GFFFieldTypes` wire tags (`u4` at `GFFFieldData.field_type` / offset +0).
 
   Imported by `formats/GFF/GFF.ksy`. Each enum member’s `doc:` is the **lowest-scope** narrative for that numeric ID
   (Ghidra symbol names, `ReadField*` addresses, PyKotor / reone / wiki line anchors).
+
+  **GFF4** uses a different container/struct layout on disk (`GFF4File::Header::read` in `meta.xref.xoreos_gff4file_header_read`);
+  this enum remains the **GFF3** field-type table unless a future split spec proves wire-identical IDs across both.
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types PyKotor wiki — GFF data types"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py#L347-L367 PyKotor — `GFFFieldType` enum"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L197-L273 PyKotor — field read dispatch"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63 xoreos — `GFF3File::readHeader`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L59-L82 xoreos — `GFF4File::Header::read` (GFF4 container; distinct from GFF3 field tags above)"
+  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L225 reone — `GffReader`"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffdumper.cpp#L36-L176 xoreos-tools — `gffdumper` (identify / dump)"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/gffcreator.cpp#L43-L60 xoreos-tools — `gffcreator` (create)"
 
 enums:
   gff_field_type:

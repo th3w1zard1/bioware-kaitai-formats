@@ -397,9 +397,9 @@ The MDL file contains:
 
 Reference implementations:
 - https://github.com/th3w1zard1/MDLOpsM.pm
-- https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md
+- https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
 
-@see <a href="https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md">Source</a>
+@see <a href="https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format">Source</a>
 ]##
 proc read*(_: typedesc[Mdl], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Mdl =
   template this: untyped = result
@@ -792,8 +792,8 @@ Mesh Controllers (used by all mesh node types: trimesh, skinmesh, animmesh, dang
 - 100: SelfIllumColor (self-illumination color, 3 floats: R, G, B)
 - 128: Alpha (transparency/opacity, 1 float)
 
-Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md - Additional Controller Types section
-Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:342-407 - Controller type definitions
+Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - Additional Controller Types section
+Reference: https://github.com/OpenKotOR/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:342-407 - Controller type definitions
 Reference: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html - Comprehensive controller list
 
   ]##

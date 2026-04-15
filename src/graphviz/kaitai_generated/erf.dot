@@ -98,11 +98,11 @@ digraph {
 			resource_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
 				<TR><TD PORT="offset_to_data_pos">0</TD><TD PORT="offset_to_data_size">4</TD><TD>u4le</TD><TD PORT="offset_to_data_type">offset_to_data</TD></TR>
-				<TR><TD PORT="resource_size_pos">4</TD><TD PORT="resource_size_size">4</TD><TD>u4le</TD><TD PORT="resource_size_type">resource_size</TD></TR>
+				<TR><TD PORT="len_data_pos">4</TD><TD PORT="len_data_size">4</TD><TD>u4le</TD><TD PORT="len_data_type">len_data</TD></TR>
 			</TABLE>>];
 			resource_entry__inst__data [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="data_pos">offset_to_data</TD><TD PORT="data_size">resource_size</TD><TD></TD><TD PORT="data_type">data</TD></TR>
+				<TR><TD PORT="data_pos">offset_to_data</TD><TD PORT="data_size">len_data</TD><TD></TD><TD PORT="data_type">data</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__resource_list {
@@ -132,7 +132,7 @@ digraph {
 	localized_string_list__seq:entries_type -> localized_string_entry__seq [style=bold];
 	erf_header__seq:language_count_type -> localized_string_list__seq:entries__repeat [color="#404040"];
 	resource_entry__seq:offset_to_data_type -> resource_entry__inst__data:data_pos [color="#404040"];
-	resource_entry__seq:resource_size_type -> resource_entry__inst__data:data_size [color="#404040"];
+	resource_entry__seq:len_data_type -> resource_entry__inst__data:data_size [color="#404040"];
 	resource_list__seq:entries_type -> resource_entry__seq [style=bold];
 	erf_header__seq:entry_count_type -> resource_list__seq:entries__repeat [color="#404040"];
 }

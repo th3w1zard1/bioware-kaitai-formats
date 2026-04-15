@@ -7,328 +7,11 @@ import (
 
 
 /**
- * KEY files serve as the master index for all BIF files in the game.
- * They map resource names (ResRefs) and types to specific locations within BIF archives.
- * 
- * The KEY file contains:
- * - BIF file entries (filename, size, location)
- * - KEY entries mapping ResRef + ResourceType to Resource ID
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/KEY-File-Format.md
- * - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/key.html
- * - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/keyreader.cpp
+ * **KEY** (key table): Aurora master index — BIF catalog rows + `(ResRef, ResourceType) → resource_id` map.
+ * Resource types use `bioware_type_ids`.
+ * @see <a href="https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#key">PyKotor wiki — KEY</a>
+ * @see <a href="https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88">xoreos — KEY::load</a>
  */
-
-type Key_XoreosFileTypeId int
-const (
-	Key_XoreosFileTypeId__None Key_XoreosFileTypeId = -1
-	Key_XoreosFileTypeId__Res Key_XoreosFileTypeId = 0
-	Key_XoreosFileTypeId__Bmp Key_XoreosFileTypeId = 1
-	Key_XoreosFileTypeId__Mve Key_XoreosFileTypeId = 2
-	Key_XoreosFileTypeId__Tga Key_XoreosFileTypeId = 3
-	Key_XoreosFileTypeId__Wav Key_XoreosFileTypeId = 4
-	Key_XoreosFileTypeId__Plt Key_XoreosFileTypeId = 6
-	Key_XoreosFileTypeId__Ini Key_XoreosFileTypeId = 7
-	Key_XoreosFileTypeId__Bmu Key_XoreosFileTypeId = 8
-	Key_XoreosFileTypeId__Mpg Key_XoreosFileTypeId = 9
-	Key_XoreosFileTypeId__Txt Key_XoreosFileTypeId = 10
-	Key_XoreosFileTypeId__Wma Key_XoreosFileTypeId = 11
-	Key_XoreosFileTypeId__Wmv Key_XoreosFileTypeId = 12
-	Key_XoreosFileTypeId__Xmv Key_XoreosFileTypeId = 13
-	Key_XoreosFileTypeId__Plh Key_XoreosFileTypeId = 2000
-	Key_XoreosFileTypeId__Tex Key_XoreosFileTypeId = 2001
-	Key_XoreosFileTypeId__Mdl Key_XoreosFileTypeId = 2002
-	Key_XoreosFileTypeId__Thg Key_XoreosFileTypeId = 2003
-	Key_XoreosFileTypeId__Fnt Key_XoreosFileTypeId = 2005
-	Key_XoreosFileTypeId__Lua Key_XoreosFileTypeId = 2007
-	Key_XoreosFileTypeId__Slt Key_XoreosFileTypeId = 2008
-	Key_XoreosFileTypeId__Nss Key_XoreosFileTypeId = 2009
-	Key_XoreosFileTypeId__Ncs Key_XoreosFileTypeId = 2010
-	Key_XoreosFileTypeId__Mod Key_XoreosFileTypeId = 2011
-	Key_XoreosFileTypeId__Are Key_XoreosFileTypeId = 2012
-	Key_XoreosFileTypeId__Set Key_XoreosFileTypeId = 2013
-	Key_XoreosFileTypeId__Ifo Key_XoreosFileTypeId = 2014
-	Key_XoreosFileTypeId__Bic Key_XoreosFileTypeId = 2015
-	Key_XoreosFileTypeId__Wok Key_XoreosFileTypeId = 2016
-	Key_XoreosFileTypeId__TwoDa Key_XoreosFileTypeId = 2017
-	Key_XoreosFileTypeId__Tlk Key_XoreosFileTypeId = 2018
-	Key_XoreosFileTypeId__Txi Key_XoreosFileTypeId = 2022
-	Key_XoreosFileTypeId__Git Key_XoreosFileTypeId = 2023
-	Key_XoreosFileTypeId__Bti Key_XoreosFileTypeId = 2024
-	Key_XoreosFileTypeId__Uti Key_XoreosFileTypeId = 2025
-	Key_XoreosFileTypeId__Btc Key_XoreosFileTypeId = 2026
-	Key_XoreosFileTypeId__Utc Key_XoreosFileTypeId = 2027
-	Key_XoreosFileTypeId__Dlg Key_XoreosFileTypeId = 2029
-	Key_XoreosFileTypeId__Itp Key_XoreosFileTypeId = 2030
-	Key_XoreosFileTypeId__Btt Key_XoreosFileTypeId = 2031
-	Key_XoreosFileTypeId__Utt Key_XoreosFileTypeId = 2032
-	Key_XoreosFileTypeId__Dds Key_XoreosFileTypeId = 2033
-	Key_XoreosFileTypeId__Bts Key_XoreosFileTypeId = 2034
-	Key_XoreosFileTypeId__Uts Key_XoreosFileTypeId = 2035
-	Key_XoreosFileTypeId__Ltr Key_XoreosFileTypeId = 2036
-	Key_XoreosFileTypeId__Gff Key_XoreosFileTypeId = 2037
-	Key_XoreosFileTypeId__Fac Key_XoreosFileTypeId = 2038
-	Key_XoreosFileTypeId__Bte Key_XoreosFileTypeId = 2039
-	Key_XoreosFileTypeId__Ute Key_XoreosFileTypeId = 2040
-	Key_XoreosFileTypeId__Btd Key_XoreosFileTypeId = 2041
-	Key_XoreosFileTypeId__Utd Key_XoreosFileTypeId = 2042
-	Key_XoreosFileTypeId__Btp Key_XoreosFileTypeId = 2043
-	Key_XoreosFileTypeId__Utp Key_XoreosFileTypeId = 2044
-	Key_XoreosFileTypeId__Dft Key_XoreosFileTypeId = 2045
-	Key_XoreosFileTypeId__Gic Key_XoreosFileTypeId = 2046
-	Key_XoreosFileTypeId__Gui Key_XoreosFileTypeId = 2047
-	Key_XoreosFileTypeId__Css Key_XoreosFileTypeId = 2048
-	Key_XoreosFileTypeId__Ccs Key_XoreosFileTypeId = 2049
-	Key_XoreosFileTypeId__Btm Key_XoreosFileTypeId = 2050
-	Key_XoreosFileTypeId__Utm Key_XoreosFileTypeId = 2051
-	Key_XoreosFileTypeId__Dwk Key_XoreosFileTypeId = 2052
-	Key_XoreosFileTypeId__Pwk Key_XoreosFileTypeId = 2053
-	Key_XoreosFileTypeId__Btg Key_XoreosFileTypeId = 2054
-	Key_XoreosFileTypeId__Utg Key_XoreosFileTypeId = 2055
-	Key_XoreosFileTypeId__Jrl Key_XoreosFileTypeId = 2056
-	Key_XoreosFileTypeId__Sav Key_XoreosFileTypeId = 2057
-	Key_XoreosFileTypeId__Utw Key_XoreosFileTypeId = 2058
-	Key_XoreosFileTypeId__FourPc Key_XoreosFileTypeId = 2059
-	Key_XoreosFileTypeId__Ssf Key_XoreosFileTypeId = 2060
-	Key_XoreosFileTypeId__Hak Key_XoreosFileTypeId = 2061
-	Key_XoreosFileTypeId__Nwm Key_XoreosFileTypeId = 2062
-	Key_XoreosFileTypeId__Bik Key_XoreosFileTypeId = 2063
-	Key_XoreosFileTypeId__Ndb Key_XoreosFileTypeId = 2064
-	Key_XoreosFileTypeId__Ptm Key_XoreosFileTypeId = 2065
-	Key_XoreosFileTypeId__Ptt Key_XoreosFileTypeId = 2066
-	Key_XoreosFileTypeId__Ncm Key_XoreosFileTypeId = 2067
-	Key_XoreosFileTypeId__Mfx Key_XoreosFileTypeId = 2068
-	Key_XoreosFileTypeId__Mat Key_XoreosFileTypeId = 2069
-	Key_XoreosFileTypeId__Mdb Key_XoreosFileTypeId = 2070
-	Key_XoreosFileTypeId__Say Key_XoreosFileTypeId = 2071
-	Key_XoreosFileTypeId__Ttf Key_XoreosFileTypeId = 2072
-	Key_XoreosFileTypeId__Ttc Key_XoreosFileTypeId = 2073
-	Key_XoreosFileTypeId__Cut Key_XoreosFileTypeId = 2074
-	Key_XoreosFileTypeId__Ka Key_XoreosFileTypeId = 2075
-	Key_XoreosFileTypeId__Jpg Key_XoreosFileTypeId = 2076
-	Key_XoreosFileTypeId__Ico Key_XoreosFileTypeId = 2077
-	Key_XoreosFileTypeId__Ogg Key_XoreosFileTypeId = 2078
-	Key_XoreosFileTypeId__Spt Key_XoreosFileTypeId = 2079
-	Key_XoreosFileTypeId__Spw Key_XoreosFileTypeId = 2080
-	Key_XoreosFileTypeId__Wfx Key_XoreosFileTypeId = 2081
-	Key_XoreosFileTypeId__Ugm Key_XoreosFileTypeId = 2082
-	Key_XoreosFileTypeId__Qdb Key_XoreosFileTypeId = 2083
-	Key_XoreosFileTypeId__Qst Key_XoreosFileTypeId = 2084
-	Key_XoreosFileTypeId__Npc Key_XoreosFileTypeId = 2085
-	Key_XoreosFileTypeId__Spn Key_XoreosFileTypeId = 2086
-	Key_XoreosFileTypeId__Utx Key_XoreosFileTypeId = 2087
-	Key_XoreosFileTypeId__Mmd Key_XoreosFileTypeId = 2088
-	Key_XoreosFileTypeId__Smm Key_XoreosFileTypeId = 2089
-	Key_XoreosFileTypeId__Uta Key_XoreosFileTypeId = 2090
-	Key_XoreosFileTypeId__Mde Key_XoreosFileTypeId = 2091
-	Key_XoreosFileTypeId__Mdv Key_XoreosFileTypeId = 2092
-	Key_XoreosFileTypeId__Mda Key_XoreosFileTypeId = 2093
-	Key_XoreosFileTypeId__Mba Key_XoreosFileTypeId = 2094
-	Key_XoreosFileTypeId__Oct Key_XoreosFileTypeId = 2095
-	Key_XoreosFileTypeId__Bfx Key_XoreosFileTypeId = 2096
-	Key_XoreosFileTypeId__Pdb Key_XoreosFileTypeId = 2097
-	Key_XoreosFileTypeId__TheWitcherSave Key_XoreosFileTypeId = 2098
-	Key_XoreosFileTypeId__Pvs Key_XoreosFileTypeId = 2099
-	Key_XoreosFileTypeId__Cfx Key_XoreosFileTypeId = 2100
-	Key_XoreosFileTypeId__Luc Key_XoreosFileTypeId = 2101
-	Key_XoreosFileTypeId__Prb Key_XoreosFileTypeId = 2103
-	Key_XoreosFileTypeId__Cam Key_XoreosFileTypeId = 2104
-	Key_XoreosFileTypeId__Vds Key_XoreosFileTypeId = 2105
-	Key_XoreosFileTypeId__Bin Key_XoreosFileTypeId = 2106
-	Key_XoreosFileTypeId__Wob Key_XoreosFileTypeId = 2107
-	Key_XoreosFileTypeId__Api Key_XoreosFileTypeId = 2108
-	Key_XoreosFileTypeId__Properties Key_XoreosFileTypeId = 2109
-	Key_XoreosFileTypeId__Png Key_XoreosFileTypeId = 2110
-	Key_XoreosFileTypeId__Lyt Key_XoreosFileTypeId = 3000
-	Key_XoreosFileTypeId__Vis Key_XoreosFileTypeId = 3001
-	Key_XoreosFileTypeId__Rim Key_XoreosFileTypeId = 3002
-	Key_XoreosFileTypeId__Pth Key_XoreosFileTypeId = 3003
-	Key_XoreosFileTypeId__Lip Key_XoreosFileTypeId = 3004
-	Key_XoreosFileTypeId__Bwm Key_XoreosFileTypeId = 3005
-	Key_XoreosFileTypeId__Txb Key_XoreosFileTypeId = 3006
-	Key_XoreosFileTypeId__Tpc Key_XoreosFileTypeId = 3007
-	Key_XoreosFileTypeId__Mdx Key_XoreosFileTypeId = 3008
-	Key_XoreosFileTypeId__Rsv Key_XoreosFileTypeId = 3009
-	Key_XoreosFileTypeId__Sig Key_XoreosFileTypeId = 3010
-	Key_XoreosFileTypeId__Mab Key_XoreosFileTypeId = 3011
-	Key_XoreosFileTypeId__Qst2 Key_XoreosFileTypeId = 3012
-	Key_XoreosFileTypeId__Sto Key_XoreosFileTypeId = 3013
-	Key_XoreosFileTypeId__Hex Key_XoreosFileTypeId = 3015
-	Key_XoreosFileTypeId__Mdx2 Key_XoreosFileTypeId = 3016
-	Key_XoreosFileTypeId__Txb2 Key_XoreosFileTypeId = 3017
-	Key_XoreosFileTypeId__Fsm Key_XoreosFileTypeId = 3022
-	Key_XoreosFileTypeId__Art Key_XoreosFileTypeId = 3023
-	Key_XoreosFileTypeId__Amp Key_XoreosFileTypeId = 3024
-	Key_XoreosFileTypeId__Cwa Key_XoreosFileTypeId = 3025
-	Key_XoreosFileTypeId__Bip Key_XoreosFileTypeId = 3028
-	Key_XoreosFileTypeId__Mdb2 Key_XoreosFileTypeId = 4000
-	Key_XoreosFileTypeId__Mda2 Key_XoreosFileTypeId = 4001
-	Key_XoreosFileTypeId__Spt2 Key_XoreosFileTypeId = 4002
-	Key_XoreosFileTypeId__Gr2 Key_XoreosFileTypeId = 4003
-	Key_XoreosFileTypeId__Fxa Key_XoreosFileTypeId = 4004
-	Key_XoreosFileTypeId__Fxe Key_XoreosFileTypeId = 4005
-	Key_XoreosFileTypeId__Jpg2 Key_XoreosFileTypeId = 4007
-	Key_XoreosFileTypeId__Pwc Key_XoreosFileTypeId = 4008
-	Key_XoreosFileTypeId__OneDa Key_XoreosFileTypeId = 9996
-	Key_XoreosFileTypeId__Erf Key_XoreosFileTypeId = 9997
-	Key_XoreosFileTypeId__Bif Key_XoreosFileTypeId = 9998
-	Key_XoreosFileTypeId__Key Key_XoreosFileTypeId = 9999
-	Key_XoreosFileTypeId__Exe Key_XoreosFileTypeId = 19000
-	Key_XoreosFileTypeId__Dbf Key_XoreosFileTypeId = 19001
-	Key_XoreosFileTypeId__Cdx Key_XoreosFileTypeId = 19002
-	Key_XoreosFileTypeId__Fpt Key_XoreosFileTypeId = 19003
-	Key_XoreosFileTypeId__Zip Key_XoreosFileTypeId = 20000
-	Key_XoreosFileTypeId__Fxm Key_XoreosFileTypeId = 20001
-	Key_XoreosFileTypeId__Fxs Key_XoreosFileTypeId = 20002
-	Key_XoreosFileTypeId__Xml Key_XoreosFileTypeId = 20003
-	Key_XoreosFileTypeId__Wlk Key_XoreosFileTypeId = 20004
-	Key_XoreosFileTypeId__Utr Key_XoreosFileTypeId = 20005
-	Key_XoreosFileTypeId__Sef Key_XoreosFileTypeId = 20006
-	Key_XoreosFileTypeId__Pfx Key_XoreosFileTypeId = 20007
-	Key_XoreosFileTypeId__Tfx Key_XoreosFileTypeId = 20008
-	Key_XoreosFileTypeId__Ifx Key_XoreosFileTypeId = 20009
-	Key_XoreosFileTypeId__Lfx Key_XoreosFileTypeId = 20010
-	Key_XoreosFileTypeId__Bbx Key_XoreosFileTypeId = 20011
-	Key_XoreosFileTypeId__Pfb Key_XoreosFileTypeId = 20012
-	Key_XoreosFileTypeId__Upe Key_XoreosFileTypeId = 20013
-	Key_XoreosFileTypeId__Usc Key_XoreosFileTypeId = 20014
-	Key_XoreosFileTypeId__Ult Key_XoreosFileTypeId = 20015
-	Key_XoreosFileTypeId__Fx Key_XoreosFileTypeId = 20016
-	Key_XoreosFileTypeId__Max Key_XoreosFileTypeId = 20017
-	Key_XoreosFileTypeId__Doc Key_XoreosFileTypeId = 20018
-	Key_XoreosFileTypeId__Scc Key_XoreosFileTypeId = 20019
-	Key_XoreosFileTypeId__Wmp Key_XoreosFileTypeId = 20020
-	Key_XoreosFileTypeId__Osc Key_XoreosFileTypeId = 20021
-	Key_XoreosFileTypeId__Trn Key_XoreosFileTypeId = 20022
-	Key_XoreosFileTypeId__Uen Key_XoreosFileTypeId = 20023
-	Key_XoreosFileTypeId__Ros Key_XoreosFileTypeId = 20024
-	Key_XoreosFileTypeId__Rst Key_XoreosFileTypeId = 20025
-	Key_XoreosFileTypeId__Ptx Key_XoreosFileTypeId = 20026
-	Key_XoreosFileTypeId__Ltx Key_XoreosFileTypeId = 20027
-	Key_XoreosFileTypeId__Trx Key_XoreosFileTypeId = 20028
-	Key_XoreosFileTypeId__Nds Key_XoreosFileTypeId = 21000
-	Key_XoreosFileTypeId__Herf Key_XoreosFileTypeId = 21001
-	Key_XoreosFileTypeId__Dict Key_XoreosFileTypeId = 21002
-	Key_XoreosFileTypeId__Small Key_XoreosFileTypeId = 21003
-	Key_XoreosFileTypeId__Cbgt Key_XoreosFileTypeId = 21004
-	Key_XoreosFileTypeId__Cdpth Key_XoreosFileTypeId = 21005
-	Key_XoreosFileTypeId__Emit Key_XoreosFileTypeId = 21006
-	Key_XoreosFileTypeId__Itm Key_XoreosFileTypeId = 21007
-	Key_XoreosFileTypeId__Nanr Key_XoreosFileTypeId = 21008
-	Key_XoreosFileTypeId__Nbfp Key_XoreosFileTypeId = 21009
-	Key_XoreosFileTypeId__Nbfs Key_XoreosFileTypeId = 21010
-	Key_XoreosFileTypeId__Ncer Key_XoreosFileTypeId = 21011
-	Key_XoreosFileTypeId__Ncgr Key_XoreosFileTypeId = 21012
-	Key_XoreosFileTypeId__Nclr Key_XoreosFileTypeId = 21013
-	Key_XoreosFileTypeId__Nftr Key_XoreosFileTypeId = 21014
-	Key_XoreosFileTypeId__Nsbca Key_XoreosFileTypeId = 21015
-	Key_XoreosFileTypeId__Nsbmd Key_XoreosFileTypeId = 21016
-	Key_XoreosFileTypeId__Nsbta Key_XoreosFileTypeId = 21017
-	Key_XoreosFileTypeId__Nsbtp Key_XoreosFileTypeId = 21018
-	Key_XoreosFileTypeId__Nsbtx Key_XoreosFileTypeId = 21019
-	Key_XoreosFileTypeId__Pal Key_XoreosFileTypeId = 21020
-	Key_XoreosFileTypeId__Raw Key_XoreosFileTypeId = 21021
-	Key_XoreosFileTypeId__Sadl Key_XoreosFileTypeId = 21022
-	Key_XoreosFileTypeId__Sdat Key_XoreosFileTypeId = 21023
-	Key_XoreosFileTypeId__Smp Key_XoreosFileTypeId = 21024
-	Key_XoreosFileTypeId__Spl Key_XoreosFileTypeId = 21025
-	Key_XoreosFileTypeId__Vx Key_XoreosFileTypeId = 21026
-	Key_XoreosFileTypeId__Anb Key_XoreosFileTypeId = 22000
-	Key_XoreosFileTypeId__Ani Key_XoreosFileTypeId = 22001
-	Key_XoreosFileTypeId__Cns Key_XoreosFileTypeId = 22002
-	Key_XoreosFileTypeId__Cur Key_XoreosFileTypeId = 22003
-	Key_XoreosFileTypeId__Evt Key_XoreosFileTypeId = 22004
-	Key_XoreosFileTypeId__Fdl Key_XoreosFileTypeId = 22005
-	Key_XoreosFileTypeId__Fxo Key_XoreosFileTypeId = 22006
-	Key_XoreosFileTypeId__Gad Key_XoreosFileTypeId = 22007
-	Key_XoreosFileTypeId__Gda Key_XoreosFileTypeId = 22008
-	Key_XoreosFileTypeId__Gfx Key_XoreosFileTypeId = 22009
-	Key_XoreosFileTypeId__Ldf Key_XoreosFileTypeId = 22010
-	Key_XoreosFileTypeId__Lst Key_XoreosFileTypeId = 22011
-	Key_XoreosFileTypeId__Mal Key_XoreosFileTypeId = 22012
-	Key_XoreosFileTypeId__Mao Key_XoreosFileTypeId = 22013
-	Key_XoreosFileTypeId__Mmh Key_XoreosFileTypeId = 22014
-	Key_XoreosFileTypeId__Mop Key_XoreosFileTypeId = 22015
-	Key_XoreosFileTypeId__Mor Key_XoreosFileTypeId = 22016
-	Key_XoreosFileTypeId__Msh Key_XoreosFileTypeId = 22017
-	Key_XoreosFileTypeId__Mtx Key_XoreosFileTypeId = 22018
-	Key_XoreosFileTypeId__Ncc Key_XoreosFileTypeId = 22019
-	Key_XoreosFileTypeId__Phy Key_XoreosFileTypeId = 22020
-	Key_XoreosFileTypeId__Plo Key_XoreosFileTypeId = 22021
-	Key_XoreosFileTypeId__Stg Key_XoreosFileTypeId = 22022
-	Key_XoreosFileTypeId__Tbi Key_XoreosFileTypeId = 22023
-	Key_XoreosFileTypeId__Tnt Key_XoreosFileTypeId = 22024
-	Key_XoreosFileTypeId__Arl Key_XoreosFileTypeId = 22025
-	Key_XoreosFileTypeId__Fev Key_XoreosFileTypeId = 22026
-	Key_XoreosFileTypeId__Fsb Key_XoreosFileTypeId = 22027
-	Key_XoreosFileTypeId__Opf Key_XoreosFileTypeId = 22028
-	Key_XoreosFileTypeId__Crf Key_XoreosFileTypeId = 22029
-	Key_XoreosFileTypeId__Rimp Key_XoreosFileTypeId = 22030
-	Key_XoreosFileTypeId__Met Key_XoreosFileTypeId = 22031
-	Key_XoreosFileTypeId__Meta Key_XoreosFileTypeId = 22032
-	Key_XoreosFileTypeId__Fxr Key_XoreosFileTypeId = 22033
-	Key_XoreosFileTypeId__Cif Key_XoreosFileTypeId = 22034
-	Key_XoreosFileTypeId__Cub Key_XoreosFileTypeId = 22035
-	Key_XoreosFileTypeId__Dlb Key_XoreosFileTypeId = 22036
-	Key_XoreosFileTypeId__Nsc Key_XoreosFileTypeId = 22037
-	Key_XoreosFileTypeId__Mov Key_XoreosFileTypeId = 23000
-	Key_XoreosFileTypeId__Curs Key_XoreosFileTypeId = 23001
-	Key_XoreosFileTypeId__Pict Key_XoreosFileTypeId = 23002
-	Key_XoreosFileTypeId__Rsrc Key_XoreosFileTypeId = 23003
-	Key_XoreosFileTypeId__Plist Key_XoreosFileTypeId = 23004
-	Key_XoreosFileTypeId__Cre Key_XoreosFileTypeId = 24000
-	Key_XoreosFileTypeId__Pso Key_XoreosFileTypeId = 24001
-	Key_XoreosFileTypeId__Vso Key_XoreosFileTypeId = 24002
-	Key_XoreosFileTypeId__Abc Key_XoreosFileTypeId = 24003
-	Key_XoreosFileTypeId__Sbm Key_XoreosFileTypeId = 24004
-	Key_XoreosFileTypeId__Pvd Key_XoreosFileTypeId = 24005
-	Key_XoreosFileTypeId__Pla Key_XoreosFileTypeId = 24006
-	Key_XoreosFileTypeId__Trg Key_XoreosFileTypeId = 24007
-	Key_XoreosFileTypeId__Pk Key_XoreosFileTypeId = 24008
-	Key_XoreosFileTypeId__Als Key_XoreosFileTypeId = 25000
-	Key_XoreosFileTypeId__Apl Key_XoreosFileTypeId = 25001
-	Key_XoreosFileTypeId__Assembly Key_XoreosFileTypeId = 25002
-	Key_XoreosFileTypeId__Bak Key_XoreosFileTypeId = 25003
-	Key_XoreosFileTypeId__Bnk Key_XoreosFileTypeId = 25004
-	Key_XoreosFileTypeId__Cl Key_XoreosFileTypeId = 25005
-	Key_XoreosFileTypeId__Cnv Key_XoreosFileTypeId = 25006
-	Key_XoreosFileTypeId__Con Key_XoreosFileTypeId = 25007
-	Key_XoreosFileTypeId__Dat Key_XoreosFileTypeId = 25008
-	Key_XoreosFileTypeId__Dx11 Key_XoreosFileTypeId = 25009
-	Key_XoreosFileTypeId__Ids Key_XoreosFileTypeId = 25010
-	Key_XoreosFileTypeId__Log Key_XoreosFileTypeId = 25011
-	Key_XoreosFileTypeId__Map Key_XoreosFileTypeId = 25012
-	Key_XoreosFileTypeId__Mml Key_XoreosFileTypeId = 25013
-	Key_XoreosFileTypeId__Mp3 Key_XoreosFileTypeId = 25014
-	Key_XoreosFileTypeId__Pck Key_XoreosFileTypeId = 25015
-	Key_XoreosFileTypeId__Rml Key_XoreosFileTypeId = 25016
-	Key_XoreosFileTypeId__S Key_XoreosFileTypeId = 25017
-	Key_XoreosFileTypeId__Sta Key_XoreosFileTypeId = 25018
-	Key_XoreosFileTypeId__Svr Key_XoreosFileTypeId = 25019
-	Key_XoreosFileTypeId__Vlm Key_XoreosFileTypeId = 25020
-	Key_XoreosFileTypeId__Wbd Key_XoreosFileTypeId = 25021
-	Key_XoreosFileTypeId__Xbx Key_XoreosFileTypeId = 25022
-	Key_XoreosFileTypeId__Xls Key_XoreosFileTypeId = 25023
-	Key_XoreosFileTypeId__Bzf Key_XoreosFileTypeId = 26000
-	Key_XoreosFileTypeId__Adv Key_XoreosFileTypeId = 27000
-	Key_XoreosFileTypeId__Json Key_XoreosFileTypeId = 28000
-	Key_XoreosFileTypeId__TlkExpert Key_XoreosFileTypeId = 28001
-	Key_XoreosFileTypeId__TlkMobile Key_XoreosFileTypeId = 28002
-	Key_XoreosFileTypeId__TlkTouch Key_XoreosFileTypeId = 28003
-	Key_XoreosFileTypeId__Otf Key_XoreosFileTypeId = 28004
-	Key_XoreosFileTypeId__Par Key_XoreosFileTypeId = 28005
-	Key_XoreosFileTypeId__Xwb Key_XoreosFileTypeId = 29000
-	Key_XoreosFileTypeId__Xsb Key_XoreosFileTypeId = 29001
-	Key_XoreosFileTypeId__Xds Key_XoreosFileTypeId = 30000
-	Key_XoreosFileTypeId__Wnd Key_XoreosFileTypeId = 30001
-	Key_XoreosFileTypeId__Xeositex Key_XoreosFileTypeId = 40000
-)
-var values_Key_XoreosFileTypeId = map[Key_XoreosFileTypeId]struct{}{-1: {}, 0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}, 13: {}, 2000: {}, 2001: {}, 2002: {}, 2003: {}, 2005: {}, 2007: {}, 2008: {}, 2009: {}, 2010: {}, 2011: {}, 2012: {}, 2013: {}, 2014: {}, 2015: {}, 2016: {}, 2017: {}, 2018: {}, 2022: {}, 2023: {}, 2024: {}, 2025: {}, 2026: {}, 2027: {}, 2029: {}, 2030: {}, 2031: {}, 2032: {}, 2033: {}, 2034: {}, 2035: {}, 2036: {}, 2037: {}, 2038: {}, 2039: {}, 2040: {}, 2041: {}, 2042: {}, 2043: {}, 2044: {}, 2045: {}, 2046: {}, 2047: {}, 2048: {}, 2049: {}, 2050: {}, 2051: {}, 2052: {}, 2053: {}, 2054: {}, 2055: {}, 2056: {}, 2057: {}, 2058: {}, 2059: {}, 2060: {}, 2061: {}, 2062: {}, 2063: {}, 2064: {}, 2065: {}, 2066: {}, 2067: {}, 2068: {}, 2069: {}, 2070: {}, 2071: {}, 2072: {}, 2073: {}, 2074: {}, 2075: {}, 2076: {}, 2077: {}, 2078: {}, 2079: {}, 2080: {}, 2081: {}, 2082: {}, 2083: {}, 2084: {}, 2085: {}, 2086: {}, 2087: {}, 2088: {}, 2089: {}, 2090: {}, 2091: {}, 2092: {}, 2093: {}, 2094: {}, 2095: {}, 2096: {}, 2097: {}, 2098: {}, 2099: {}, 2100: {}, 2101: {}, 2103: {}, 2104: {}, 2105: {}, 2106: {}, 2107: {}, 2108: {}, 2109: {}, 2110: {}, 3000: {}, 3001: {}, 3002: {}, 3003: {}, 3004: {}, 3005: {}, 3006: {}, 3007: {}, 3008: {}, 3009: {}, 3010: {}, 3011: {}, 3012: {}, 3013: {}, 3015: {}, 3016: {}, 3017: {}, 3022: {}, 3023: {}, 3024: {}, 3025: {}, 3028: {}, 4000: {}, 4001: {}, 4002: {}, 4003: {}, 4004: {}, 4005: {}, 4007: {}, 4008: {}, 9996: {}, 9997: {}, 9998: {}, 9999: {}, 19000: {}, 19001: {}, 19002: {}, 19003: {}, 20000: {}, 20001: {}, 20002: {}, 20003: {}, 20004: {}, 20005: {}, 20006: {}, 20007: {}, 20008: {}, 20009: {}, 20010: {}, 20011: {}, 20012: {}, 20013: {}, 20014: {}, 20015: {}, 20016: {}, 20017: {}, 20018: {}, 20019: {}, 20020: {}, 20021: {}, 20022: {}, 20023: {}, 20024: {}, 20025: {}, 20026: {}, 20027: {}, 20028: {}, 21000: {}, 21001: {}, 21002: {}, 21003: {}, 21004: {}, 21005: {}, 21006: {}, 21007: {}, 21008: {}, 21009: {}, 21010: {}, 21011: {}, 21012: {}, 21013: {}, 21014: {}, 21015: {}, 21016: {}, 21017: {}, 21018: {}, 21019: {}, 21020: {}, 21021: {}, 21022: {}, 21023: {}, 21024: {}, 21025: {}, 21026: {}, 22000: {}, 22001: {}, 22002: {}, 22003: {}, 22004: {}, 22005: {}, 22006: {}, 22007: {}, 22008: {}, 22009: {}, 22010: {}, 22011: {}, 22012: {}, 22013: {}, 22014: {}, 22015: {}, 22016: {}, 22017: {}, 22018: {}, 22019: {}, 22020: {}, 22021: {}, 22022: {}, 22023: {}, 22024: {}, 22025: {}, 22026: {}, 22027: {}, 22028: {}, 22029: {}, 22030: {}, 22031: {}, 22032: {}, 22033: {}, 22034: {}, 22035: {}, 22036: {}, 22037: {}, 23000: {}, 23001: {}, 23002: {}, 23003: {}, 23004: {}, 24000: {}, 24001: {}, 24002: {}, 24003: {}, 24004: {}, 24005: {}, 24006: {}, 24007: {}, 24008: {}, 25000: {}, 25001: {}, 25002: {}, 25003: {}, 25004: {}, 25005: {}, 25006: {}, 25007: {}, 25008: {}, 25009: {}, 25010: {}, 25011: {}, 25012: {}, 25013: {}, 25014: {}, 25015: {}, 25016: {}, 25017: {}, 25018: {}, 25019: {}, 25020: {}, 25021: {}, 25022: {}, 25023: {}, 26000: {}, 27000: {}, 28000: {}, 28001: {}, 28002: {}, 28003: {}, 28004: {}, 28005: {}, 29000: {}, 29001: {}, 30000: {}, 30001: {}, 40000: {}}
-func (v Key_XoreosFileTypeId) isDefined() bool {
-	_, ok := values_Key_XoreosFileTypeId[v]
-	return ok
-}
 type Key struct {
 	FileType string
 	FileVersion string
@@ -564,7 +247,7 @@ func (this *Key_FileEntry) Read(io *kaitai.Stream, parent *Key_FileTable, root *
 }
 
 /**
- * BIF filename (read from filename table at specified offset).
+ * BIF filename string at the absolute filename_offset in the KEY file.
  */
 func (this *Key_FileEntry) Filename() (v string, err error) {
 	if (this._f_filename) {
@@ -575,7 +258,7 @@ func (this *Key_FileEntry) Filename() (v string, err error) {
 	if err != nil {
 		return "", err
 	}
-	_, err = this._io.Seek(int64((this._root.FileTableOffset + this._root.BifCount * 12) + this.FilenameOffset), io.SeekStart)
+	_, err = this._io.Seek(int64(this.FilenameOffset), io.SeekStart)
 	if err != nil {
 		return "", err
 	}
@@ -597,7 +280,9 @@ func (this *Key_FileEntry) Filename() (v string, err error) {
  */
 
 /**
- * Byte offset into the filename table where this BIF's filename is stored.
+ * Absolute byte offset from the start of the KEY file where this BIF's filename is stored
+ * (seek(filename_offset), then read filename_size bytes).
+ * This is not relative to the file table or to the end of the BIF entry array.
  */
 
 /**
@@ -680,7 +365,7 @@ func (this *Key_FilenameTable) Read(io *kaitai.Stream, parent kaitai.Struct, roo
  */
 type Key_KeyEntry struct {
 	Resref string
-	ResourceType Key_XoreosFileTypeId
+	ResourceType BiowareTypeIds_XoreosFileTypeId
 	ResourceId uint32
 	_io *kaitai.Stream
 	_root *Key
@@ -710,7 +395,7 @@ func (this *Key_KeyEntry) Read(io *kaitai.Stream, parent *Key_KeyTable, root *Ke
 	if err != nil {
 		return err
 	}
-	this.ResourceType = Key_XoreosFileTypeId(tmp20)
+	this.ResourceType = BiowareTypeIds_XoreosFileTypeId(tmp20)
 	tmp21, err := this._io.ReadU4le()
 	if err != nil {
 		return err
@@ -726,7 +411,8 @@ func (this *Key_KeyEntry) Read(io *kaitai.Stream, parent *Key_KeyTable, root *Ke
  */
 
 /**
- * Resource type identifier (see ResourceType enum).
+ * Aurora resource type id (`u2` on disk). Symbol names and upstream mapping:
+ * `formats/Common/bioware_type_ids.ksy` enum `xoreos_file_type_id` (xoreos `FileType` / PyKotor `ResourceType` alignment).
  */
 
 /**

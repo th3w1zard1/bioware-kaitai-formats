@@ -2,22 +2,11 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 /**
- * WAV (Waveform Audio Format) files used in KotOR. KotOR stores both standard WAV voice-over lines
- * and Bioware-obfuscated sound-effect files. Voice-over assets are regular RIFF containers with PCM
- * headers, while SFX assets prepend a 470-byte custom block before the RIFF data.
+ * **KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
+ * MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
+ * 20-byte VO prefixes are application-level.
  * 
- * Format Types:
- * - VO (Voice-over): Plain RIFF/WAVE PCM files readable by any media player
- * - SFX (Sound effects): Contains a Bioware 470-byte obfuscation header followed by RIFF data
- * - MP3-in-WAV: Special RIFF container with MP3 data (RIFF size = 50)
- * 
- * Note: This Kaitai Struct definition documents the core RIFF/WAVE structure. SFX and VO headers
- * (470-byte and 20-byte prefixes respectively) are handled by application-level deobfuscation.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/audio/format/wavreader.cpp:30-56
- * - https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:34-84
+ * `wFormatTag` / PCM layout notes: `bioware_common.ksy` → `riff_wave_format_tag`.
  */
 
 namespace {
@@ -48,7 +37,7 @@ namespace {
         /**
          * RIFF chunks in sequence (fmt, fact, data, etc.)
          * Parsed until end of file
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:46-55
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L46-L55
          */
         public function chunks() { return $this->_m_chunks; }
     }
@@ -86,14 +75,14 @@ namespace Wav {
         /**
          * Chunk ID (4-character ASCII string)
          * Common values: "fmt ", "data", "fact", "LIST", etc.
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:58-72
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L58-L72
          */
         public function id() { return $this->_m_id; }
 
         /**
          * Chunk size in bytes (chunk data only, excluding ID and size fields)
          * Chunks are word-aligned (even byte boundaries)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
          */
         public function size() { return $this->_m_size; }
 
@@ -118,7 +107,7 @@ namespace Wav {
 
         /**
          * Raw audio data (PCM samples or compressed audio)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:79-80
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L79-L80
          */
         public function data() { return $this->_m_data; }
     }
@@ -139,7 +128,7 @@ namespace Wav {
         /**
          * Sample count (number of samples in compressed audio)
          * Used for compressed formats like ADPCM
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:189-192
+         * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L234-L236 (`fact` chunk skip — sample count lives in chunk body)
          */
         public function sampleCount() { return $this->_m_sampleCount; }
     }
@@ -171,7 +160,7 @@ namespace Wav {
         public function isImaAdpcm() {
             if ($this->_m_isImaAdpcm !== null)
                 return $this->_m_isImaAdpcm;
-            $this->_m_isImaAdpcm = $this->audioFormat() == 17;
+            $this->_m_isImaAdpcm = $this->audioFormat() == \BiowareCommon\RiffWaveFormatTag::DVI_IMA_ADPCM;
             return $this->_m_isImaAdpcm;
         }
         protected $_m_isMp3;
@@ -182,7 +171,7 @@ namespace Wav {
         public function isMp3() {
             if ($this->_m_isMp3 !== null)
                 return $this->_m_isMp3;
-            $this->_m_isMp3 = $this->audioFormat() == 85;
+            $this->_m_isMp3 = $this->audioFormat() == \BiowareCommon\RiffWaveFormatTag::MPEG_LAYER3;
             return $this->_m_isMp3;
         }
         protected $_m_isPcm;
@@ -193,7 +182,7 @@ namespace Wav {
         public function isPcm() {
             if ($this->_m_isPcm !== null)
                 return $this->_m_isPcm;
-            $this->_m_isPcm = $this->audioFormat() == 1;
+            $this->_m_isPcm = $this->audioFormat() == \BiowareCommon\RiffWaveFormatTag::PCM;
             return $this->_m_isPcm;
         }
         protected $_m_audioFormat;
@@ -205,14 +194,8 @@ namespace Wav {
         protected $_m_extraFormatBytes;
 
         /**
-         * Audio format code:
-         * - 0x0001 = PCM (Linear PCM, uncompressed)
-         * - 0x0002 = Microsoft ADPCM
-         * - 0x0006 = A-Law companded
-         * - 0x0007 = μ-Law companded
-         * - 0x0011 = IMA ADPCM (DVI ADPCM)
-         * - 0x0055 = MPEG Layer 3 (MP3)
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * RIFF `fmt ` / `WAVEFORMATEX.wFormatTag` (`u2` LE). Canonical: `formats/Common/bioware_common.ksy` → `riff_wave_format_tag`
+         * (Microsoft `WAVEFORMATEX`; KotOR usage: PyKotor WAV wiki, xoreos `wave.cpp`).
          */
         public function audioFormat() { return $this->_m_audioFormat; }
 
@@ -220,7 +203,7 @@ namespace Wav {
          * Number of audio channels:
          * - 1 = mono
          * - 2 = stereo
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public function channels() { return $this->_m_channels; }
 
@@ -229,21 +212,21 @@ namespace Wav {
          * Typical values:
          * - 22050 Hz for SFX
          * - 44100 Hz for VO
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public function sampleRate() { return $this->_m_sampleRate; }
 
         /**
          * Byte rate (average bytes per second)
          * Formula: sample_rate × block_align
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public function bytesPerSec() { return $this->_m_bytesPerSec; }
 
         /**
          * Block alignment (bytes per sample frame)
          * Formula for PCM: channels × (bits_per_sample / 8)
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public function blockAlign() { return $this->_m_blockAlign; }
 
@@ -251,7 +234,7 @@ namespace Wav {
          * Bits per sample
          * Common values: 8, 16
          * For PCM: typically 16-bit
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public function bitsPerSample() { return $this->_m_bitsPerSample; }
 
@@ -260,7 +243,7 @@ namespace Wav {
          * For IMA ADPCM and other compressed formats, contains:
          * - Extra format size (u2)
          * - Format-specific data (e.g., ADPCM coefficients)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
          */
         public function extraFormatBytes() { return $this->_m_extraFormatBytes; }
     }
@@ -288,7 +271,7 @@ namespace Wav {
 
         /**
          * MP3-in-WAV format detected when RIFF size = 50
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py:60-64
+         * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
          */
         public function isMp3InWav() {
             if ($this->_m_isMp3InWav !== null)
@@ -308,7 +291,7 @@ namespace Wav {
         /**
          * File size minus 8 bytes (RIFF_ID + RIFF_SIZE itself)
          * For MP3-in-WAV format, this is 50
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+         * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
          */
         public function riffSize() { return $this->_m_riffSize; }
 
@@ -337,14 +320,14 @@ namespace Wav {
 
         /**
          * Unknown chunk body (skip for compatibility)
-         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:53-54
+         * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L53-L54
          */
         public function data() { return $this->_m_data; }
 
         /**
          * Padding byte to align to word boundary (only if chunk size is odd)
          * RIFF chunks must be aligned to 2-byte boundaries
-         * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:153-156
+         * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L243-L245 (unknown chunk skip + optional 1-byte word alignment)
          */
         public function padding() { return $this->_m_padding; }
     }

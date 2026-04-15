@@ -348,7 +348,7 @@ type
     `parent`*: Erf
   Erf_ResourceEntry* = ref object of KaitaiStruct
     `offsetToData`*: uint32
-    `resourceSize`*: uint32
+    `lenData`*: uint32
     `parent`*: Erf_ResourceList
     `dataInst`: seq[byte]
     `dataInstFlag`: bool
@@ -398,7 +398,7 @@ Binary Format Structure:
   - unused (u2): Padding/unused field (typically 0)
 - Resource List (8 bytes per entry): Resource offset and size. Each entry contains:
   - offset_to_data (u4): Byte offset to resource data from beginning of file
-  - resource_size (u4): Uncompressed size of resource data in bytes
+  - len_data (u4): Uncompressed size of resource data in bytes (Kaitai id for byte size of `data`)
 - Resource Data (variable size): Raw binary data for each resource, stored at offsets specified
   in resource_list
 
@@ -406,16 +406,16 @@ File Access Pattern:
 1. Read header to get entry_count and offsets
 2. Read key_list to map ResRefs to resource_ids
 3. Use resource_id to index into resource_list
-4. Read resource data from offset_to_data with size resource_size
+4. Read resource data from offset_to_data with byte length len_data
 
 References:
-- https://github.com/OldRepublicDevs/PyKotor/wiki/ERF-File-Format.md - Complete ERF format documentation
-- https://github.com/OldRepublicDevs/PyKotor/wiki/Bioware-Aurora-ERF.md - Official BioWare Aurora ERF specification
+- https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf - Complete ERF format documentation
+- https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf - Official BioWare Aurora ERF specification
 - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/erfreader.cpp:24-106 - Complete C++ ERF reader implementation
 - https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp:44-229 - Generic Aurora ERF implementation (shared format)
 - https://github.com/NickHugi/Kotor.NET/blob/master/Formats/KotorERF/ERFBinaryStructure.cs:11-170 - .NET ERF reader/writer
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py - PyKotor binary reader/writer
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py - ERF data model
 
 ]##
 proc read*(_: typedesc[Erf], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Erf =
@@ -759,8 +759,8 @@ Points to the actual binary data for this resource.
 Uncompressed size of the resource.
 
   ]##
-  let resourceSizeExpr = this.io.readU4le()
-  this.resourceSize = resourceSizeExpr
+  let lenDataExpr = this.io.readU4le()
+  this.lenData = lenDataExpr
 
 proc data(this: Erf_ResourceEntry): seq[byte] = 
 
@@ -771,7 +771,7 @@ proc data(this: Erf_ResourceEntry): seq[byte] =
     return this.dataInst
   let pos = this.io.pos()
   this.io.seek(int(this.offsetToData))
-  let dataInstExpr = this.io.readBytes(int(this.resourceSize))
+  let dataInstExpr = this.io.readBytes(int(this.lenData))
   this.dataInst = dataInstExpr
   this.io.seek(pos)
   this.dataInstFlag = true

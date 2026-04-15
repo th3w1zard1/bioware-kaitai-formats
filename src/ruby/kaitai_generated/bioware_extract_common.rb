@@ -11,7 +11,7 @@ end
 # Enums and small helper types used by installation/extraction tooling.
 # 
 # References:
-# - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+# - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
 class BiowareExtractCommon < Kaitai::Struct::Struct
 
   BIOWARE_SEARCH_LOCATION_ID = {

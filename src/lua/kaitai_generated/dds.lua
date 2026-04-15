@@ -4,20 +4,16 @@
 
 local class = require("class")
 require("kaitaistruct")
+require("bioware_common")
 local str_decode = require("string_decode")
 
 -- 
--- DDS (DirectDraw Surface) files appear in two variants in KotOR:
+-- **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+-- (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
 -- 
--- 1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
--- 2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
--- 
--- DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
--- and various other pixel formats. They can include mipmaps and cube maps.
--- 
--- References:
--- - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
--- - Standard DirectX DDS format specification
+-- BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
+-- See also: PyKotor wiki — DDS (https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds)
+-- See also: PyKotor — TPCDDSReader (https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130)
 Dds = class.class(KaitaiStruct)
 
 function Dds:_init(io, parent, root)
@@ -38,12 +34,7 @@ function Dds:_read()
   if self.magic ~= "DDS " then
     self.bioware_header = Dds.BiowareDdsHeader(self._io, self, self._root)
   end
-  self.pixel_data = {}
-  local i = 0
-  while not self._io:is_eof() do
-    self.pixel_data[i + 1] = self._io:read_u1()
-    i = i + 1
-  end
+  self.pixel_data = self._io:read_bytes_full()
 end
 
 -- 
@@ -54,9 +45,9 @@ end
 -- 
 -- BioWare DDS variant header - only present if magic is not "DDS ".
 -- 
--- Pixel data (compressed or uncompressed).
--- For standard DDS: Format determined by DDPIXELFORMAT
--- For BioWare DDS: DXT1 or DXT5 compressed data
+-- Pixel data (compressed or uncompressed); single blob to EOF.
+-- For standard DDS: format determined by DDPIXELFORMAT.
+-- For BioWare DDS: DXT1 or DXT5 compressed data.
 
 Dds.BiowareDdsHeader = class.class(KaitaiStruct)
 
@@ -70,7 +61,7 @@ end
 function Dds.BiowareDdsHeader:_read()
   self.width = self._io:read_u4le()
   self.height = self._io:read_u4le()
-  self.bytes_per_pixel = self._io:read_u4le()
+  self.bytes_per_pixel = BiowareCommon.BiowareDdsVariantBytesPerPixel(self._io:read_u4le())
   self.data_size = self._io:read_u4le()
   self.unused_float = self._io:read_f4le()
 end
@@ -80,9 +71,7 @@ end
 -- 
 -- Image height in pixels (must be power of two, < 0x8000).
 -- 
--- Bytes per pixel:
--- - 3 = DXT1 compression
--- - 4 = DXT5 compression
+-- BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
 -- 
 -- Total compressed data size.
 -- Must match (width*height)/2 for DXT1 or width*height for DXT5

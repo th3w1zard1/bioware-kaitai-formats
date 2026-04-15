@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use IO::KaitaiStruct 0.011_000;
+use BiowareCommon;
 use Encode;
 
 ########################################################################
@@ -238,21 +239,21 @@ sub _read {
 sub is_ima_adpcm {
     my ($self) = @_;
     return $self->{is_ima_adpcm} if ($self->{is_ima_adpcm});
-    $self->{is_ima_adpcm} = $self->audio_format() == 17;
+    $self->{is_ima_adpcm} = $self->audio_format() == $BiowareCommon::RIFF_WAVE_FORMAT_TAG_DVI_IMA_ADPCM;
     return $self->{is_ima_adpcm};
 }
 
 sub is_mp3 {
     my ($self) = @_;
     return $self->{is_mp3} if ($self->{is_mp3});
-    $self->{is_mp3} = $self->audio_format() == 85;
+    $self->{is_mp3} = $self->audio_format() == $BiowareCommon::RIFF_WAVE_FORMAT_TAG_MPEG_LAYER3;
     return $self->{is_mp3};
 }
 
 sub is_pcm {
     my ($self) = @_;
     return $self->{is_pcm} if ($self->{is_pcm});
-    $self->{is_pcm} = $self->audio_format() == 1;
+    $self->{is_pcm} = $self->audio_format() == $BiowareCommon::RIFF_WAVE_FORMAT_TAG_PCM;
     return $self->{is_pcm};
 }
 

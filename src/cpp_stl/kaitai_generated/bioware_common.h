@@ -24,9 +24,9 @@ class bioware_common_t;
  * - The CExoLocString / LocalizedString binary layout
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
  * - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
  * - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
  */
@@ -41,6 +41,18 @@ public:
     class bioware_vector3_t;
     class bioware_vector4_t;
     class substring_t;
+
+    enum bioware_dds_variant_bytes_per_pixel_t {
+        BIOWARE_DDS_VARIANT_BYTES_PER_PIXEL_DXT1 = 3,
+        BIOWARE_DDS_VARIANT_BYTES_PER_PIXEL_DXT5 = 4
+    };
+    static bool _is_defined_bioware_dds_variant_bytes_per_pixel_t(bioware_dds_variant_bytes_per_pixel_t v);
+
+private:
+    static const std::set<bioware_dds_variant_bytes_per_pixel_t> _values_bioware_dds_variant_bytes_per_pixel_t;
+    static std::set<bioware_dds_variant_bytes_per_pixel_t> _build_values_bioware_dds_variant_bytes_per_pixel_t();
+
+public:
 
     enum bioware_equipment_slot_flag_t {
         BIOWARE_EQUIPMENT_SLOT_FLAG_INVALID = 0,
@@ -205,6 +217,44 @@ private:
 
 public:
 
+    enum bioware_lip_viseme_id_t {
+        BIOWARE_LIP_VISEME_ID_NEUTRAL = 0,
+        BIOWARE_LIP_VISEME_ID_EE = 1,
+        BIOWARE_LIP_VISEME_ID_EH = 2,
+        BIOWARE_LIP_VISEME_ID_AH = 3,
+        BIOWARE_LIP_VISEME_ID_OH = 4,
+        BIOWARE_LIP_VISEME_ID_OOH = 5,
+        BIOWARE_LIP_VISEME_ID_Y = 6,
+        BIOWARE_LIP_VISEME_ID_STS = 7,
+        BIOWARE_LIP_VISEME_ID_FV = 8,
+        BIOWARE_LIP_VISEME_ID_NG = 9,
+        BIOWARE_LIP_VISEME_ID_TH = 10,
+        BIOWARE_LIP_VISEME_ID_MPB = 11,
+        BIOWARE_LIP_VISEME_ID_TD = 12,
+        BIOWARE_LIP_VISEME_ID_SH = 13,
+        BIOWARE_LIP_VISEME_ID_L = 14,
+        BIOWARE_LIP_VISEME_ID_KG = 15
+    };
+    static bool _is_defined_bioware_lip_viseme_id_t(bioware_lip_viseme_id_t v);
+
+private:
+    static const std::set<bioware_lip_viseme_id_t> _values_bioware_lip_viseme_id_t;
+    static std::set<bioware_lip_viseme_id_t> _build_values_bioware_lip_viseme_id_t();
+
+public:
+
+    enum bioware_ltr_alphabet_length_t {
+        BIOWARE_LTR_ALPHABET_LENGTH_NEVERWINTER_NIGHTS = 26,
+        BIOWARE_LTR_ALPHABET_LENGTH_KOTOR = 28
+    };
+    static bool _is_defined_bioware_ltr_alphabet_length_t(bioware_ltr_alphabet_length_t v);
+
+private:
+    static const std::set<bioware_ltr_alphabet_length_t> _values_bioware_ltr_alphabet_length_t;
+    static std::set<bioware_ltr_alphabet_length_t> _build_values_bioware_ltr_alphabet_length_t();
+
+public:
+
     enum bioware_object_type_id_t {
         BIOWARE_OBJECT_TYPE_ID_INVALID = 0,
         BIOWARE_OBJECT_TYPE_ID_CREATURE = 1,
@@ -224,6 +274,63 @@ public:
 private:
     static const std::set<bioware_object_type_id_t> _values_bioware_object_type_id_t;
     static std::set<bioware_object_type_id_t> _build_values_bioware_object_type_id_t();
+
+public:
+
+    enum bioware_pcc_compression_codec_t {
+        BIOWARE_PCC_COMPRESSION_CODEC_NONE = 0,
+        BIOWARE_PCC_COMPRESSION_CODEC_ZLIB = 1,
+        BIOWARE_PCC_COMPRESSION_CODEC_LZO = 2
+    };
+    static bool _is_defined_bioware_pcc_compression_codec_t(bioware_pcc_compression_codec_t v);
+
+private:
+    static const std::set<bioware_pcc_compression_codec_t> _values_bioware_pcc_compression_codec_t;
+    static std::set<bioware_pcc_compression_codec_t> _build_values_bioware_pcc_compression_codec_t();
+
+public:
+
+    enum bioware_pcc_package_kind_t {
+        BIOWARE_PCC_PACKAGE_KIND_NORMAL_PACKAGE = 0,
+        BIOWARE_PCC_PACKAGE_KIND_PATCH_PACKAGE = 1
+    };
+    static bool _is_defined_bioware_pcc_package_kind_t(bioware_pcc_package_kind_t v);
+
+private:
+    static const std::set<bioware_pcc_package_kind_t> _values_bioware_pcc_package_kind_t;
+    static std::set<bioware_pcc_package_kind_t> _build_values_bioware_pcc_package_kind_t();
+
+public:
+
+    enum bioware_tpc_pixel_format_id_t {
+        BIOWARE_TPC_PIXEL_FORMAT_ID_GREYSCALE = 1,
+        BIOWARE_TPC_PIXEL_FORMAT_ID_RGB_OR_DXT1 = 2,
+        BIOWARE_TPC_PIXEL_FORMAT_ID_RGBA_OR_DXT5 = 4,
+        BIOWARE_TPC_PIXEL_FORMAT_ID_BGRA_XBOX_SWIZZLE = 12
+    };
+    static bool _is_defined_bioware_tpc_pixel_format_id_t(bioware_tpc_pixel_format_id_t v);
+
+private:
+    static const std::set<bioware_tpc_pixel_format_id_t> _values_bioware_tpc_pixel_format_id_t;
+    static std::set<bioware_tpc_pixel_format_id_t> _build_values_bioware_tpc_pixel_format_id_t();
+
+public:
+
+    enum riff_wave_format_tag_t {
+        RIFF_WAVE_FORMAT_TAG_PCM = 1,
+        RIFF_WAVE_FORMAT_TAG_ADPCM_MS = 2,
+        RIFF_WAVE_FORMAT_TAG_IEEE_FLOAT = 3,
+        RIFF_WAVE_FORMAT_TAG_ALAW = 6,
+        RIFF_WAVE_FORMAT_TAG_MULAW = 7,
+        RIFF_WAVE_FORMAT_TAG_DVI_IMA_ADPCM = 17,
+        RIFF_WAVE_FORMAT_TAG_MPEG_LAYER3 = 85,
+        RIFF_WAVE_FORMAT_TAG_WAVE_FORMAT_EXTENSIBLE = 65534
+    };
+    static bool _is_defined_riff_wave_format_tag_t(riff_wave_format_tag_t v);
+
+private:
+    static const std::set<riff_wave_format_tag_t> _values_riff_wave_format_tag_t;
+    static std::set<riff_wave_format_tag_t> _build_values_riff_wave_format_tag_t();
 
 public:
 
@@ -359,7 +466,7 @@ public:
         uint32_t total_size() const { return m_total_size; }
 
         /**
-         * StrRef into dialog.tlk (0xFFFFFFFF means no strref / use substrings).
+         * StrRef into `dialog.tlk` (0xFFFFFFFF means no strref / use substrings).
          */
         uint32_t string_ref() const { return m_string_ref; }
 

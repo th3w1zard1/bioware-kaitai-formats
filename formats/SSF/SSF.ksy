@@ -5,10 +5,29 @@ meta:
   endian: le
   file-extension: ssf
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1:
       note: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: SSF voice sets are loaded as Aurora resources; wire layout matches PyKotor wiki."
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/
     pykotor_wiki_ssf: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf
+    github_openkotor_pykotor_io_ssf: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py`:
+      **`_load_ssf_from_kaitai`** **102–109**; **`SSFBinaryReader`** **112–143** (`load` **137–143**); **`SSFBinaryWriter`** **146–165** (`write` **156–165**, 12× `0xFFFFFFFF` trailer).
+    github_xoreos_ssffile: |
+      https://github.com/xoreos/xoreos — `src/aurora/ssffile.cpp`:
+      **`SSFFile::load`** **72–85**; **`readSSFHeader`** **87–120** (KotOR `V1.1` path returns **`kVersion11_KotOR`** **118–119**);
+      **`readEntries`** **122–141**; **`readEntriesKotOR`** **165–170**; **`writeKotOR`** **371–378**.
+    github_xoreos_types_kfiletype_ssf: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L126
+    xoreos_ssffile_read_chain: https://github.com/xoreos/xoreos/blob/master/src/aurora/ssffile.cpp#L72-L141
+    xoreos_ssffile_read_entries_kotor: https://github.com/xoreos/xoreos/blob/master/src/aurora/ssffile.cpp#L165-L170
+    xoreos_tools_ssf2xml_main: https://github.com/xoreos/xoreos-tools/blob/master/src/ssf2xml.cpp#L51-L70
+    xoreos_tools_xml2ssf_main: https://github.com/xoreos/xoreos-tools/blob/master/src/xml2ssf.cpp#L54-L75
+    xoreos_tools_ssfdumper_dump: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfdumper.cpp#L133-L167
+    xoreos_tools_ssfcreator_create: https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfcreator.cpp#L38-L74
+    github_modawan_reone_ssf: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp
+    reone_ssfreader_load: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp#L26-L32
 doc: |
   SSF (Sound Set File) files store sound string references (StrRefs) for character voice sets.
   Each SSF file contains exactly 28 sound slots, mapping to different game events and actions.
@@ -40,9 +59,19 @@ doc: |
   26: Rejoined Party
   27: Poisoned
 
-  References:
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
-  - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+  Authoritative implementations: `meta.xref` and `doc-ref` (PyKotor `io_ssf`, xoreos `ssffile.cpp`, xoreos-tools `ssf2xml` / `xml2ssf`, reone `SsfReader`).
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf PyKotor wiki — SSF"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py#L102-L166 PyKotor — `io_ssf` (Kaitai bridge + binary read/write)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L126 xoreos — `kFileTypeSSF`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ssffile.cpp#L72-L141 xoreos — `SSFFile::load` + `readSSFHeader` + `readEntries`"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ssffile.cpp#L165-L170 xoreos — `readEntriesKotOR`"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/ssf2xml.cpp#L51-L70 xoreos-tools — `ssf2xml` CLI"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml2ssf.cpp#L54-L75 xoreos-tools — `xml2ssf` CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfdumper.cpp#L133-L167 xoreos-tools — `SSFDumper::dump` (XML mapping for `ssf2xml`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfcreator.cpp#L38-L74 xoreos-tools — `SSFCreator::create` (XML mapping for `xml2ssf`)"
+  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp#L26-L32 reone — `SsfReader::load`"
 
 seq:
   - id: file_type

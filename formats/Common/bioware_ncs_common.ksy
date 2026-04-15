@@ -4,10 +4,18 @@ meta:
   license: MIT
   endian: be
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
+    ghidra_odyssey_k1:
+      note: "Shared NCS opcode/qualifier enums — VM/Ghidra context on `formats/NSS/NCS.ksy`; `user-agdec-http` per AGENTS.md."
     pykotor_ncs_data_bytecode: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L115
     pykotor_ncs_data_qualifier: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L118-L140
     pykotor_wiki_ncs: https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format
     xoreos_ncs_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/nwscript/ncsfile.cpp#L333-L355
+    xoreos_tools_ncsfile_load: https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137
+    reone_ncsreader_load: https://github.com/modawan/reone/blob/master/src/libs/script/format/ncsreader.cpp#L28-L40
+    xoreos_docs_torlack_ncs: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html
 doc: |
   Shared **opcode** (`u1`) and **type qualifier** (`u1`) bytes for NWScript compiled scripts (`NCS`).
 
@@ -19,6 +27,15 @@ doc: |
 
   **Lowest-scope authority:** numeric tables live here; `formats/NSS/NCS*.ksy` cite this file instead of
   duplicating opcode lists.
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L115 PyKotor — NCSByteCode"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L118-L140 PyKotor — NCSInstructionQualifier"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format PyKotor wiki — NCS"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/nwscript/ncsfile.cpp#L333-L355 xoreos — NCSFile::load"
+  - "https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137 xoreos-tools — NCSFile::load"
+  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html xoreos-docs — Torlack ncs.html"
+  - "https://github.com/modawan/reone/blob/master/src/libs/script/format/ncsreader.cpp#L28-L40 reone — NcsReader::load"
 
 enums:
   # Fixed header byte (see PyKotor wiki “Header” / `NCS.ksy` `size_marker`).

@@ -2,25 +2,20 @@
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['exports', 'kaitai-struct/KaitaiStream'], factory);
+    define(['exports', 'kaitai-struct/KaitaiStream', './BiowareCommon'], factory);
   } else if (typeof exports === 'object' && exports !== null && typeof exports.nodeType !== 'number') {
-    factory(exports, require('kaitai-struct/KaitaiStream'));
+    factory(exports, require('kaitai-struct/KaitaiStream'), require('./BiowareCommon'));
   } else {
-    factory(root.Dds || (root.Dds = {}), root.KaitaiStream);
+    factory(root.Dds || (root.Dds = {}), root.KaitaiStream, root.BiowareCommon || (root.BiowareCommon = {}));
   }
-})(typeof self !== 'undefined' ? self : this, function (Dds_, KaitaiStream) {
+})(typeof self !== 'undefined' ? self : this, function (Dds_, KaitaiStream, BiowareCommon_) {
 /**
- * DDS (DirectDraw Surface) files appear in two variants in KotOR:
+ * **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+ * (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
  * 
- * 1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
- * 2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
- * 
- * DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
- * and various other pixel formats. They can include mipmaps and cube maps.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
- * - Standard DirectX DDS format specification
+ * BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
+ * @see {@link https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds|PyKotor wiki — DDS}
+ * @see {@link https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130|PyKotor — TPCDDSReader}
  */
 
 var Dds = (function() {
@@ -42,12 +37,7 @@ var Dds = (function() {
     if (this.magic != "DDS ") {
       this.biowareHeader = new BiowareDdsHeader(this._io, this, this._root);
     }
-    this.pixelData = [];
-    var i = 0;
-    while (!this._io.isEof()) {
-      this.pixelData.push(this._io.readU1());
-      i++;
-    }
+    this.pixelData = this._io.readBytesFull();
   }
 
   var BiowareDdsHeader = Dds.BiowareDdsHeader = (function() {
@@ -75,9 +65,7 @@ var Dds = (function() {
      */
 
     /**
-     * Bytes per pixel:
-     * - 3 = DXT1 compression
-     * - 4 = DXT5 compression
+     * BioWare variant “bytes per pixel” (`u4`): DXT1 vs DXT5 block stride hint. Canonical: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
      */
 
     /**
@@ -271,9 +259,9 @@ var Dds = (function() {
    */
 
   /**
-   * Pixel data (compressed or uncompressed).
-   * For standard DDS: Format determined by DDPIXELFORMAT
-   * For BioWare DDS: DXT1 or DXT5 compressed data
+   * Pixel data (compressed or uncompressed); single blob to EOF.
+   * For standard DDS: format determined by DDPIXELFORMAT.
+   * For BioWare DDS: DXT1 or DXT5 compressed data.
    */
 
   return Dds;

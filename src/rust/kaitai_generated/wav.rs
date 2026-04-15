@@ -11,24 +11,16 @@ use kaitai::*;
 use std::convert::{TryFrom, TryInto};
 use std::cell::{Ref, Cell, RefCell};
 use std::rc::{Rc, Weak};
+use super::bioware_common::BiowareCommon_RiffWaveFormatTag;
 
 /**
- * WAV (Waveform Audio Format) files used in KotOR. KotOR stores both standard WAV voice-over lines
- * and Bioware-obfuscated sound-effect files. Voice-over assets are regular RIFF containers with PCM
- * headers, while SFX assets prepend a 470-byte custom block before the RIFF data.
+ * **KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
+ * MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
+ * 20-byte VO prefixes are application-level.
  * 
- * Format Types:
- * - VO (Voice-over): Plain RIFF/WAVE PCM files readable by any media player
- * - SFX (Sound effects): Contains a Bioware 470-byte obfuscation header followed by RIFF data
- * - MP3-in-WAV: Special RIFF container with MP3 data (RIFF size = 50)
- * 
- * Note: This Kaitai Struct definition documents the core RIFF/WAVE structure. SFX and VO headers
- * (470-byte and 20-byte prefixes respectively) are handled by application-level deobfuscation.
- * 
- * References:
- * - https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
- * - https://github.com/seedhartha/reone/blob/master/src/libs/audio/format/wavreader.cpp:30-56
- * - https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:34-84
+ * `wFormatTag` / PCM layout notes: `bioware_common.ksy` → `riff_wave_format_tag`.
+ * \sa https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav PyKotor wiki — WAV
+ * \sa https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106 xoreos — wave decoder
  */
 
 #[derive(Default, Debug, Clone)]
@@ -90,7 +82,7 @@ impl Wav {
 /**
  * RIFF chunks in sequence (fmt, fact, data, etc.)
  * Parsed until end of file
- * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:46-55
+ * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L46-L55
  */
 impl Wav {
     pub fn chunks(&self) -> Ref<'_, Vec<OptRc<Wav_Chunk>>> {
@@ -219,7 +211,7 @@ impl Wav_Chunk {
 /**
  * Chunk ID (4-character ASCII string)
  * Common values: "fmt ", "data", "fact", "LIST", etc.
- * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:58-72
+ * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L58-L72
  */
 impl Wav_Chunk {
     pub fn id(&self) -> Ref<'_, String> {
@@ -230,7 +222,7 @@ impl Wav_Chunk {
 /**
  * Chunk size in bytes (chunk data only, excluding ID and size fields)
  * Chunks are word-aligned (even byte boundaries)
- * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+ * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
  */
 impl Wav_Chunk {
     pub fn size(&self) -> Ref<'_, u32> {
@@ -286,7 +278,7 @@ impl Wav_DataChunkBody {
 
 /**
  * Raw audio data (PCM samples or compressed audio)
- * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:79-80
+ * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L79-L80
  */
 impl Wav_DataChunkBody {
     pub fn data(&self) -> Ref<'_, Vec<u8>> {
@@ -334,7 +326,7 @@ impl Wav_FactChunkBody {
 /**
  * Sample count (number of samples in compressed audio)
  * Used for compressed formats like ADPCM
- * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:189-192
+ * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L234-L236 (`fact` chunk skip — sample count lives in chunk body)
  */
 impl Wav_FactChunkBody {
     pub fn sample_count(&self) -> Ref<'_, u32> {
@@ -352,7 +344,7 @@ pub struct Wav_FormatChunkBody {
     pub _root: SharedType<Wav>,
     pub _parent: SharedType<Wav_Chunk>,
     pub _self: SharedType<Self>,
-    audio_format: RefCell<u16>,
+    audio_format: RefCell<BiowareCommon_RiffWaveFormatTag>,
     channels: RefCell<u16>,
     sample_rate: RefCell<u32>,
     bytes_per_sec: RefCell<u32>,
@@ -384,7 +376,7 @@ impl KStruct for Wav_FormatChunkBody {
         let _rrc = self_rc._root.get_value().borrow().upgrade();
         let _prc = self_rc._parent.get_value().borrow().upgrade();
         let _r = _rrc.as_ref().unwrap();
-        *self_rc.audio_format.borrow_mut() = _io.read_u2le()?.into();
+        *self_rc.audio_format.borrow_mut() = (_io.read_u2le()? as i64).try_into()?;
         *self_rc.channels.borrow_mut() = _io.read_u2le()?.into();
         *self_rc.sample_rate.borrow_mut() = _io.read_u4le()?.into();
         *self_rc.bytes_per_sec.borrow_mut() = _io.read_u4le()?.into();
@@ -412,7 +404,7 @@ impl Wav_FormatChunkBody {
             return Ok(self.is_ima_adpcm.borrow());
         }
         self.f_is_ima_adpcm.set(true);
-        *self.is_ima_adpcm.borrow_mut() = (((*self.audio_format() as u16) == (17 as u16))) as bool;
+        *self.is_ima_adpcm.borrow_mut() = (*self.audio_format() == BiowareCommon_RiffWaveFormatTag::DviImaAdpcm) as bool;
         Ok(self.is_ima_adpcm.borrow())
     }
 
@@ -430,7 +422,7 @@ impl Wav_FormatChunkBody {
             return Ok(self.is_mp3.borrow());
         }
         self.f_is_mp3.set(true);
-        *self.is_mp3.borrow_mut() = (((*self.audio_format() as u16) == (85 as u16))) as bool;
+        *self.is_mp3.borrow_mut() = (*self.audio_format() == BiowareCommon_RiffWaveFormatTag::MpegLayer3) as bool;
         Ok(self.is_mp3.borrow())
     }
 
@@ -448,23 +440,17 @@ impl Wav_FormatChunkBody {
             return Ok(self.is_pcm.borrow());
         }
         self.f_is_pcm.set(true);
-        *self.is_pcm.borrow_mut() = (((*self.audio_format() as u16) == (1 as u16))) as bool;
+        *self.is_pcm.borrow_mut() = (*self.audio_format() == BiowareCommon_RiffWaveFormatTag::Pcm) as bool;
         Ok(self.is_pcm.borrow())
     }
 }
 
 /**
- * Audio format code:
- * - 0x0001 = PCM (Linear PCM, uncompressed)
- * - 0x0002 = Microsoft ADPCM
- * - 0x0006 = A-Law companded
- * - 0x0007 = μ-Law companded
- * - 0x0011 = IMA ADPCM (DVI ADPCM)
- * - 0x0055 = MPEG Layer 3 (MP3)
- * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+ * RIFF `fmt ` / `WAVEFORMATEX.wFormatTag` (`u2` LE). Canonical: `formats/Common/bioware_common.ksy` → `riff_wave_format_tag`
+ * (Microsoft `WAVEFORMATEX`; KotOR usage: PyKotor WAV wiki, xoreos `wave.cpp`).
  */
 impl Wav_FormatChunkBody {
-    pub fn audio_format(&self) -> Ref<'_, u16> {
+    pub fn audio_format(&self) -> Ref<'_, BiowareCommon_RiffWaveFormatTag> {
         self.audio_format.borrow()
     }
 }
@@ -473,7 +459,7 @@ impl Wav_FormatChunkBody {
  * Number of audio channels:
  * - 1 = mono
  * - 2 = stereo
- * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+ * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
  */
 impl Wav_FormatChunkBody {
     pub fn channels(&self) -> Ref<'_, u16> {
@@ -486,7 +472,7 @@ impl Wav_FormatChunkBody {
  * Typical values:
  * - 22050 Hz for SFX
  * - 44100 Hz for VO
- * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+ * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
  */
 impl Wav_FormatChunkBody {
     pub fn sample_rate(&self) -> Ref<'_, u32> {
@@ -497,7 +483,7 @@ impl Wav_FormatChunkBody {
 /**
  * Byte rate (average bytes per second)
  * Formula: sample_rate × block_align
- * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+ * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
  */
 impl Wav_FormatChunkBody {
     pub fn bytes_per_sec(&self) -> Ref<'_, u32> {
@@ -508,7 +494,7 @@ impl Wav_FormatChunkBody {
 /**
  * Block alignment (bytes per sample frame)
  * Formula for PCM: channels × (bits_per_sample / 8)
- * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+ * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
  */
 impl Wav_FormatChunkBody {
     pub fn block_align(&self) -> Ref<'_, u16> {
@@ -520,7 +506,7 @@ impl Wav_FormatChunkBody {
  * Bits per sample
  * Common values: 8, 16
  * For PCM: typically 16-bit
- * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+ * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
  */
 impl Wav_FormatChunkBody {
     pub fn bits_per_sample(&self) -> Ref<'_, u16> {
@@ -533,7 +519,7 @@ impl Wav_FormatChunkBody {
  * For IMA ADPCM and other compressed formats, contains:
  * - Extra format size (u2)
  * - Format-specific data (e.g., ADPCM coefficients)
- * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:66
+ * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L66
  */
 impl Wav_FormatChunkBody {
     pub fn extra_format_bytes(&self) -> Ref<'_, Vec<u8>> {
@@ -591,7 +577,7 @@ impl Wav_RiffHeader {
 
     /**
      * MP3-in-WAV format detected when RIFF size = 50
-     * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py:60-64
+     * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
      */
     pub fn is_mp3_in_wav(
         &self
@@ -621,7 +607,7 @@ impl Wav_RiffHeader {
 /**
  * File size minus 8 bytes (RIFF_ID + RIFF_SIZE itself)
  * For MP3-in-WAV format, this is 50
- * Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
+ * Reference: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
  */
 impl Wav_RiffHeader {
     pub fn riff_size(&self) -> Ref<'_, u32> {
@@ -681,7 +667,7 @@ impl Wav_UnknownChunkBody {
 
 /**
  * Unknown chunk body (skip for compatibility)
- * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:53-54
+ * Reference: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L53-L54
  */
 impl Wav_UnknownChunkBody {
     pub fn data(&self) -> Ref<'_, Vec<u8>> {
@@ -692,7 +678,7 @@ impl Wav_UnknownChunkBody {
 /**
  * Padding byte to align to word boundary (only if chunk size is odd)
  * RIFF chunks must be aligned to 2-byte boundaries
- * Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py:153-156
+ * Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L243-L245 (unknown chunk skip + optional 1-byte word alignment)
  */
 impl Wav_UnknownChunkBody {
     pub fn padding(&self) -> Ref<'_, u8> {

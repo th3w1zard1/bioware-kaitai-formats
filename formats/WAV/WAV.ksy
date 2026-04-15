@@ -7,18 +7,34 @@ meta:
   imports:
     - ../Common/bioware_common
   xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
     ghidra_odyssey_k1: |
       Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: WAV/VOX resources use KotOR RIFF + optional 470-byte SFX prefix per PyKotor wiki.
+    ghidra_mcp_odyssey_program_paths: |
+      Odyssey shared Ghidra (user-agdec-http): `sync-project` / `checkout-program` with `/K1/k1_win_gog_swkotor.exe` (and TSL build) when
+      correlating `CResWAV` / RIFF wrappers — same MCP entry pattern as `formats/TPC/DDS.ksy` (`AGENTS.md`).
     pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/
+    github_openkotor_pykotor_io_wav: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py`:
+      **`_parse_riff_wave_from_kaitai`** **43–84**; **`WAVBinaryReader.load`** **118–158** (KotOR prefix / deobfuscation hooks **134–135**); legacy RIFF probe **175–187**.
+    github_openkotor_pykotor_wav_obfuscation: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py`: MP3-in-WAV / SFX / VO helpers (see wiki + `WAV.ksy` `is_mp3_in_wav` instance).
     reone: https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp
+    xoreos: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
     xoreos_types_kfiletype_wav: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L62
     xoreos_sound_make_audio_stream: https://github.com/xoreos/xoreos/blob/master/src/sound/sound.cpp#L256-L340
     xoreos_wave_make_wav_stream: https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
+    xoreos_tools_wav_note: |
+      `xoreos-tools` `master` has no dedicated RIFF/WAVE chunk parser or `.wav` CLI (matches `docs/XOREOS_FORMAT_COVERAGE.md` tools cell for WAV).
+      Numeric `kFileTypeWAV` lives in engine `types.h` (`meta.xref.xoreos_types_kfiletype_wav`); the tools repo does not mirror that enum header.
     pykotor_wiki_wav: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
     bioware_common_riff_fmt: |
       `fmt ` chunk `audio_format` / `wFormatTag`: `formats/Common/bioware_common.ksy` → `riff_wave_format_tag`.
     reone_wavreader: https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp#L30-L56
+    github_kobaltblu_kotor_js_audiofile: |
+      https://github.com/KobaltBlu/KotOR.js — `src/audio/AudioFile.ts`: **`fakeHeaderTest`** **10**; **`ArrayMatch`** → **470**-byte strip **`slice(470, …)`** **117–120**; MP3-in-WAV **`riffSize == 50`** **114+** / branch **134+**; **`readWavHeader`** / **`fmt`** **214+**.
 doc: |
   **KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
   MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
@@ -26,9 +42,16 @@ doc: |
 
   `wFormatTag` / PCM layout notes: `bioware_common.ksy` → `riff_wave_format_tag`.
 
+  The `xoreos-tools` tree does not ship a RIFF/WAVE wire parser on `master` (see `meta.xref.xoreos_tools_wav_note`); use xoreos `wave.cpp` / `sound.cpp` and PyKotor `io_wav.py` for chunk behavior.
+
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav PyKotor wiki — WAV"
-  - "https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106 xoreos — wave decoder"
+  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L43-L187 PyKotor — `io_wav` (Kaitai RIFF parse + `WAVBinaryReader.load` + legacy)"
+  - "https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp#L30-L72 reone — `WavReader` (fake header + chunk loop)"
+  - "https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106 xoreos — `makeWAVStream` / chunk scan"
+  - "https://github.com/xoreos/xoreos/blob/master/src/sound/sound.cpp#L256-L340 xoreos — `SoundManager::makeAudioStream` KotOR WAVE quirks"
+  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L62 xoreos — `kFileTypeWAV` (numeric id)"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/audio/AudioFile.ts#L10-L145 KotOR.js — `AudioFile` (prefix + MP3-in-WAV)"
 
 seq:
   - id: riff_header

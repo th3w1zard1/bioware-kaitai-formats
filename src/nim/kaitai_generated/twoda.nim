@@ -7,14 +7,12 @@ type
     `columnHeadersRaw`*: string
     `rowCount`*: uint32
     `rowLabelsSection`*: Twoda_RowLabelsSection
-    `cellOffsetsArray`*: Twoda_CellOffsetsArray
+    `cellOffsets`*: seq[uint16]
     `lenCellValuesSection`*: uint16
     `cellValuesSection`*: Twoda_CellValuesSection
+    `columnCount`*: uint32
     `parent`*: KaitaiStruct
     `rawCellValuesSection`*: seq[byte]
-  Twoda_CellOffsetsArray* = ref object of KaitaiStruct
-    `offsets`*: seq[uint16]
-    `parent`*: Twoda
   Twoda_CellValuesSection* = ref object of KaitaiStruct
     `rawData`*: string
     `parent`*: Twoda
@@ -32,8 +30,7 @@ type
     `isValidTwodaInst`: bool
     `isValidTwodaInstFlag`: bool
 
-proc read*(_: typedesc[Twoda], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Twoda
-proc read*(_: typedesc[Twoda_CellOffsetsArray], io: KaitaiStream, root: KaitaiStruct, parent: Twoda): Twoda_CellOffsetsArray
+proc read*(_: typedesc[Twoda], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct, columnCount: any): Twoda
 proc read*(_: typedesc[Twoda_CellValuesSection], io: KaitaiStream, root: KaitaiStruct, parent: Twoda): Twoda_CellValuesSection
 proc read*(_: typedesc[Twoda_RowLabelEntry], io: KaitaiStream, root: KaitaiStruct, parent: Twoda_RowLabelsSection): Twoda_RowLabelEntry
 proc read*(_: typedesc[Twoda_RowLabelsSection], io: KaitaiStream, root: KaitaiStruct, parent: Twoda): Twoda_RowLabelsSection
@@ -64,17 +61,19 @@ The format uses an offset-based string table for cell values, allowing efficient
 storage of duplicate values (shared strings are stored once and referenced by offset).
 
 References:
-- https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
-- https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
+- https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+- https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
 
 ]##
-proc read*(_: typedesc[Twoda], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct): Twoda =
+proc read*(_: typedesc[Twoda], io: KaitaiStream, root: KaitaiStruct, parent: KaitaiStruct, columnCount: any): Twoda =
   template this: untyped = result
   this = new(Twoda)
   let root = if root == nil: cast[Twoda](this) else: cast[Twoda](root)
   this.io = io
   this.root = root
   this.parent = parent
+  let columnCountExpr = uint32(columnCount)
+  this.columnCount = columnCountExpr
 
 
   ##[
@@ -108,13 +107,14 @@ This count determines how many row labels and how many cell entries per column.
   this.rowLabelsSection = rowLabelsSectionExpr
 
   ##[
-  Array of cell value offsets (uint16 per cell).
-Total entries = row_count * column_count (where column_count = number of tab-separated parts in column_headers_raw).
-Each offset points to a null-terminated string in the cell values section.
+  Array of cell value offsets (uint16 per cell). There are exactly row_count * column_count
+entries, in row-major order. Each offset is relative to the start of the cell values blob
+and points to a null-terminated string.
 
   ]##
-  let cellOffsetsArrayExpr = Twoda_CellOffsetsArray.read(this.io, this.root, this)
-  this.cellOffsetsArray = cellOffsetsArrayExpr
+  for i in 0 ..< int(this.rowCount * this.columnCount):
+    let it = this.io.readU2le()
+    this.cellOffsets.add(it)
 
   ##[
   Total size in bytes of the cell values data section.
@@ -127,7 +127,7 @@ Not used during reading but stored for format consistency.
 
   ##[
   Cell values data section containing all unique cell value strings.
-Each string is null-terminated. Offsets from cell_offsets_array point into this section.
+Each string is null-terminated. Offsets from cell_offsets point into this section.
 The section starts immediately after len_cell_values_section field and has size = len_cell_values_section bytes.
 
   ]##
@@ -139,45 +139,6 @@ The section starts immediately after len_cell_values_section field and has size 
 
 proc fromFile*(_: typedesc[Twoda], filename: string): Twoda =
   Twoda.read(newKaitaiFileStream(filename), nil, nil)
-
-proc read*(_: typedesc[Twoda_CellOffsetsArray], io: KaitaiStream, root: KaitaiStruct, parent: Twoda): Twoda_CellOffsetsArray =
-  template this: untyped = result
-  this = new(Twoda_CellOffsetsArray)
-  let root = if root == nil: cast[Twoda](this) else: cast[Twoda](root)
-  this.io = io
-  this.root = root
-  this.parent = parent
-
-
-  ##[
-  Array of cell value offsets (uint16, little-endian).
-Each offset points to a null-terminated string in the cell_values_section.
-Offsets are relative to the start of cell_values_section.
-
-Reading continues until we reach 2 bytes before end of file (where len_cell_values_section field is).
-Then len_cell_values_section is read, followed by cell_values_section.
-
-The actual count is: row_count * column_count
-where column_count = number of tab-separated parts in column_headers_raw.
-
-Cell access pattern:
-- Cell at row i, column j = offsets[i * column_count + j]
-- Value = read string at cell_values_section start + offsets[i * column_count + j]
-
-Duplicate cell values share the same offset (string deduplication).
-
-  ]##
-  block:
-    var i: int
-    while true:
-      let it = this.io.readU2le()
-      this.offsets.add(it)
-      if this.io.pos >= this.io.size - 2:
-        break
-      inc i
-
-proc fromFile*(_: typedesc[Twoda_CellOffsetsArray], filename: string): Twoda_CellOffsetsArray =
-  Twoda_CellOffsetsArray.read(newKaitaiFileStream(filename), nil, nil)
 
 proc read*(_: typedesc[Twoda_CellValuesSection], io: KaitaiStream, root: KaitaiStruct, parent: Twoda): Twoda_CellValuesSection =
   template this: untyped = result
@@ -191,7 +152,7 @@ proc read*(_: typedesc[Twoda_CellValuesSection], io: KaitaiStream, root: KaitaiS
   ##[
   Raw cell values data as a single string.
 Contains all null-terminated cell value strings concatenated together.
-Individual strings can be extracted using offsets from cell_offsets_array.
+Individual strings can be extracted using offsets from cell_offsets.
 Note: To read a specific cell value, seek to (cell_values_section start + offset) and read a null-terminated string.
 
   ]##

@@ -53,7 +53,7 @@ chunk__seq_body_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 
 			format_chunk_body__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
-				<TR><TD PORT="audio_format_pos">0</TD><TD PORT="audio_format_size">2</TD><TD>u2le</TD><TD PORT="audio_format_type">audio_format</TD></TR>
+				<TR><TD PORT="audio_format_pos">0</TD><TD PORT="audio_format_size">2</TD><TD>u2le→BiowareCommon::RiffWaveFormatTag</TD><TD PORT="audio_format_type">audio_format</TD></TR>
 				<TR><TD PORT="channels_pos">2</TD><TD PORT="channels_size">2</TD><TD>u2le</TD><TD PORT="channels_type">channels</TD></TR>
 				<TR><TD PORT="sample_rate_pos">4</TD><TD PORT="sample_rate_size">4</TD><TD>u4le</TD><TD PORT="sample_rate_type">sample_rate</TD></TR>
 				<TR><TD PORT="bytes_per_sec_pos">8</TD><TD PORT="bytes_per_sec_size">4</TD><TD>u4le</TD><TD PORT="bytes_per_sec_type">bytes_per_sec</TD></TR>
@@ -64,15 +64,15 @@ chunk__seq_body_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 			</TABLE>>];
 			format_chunk_body__inst__is_ima_adpcm [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
-				<TR><TD>is_ima_adpcm</TD><TD>audio_format == 17</TD></TR>
+				<TR><TD>is_ima_adpcm</TD><TD>audio_format == :riff_wave_format_tag_dvi_ima_adpcm</TD></TR>
 			</TABLE>>];
 			format_chunk_body__inst__is_mp3 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
-				<TR><TD>is_mp3</TD><TD>audio_format == 85</TD></TR>
+				<TR><TD>is_mp3</TD><TD>audio_format == :riff_wave_format_tag_mpeg_layer3</TD></TR>
 			</TABLE>>];
 			format_chunk_body__inst__is_pcm [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
 				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
-				<TR><TD>is_pcm</TD><TD>audio_format == 1</TD></TR>
+				<TR><TD>is_pcm</TD><TD>audio_format == :riff_wave_format_tag_pcm</TD></TR>
 			</TABLE>>];
 		}
 		subgraph cluster__riff_header {

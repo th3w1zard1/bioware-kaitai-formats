@@ -1,28 +1,9 @@
 from construct import *
 from construct.lib import *
-import enum
-
-class lip__lip_shapes(enum.IntEnum):
-	neutral = 0
-	ee = 1
-	eh = 2
-	ah = 3
-	oh = 4
-	ooh = 5
-	y = 6
-	sts = 7
-	fv = 8
-	ng = 9
-	th = 10
-	mpb = 11
-	td = 12
-	sh = 13
-	l = 14
-	kg = 15
 
 lip__keyframe_entry = Struct(
 	'timestamp' / Float32l,
-	'shape' / Enum(Int8ub, lip__lip_shapes),
+	'shape' / Enum(Int8ub, bioware_common__bioware_lip_viseme_id),
 )
 
 lip = Struct(

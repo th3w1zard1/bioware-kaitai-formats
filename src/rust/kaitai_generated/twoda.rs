@@ -34,8 +34,8 @@ use std::rc::{Rc, Weak};
  * storage of duplicate values (shared strings are stored once and referenced by offset).
  * 
  * References:
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
- * - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
+ * - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
  */
 
 #[derive(Default, Debug, Clone)]
@@ -43,11 +43,12 @@ pub struct Twoda {
     pub _root: SharedType<Twoda>,
     pub _parent: SharedType<Twoda>,
     pub _self: SharedType<Self>,
+    column_count: RefCell<u32>,
     header: RefCell<OptRc<Twoda_TwodaHeader>>,
     column_headers_raw: RefCell<String>,
     row_count: RefCell<u32>,
     row_labels_section: RefCell<OptRc<Twoda_RowLabelsSection>>,
-    cell_offsets_array: RefCell<OptRc<Twoda_CellOffsetsArray>>,
+    cell_offsets: RefCell<Vec<u16>>,
     len_cell_values_section: RefCell<u16>,
     cell_values_section: RefCell<OptRc<Twoda_CellValuesSection>>,
     _io: RefCell<BytesReader>,
@@ -76,8 +77,11 @@ impl KStruct for Twoda {
         *self_rc.row_count.borrow_mut() = _io.read_u4le()?.into();
         let t = Self::read_into::<_, Twoda_RowLabelsSection>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
         *self_rc.row_labels_section.borrow_mut() = t;
-        let t = Self::read_into::<_, Twoda_CellOffsetsArray>(&*_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
-        *self_rc.cell_offsets_array.borrow_mut() = t;
+        *self_rc.cell_offsets.borrow_mut() = Vec::new();
+        let l_cell_offsets = ((*self_rc.row_count() as i32) * (*self_rc.column_count() as i32));
+        for _i in 0..l_cell_offsets {
+            self_rc.cell_offsets.borrow_mut().push(_io.read_u2le()?.into());
+        }
         *self_rc.len_cell_values_section.borrow_mut() = _io.read_u2le()?.into();
         *self_rc.cell_values_section_raw.borrow_mut() = _io.read_bytes(*self_rc.len_cell_values_section() as usize)?.into();
         let cell_values_section_raw = self_rc.cell_values_section_raw.borrow();
@@ -85,6 +89,16 @@ impl KStruct for Twoda {
         let t = Self::read_into::<BytesReader, Twoda_CellValuesSection>(&_t_cell_values_section_raw_io, Some(self_rc._root.clone()), Some(self_rc._self.clone()))?.into();
         *self_rc.cell_values_section.borrow_mut() = t;
         Ok(())
+    }
+}
+impl Twoda {
+    pub fn column_count(&self) -> Ref<'_, u32> {
+        self.column_count.borrow()
+    }
+}
+impl Twoda {
+    pub fn set_params(&mut self, column_count: u32) {
+        *self.column_count.borrow_mut() = column_count;
     }
 }
 impl Twoda {
@@ -131,13 +145,13 @@ impl Twoda {
 }
 
 /**
- * Array of cell value offsets (uint16 per cell).
- * Total entries = row_count * column_count (where column_count = number of tab-separated parts in column_headers_raw).
- * Each offset points to a null-terminated string in the cell values section.
+ * Array of cell value offsets (uint16 per cell). There are exactly row_count * column_count
+ * entries, in row-major order. Each offset is relative to the start of the cell values blob
+ * and points to a null-terminated string.
  */
 impl Twoda {
-    pub fn cell_offsets_array(&self) -> Ref<'_, OptRc<Twoda_CellOffsetsArray>> {
-        self.cell_offsets_array.borrow()
+    pub fn cell_offsets(&self) -> Ref<'_, Vec<u16>> {
+        self.cell_offsets.borrow()
     }
 }
 
@@ -154,7 +168,7 @@ impl Twoda {
 
 /**
  * Cell values data section containing all unique cell value strings.
- * Each string is null-terminated. Offsets from cell_offsets_array point into this section.
+ * Each string is null-terminated. Offsets from cell_offsets point into this section.
  * The section starts immediately after len_cell_values_section field and has size = len_cell_values_section bytes.
  */
 impl Twoda {
@@ -170,77 +184,6 @@ impl Twoda {
 impl Twoda {
     pub fn cell_values_section_raw(&self) -> Ref<'_, Vec<u8>> {
         self.cell_values_section_raw.borrow()
-    }
-}
-
-#[derive(Default, Debug, Clone)]
-pub struct Twoda_CellOffsetsArray {
-    pub _root: SharedType<Twoda>,
-    pub _parent: SharedType<Twoda>,
-    pub _self: SharedType<Self>,
-    offsets: RefCell<Vec<u16>>,
-    _io: RefCell<BytesReader>,
-}
-impl KStruct for Twoda_CellOffsetsArray {
-    type Root = Twoda;
-    type Parent = Twoda;
-
-    fn read<S: KStream>(
-        self_rc: &OptRc<Self>,
-        _io: &S,
-        _root: SharedType<Self::Root>,
-        _parent: SharedType<Self::Parent>,
-    ) -> KResult<()> {
-        *self_rc._io.borrow_mut() = _io.clone();
-        self_rc._root.set(_root.get());
-        self_rc._parent.set(_parent.get());
-        self_rc._self.set(Ok(self_rc.clone()));
-        let _rrc = self_rc._root.get_value().borrow().upgrade();
-        let _prc = self_rc._parent.get_value().borrow().upgrade();
-        let _r = _rrc.as_ref().unwrap();
-        *self_rc.offsets.borrow_mut() = Vec::new();
-        {
-            let mut _i = 0;
-            while {
-                self_rc.offsets.borrow_mut().push(_io.read_u2le()?.into());
-                let _t_offsets = self_rc.offsets.borrow();
-                let _tmpa = *_t_offsets.last().unwrap();
-                _i += 1;
-                let x = !(_io.pos() >= ((_io.size() as i32) - (2 as i32)));
-                x
-            } {}
-        }
-        Ok(())
-    }
-}
-impl Twoda_CellOffsetsArray {
-}
-
-/**
- * Array of cell value offsets (uint16, little-endian).
- * Each offset points to a null-terminated string in the cell_values_section.
- * Offsets are relative to the start of cell_values_section.
- * 
- * Reading continues until we reach 2 bytes before end of file (where len_cell_values_section field is).
- * Then len_cell_values_section is read, followed by cell_values_section.
- * 
- * The actual count is: row_count * column_count
- * where column_count = number of tab-separated parts in column_headers_raw.
- * 
- * Cell access pattern:
- * - Cell at row i, column j = offsets[i * column_count + j]
- * - Value = read string at cell_values_section start + offsets[i * column_count + j]
- * 
- * Duplicate cell values share the same offset (string deduplication).
- */
-impl Twoda_CellOffsetsArray {
-    pub fn offsets(&self) -> Ref<'_, Vec<u16>> {
-        self.offsets.borrow()
-    }
-}
-impl Twoda_CellOffsetsArray {
-    pub fn _io(&self) -> Ref<'_, BytesReader> {
-        self._io.borrow()
     }
 }
 
@@ -279,7 +222,7 @@ impl Twoda_CellValuesSection {
 /**
  * Raw cell values data as a single string.
  * Contains all null-terminated cell value strings concatenated together.
- * Individual strings can be extracted using offsets from cell_offsets_array.
+ * Individual strings can be extracted using offsets from cell_offsets.
  * Note: To read a specific cell value, seek to (cell_values_section start + offset) and read a null-terminated string.
  */
 impl Twoda_CellValuesSection {
