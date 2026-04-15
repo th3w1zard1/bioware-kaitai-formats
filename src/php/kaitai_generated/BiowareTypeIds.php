@@ -5,22 +5,28 @@
  * This file provides **exhaustive enum mappings** for resource/type identifiers used across
  * BioWare-family games and their tooling ecosystems.
  * 
+ * **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+ * type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+ * `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+ * Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+ * mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+ * 
  * Why two enums?
  * - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
  *   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
- * - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+ * - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
  *   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
  * 
  * Important notes:
  * - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
- *   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+ *   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
  *   so this file keeps a single canonical name per value.
  * - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
  *   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
  * 
  * References:
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
  */
 
 namespace {
@@ -180,8 +186,6 @@ namespace BiowareTypeIds {
         const WAV_DEOB = 25015;
         const TLK_XML = 50001;
         const MDL_ASCII = 50002;
-        const GFF_XML = 50004;
-        const GFF_JSON = 50005;
         const IFO_XML = 50006;
         const GIT_XML = 50007;
         const UTI_XML = 50008;
@@ -206,7 +210,28 @@ namespace BiowareTypeIds {
         const LIP_JSON = 50028;
         const RES_XML = 50029;
 
-        private const _VALUES = [-1 => true, 0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 6 => true, 7 => true, 8 => true, 9 => true, 10 => true, 11 => true, 12 => true, 13 => true, 2000 => true, 2001 => true, 2002 => true, 2003 => true, 2005 => true, 2007 => true, 2008 => true, 2009 => true, 2010 => true, 2011 => true, 2012 => true, 2013 => true, 2014 => true, 2015 => true, 2016 => true, 2018 => true, 2022 => true, 2023 => true, 2024 => true, 2025 => true, 2026 => true, 2027 => true, 2029 => true, 2030 => true, 2031 => true, 2032 => true, 2033 => true, 2034 => true, 2035 => true, 2036 => true, 2037 => true, 2038 => true, 2039 => true, 2040 => true, 2041 => true, 2042 => true, 2043 => true, 2044 => true, 2045 => true, 2046 => true, 2047 => true, 2048 => true, 2049 => true, 2050 => true, 2051 => true, 2052 => true, 2053 => true, 2054 => true, 2055 => true, 2056 => true, 2057 => true, 2058 => true, 2060 => true, 2061 => true, 2062 => true, 2063 => true, 2064 => true, 2065 => true, 2066 => true, 2067 => true, 2068 => true, 2069 => true, 2070 => true, 2071 => true, 2072 => true, 2073 => true, 2074 => true, 2075 => true, 2076 => true, 2077 => true, 2078 => true, 2079 => true, 2080 => true, 2081 => true, 2082 => true, 2083 => true, 2084 => true, 2085 => true, 2086 => true, 2087 => true, 2088 => true, 2089 => true, 2090 => true, 2091 => true, 2092 => true, 2093 => true, 2094 => true, 2095 => true, 2096 => true, 2097 => true, 2099 => true, 2100 => true, 2101 => true, 2103 => true, 2104 => true, 2105 => true, 2106 => true, 2107 => true, 2108 => true, 2110 => true, 3000 => true, 3001 => true, 3002 => true, 3003 => true, 3004 => true, 3005 => true, 3006 => true, 3007 => true, 3008 => true, 3009 => true, 3010 => true, 3011 => true, 3012 => true, 3013 => true, 3015 => true, 3016 => true, 3017 => true, 3022 => true, 3023 => true, 3024 => true, 3025 => true, 3028 => true, 9997 => true, 9998 => true, 9999 => true, 25014 => true, 25015 => true, 50001 => true, 50002 => true, 50004 => true, 50005 => true, 50006 => true, 50007 => true, 50008 => true, 50009 => true, 50010 => true, 50011 => true, 50012 => true, 50013 => true, 50014 => true, 50015 => true, 50016 => true, 50017 => true, 50018 => true, 50019 => true, 50020 => true, 50021 => true, 50022 => true, 50023 => true, 50024 => true, 50025 => true, 50027 => true, 50028 => true, 50029 => true];
+        private const _VALUES = [-1 => true, 0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 6 => true, 7 => true, 8 => true, 9 => true, 10 => true, 11 => true, 12 => true, 13 => true, 2000 => true, 2001 => true, 2002 => true, 2003 => true, 2005 => true, 2007 => true, 2008 => true, 2009 => true, 2010 => true, 2011 => true, 2012 => true, 2013 => true, 2014 => true, 2015 => true, 2016 => true, 2018 => true, 2022 => true, 2023 => true, 2024 => true, 2025 => true, 2026 => true, 2027 => true, 2029 => true, 2030 => true, 2031 => true, 2032 => true, 2033 => true, 2034 => true, 2035 => true, 2036 => true, 2037 => true, 2038 => true, 2039 => true, 2040 => true, 2041 => true, 2042 => true, 2043 => true, 2044 => true, 2045 => true, 2046 => true, 2047 => true, 2048 => true, 2049 => true, 2050 => true, 2051 => true, 2052 => true, 2053 => true, 2054 => true, 2055 => true, 2056 => true, 2057 => true, 2058 => true, 2060 => true, 2061 => true, 2062 => true, 2063 => true, 2064 => true, 2065 => true, 2066 => true, 2067 => true, 2068 => true, 2069 => true, 2070 => true, 2071 => true, 2072 => true, 2073 => true, 2074 => true, 2075 => true, 2076 => true, 2077 => true, 2078 => true, 2079 => true, 2080 => true, 2081 => true, 2082 => true, 2083 => true, 2084 => true, 2085 => true, 2086 => true, 2087 => true, 2088 => true, 2089 => true, 2090 => true, 2091 => true, 2092 => true, 2093 => true, 2094 => true, 2095 => true, 2096 => true, 2097 => true, 2099 => true, 2100 => true, 2101 => true, 2103 => true, 2104 => true, 2105 => true, 2106 => true, 2107 => true, 2108 => true, 2110 => true, 3000 => true, 3001 => true, 3002 => true, 3003 => true, 3004 => true, 3005 => true, 3006 => true, 3007 => true, 3008 => true, 3009 => true, 3010 => true, 3011 => true, 3012 => true, 3013 => true, 3015 => true, 3016 => true, 3017 => true, 3022 => true, 3023 => true, 3024 => true, 3025 => true, 3028 => true, 9997 => true, 9998 => true, 9999 => true, 25014 => true, 25015 => true, 50001 => true, 50002 => true, 50006 => true, 50007 => true, 50008 => true, 50009 => true, 50010 => true, 50011 => true, 50012 => true, 50013 => true, 50014 => true, 50015 => true, 50016 => true, 50017 => true, 50018 => true, 50019 => true, 50020 => true, 50021 => true, 50022 => true, 50023 => true, 50024 => true, 50025 => true, 50027 => true, 50028 => true, 50029 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareTypeIds {
+    class XoreosArchiveType {
+        const KEY = 0;
+        const BIF = 1;
+        const ERF = 2;
+        const RIM = 3;
+        const ZIP = 4;
+        const EXE = 5;
+        const NDS = 6;
+        const HERF = 7;
+        const NSBTX = 8;
+        const MAX = 9;
+
+        private const _VALUES = [0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true, 6 => true, 7 => true, 8 => true, 9 => true];
 
         public static function isDefined(int $v): bool {
             return isset(self::_VALUES[$v]);
@@ -519,6 +544,66 @@ namespace BiowareTypeIds {
         const XEOSITEX = 40000;
 
         private const _VALUES = [-1 => true, 0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 6 => true, 7 => true, 8 => true, 9 => true, 10 => true, 11 => true, 12 => true, 13 => true, 2000 => true, 2001 => true, 2002 => true, 2003 => true, 2005 => true, 2007 => true, 2008 => true, 2009 => true, 2010 => true, 2011 => true, 2012 => true, 2013 => true, 2014 => true, 2015 => true, 2016 => true, 2017 => true, 2018 => true, 2022 => true, 2023 => true, 2024 => true, 2025 => true, 2026 => true, 2027 => true, 2029 => true, 2030 => true, 2031 => true, 2032 => true, 2033 => true, 2034 => true, 2035 => true, 2036 => true, 2037 => true, 2038 => true, 2039 => true, 2040 => true, 2041 => true, 2042 => true, 2043 => true, 2044 => true, 2045 => true, 2046 => true, 2047 => true, 2048 => true, 2049 => true, 2050 => true, 2051 => true, 2052 => true, 2053 => true, 2054 => true, 2055 => true, 2056 => true, 2057 => true, 2058 => true, 2059 => true, 2060 => true, 2061 => true, 2062 => true, 2063 => true, 2064 => true, 2065 => true, 2066 => true, 2067 => true, 2068 => true, 2069 => true, 2070 => true, 2071 => true, 2072 => true, 2073 => true, 2074 => true, 2075 => true, 2076 => true, 2077 => true, 2078 => true, 2079 => true, 2080 => true, 2081 => true, 2082 => true, 2083 => true, 2084 => true, 2085 => true, 2086 => true, 2087 => true, 2088 => true, 2089 => true, 2090 => true, 2091 => true, 2092 => true, 2093 => true, 2094 => true, 2095 => true, 2096 => true, 2097 => true, 2098 => true, 2099 => true, 2100 => true, 2101 => true, 2103 => true, 2104 => true, 2105 => true, 2106 => true, 2107 => true, 2108 => true, 2109 => true, 2110 => true, 3000 => true, 3001 => true, 3002 => true, 3003 => true, 3004 => true, 3005 => true, 3006 => true, 3007 => true, 3008 => true, 3009 => true, 3010 => true, 3011 => true, 3012 => true, 3013 => true, 3015 => true, 3016 => true, 3017 => true, 3022 => true, 3023 => true, 3024 => true, 3025 => true, 3028 => true, 4000 => true, 4001 => true, 4002 => true, 4003 => true, 4004 => true, 4005 => true, 4007 => true, 4008 => true, 9996 => true, 9997 => true, 9998 => true, 9999 => true, 19000 => true, 19001 => true, 19002 => true, 19003 => true, 20000 => true, 20001 => true, 20002 => true, 20003 => true, 20004 => true, 20005 => true, 20006 => true, 20007 => true, 20008 => true, 20009 => true, 20010 => true, 20011 => true, 20012 => true, 20013 => true, 20014 => true, 20015 => true, 20016 => true, 20017 => true, 20018 => true, 20019 => true, 20020 => true, 20021 => true, 20022 => true, 20023 => true, 20024 => true, 20025 => true, 20026 => true, 20027 => true, 20028 => true, 21000 => true, 21001 => true, 21002 => true, 21003 => true, 21004 => true, 21005 => true, 21006 => true, 21007 => true, 21008 => true, 21009 => true, 21010 => true, 21011 => true, 21012 => true, 21013 => true, 21014 => true, 21015 => true, 21016 => true, 21017 => true, 21018 => true, 21019 => true, 21020 => true, 21021 => true, 21022 => true, 21023 => true, 21024 => true, 21025 => true, 21026 => true, 22000 => true, 22001 => true, 22002 => true, 22003 => true, 22004 => true, 22005 => true, 22006 => true, 22007 => true, 22008 => true, 22009 => true, 22010 => true, 22011 => true, 22012 => true, 22013 => true, 22014 => true, 22015 => true, 22016 => true, 22017 => true, 22018 => true, 22019 => true, 22020 => true, 22021 => true, 22022 => true, 22023 => true, 22024 => true, 22025 => true, 22026 => true, 22027 => true, 22028 => true, 22029 => true, 22030 => true, 22031 => true, 22032 => true, 22033 => true, 22034 => true, 22035 => true, 22036 => true, 22037 => true, 23000 => true, 23001 => true, 23002 => true, 23003 => true, 23004 => true, 24000 => true, 24001 => true, 24002 => true, 24003 => true, 24004 => true, 24005 => true, 24006 => true, 24007 => true, 24008 => true, 25000 => true, 25001 => true, 25002 => true, 25003 => true, 25004 => true, 25005 => true, 25006 => true, 25007 => true, 25008 => true, 25009 => true, 25010 => true, 25011 => true, 25012 => true, 25013 => true, 25014 => true, 25015 => true, 25016 => true, 25017 => true, 25018 => true, 25019 => true, 25020 => true, 25021 => true, 25022 => true, 25023 => true, 26000 => true, 27000 => true, 28000 => true, 28001 => true, 28002 => true, 28003 => true, 28004 => true, 28005 => true, 29000 => true, 29001 => true, 30000 => true, 30001 => true, 40000 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareTypeIds {
+    class XoreosGameId {
+        const UNKNOWN = -1;
+        const NWN = 0;
+        const NWN2 = 1;
+        const KOTOR = 2;
+        const KOTOR2 = 3;
+        const JADE = 4;
+        const WITCHER = 5;
+        const SONIC = 6;
+        const DRAGON_AGE = 7;
+        const DRAGON_AGE2 = 8;
+        const MAX = 9;
+
+        private const _VALUES = [-1 => true, 0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true, 6 => true, 7 => true, 8 => true, 9 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareTypeIds {
+    class XoreosPlatformId {
+        const WINDOWS = 0;
+        const MAC_OSX = 1;
+        const LINUX = 2;
+        const XBOX = 3;
+        const XBOX360 = 4;
+        const PS3 = 5;
+        const NDS = 6;
+        const ANDROID = 7;
+        const IOS = 8;
+        const UNKNOWN = 9;
+
+        private const _VALUES = [0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true, 6 => true, 7 => true, 8 => true, 9 => true];
+
+        public static function isDefined(int $v): bool {
+            return isset(self::_VALUES[$v]);
+        }
+    }
+}
+
+namespace BiowareTypeIds {
+    class XoreosResourceCategory {
+        const IMAGE = 0;
+        const VIDEO = 1;
+        const SOUND = 2;
+        const MUSIC = 3;
+        const CURSOR = 4;
+        const MAX = 5;
+
+        private const _VALUES = [0 => true, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true];
 
         public static function isDefined(int $v): bool {
             return isset(self::_VALUES[$v]);

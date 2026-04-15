@@ -34,40 +34,46 @@ def _resolve_ksc() -> str:
     )
 
 
-# FIXME: This is a baseline list of known-failing formats under Kaitai Struct Compiler 0.11.
-# TODO: Keep this list shrinking: whenever you fix a format, move it to EXPECTED_PASSES.
-EXPECTED_FAILURES = {
-    Path("formats/DA2S/DA2S.ksy"),
-    Path("formats/DAS/DAS.ksy"),
-    Path("formats/LYT/LYT.ksy"),
-    Path("formats/MDL/MDL_ASCII.ksy"),
-    Path("formats/MDL/MDL.ksy"),
-    Path("formats/PCC/PCC.ksy"),
-    Path("formats/TPC/TGA.ksy"),
-    Path("formats/TPC/TPC.ksy"),
-}
+# Known-failing `.ksy` files under the current Kaitai Struct compiler (re-add paths here if ksc regresses).
+EXPECTED_FAILURES: set[Path] = set()
 
 
-# A small “known good” set we expect to compile cleanly.
-# This guards against PATH / environment regressions and confirms the harness is working.
+# Every ``formats/**/*.ksy`` in this repo — compile check guards PATH/KSC regressions.
 EXPECTED_PASSES = {
     Path("formats/BIF/KEY.ksy"),
     Path("formats/BIF/BIF.ksy"),
     Path("formats/BIF/BZF.ksy"),
-    Path("formats/Common/BioWare_Common.ksy"),
-    Path("formats/Common/BioWare_Extraction.ksy"),
-    Path("formats/Common/BioWare_TSLPatcher.ksy"),
-    Path("formats/Common/BioWare_TypeIds.ksy"),
+    Path("formats/BWM/BWM.ksy"),
+    Path("formats/DA2S/DA2S.ksy"),
+    Path("formats/DAS/DAS.ksy"),
+    Path("formats/Common/bioware_common.ksy"),
+    Path("formats/Common/bioware_gff_common.ksy"),
+    Path("formats/Common/bioware_type_ids.ksy"),
+    Path("formats/Common/bioware_mdl_common.ksy"),
+    Path("formats/Common/bioware_ncs_common.ksy"),
+    Path("formats/Common/tga_common.ksy"),
     Path("formats/ERF/ERF.ksy"),
     Path("formats/GFF/GFF.ksy"),
-    Path("formats/GFF/Generics/ARE/ARE.ksy"),
-    Path("formats/GFF/Generics/CNV/CNV.ksy"),
-    Path("formats/GFF/Generics/PT/PT.ksy"),
+    Path("formats/GFF/XML/GFF_XML.ksy"),
+    Path("formats/GDA/GDA.ksy"),
+    Path("formats/HERF/HERF.ksy"),
+    Path("formats/LIP/LIP.ksy"),
+    Path("formats/LTR/LTR.ksy"),
+    Path("formats/PLT/PLT.ksy"),
+    Path("formats/MDL/MDL.ksy"),
     Path("formats/MDL/MDX.ksy"),
+    Path("formats/NSS/NCS.ksy"),
+    Path("formats/NSS/NCS_minimal.ksy"),
+    Path("formats/PCC/PCC.ksy"),
     Path("formats/RIM/RIM.ksy"),
     Path("formats/SSF/SSF.ksy"),
+    Path("formats/TLK/TLK.ksy"),
     Path("formats/TPC/DDS.ksy"),
+    Path("formats/TPC/TPC.ksy"),
+    Path("formats/TPC/TGA.ksy"),
+    Path("formats/TPC/TXB.ksy"),
     Path("formats/TwoDA/TwoDA.ksy"),
+    Path("formats/WAV/WAV.ksy"),
 }
 
 

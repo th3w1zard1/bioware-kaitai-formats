@@ -16,22 +16,28 @@ use std::rc::{Rc, Weak};
  * This file provides **exhaustive enum mappings** for resource/type identifiers used across
  * BioWare-family games and their tooling ecosystems.
  * 
+ * **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+ * type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+ * `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+ * Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+ * mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+ * 
  * Why two enums?
  * - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
  *   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
- * - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+ * - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
  *   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
  * 
  * Important notes:
  * - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
- *   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+ *   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
  *   so this file keeps a single canonical name per value.
  * - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
  *   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
  * 
  * References:
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
  */
 
 #[derive(Default, Debug, Clone)]
@@ -213,8 +219,6 @@ pub enum BiowareTypeIds_BiowareResourceTypeId {
     WavDeob,
     TlkXml,
     MdlAscii,
-    GffXml,
-    GffJson,
     IfoXml,
     GitXml,
     UtiXml,
@@ -388,8 +392,6 @@ impl TryFrom<i64> for BiowareTypeIds_BiowareResourceTypeId {
             25015 => Ok(BiowareTypeIds_BiowareResourceTypeId::WavDeob),
             50001 => Ok(BiowareTypeIds_BiowareResourceTypeId::TlkXml),
             50002 => Ok(BiowareTypeIds_BiowareResourceTypeId::MdlAscii),
-            50004 => Ok(BiowareTypeIds_BiowareResourceTypeId::GffXml),
-            50005 => Ok(BiowareTypeIds_BiowareResourceTypeId::GffJson),
             50006 => Ok(BiowareTypeIds_BiowareResourceTypeId::IfoXml),
             50007 => Ok(BiowareTypeIds_BiowareResourceTypeId::GitXml),
             50008 => Ok(BiowareTypeIds_BiowareResourceTypeId::UtiXml),
@@ -564,8 +566,6 @@ impl From<&BiowareTypeIds_BiowareResourceTypeId> for i64 {
             BiowareTypeIds_BiowareResourceTypeId::WavDeob => 25015,
             BiowareTypeIds_BiowareResourceTypeId::TlkXml => 50001,
             BiowareTypeIds_BiowareResourceTypeId::MdlAscii => 50002,
-            BiowareTypeIds_BiowareResourceTypeId::GffXml => 50004,
-            BiowareTypeIds_BiowareResourceTypeId::GffJson => 50005,
             BiowareTypeIds_BiowareResourceTypeId::IfoXml => 50006,
             BiowareTypeIds_BiowareResourceTypeId::GitXml => 50007,
             BiowareTypeIds_BiowareResourceTypeId::UtiXml => 50008,
@@ -596,6 +596,62 @@ impl From<&BiowareTypeIds_BiowareResourceTypeId> for i64 {
 
 impl Default for BiowareTypeIds_BiowareResourceTypeId {
     fn default() -> Self { BiowareTypeIds_BiowareResourceTypeId::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareTypeIds_XoreosArchiveType {
+    Key,
+    Bif,
+    Erf,
+    Rim,
+    Zip,
+    Exe,
+    Nds,
+    Herf,
+    Nsbtx,
+    Max,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareTypeIds_XoreosArchiveType {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareTypeIds_XoreosArchiveType> {
+        match flag {
+            0 => Ok(BiowareTypeIds_XoreosArchiveType::Key),
+            1 => Ok(BiowareTypeIds_XoreosArchiveType::Bif),
+            2 => Ok(BiowareTypeIds_XoreosArchiveType::Erf),
+            3 => Ok(BiowareTypeIds_XoreosArchiveType::Rim),
+            4 => Ok(BiowareTypeIds_XoreosArchiveType::Zip),
+            5 => Ok(BiowareTypeIds_XoreosArchiveType::Exe),
+            6 => Ok(BiowareTypeIds_XoreosArchiveType::Nds),
+            7 => Ok(BiowareTypeIds_XoreosArchiveType::Herf),
+            8 => Ok(BiowareTypeIds_XoreosArchiveType::Nsbtx),
+            9 => Ok(BiowareTypeIds_XoreosArchiveType::Max),
+            _ => Ok(BiowareTypeIds_XoreosArchiveType::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareTypeIds_XoreosArchiveType> for i64 {
+    fn from(v: &BiowareTypeIds_XoreosArchiveType) -> Self {
+        match *v {
+            BiowareTypeIds_XoreosArchiveType::Key => 0,
+            BiowareTypeIds_XoreosArchiveType::Bif => 1,
+            BiowareTypeIds_XoreosArchiveType::Erf => 2,
+            BiowareTypeIds_XoreosArchiveType::Rim => 3,
+            BiowareTypeIds_XoreosArchiveType::Zip => 4,
+            BiowareTypeIds_XoreosArchiveType::Exe => 5,
+            BiowareTypeIds_XoreosArchiveType::Nds => 6,
+            BiowareTypeIds_XoreosArchiveType::Herf => 7,
+            BiowareTypeIds_XoreosArchiveType::Nsbtx => 8,
+            BiowareTypeIds_XoreosArchiveType::Max => 9,
+            BiowareTypeIds_XoreosArchiveType::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareTypeIds_XoreosArchiveType {
+    fn default() -> Self { BiowareTypeIds_XoreosArchiveType::Unknown(0) }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -1525,5 +1581,164 @@ impl From<&BiowareTypeIds_XoreosFileTypeId> for i64 {
 
 impl Default for BiowareTypeIds_XoreosFileTypeId {
     fn default() -> Self { BiowareTypeIds_XoreosFileTypeId::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareTypeIds_XoreosGameId {
+    Unknown,
+    Nwn,
+    Nwn2,
+    Kotor,
+    Kotor2,
+    Jade,
+    Witcher,
+    Sonic,
+    DragonAge,
+    DragonAge2,
+    Max,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareTypeIds_XoreosGameId {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareTypeIds_XoreosGameId> {
+        match flag {
+            -1 => Ok(BiowareTypeIds_XoreosGameId::Unknown),
+            0 => Ok(BiowareTypeIds_XoreosGameId::Nwn),
+            1 => Ok(BiowareTypeIds_XoreosGameId::Nwn2),
+            2 => Ok(BiowareTypeIds_XoreosGameId::Kotor),
+            3 => Ok(BiowareTypeIds_XoreosGameId::Kotor2),
+            4 => Ok(BiowareTypeIds_XoreosGameId::Jade),
+            5 => Ok(BiowareTypeIds_XoreosGameId::Witcher),
+            6 => Ok(BiowareTypeIds_XoreosGameId::Sonic),
+            7 => Ok(BiowareTypeIds_XoreosGameId::DragonAge),
+            8 => Ok(BiowareTypeIds_XoreosGameId::DragonAge2),
+            9 => Ok(BiowareTypeIds_XoreosGameId::Max),
+            _ => Ok(BiowareTypeIds_XoreosGameId::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareTypeIds_XoreosGameId> for i64 {
+    fn from(v: &BiowareTypeIds_XoreosGameId) -> Self {
+        match *v {
+            BiowareTypeIds_XoreosGameId::Unknown => -1,
+            BiowareTypeIds_XoreosGameId::Nwn => 0,
+            BiowareTypeIds_XoreosGameId::Nwn2 => 1,
+            BiowareTypeIds_XoreosGameId::Kotor => 2,
+            BiowareTypeIds_XoreosGameId::Kotor2 => 3,
+            BiowareTypeIds_XoreosGameId::Jade => 4,
+            BiowareTypeIds_XoreosGameId::Witcher => 5,
+            BiowareTypeIds_XoreosGameId::Sonic => 6,
+            BiowareTypeIds_XoreosGameId::DragonAge => 7,
+            BiowareTypeIds_XoreosGameId::DragonAge2 => 8,
+            BiowareTypeIds_XoreosGameId::Max => 9,
+            BiowareTypeIds_XoreosGameId::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareTypeIds_XoreosGameId {
+    fn default() -> Self { BiowareTypeIds_XoreosGameId::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareTypeIds_XoreosPlatformId {
+    Windows,
+    MacOsx,
+    Linux,
+    Xbox,
+    Xbox360,
+    Ps3,
+    Nds,
+    Android,
+    Ios,
+    Unknown,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareTypeIds_XoreosPlatformId {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareTypeIds_XoreosPlatformId> {
+        match flag {
+            0 => Ok(BiowareTypeIds_XoreosPlatformId::Windows),
+            1 => Ok(BiowareTypeIds_XoreosPlatformId::MacOsx),
+            2 => Ok(BiowareTypeIds_XoreosPlatformId::Linux),
+            3 => Ok(BiowareTypeIds_XoreosPlatformId::Xbox),
+            4 => Ok(BiowareTypeIds_XoreosPlatformId::Xbox360),
+            5 => Ok(BiowareTypeIds_XoreosPlatformId::Ps3),
+            6 => Ok(BiowareTypeIds_XoreosPlatformId::Nds),
+            7 => Ok(BiowareTypeIds_XoreosPlatformId::Android),
+            8 => Ok(BiowareTypeIds_XoreosPlatformId::Ios),
+            9 => Ok(BiowareTypeIds_XoreosPlatformId::Unknown),
+            _ => Ok(BiowareTypeIds_XoreosPlatformId::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareTypeIds_XoreosPlatformId> for i64 {
+    fn from(v: &BiowareTypeIds_XoreosPlatformId) -> Self {
+        match *v {
+            BiowareTypeIds_XoreosPlatformId::Windows => 0,
+            BiowareTypeIds_XoreosPlatformId::MacOsx => 1,
+            BiowareTypeIds_XoreosPlatformId::Linux => 2,
+            BiowareTypeIds_XoreosPlatformId::Xbox => 3,
+            BiowareTypeIds_XoreosPlatformId::Xbox360 => 4,
+            BiowareTypeIds_XoreosPlatformId::Ps3 => 5,
+            BiowareTypeIds_XoreosPlatformId::Nds => 6,
+            BiowareTypeIds_XoreosPlatformId::Android => 7,
+            BiowareTypeIds_XoreosPlatformId::Ios => 8,
+            BiowareTypeIds_XoreosPlatformId::Unknown => 9,
+            BiowareTypeIds_XoreosPlatformId::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareTypeIds_XoreosPlatformId {
+    fn default() -> Self { BiowareTypeIds_XoreosPlatformId::Unknown(0) }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BiowareTypeIds_XoreosResourceCategory {
+    Image,
+    Video,
+    Sound,
+    Music,
+    Cursor,
+    Max,
+    Unknown(i64),
+}
+
+impl TryFrom<i64> for BiowareTypeIds_XoreosResourceCategory {
+    type Error = KError;
+    fn try_from(flag: i64) -> KResult<BiowareTypeIds_XoreosResourceCategory> {
+        match flag {
+            0 => Ok(BiowareTypeIds_XoreosResourceCategory::Image),
+            1 => Ok(BiowareTypeIds_XoreosResourceCategory::Video),
+            2 => Ok(BiowareTypeIds_XoreosResourceCategory::Sound),
+            3 => Ok(BiowareTypeIds_XoreosResourceCategory::Music),
+            4 => Ok(BiowareTypeIds_XoreosResourceCategory::Cursor),
+            5 => Ok(BiowareTypeIds_XoreosResourceCategory::Max),
+            _ => Ok(BiowareTypeIds_XoreosResourceCategory::Unknown(flag)),
+        }
+    }
+}
+
+impl From<&BiowareTypeIds_XoreosResourceCategory> for i64 {
+    fn from(v: &BiowareTypeIds_XoreosResourceCategory) -> Self {
+        match *v {
+            BiowareTypeIds_XoreosResourceCategory::Image => 0,
+            BiowareTypeIds_XoreosResourceCategory::Video => 1,
+            BiowareTypeIds_XoreosResourceCategory::Sound => 2,
+            BiowareTypeIds_XoreosResourceCategory::Music => 3,
+            BiowareTypeIds_XoreosResourceCategory::Cursor => 4,
+            BiowareTypeIds_XoreosResourceCategory::Max => 5,
+            BiowareTypeIds_XoreosResourceCategory::Unknown(v) => v
+        }
+    }
+}
+
+impl Default for BiowareTypeIds_XoreosResourceCategory {
+    fn default() -> Self { BiowareTypeIds_XoreosResourceCategory::Unknown(0) }
 }
 

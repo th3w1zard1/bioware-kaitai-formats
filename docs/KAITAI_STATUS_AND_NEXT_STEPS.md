@@ -1,242 +1,44 @@
-# Kaitai Struct Compilation Status & Next Steps
+# Kaitai Struct — repository status and next steps
 
-## Current Status (as of commit 4aa7643)
+_Last aligned with the working tree in 2026; treat [`docs/XOREOS_FORMAT_COVERAGE.md`](XOREOS_FORMAT_COVERAGE.md) as the live matrix for xoreos ↔ `.ksy` mapping._
 
-### ✅ Completed
-1. **Refactored all GFF generics** - Removed duplication, all inherit from GFF.ksy
-2. **Created BioWare_Common.ksy** - Shared types (LocalizedString, ResRef, Vector3, etc.)
-3. **Fixed 57 .ksy files** - Successfully compiling to Python
-4. **Fixed boolean operators** - Replaced `&&`/`||` with `and`/`or`
-5. **Fixed XML variant imports** - Corrected path case sensitivity
-6. **Generated Python parsers** - 57 working Kaitai-generated Python modules
+## Current snapshot
 
-### ❌ Remaining Issues (31 files)
+### What this repo ships
 
-**XML Variants (23 files)** - Path resolution issues
-- All `*_XML.ksy` files in GFF/Generics failing with path not found
-- Issue: Kaitai compiler can't resolve `../../GFF/GFF.ksy` on Windows
+- **`formats/**/*.ksy`** — **34** Kaitai specs (binary on-disk layouts only). Shared enums and structs live under [`formats/Common/`](../formats/Common/) (`bioware_common`, `bioware_gff_common`, `bioware_type_ids`, `bioware_mdl_common`, `bioware_ncs_common`, `tga_common`). Per-format folders (BIF, ERF, GFF, TPC, …) import those modules using **`meta.imports`** paths whose final segment is **`lower_snake_case`** (matches `include/ksy_schema.json` and KSC resolution on case-insensitive filesystems).
+- **`src/<language>/kaitai_generated/`** — parsers emitted by **Kaitai Struct Compiler 0.11** (see [`.cursorrules`](../.cursorrules) §3). Regenerate after substantive `.ksy` edits via [`scripts/generate_code.ps1`](../scripts/generate_code.ps1) or targeted `kaitai-struct-compiler` invocations.
+- **Documentation** — Cross-vendor coverage and proof links: [`docs/XOREOS_FORMAT_COVERAGE.md`](XOREOS_FORMAT_COVERAGE.md). Architecture overview: [`docs/kaitai_architecture.md`](kaitai_architecture.md).
 
-**Format-Specific Errors (8 files)**:
-1. **BWM.ksy** - Expression parsing (string methods not supported)
-2. **DA2S.ksy** - Ternary operator not supported
-3. **DAS.ksy** - String method `.rstrip()` not supported  
-4. **LYT.ksy** - String method `.find()` not supported
-5. **MDL_ASCII.ksy** - Missing size/terminator specification
-6. **MDL.ksy** - Invalid `pos:` key in seq
-7. **PCC.ksy** - YAML syntax error
-8. **TGA.ksy** - Ternary operator in repeat-expr
-9. **TPC.ksy** - Invalid `size:` key usage
+### Compilation and CI-style checks
 
-## Critical Understanding: Kaitai Struct Limitations
+| Check | Command / location |
+|--------|---------------------|
+| **KSC smoke (Python target)** | `python -m pytest src/python/tests/test_kaitai_compile_smoke.py` — expects **every** `formats/**/*.ksy` to compile. |
+| **xoreos `#L` anchors vs `master` file length** | `python scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges --also docs/XOREOS_FORMAT_COVERAGE.md` |
+| **Optional URL HEAD probe** | `python scripts/verify_ksy_urls.py --verify …` (slow; some hosts block HEAD) |
 
-### What Kaitai CAN Do ✅
-- Generate **parsers (readers)** for 12+ languages
-- Parse binary formats into data structures
-- Support complex format specifications
-- Lazy parsing for efficiency
+### Policy (from project conventions)
 
-### What Kaitai CANNOT Do ❌
-- Generate **writers/serializers**
-- Generate high-level object models (like PyKotor classes)
-- Generate test suites
-- Support Python string methods (`.rstrip()`, `.find()`, etc.)
-- Support ternary operators (`x if condition else y`)
+- **Binary wire in `.ksy` only** — Do not model plaintext interchange (TXI, VIS, NSS, MDL ASCII, arbitrary XML/JSON/CSV payloads) in Kaitai unless the team explicitly expands scope. The tree retains **`formats/GFF/XML/GFF_XML.ksy`** where XML is still tracked; other plaintext siblings were removed per that policy.
+- **Upstream citations** — Prefer `meta.xref` / `doc` URLs to **xoreos `master`** (and PyKotor / tooling) at stable line anchors; see §9 in [`XOREOS_FORMAT_COVERAGE.md`](XOREOS_FORMAT_COVERAGE.md).
 
-## Next Steps to Complete
+### Major structural facts
 
-### Phase 1: Fix Remaining .ksy Errors (PRIORITY)
+1. **GFF3 + GFF4 in one spec** — Standalone `GFF4.ksy` was **merged into** [`formats/GFF/GFF.ksy`](../formats/GFF/GFF.ksy) (`gff4_after_aurora` / `gff4_file`). [`formats/GDA/GDA.ksy`](../formats/GDA/GDA.ksy) imports the unified `gff` types.
+2. **Kaitai generates readers, not writers** — Serializers and rich object models remain application concerns (e.g. PyKotor).
 
-**1. Fix XML Variant Imports**
-```yaml
-# Current (failing):
-imports:
-  - ../../GFF/GFF
-  
-# Try absolute imports or different path format
-imports:
-  - /GFF/GFF
-# OR remove imports entirely if not needed
-```
+## Historical note
 
-**2. Remove Unsupported Features**
-- Replace ternary operators with switch-on
-- Remove string method calls
-- Fix invalid YAML syntax
+Older snapshots in git history described “57 `.ksy` files”, “31 failing XML generics”, and Windows import-path issues. **That era is closed for this branch:** the inventory is the **34** files under `formats/`, and the smoke test above is the source of truth for “compiles today”.
 
-**3. Simplify Complex Formats**
-- Mark unsupported features with TODO comments
-- Create simplified versions that compile
-- Document limitations
+## Suggested next steps (engineering)
 
-### Phase 2: Generate Parsers for All Languages
+1. **GFF4 depth** — Field-declaration blocks, `data_offset` struct payloads, and V4.1 shared string heap (see gap notes in [`XOREOS_FORMAT_COVERAGE.md`](XOREOS_FORMAT_COVERAGE.md) §3 / appendix).
+2. **Golden fixtures** — Add small binary samples under a dedicated `tests/fixtures/` (or documented external corpus) and parse them in language-specific tests beyond compile-only smoke.
+3. **Multi-language regen** — After `.ksy` changes, run the repo’s batch generator so `src/{csharp,java,go,rust,…}/kaitai_generated` stays in sync; avoid hand-editing generated files except for emergencies (then re-run KSC).
 
-Once all .ksy files compile:
+## References
 
-```powershell
-# Generate for all supported languages
-$languages = @("python", "csharp", "java", "javascript", "go", "rust", "cpp_stl", "ruby", "php", "lua", "perl", "nim", "swift")
-
-foreach ($lang in $languages) {
-    kaitai-struct-compiler -t $lang -d "src/$lang" formats/**/*.ksy
-}
-```
-
-### Phase 3: Create Test Infrastructure
-
-Since Kaitai doesn't generate tests, create test framework:
-
-**Python Test Template** (`src/python/tests/test_kaitai_parsers.py`):
-```python
-"""Test that Kaitai parsers produce same output as PyKotor."""
-
-import unittest
-from pathlib import Path
-
-# Import Kaitai-generated parsers
-from kaitai_generated import are, utc, gff
-
-# Import PyKotor for comparison
-from pykotor.resource.generics import are as pykotor_are
-from pykotor.resource.formats.gff import read_gff
-
-
-class TestKaitaiParsers(unittest.TestCase):
-    """Verify Kaitai parsers match PyKotor output."""
-    
-    def test_are_parser_matches_pykotor(self):
-        """Test ARE parser produces same structure as PyKotor."""
-        test_file = Path("test_files/test.are")
-        
-        # Parse with Kaitai
-        kaitai_result = are.Are.from_file(str(test_file))
-        
-        # Parse with PyKotor
-        pykotor_result = pykotor_are.read_are(test_file)
-        
-        # Compare structures
-        self.assertEqual(
-            kaitai_result.gff_data.header.file_type,
-            "ARE "
-        )
-        # Add more comparisons...
-```
-
-### Phase 4: Document Kaitai vs PyKotor Differences
-
-Create mapping document showing:
-- What Kaitai parsers provide
-- What PyKotor provides that Kaitai doesn't
-- How to bridge the gap
-
-## Recommended Approach Going Forward
-
-### Option A: Kaitai for Reading, Manual Writers (RECOMMENDED)
-
-**Pros:**
-- Leverages Kaitai's strengths (parsing)
-- Multi-language support automatically
-- Well-tested parser generation
-
-**Cons:**
-- Must manually implement writers per language
-- No high-level object models
-- Tests must be written manually
-
-**Implementation:**
-1. Fix all .ksy files
-2. Generate parsers for all languages
-3. Create wrapper classes that use Kaitai parsers
-4. Manually implement writers (or use PyKotor writers)
-5. Create comprehensive test suite
-
-### Option B: Pure PyKotor with Language Bindings
-
-**Pros:**
-- PyKotor already has everything (readers, writers, tests)
-- Proven, battle-tested code
-- High-level object models
-
-**Cons:**
-- Python-only natively
-- Language bindings add complexity
-- Performance overhead for cross-language calls
-
-**Implementation:**
-1. Keep PyKotor as-is
-2. Create C# bindings via Python.NET
-3. Create Go bindings via gRPC
-4. etc.
-
-### Option C: Custom Code Generator from .ksy
-
-**Pros:**
-- Full control over generated code
-- Can generate readers AND writers
-- Can match PyKotor architecture exactly
-
-**Cons:**
-- Massive undertaking (months of work)
-- Must maintain custom generator
-- Reinventing the wheel
-
-**Implementation:**
-1. Build code generator that reads .ksy
-2. Generate PyKotor-style classes
-3. Generate readers and writers
-4. Generate tests
-5. Support multiple languages
-
-## Immediate Action Items
-
-1. **Fix remaining 31 .ksy compilation errors**
-   - Focus on XML variants path issues
-   - Remove unsupported features
-   - Simplify complex formats
-
-2. **Generate Python parsers for all working formats**
-   - Run compilation script
-   - Verify generated code
-   - Test with sample files
-
-3. **Create comparison tests**
-   - Parse same files with Kaitai and PyKotor
-   - Compare outputs
-   - Document differences
-
-4. **Make decision on approach**
-   - Pure Kaitai (readers only)
-   - Hybrid (Kaitai + PyKotor)
-   - Custom generator
-   - Pure PyKotor with bindings
-
-## Files Created This Session
-
-- `scripts/compile_all_ksy.ps1` - Batch compilation script
-- `scripts/fix_all_ksy_errors.ps1` - Automated error fixing
-- `scripts/fix_xml_variants.py` - XML variant standardization
-- `docs/kaitai_architecture.md` - Architecture documentation
-- `src/python/kaitai_generated/*.py` - 57 generated Python parsers
-
-## Success Metrics
-
-- ✅ 57/88 .ksy files compiling (65%)
-- ✅ All GFF binary formats working
-- ✅ Core formats (BIF, ERF, RIM, TLK, SSF) working
-- ⏳ XML variants need fixing
-- ⏳ Complex formats (MDL, TPC) need simplification
-
-## Conclusion
-
-We've made significant progress refactoring and fixing .ksy files. The Kaitai Struct compiler is working for most formats. The remaining issues are:
-
-1. **Path resolution for XML variants** - Solvable
-2. **Unsupported language features** - Must remove or work around
-3. **Complex formats** - May need simplification
-
-The fundamental limitation remains: **Kaitai only generates parsers, not writers**. Any solution requiring writers must either:
-- Use PyKotor's existing writers
-- Manually implement writers per language
-- Build a custom code generator
-
-**Recommendation**: Fix remaining .ksy errors, generate parsers for all languages, create test suite comparing Kaitai output to PyKotor, then decide on writer strategy.
-
+- [`AGENTS.md`](../AGENTS.md) — learned preferences (xref placement, common modules, Ghidra context).
+- [Kaitai Struct user guide](https://doc.kaitai.io/user_guide.html) — expression language, enums (`to_i`), compiler version expectations.

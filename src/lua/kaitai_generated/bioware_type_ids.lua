@@ -10,22 +10,28 @@ local enum = require("enum")
 -- This file provides **exhaustive enum mappings** for resource/type identifiers used across
 -- BioWare-family games and their tooling ecosystems.
 -- 
+-- **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+-- type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+-- `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+-- Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+-- mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+-- 
 -- Why two enums?
 -- - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
 --   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
--- - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+-- - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
 --   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
 -- 
 -- Important notes:
 -- - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
---   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+--   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
 --   so this file keeps a single canonical name per value.
 -- - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
 --   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
 -- 
 -- References:
 -- - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
--- - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+-- - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
 BiowareTypeIds = class.class(KaitaiStruct)
 
 BiowareTypeIds.BiowareResourceTypeId = enum.Enum {
@@ -172,8 +178,6 @@ BiowareTypeIds.BiowareResourceTypeId = enum.Enum {
   wav_deob = 25015,
   tlk_xml = 50001,
   mdl_ascii = 50002,
-  gff_xml = 50004,
-  gff_json = 50005,
   ifo_xml = 50006,
   git_xml = 50007,
   uti_xml = 50008,
@@ -197,6 +201,19 @@ BiowareTypeIds.BiowareResourceTypeId = enum.Enum {
   tlk_json = 50027,
   lip_json = 50028,
   res_xml = 50029,
+}
+
+BiowareTypeIds.XoreosArchiveType = enum.Enum {
+  key = 0,
+  bif = 1,
+  erf = 2,
+  rim = 3,
+  zip = 4,
+  exe = 5,
+  nds = 6,
+  herf = 7,
+  nsbtx = 8,
+  max = 9,
 }
 
 BiowareTypeIds.XoreosFileTypeId = enum.Enum {
@@ -501,6 +518,42 @@ BiowareTypeIds.XoreosFileTypeId = enum.Enum {
   xds = 30000,
   wnd = 30001,
   xeositex = 40000,
+}
+
+BiowareTypeIds.XoreosGameId = enum.Enum {
+  unknown = -1,
+  nwn = 0,
+  nwn2 = 1,
+  kotor = 2,
+  kotor2 = 3,
+  jade = 4,
+  witcher = 5,
+  sonic = 6,
+  dragon_age = 7,
+  dragon_age2 = 8,
+  max = 9,
+}
+
+BiowareTypeIds.XoreosPlatformId = enum.Enum {
+  windows = 0,
+  mac_osx = 1,
+  linux = 2,
+  xbox = 3,
+  xbox360 = 4,
+  ps3 = 5,
+  nds = 6,
+  android = 7,
+  ios = 8,
+  unknown = 9,
+}
+
+BiowareTypeIds.XoreosResourceCategory = enum.Enum {
+  image = 0,
+  video = 1,
+  sound = 2,
+  music = 3,
+  cursor = 4,
+  max = 5,
 }
 
 function BiowareTypeIds:_init(io, parent, root)

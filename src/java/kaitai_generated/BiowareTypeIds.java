@@ -12,22 +12,28 @@ import java.util.HashMap;
  * This file provides **exhaustive enum mappings** for resource/type identifiers used across
  * BioWare-family games and their tooling ecosystems.
  * 
+ * **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+ * type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+ * `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+ * Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+ * mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+ * 
  * Why two enums?
  * - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
  *   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
- * - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+ * - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
  *   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
  * 
  * Important notes:
  * - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
- *   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+ *   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
  *   so this file keeps a single canonical name per value.
  * - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
  *   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
  * 
  * References:
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
  */
 public class BiowareTypeIds extends KaitaiStruct {
     public static BiowareTypeIds fromFile(String fileName) throws IOException {
@@ -178,8 +184,6 @@ public class BiowareTypeIds extends KaitaiStruct {
         WAV_DEOB(25015),
         TLK_XML(50001),
         MDL_ASCII(50002),
-        GFF_XML(50004),
-        GFF_JSON(50005),
         IFO_XML(50006),
         GIT_XML(50007),
         UTI_XML(50008),
@@ -207,12 +211,35 @@ public class BiowareTypeIds extends KaitaiStruct {
         private final long id;
         BiowareResourceTypeId(long id) { this.id = id; }
         public long id() { return id; }
-        private static final Map<Long, BiowareResourceTypeId> byId = new HashMap<Long, BiowareResourceTypeId>(168);
+        private static final Map<Long, BiowareResourceTypeId> byId = new HashMap<Long, BiowareResourceTypeId>(166);
         static {
             for (BiowareResourceTypeId e : BiowareResourceTypeId.values())
                 byId.put(e.id(), e);
         }
         public static BiowareResourceTypeId byId(long id) { return byId.get(id); }
+    }
+
+    public enum XoreosArchiveType {
+        KEY(0),
+        BIF(1),
+        ERF(2),
+        RIM(3),
+        ZIP(4),
+        EXE(5),
+        NDS(6),
+        HERF(7),
+        NSBTX(8),
+        MAX(9);
+
+        private final long id;
+        XoreosArchiveType(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, XoreosArchiveType> byId = new HashMap<Long, XoreosArchiveType>(10);
+        static {
+            for (XoreosArchiveType e : XoreosArchiveType.values())
+                byId.put(e.id(), e);
+        }
+        public static XoreosArchiveType byId(long id) { return byId.get(id); }
     }
 
     public enum XoreosFileTypeId {
@@ -527,6 +554,72 @@ public class BiowareTypeIds extends KaitaiStruct {
                 byId.put(e.id(), e);
         }
         public static XoreosFileTypeId byId(long id) { return byId.get(id); }
+    }
+
+    public enum XoreosGameId {
+        UNKNOWN(-1),
+        NWN(0),
+        NWN2(1),
+        KOTOR(2),
+        KOTOR2(3),
+        JADE(4),
+        WITCHER(5),
+        SONIC(6),
+        DRAGON_AGE(7),
+        DRAGON_AGE2(8),
+        MAX(9);
+
+        private final long id;
+        XoreosGameId(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, XoreosGameId> byId = new HashMap<Long, XoreosGameId>(11);
+        static {
+            for (XoreosGameId e : XoreosGameId.values())
+                byId.put(e.id(), e);
+        }
+        public static XoreosGameId byId(long id) { return byId.get(id); }
+    }
+
+    public enum XoreosPlatformId {
+        WINDOWS(0),
+        MAC_OSX(1),
+        LINUX(2),
+        XBOX(3),
+        XBOX360(4),
+        PS3(5),
+        NDS(6),
+        ANDROID(7),
+        IOS(8),
+        UNKNOWN(9);
+
+        private final long id;
+        XoreosPlatformId(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, XoreosPlatformId> byId = new HashMap<Long, XoreosPlatformId>(10);
+        static {
+            for (XoreosPlatformId e : XoreosPlatformId.values())
+                byId.put(e.id(), e);
+        }
+        public static XoreosPlatformId byId(long id) { return byId.get(id); }
+    }
+
+    public enum XoreosResourceCategory {
+        IMAGE(0),
+        VIDEO(1),
+        SOUND(2),
+        MUSIC(3),
+        CURSOR(4),
+        MAX(5);
+
+        private final long id;
+        XoreosResourceCategory(long id) { this.id = id; }
+        public long id() { return id; }
+        private static final Map<Long, XoreosResourceCategory> byId = new HashMap<Long, XoreosResourceCategory>(6);
+        static {
+            for (XoreosResourceCategory e : XoreosResourceCategory.values())
+                byId.put(e.id(), e);
+        }
+        public static XoreosResourceCategory byId(long id) { return byId.get(id); }
     }
 
     public BiowareTypeIds(KaitaiStream _io) {

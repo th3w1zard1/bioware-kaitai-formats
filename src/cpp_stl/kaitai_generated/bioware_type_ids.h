@@ -17,22 +17,28 @@ class bioware_type_ids_t;
  * This file provides **exhaustive enum mappings** for resource/type identifiers used across
  * BioWare-family games and their tooling ecosystems.
  * 
+ * **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+ * type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+ * `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+ * Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+ * mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+ * 
  * Why two enums?
  * - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
  *   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
- * - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+ * - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
  *   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
  * 
  * Important notes:
  * - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
- *   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+ *   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
  *   so this file keeps a single canonical name per value.
  * - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
  *   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
  * 
  * References:
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
  */
 
 class bioware_type_ids_t : public kaitai::kstruct {
@@ -183,8 +189,6 @@ public:
         BIOWARE_RESOURCE_TYPE_ID_WAV_DEOB = 25015,
         BIOWARE_RESOURCE_TYPE_ID_TLK_XML = 50001,
         BIOWARE_RESOURCE_TYPE_ID_MDL_ASCII = 50002,
-        BIOWARE_RESOURCE_TYPE_ID_GFF_XML = 50004,
-        BIOWARE_RESOURCE_TYPE_ID_GFF_JSON = 50005,
         BIOWARE_RESOURCE_TYPE_ID_IFO_XML = 50006,
         BIOWARE_RESOURCE_TYPE_ID_GIT_XML = 50007,
         BIOWARE_RESOURCE_TYPE_ID_UTI_XML = 50008,
@@ -214,6 +218,26 @@ public:
 private:
     static const std::set<bioware_resource_type_id_t> _values_bioware_resource_type_id_t;
     static std::set<bioware_resource_type_id_t> _build_values_bioware_resource_type_id_t();
+
+public:
+
+    enum xoreos_archive_type_t {
+        XOREOS_ARCHIVE_TYPE_KEY = 0,
+        XOREOS_ARCHIVE_TYPE_BIF = 1,
+        XOREOS_ARCHIVE_TYPE_ERF = 2,
+        XOREOS_ARCHIVE_TYPE_RIM = 3,
+        XOREOS_ARCHIVE_TYPE_ZIP = 4,
+        XOREOS_ARCHIVE_TYPE_EXE = 5,
+        XOREOS_ARCHIVE_TYPE_NDS = 6,
+        XOREOS_ARCHIVE_TYPE_HERF = 7,
+        XOREOS_ARCHIVE_TYPE_NSBTX = 8,
+        XOREOS_ARCHIVE_TYPE_MAX = 9
+    };
+    static bool _is_defined_xoreos_archive_type_t(xoreos_archive_type_t v);
+
+private:
+    static const std::set<xoreos_archive_type_t> _values_xoreos_archive_type_t;
+    static std::set<xoreos_archive_type_t> _build_values_xoreos_archive_type_t();
 
 public:
 
@@ -525,6 +549,63 @@ public:
 private:
     static const std::set<xoreos_file_type_id_t> _values_xoreos_file_type_id_t;
     static std::set<xoreos_file_type_id_t> _build_values_xoreos_file_type_id_t();
+
+public:
+
+    enum xoreos_game_id_t {
+        XOREOS_GAME_ID_UNKNOWN = -1,
+        XOREOS_GAME_ID_NWN = 0,
+        XOREOS_GAME_ID_NWN2 = 1,
+        XOREOS_GAME_ID_KOTOR = 2,
+        XOREOS_GAME_ID_KOTOR2 = 3,
+        XOREOS_GAME_ID_JADE = 4,
+        XOREOS_GAME_ID_WITCHER = 5,
+        XOREOS_GAME_ID_SONIC = 6,
+        XOREOS_GAME_ID_DRAGON_AGE = 7,
+        XOREOS_GAME_ID_DRAGON_AGE2 = 8,
+        XOREOS_GAME_ID_MAX = 9
+    };
+    static bool _is_defined_xoreos_game_id_t(xoreos_game_id_t v);
+
+private:
+    static const std::set<xoreos_game_id_t> _values_xoreos_game_id_t;
+    static std::set<xoreos_game_id_t> _build_values_xoreos_game_id_t();
+
+public:
+
+    enum xoreos_platform_id_t {
+        XOREOS_PLATFORM_ID_WINDOWS = 0,
+        XOREOS_PLATFORM_ID_MAC_OSX = 1,
+        XOREOS_PLATFORM_ID_LINUX = 2,
+        XOREOS_PLATFORM_ID_XBOX = 3,
+        XOREOS_PLATFORM_ID_XBOX360 = 4,
+        XOREOS_PLATFORM_ID_PS3 = 5,
+        XOREOS_PLATFORM_ID_NDS = 6,
+        XOREOS_PLATFORM_ID_ANDROID = 7,
+        XOREOS_PLATFORM_ID_IOS = 8,
+        XOREOS_PLATFORM_ID_UNKNOWN = 9
+    };
+    static bool _is_defined_xoreos_platform_id_t(xoreos_platform_id_t v);
+
+private:
+    static const std::set<xoreos_platform_id_t> _values_xoreos_platform_id_t;
+    static std::set<xoreos_platform_id_t> _build_values_xoreos_platform_id_t();
+
+public:
+
+    enum xoreos_resource_category_t {
+        XOREOS_RESOURCE_CATEGORY_IMAGE = 0,
+        XOREOS_RESOURCE_CATEGORY_VIDEO = 1,
+        XOREOS_RESOURCE_CATEGORY_SOUND = 2,
+        XOREOS_RESOURCE_CATEGORY_MUSIC = 3,
+        XOREOS_RESOURCE_CATEGORY_CURSOR = 4,
+        XOREOS_RESOURCE_CATEGORY_MAX = 5
+    };
+    static bool _is_defined_xoreos_resource_category_t(xoreos_resource_category_t v);
+
+private:
+    static const std::set<xoreos_resource_category_t> _values_xoreos_resource_category_t;
+    static std::set<xoreos_resource_category_t> _build_values_xoreos_resource_category_t();
 
 public:
 

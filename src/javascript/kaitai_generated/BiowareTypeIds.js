@@ -13,22 +13,28 @@
  * This file provides **exhaustive enum mappings** for resource/type identifiers used across
  * BioWare-family games and their tooling ecosystems.
  * 
+ * **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+ * type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+ * `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+ * Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+ * mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+ * 
  * Why two enums?
  * - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
  *   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
- * - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+ * - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
  *   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
  * 
  * Important notes:
  * - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
- *   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+ *   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
  *   so this file keeps a single canonical name per value.
  * - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
  *   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
  * 
  * References:
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
  */
 
 var BiowareTypeIds = (function() {
@@ -176,8 +182,6 @@ var BiowareTypeIds = (function() {
     WAV_DEOB: 25015,
     TLK_XML: 50001,
     MDL_ASCII: 50002,
-    GFF_XML: 50004,
-    GFF_JSON: 50005,
     IFO_XML: 50006,
     GIT_XML: 50007,
     UTI_XML: 50008,
@@ -345,8 +349,6 @@ var BiowareTypeIds = (function() {
     25015: "WAV_DEOB",
     50001: "TLK_XML",
     50002: "MDL_ASCII",
-    50004: "GFF_XML",
-    50005: "GFF_JSON",
     50006: "IFO_XML",
     50007: "GIT_XML",
     50008: "UTI_XML",
@@ -370,6 +372,30 @@ var BiowareTypeIds = (function() {
     50027: "TLK_JSON",
     50028: "LIP_JSON",
     50029: "RES_XML",
+  });
+
+  BiowareTypeIds.XoreosArchiveType = Object.freeze({
+    KEY: 0,
+    BIF: 1,
+    ERF: 2,
+    RIM: 3,
+    ZIP: 4,
+    EXE: 5,
+    NDS: 6,
+    HERF: 7,
+    NSBTX: 8,
+    MAX: 9,
+
+    0: "KEY",
+    1: "BIF",
+    2: "ERF",
+    3: "RIM",
+    4: "ZIP",
+    5: "EXE",
+    6: "NDS",
+    7: "HERF",
+    8: "NSBTX",
+    9: "MAX",
   });
 
   BiowareTypeIds.XoreosFileTypeId = Object.freeze({
@@ -976,6 +1002,72 @@ var BiowareTypeIds = (function() {
     30000: "XDS",
     30001: "WND",
     40000: "XEOSITEX",
+  });
+
+  BiowareTypeIds.XoreosGameId = Object.freeze({
+    UNKNOWN: -1,
+    NWN: 0,
+    NWN2: 1,
+    KOTOR: 2,
+    KOTOR2: 3,
+    JADE: 4,
+    WITCHER: 5,
+    SONIC: 6,
+    DRAGON_AGE: 7,
+    DRAGON_AGE2: 8,
+    MAX: 9,
+
+    "-1": "UNKNOWN",
+    0: "NWN",
+    1: "NWN2",
+    2: "KOTOR",
+    3: "KOTOR2",
+    4: "JADE",
+    5: "WITCHER",
+    6: "SONIC",
+    7: "DRAGON_AGE",
+    8: "DRAGON_AGE2",
+    9: "MAX",
+  });
+
+  BiowareTypeIds.XoreosPlatformId = Object.freeze({
+    WINDOWS: 0,
+    MAC_OSX: 1,
+    LINUX: 2,
+    XBOX: 3,
+    XBOX360: 4,
+    PS3: 5,
+    NDS: 6,
+    ANDROID: 7,
+    IOS: 8,
+    UNKNOWN: 9,
+
+    0: "WINDOWS",
+    1: "MAC_OSX",
+    2: "LINUX",
+    3: "XBOX",
+    4: "XBOX360",
+    5: "PS3",
+    6: "NDS",
+    7: "ANDROID",
+    8: "IOS",
+    9: "UNKNOWN",
+  });
+
+  BiowareTypeIds.XoreosResourceCategory = Object.freeze({
+    IMAGE: 0,
+    VIDEO: 1,
+    SOUND: 2,
+    MUSIC: 3,
+    CURSOR: 4,
+    MAX: 5,
+
+    0: "IMAGE",
+    1: "VIDEO",
+    2: "SOUND",
+    3: "MUSIC",
+    4: "CURSOR",
+    5: "MAX",
   });
 
   function BiowareTypeIds(_io, _parent, _root) {

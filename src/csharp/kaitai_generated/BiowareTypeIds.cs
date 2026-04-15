@@ -9,22 +9,28 @@ namespace Kaitai
     /// This file provides **exhaustive enum mappings** for resource/type identifiers used across
     /// BioWare-family games and their tooling ecosystems.
     /// 
+    /// **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+    /// type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+    /// `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+    /// Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+    /// mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+    /// 
     /// Why two enums?
     /// - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
     ///   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
-    /// - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+    /// - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
     ///   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
     /// 
     /// Important notes:
     /// - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
-    ///   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+    ///   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
     ///   so this file keeps a single canonical name per value.
     /// - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
     ///   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
     /// 
     /// References:
     /// - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
-    /// - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+    /// - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
     /// </summary>
     public partial class BiowareTypeIds : KaitaiStruct
     {
@@ -179,8 +185,6 @@ namespace Kaitai
             WavDeob = 25015,
             TlkXml = 50001,
             MdlAscii = 50002,
-            GffXml = 50004,
-            GffJson = 50005,
             IfoXml = 50006,
             GitXml = 50007,
             UtiXml = 50008,
@@ -204,6 +208,20 @@ namespace Kaitai
             TlkJson = 50027,
             LipJson = 50028,
             ResXml = 50029,
+        }
+
+        public enum XoreosArchiveType
+        {
+            Key = 0,
+            Bif = 1,
+            Erf = 2,
+            Rim = 3,
+            Zip = 4,
+            Exe = 5,
+            Nds = 6,
+            Herf = 7,
+            Nsbtx = 8,
+            Max = 9,
         }
 
         public enum XoreosFileTypeId
@@ -509,6 +527,45 @@ namespace Kaitai
             Xds = 30000,
             Wnd = 30001,
             Xeositex = 40000,
+        }
+
+        public enum XoreosGameId
+        {
+            Unknown = -1,
+            Nwn = 0,
+            Nwn2 = 1,
+            Kotor = 2,
+            Kotor2 = 3,
+            Jade = 4,
+            Witcher = 5,
+            Sonic = 6,
+            DragonAge = 7,
+            DragonAge2 = 8,
+            Max = 9,
+        }
+
+        public enum XoreosPlatformId
+        {
+            Windows = 0,
+            MacOsx = 1,
+            Linux = 2,
+            Xbox = 3,
+            Xbox360 = 4,
+            Ps3 = 5,
+            Nds = 6,
+            Android = 7,
+            Ios = 8,
+            Unknown = 9,
+        }
+
+        public enum XoreosResourceCategory
+        {
+            Image = 0,
+            Video = 1,
+            Sound = 2,
+            Music = 3,
+            Cursor = 4,
+            Max = 5,
         }
         public BiowareTypeIds(KaitaiStream p__io, KaitaiStruct p__parent = null, BiowareTypeIds p__root = null) : base(p__io)
         {

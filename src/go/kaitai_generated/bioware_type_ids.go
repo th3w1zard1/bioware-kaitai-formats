@@ -7,22 +7,28 @@ import "github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
  * This file provides **exhaustive enum mappings** for resource/type identifiers used across
  * BioWare-family games and their tooling ecosystems.
  * 
+ * **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+ * type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+ * `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+ * Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+ * mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+ * 
  * Why two enums?
  * - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
  *   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
- * - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+ * - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
  *   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
  * 
  * Important notes:
  * - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
- *   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+ *   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
  *   so this file keeps a single canonical name per value.
  * - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
  *   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
  * 
  * References:
  * - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
- * - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+ * - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
  */
 
 type BiowareTypeIds_BiowareResourceTypeId int
@@ -170,8 +176,6 @@ const (
 	BiowareTypeIds_BiowareResourceTypeId__WavDeob BiowareTypeIds_BiowareResourceTypeId = 25015
 	BiowareTypeIds_BiowareResourceTypeId__TlkXml BiowareTypeIds_BiowareResourceTypeId = 50001
 	BiowareTypeIds_BiowareResourceTypeId__MdlAscii BiowareTypeIds_BiowareResourceTypeId = 50002
-	BiowareTypeIds_BiowareResourceTypeId__GffXml BiowareTypeIds_BiowareResourceTypeId = 50004
-	BiowareTypeIds_BiowareResourceTypeId__GffJson BiowareTypeIds_BiowareResourceTypeId = 50005
 	BiowareTypeIds_BiowareResourceTypeId__IfoXml BiowareTypeIds_BiowareResourceTypeId = 50006
 	BiowareTypeIds_BiowareResourceTypeId__GitXml BiowareTypeIds_BiowareResourceTypeId = 50007
 	BiowareTypeIds_BiowareResourceTypeId__UtiXml BiowareTypeIds_BiowareResourceTypeId = 50008
@@ -196,9 +200,28 @@ const (
 	BiowareTypeIds_BiowareResourceTypeId__LipJson BiowareTypeIds_BiowareResourceTypeId = 50028
 	BiowareTypeIds_BiowareResourceTypeId__ResXml BiowareTypeIds_BiowareResourceTypeId = 50029
 )
-var values_BiowareTypeIds_BiowareResourceTypeId = map[BiowareTypeIds_BiowareResourceTypeId]struct{}{-1: {}, 0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}, 13: {}, 2000: {}, 2001: {}, 2002: {}, 2003: {}, 2005: {}, 2007: {}, 2008: {}, 2009: {}, 2010: {}, 2011: {}, 2012: {}, 2013: {}, 2014: {}, 2015: {}, 2016: {}, 2018: {}, 2022: {}, 2023: {}, 2024: {}, 2025: {}, 2026: {}, 2027: {}, 2029: {}, 2030: {}, 2031: {}, 2032: {}, 2033: {}, 2034: {}, 2035: {}, 2036: {}, 2037: {}, 2038: {}, 2039: {}, 2040: {}, 2041: {}, 2042: {}, 2043: {}, 2044: {}, 2045: {}, 2046: {}, 2047: {}, 2048: {}, 2049: {}, 2050: {}, 2051: {}, 2052: {}, 2053: {}, 2054: {}, 2055: {}, 2056: {}, 2057: {}, 2058: {}, 2060: {}, 2061: {}, 2062: {}, 2063: {}, 2064: {}, 2065: {}, 2066: {}, 2067: {}, 2068: {}, 2069: {}, 2070: {}, 2071: {}, 2072: {}, 2073: {}, 2074: {}, 2075: {}, 2076: {}, 2077: {}, 2078: {}, 2079: {}, 2080: {}, 2081: {}, 2082: {}, 2083: {}, 2084: {}, 2085: {}, 2086: {}, 2087: {}, 2088: {}, 2089: {}, 2090: {}, 2091: {}, 2092: {}, 2093: {}, 2094: {}, 2095: {}, 2096: {}, 2097: {}, 2099: {}, 2100: {}, 2101: {}, 2103: {}, 2104: {}, 2105: {}, 2106: {}, 2107: {}, 2108: {}, 2110: {}, 3000: {}, 3001: {}, 3002: {}, 3003: {}, 3004: {}, 3005: {}, 3006: {}, 3007: {}, 3008: {}, 3009: {}, 3010: {}, 3011: {}, 3012: {}, 3013: {}, 3015: {}, 3016: {}, 3017: {}, 3022: {}, 3023: {}, 3024: {}, 3025: {}, 3028: {}, 9997: {}, 9998: {}, 9999: {}, 25014: {}, 25015: {}, 50001: {}, 50002: {}, 50004: {}, 50005: {}, 50006: {}, 50007: {}, 50008: {}, 50009: {}, 50010: {}, 50011: {}, 50012: {}, 50013: {}, 50014: {}, 50015: {}, 50016: {}, 50017: {}, 50018: {}, 50019: {}, 50020: {}, 50021: {}, 50022: {}, 50023: {}, 50024: {}, 50025: {}, 50027: {}, 50028: {}, 50029: {}}
+var values_BiowareTypeIds_BiowareResourceTypeId = map[BiowareTypeIds_BiowareResourceTypeId]struct{}{-1: {}, 0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}, 13: {}, 2000: {}, 2001: {}, 2002: {}, 2003: {}, 2005: {}, 2007: {}, 2008: {}, 2009: {}, 2010: {}, 2011: {}, 2012: {}, 2013: {}, 2014: {}, 2015: {}, 2016: {}, 2018: {}, 2022: {}, 2023: {}, 2024: {}, 2025: {}, 2026: {}, 2027: {}, 2029: {}, 2030: {}, 2031: {}, 2032: {}, 2033: {}, 2034: {}, 2035: {}, 2036: {}, 2037: {}, 2038: {}, 2039: {}, 2040: {}, 2041: {}, 2042: {}, 2043: {}, 2044: {}, 2045: {}, 2046: {}, 2047: {}, 2048: {}, 2049: {}, 2050: {}, 2051: {}, 2052: {}, 2053: {}, 2054: {}, 2055: {}, 2056: {}, 2057: {}, 2058: {}, 2060: {}, 2061: {}, 2062: {}, 2063: {}, 2064: {}, 2065: {}, 2066: {}, 2067: {}, 2068: {}, 2069: {}, 2070: {}, 2071: {}, 2072: {}, 2073: {}, 2074: {}, 2075: {}, 2076: {}, 2077: {}, 2078: {}, 2079: {}, 2080: {}, 2081: {}, 2082: {}, 2083: {}, 2084: {}, 2085: {}, 2086: {}, 2087: {}, 2088: {}, 2089: {}, 2090: {}, 2091: {}, 2092: {}, 2093: {}, 2094: {}, 2095: {}, 2096: {}, 2097: {}, 2099: {}, 2100: {}, 2101: {}, 2103: {}, 2104: {}, 2105: {}, 2106: {}, 2107: {}, 2108: {}, 2110: {}, 3000: {}, 3001: {}, 3002: {}, 3003: {}, 3004: {}, 3005: {}, 3006: {}, 3007: {}, 3008: {}, 3009: {}, 3010: {}, 3011: {}, 3012: {}, 3013: {}, 3015: {}, 3016: {}, 3017: {}, 3022: {}, 3023: {}, 3024: {}, 3025: {}, 3028: {}, 9997: {}, 9998: {}, 9999: {}, 25014: {}, 25015: {}, 50001: {}, 50002: {}, 50006: {}, 50007: {}, 50008: {}, 50009: {}, 50010: {}, 50011: {}, 50012: {}, 50013: {}, 50014: {}, 50015: {}, 50016: {}, 50017: {}, 50018: {}, 50019: {}, 50020: {}, 50021: {}, 50022: {}, 50023: {}, 50024: {}, 50025: {}, 50027: {}, 50028: {}, 50029: {}}
 func (v BiowareTypeIds_BiowareResourceTypeId) isDefined() bool {
 	_, ok := values_BiowareTypeIds_BiowareResourceTypeId[v]
+	return ok
+}
+
+type BiowareTypeIds_XoreosArchiveType int
+const (
+	BiowareTypeIds_XoreosArchiveType__Key BiowareTypeIds_XoreosArchiveType = 0
+	BiowareTypeIds_XoreosArchiveType__Bif BiowareTypeIds_XoreosArchiveType = 1
+	BiowareTypeIds_XoreosArchiveType__Erf BiowareTypeIds_XoreosArchiveType = 2
+	BiowareTypeIds_XoreosArchiveType__Rim BiowareTypeIds_XoreosArchiveType = 3
+	BiowareTypeIds_XoreosArchiveType__Zip BiowareTypeIds_XoreosArchiveType = 4
+	BiowareTypeIds_XoreosArchiveType__Exe BiowareTypeIds_XoreosArchiveType = 5
+	BiowareTypeIds_XoreosArchiveType__Nds BiowareTypeIds_XoreosArchiveType = 6
+	BiowareTypeIds_XoreosArchiveType__Herf BiowareTypeIds_XoreosArchiveType = 7
+	BiowareTypeIds_XoreosArchiveType__Nsbtx BiowareTypeIds_XoreosArchiveType = 8
+	BiowareTypeIds_XoreosArchiveType__Max BiowareTypeIds_XoreosArchiveType = 9
+)
+var values_BiowareTypeIds_XoreosArchiveType = map[BiowareTypeIds_XoreosArchiveType]struct{}{0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
+func (v BiowareTypeIds_XoreosArchiveType) isDefined() bool {
+	_, ok := values_BiowareTypeIds_XoreosArchiveType[v]
 	return ok
 }
 
@@ -509,6 +532,60 @@ const (
 var values_BiowareTypeIds_XoreosFileTypeId = map[BiowareTypeIds_XoreosFileTypeId]struct{}{-1: {}, 0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}, 13: {}, 2000: {}, 2001: {}, 2002: {}, 2003: {}, 2005: {}, 2007: {}, 2008: {}, 2009: {}, 2010: {}, 2011: {}, 2012: {}, 2013: {}, 2014: {}, 2015: {}, 2016: {}, 2017: {}, 2018: {}, 2022: {}, 2023: {}, 2024: {}, 2025: {}, 2026: {}, 2027: {}, 2029: {}, 2030: {}, 2031: {}, 2032: {}, 2033: {}, 2034: {}, 2035: {}, 2036: {}, 2037: {}, 2038: {}, 2039: {}, 2040: {}, 2041: {}, 2042: {}, 2043: {}, 2044: {}, 2045: {}, 2046: {}, 2047: {}, 2048: {}, 2049: {}, 2050: {}, 2051: {}, 2052: {}, 2053: {}, 2054: {}, 2055: {}, 2056: {}, 2057: {}, 2058: {}, 2059: {}, 2060: {}, 2061: {}, 2062: {}, 2063: {}, 2064: {}, 2065: {}, 2066: {}, 2067: {}, 2068: {}, 2069: {}, 2070: {}, 2071: {}, 2072: {}, 2073: {}, 2074: {}, 2075: {}, 2076: {}, 2077: {}, 2078: {}, 2079: {}, 2080: {}, 2081: {}, 2082: {}, 2083: {}, 2084: {}, 2085: {}, 2086: {}, 2087: {}, 2088: {}, 2089: {}, 2090: {}, 2091: {}, 2092: {}, 2093: {}, 2094: {}, 2095: {}, 2096: {}, 2097: {}, 2098: {}, 2099: {}, 2100: {}, 2101: {}, 2103: {}, 2104: {}, 2105: {}, 2106: {}, 2107: {}, 2108: {}, 2109: {}, 2110: {}, 3000: {}, 3001: {}, 3002: {}, 3003: {}, 3004: {}, 3005: {}, 3006: {}, 3007: {}, 3008: {}, 3009: {}, 3010: {}, 3011: {}, 3012: {}, 3013: {}, 3015: {}, 3016: {}, 3017: {}, 3022: {}, 3023: {}, 3024: {}, 3025: {}, 3028: {}, 4000: {}, 4001: {}, 4002: {}, 4003: {}, 4004: {}, 4005: {}, 4007: {}, 4008: {}, 9996: {}, 9997: {}, 9998: {}, 9999: {}, 19000: {}, 19001: {}, 19002: {}, 19003: {}, 20000: {}, 20001: {}, 20002: {}, 20003: {}, 20004: {}, 20005: {}, 20006: {}, 20007: {}, 20008: {}, 20009: {}, 20010: {}, 20011: {}, 20012: {}, 20013: {}, 20014: {}, 20015: {}, 20016: {}, 20017: {}, 20018: {}, 20019: {}, 20020: {}, 20021: {}, 20022: {}, 20023: {}, 20024: {}, 20025: {}, 20026: {}, 20027: {}, 20028: {}, 21000: {}, 21001: {}, 21002: {}, 21003: {}, 21004: {}, 21005: {}, 21006: {}, 21007: {}, 21008: {}, 21009: {}, 21010: {}, 21011: {}, 21012: {}, 21013: {}, 21014: {}, 21015: {}, 21016: {}, 21017: {}, 21018: {}, 21019: {}, 21020: {}, 21021: {}, 21022: {}, 21023: {}, 21024: {}, 21025: {}, 21026: {}, 22000: {}, 22001: {}, 22002: {}, 22003: {}, 22004: {}, 22005: {}, 22006: {}, 22007: {}, 22008: {}, 22009: {}, 22010: {}, 22011: {}, 22012: {}, 22013: {}, 22014: {}, 22015: {}, 22016: {}, 22017: {}, 22018: {}, 22019: {}, 22020: {}, 22021: {}, 22022: {}, 22023: {}, 22024: {}, 22025: {}, 22026: {}, 22027: {}, 22028: {}, 22029: {}, 22030: {}, 22031: {}, 22032: {}, 22033: {}, 22034: {}, 22035: {}, 22036: {}, 22037: {}, 23000: {}, 23001: {}, 23002: {}, 23003: {}, 23004: {}, 24000: {}, 24001: {}, 24002: {}, 24003: {}, 24004: {}, 24005: {}, 24006: {}, 24007: {}, 24008: {}, 25000: {}, 25001: {}, 25002: {}, 25003: {}, 25004: {}, 25005: {}, 25006: {}, 25007: {}, 25008: {}, 25009: {}, 25010: {}, 25011: {}, 25012: {}, 25013: {}, 25014: {}, 25015: {}, 25016: {}, 25017: {}, 25018: {}, 25019: {}, 25020: {}, 25021: {}, 25022: {}, 25023: {}, 26000: {}, 27000: {}, 28000: {}, 28001: {}, 28002: {}, 28003: {}, 28004: {}, 28005: {}, 29000: {}, 29001: {}, 30000: {}, 30001: {}, 40000: {}}
 func (v BiowareTypeIds_XoreosFileTypeId) isDefined() bool {
 	_, ok := values_BiowareTypeIds_XoreosFileTypeId[v]
+	return ok
+}
+
+type BiowareTypeIds_XoreosGameId int
+const (
+	BiowareTypeIds_XoreosGameId__Unknown BiowareTypeIds_XoreosGameId = -1
+	BiowareTypeIds_XoreosGameId__Nwn BiowareTypeIds_XoreosGameId = 0
+	BiowareTypeIds_XoreosGameId__Nwn2 BiowareTypeIds_XoreosGameId = 1
+	BiowareTypeIds_XoreosGameId__Kotor BiowareTypeIds_XoreosGameId = 2
+	BiowareTypeIds_XoreosGameId__Kotor2 BiowareTypeIds_XoreosGameId = 3
+	BiowareTypeIds_XoreosGameId__Jade BiowareTypeIds_XoreosGameId = 4
+	BiowareTypeIds_XoreosGameId__Witcher BiowareTypeIds_XoreosGameId = 5
+	BiowareTypeIds_XoreosGameId__Sonic BiowareTypeIds_XoreosGameId = 6
+	BiowareTypeIds_XoreosGameId__DragonAge BiowareTypeIds_XoreosGameId = 7
+	BiowareTypeIds_XoreosGameId__DragonAge2 BiowareTypeIds_XoreosGameId = 8
+	BiowareTypeIds_XoreosGameId__Max BiowareTypeIds_XoreosGameId = 9
+)
+var values_BiowareTypeIds_XoreosGameId = map[BiowareTypeIds_XoreosGameId]struct{}{-1: {}, 0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
+func (v BiowareTypeIds_XoreosGameId) isDefined() bool {
+	_, ok := values_BiowareTypeIds_XoreosGameId[v]
+	return ok
+}
+
+type BiowareTypeIds_XoreosPlatformId int
+const (
+	BiowareTypeIds_XoreosPlatformId__Windows BiowareTypeIds_XoreosPlatformId = 0
+	BiowareTypeIds_XoreosPlatformId__MacOsx BiowareTypeIds_XoreosPlatformId = 1
+	BiowareTypeIds_XoreosPlatformId__Linux BiowareTypeIds_XoreosPlatformId = 2
+	BiowareTypeIds_XoreosPlatformId__Xbox BiowareTypeIds_XoreosPlatformId = 3
+	BiowareTypeIds_XoreosPlatformId__Xbox360 BiowareTypeIds_XoreosPlatformId = 4
+	BiowareTypeIds_XoreosPlatformId__Ps3 BiowareTypeIds_XoreosPlatformId = 5
+	BiowareTypeIds_XoreosPlatformId__Nds BiowareTypeIds_XoreosPlatformId = 6
+	BiowareTypeIds_XoreosPlatformId__Android BiowareTypeIds_XoreosPlatformId = 7
+	BiowareTypeIds_XoreosPlatformId__Ios BiowareTypeIds_XoreosPlatformId = 8
+	BiowareTypeIds_XoreosPlatformId__Unknown BiowareTypeIds_XoreosPlatformId = 9
+)
+var values_BiowareTypeIds_XoreosPlatformId = map[BiowareTypeIds_XoreosPlatformId]struct{}{0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}}
+func (v BiowareTypeIds_XoreosPlatformId) isDefined() bool {
+	_, ok := values_BiowareTypeIds_XoreosPlatformId[v]
+	return ok
+}
+
+type BiowareTypeIds_XoreosResourceCategory int
+const (
+	BiowareTypeIds_XoreosResourceCategory__Image BiowareTypeIds_XoreosResourceCategory = 0
+	BiowareTypeIds_XoreosResourceCategory__Video BiowareTypeIds_XoreosResourceCategory = 1
+	BiowareTypeIds_XoreosResourceCategory__Sound BiowareTypeIds_XoreosResourceCategory = 2
+	BiowareTypeIds_XoreosResourceCategory__Music BiowareTypeIds_XoreosResourceCategory = 3
+	BiowareTypeIds_XoreosResourceCategory__Cursor BiowareTypeIds_XoreosResourceCategory = 4
+	BiowareTypeIds_XoreosResourceCategory__Max BiowareTypeIds_XoreosResourceCategory = 5
+)
+var values_BiowareTypeIds_XoreosResourceCategory = map[BiowareTypeIds_XoreosResourceCategory]struct{}{0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}}
+func (v BiowareTypeIds_XoreosResourceCategory) isDefined() bool {
+	_, ok := values_BiowareTypeIds_XoreosResourceCategory[v]
 	return ok
 }
 type BiowareTypeIds struct {

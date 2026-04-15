@@ -11,22 +11,28 @@ end
 # This file provides **exhaustive enum mappings** for resource/type identifiers used across
 # BioWare-family games and their tooling ecosystems.
 # 
+# **Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+# type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+# `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+# Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+# mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+# 
 # Why two enums?
 # - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
 #   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
-# - `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+# - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
 #   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
 # 
 # Important notes:
 # - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
-#   `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+#   `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
 #   so this file keeps a single canonical name per value.
 # - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
 #   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
 # 
 # References:
 # - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
-# - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+# - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
 class BiowareTypeIds < Kaitai::Struct::Struct
 
   BIOWARE_RESOURCE_TYPE_ID = {
@@ -173,8 +179,6 @@ class BiowareTypeIds < Kaitai::Struct::Struct
     25015 => :bioware_resource_type_id_wav_deob,
     50001 => :bioware_resource_type_id_tlk_xml,
     50002 => :bioware_resource_type_id_mdl_ascii,
-    50004 => :bioware_resource_type_id_gff_xml,
-    50005 => :bioware_resource_type_id_gff_json,
     50006 => :bioware_resource_type_id_ifo_xml,
     50007 => :bioware_resource_type_id_git_xml,
     50008 => :bioware_resource_type_id_uti_xml,
@@ -200,6 +204,20 @@ class BiowareTypeIds < Kaitai::Struct::Struct
     50029 => :bioware_resource_type_id_res_xml,
   }
   I__BIOWARE_RESOURCE_TYPE_ID = BIOWARE_RESOURCE_TYPE_ID.invert
+
+  XOREOS_ARCHIVE_TYPE = {
+    0 => :xoreos_archive_type_key,
+    1 => :xoreos_archive_type_bif,
+    2 => :xoreos_archive_type_erf,
+    3 => :xoreos_archive_type_rim,
+    4 => :xoreos_archive_type_zip,
+    5 => :xoreos_archive_type_exe,
+    6 => :xoreos_archive_type_nds,
+    7 => :xoreos_archive_type_herf,
+    8 => :xoreos_archive_type_nsbtx,
+    9 => :xoreos_archive_type_max,
+  }
+  I__XOREOS_ARCHIVE_TYPE = XOREOS_ARCHIVE_TYPE.invert
 
   XOREOS_FILE_TYPE_ID = {
     -1 => :xoreos_file_type_id_none,
@@ -505,6 +523,45 @@ class BiowareTypeIds < Kaitai::Struct::Struct
     40000 => :xoreos_file_type_id_xeositex,
   }
   I__XOREOS_FILE_TYPE_ID = XOREOS_FILE_TYPE_ID.invert
+
+  XOREOS_GAME_ID = {
+    -1 => :xoreos_game_id_unknown,
+    0 => :xoreos_game_id_nwn,
+    1 => :xoreos_game_id_nwn2,
+    2 => :xoreos_game_id_kotor,
+    3 => :xoreos_game_id_kotor2,
+    4 => :xoreos_game_id_jade,
+    5 => :xoreos_game_id_witcher,
+    6 => :xoreos_game_id_sonic,
+    7 => :xoreos_game_id_dragon_age,
+    8 => :xoreos_game_id_dragon_age2,
+    9 => :xoreos_game_id_max,
+  }
+  I__XOREOS_GAME_ID = XOREOS_GAME_ID.invert
+
+  XOREOS_PLATFORM_ID = {
+    0 => :xoreos_platform_id_windows,
+    1 => :xoreos_platform_id_mac_osx,
+    2 => :xoreos_platform_id_linux,
+    3 => :xoreos_platform_id_xbox,
+    4 => :xoreos_platform_id_xbox360,
+    5 => :xoreos_platform_id_ps3,
+    6 => :xoreos_platform_id_nds,
+    7 => :xoreos_platform_id_android,
+    8 => :xoreos_platform_id_ios,
+    9 => :xoreos_platform_id_unknown,
+  }
+  I__XOREOS_PLATFORM_ID = XOREOS_PLATFORM_ID.invert
+
+  XOREOS_RESOURCE_CATEGORY = {
+    0 => :xoreos_resource_category_image,
+    1 => :xoreos_resource_category_video,
+    2 => :xoreos_resource_category_sound,
+    3 => :xoreos_resource_category_music,
+    4 => :xoreos_resource_category_cursor,
+    5 => :xoreos_resource_category_max,
+  }
+  I__XOREOS_RESOURCE_CATEGORY = XOREOS_RESOURCE_CATEGORY.invert
   def initialize(_io, _parent = nil, _root = nil)
     super(_io, _parent, _root || self)
     _read

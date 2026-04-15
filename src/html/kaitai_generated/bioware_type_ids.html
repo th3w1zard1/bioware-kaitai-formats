@@ -22,22 +22,28 @@
 <p>This file provides **exhaustive enum mappings** for resource/type identifiers used across
 BioWare-family games and their tooling ecosystems.
 
+**Consumers:** KEY/RIM/BIF import `xoreos_file_type_id` from here instead of duplicating the archive
+type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+`bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+
 Why two enums?
 - `xoreos_file_type_id` mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`) and is the
   canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
-- `bioware_resource_type_id` mirrors `https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+- `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
   and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
 
 Important notes:
 - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
-  `FXR`/`FXT` share `22033`). Kaitai enums cannot represent multiple names for the same numeric key,
+  `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
   so this file keeps a single canonical name per value.
 - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
   while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
 
 References:
 - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h
-- https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+- https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
 </p>
 <table class="table">
 <tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
@@ -479,12 +485,6 @@ References:
 <td>50002</td><td>mdl_ascii</td><td></td></tr>
 </tr>
 <tr>
-<td>50004</td><td>gff_xml</td><td></td></tr>
-</tr>
-<tr>
-<td>50005</td><td>gff_json</td><td></td></tr>
-</tr>
-<tr>
 <td>50006</td><td>ifo_xml</td><td></td></tr>
 </tr>
 <tr>
@@ -552,6 +552,44 @@ References:
 </tr>
 <tr>
 <td>50029</td><td>res_xml</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_type_ids-xoreos_archive_type'></a>
+<h2>Enum: xoreos_archive_type</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>key</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>bif</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>erf</td><td></td></tr>
+</tr>
+<tr>
+<td>3</td><td>rim</td><td></td></tr>
+</tr>
+<tr>
+<td>4</td><td>zip</td><td></td></tr>
+</tr>
+<tr>
+<td>5</td><td>exe</td><td></td></tr>
+</tr>
+<tr>
+<td>6</td><td>nds</td><td></td></tr>
+</tr>
+<tr>
+<td>7</td><td>herf</td><td></td></tr>
+</tr>
+<tr>
+<td>8</td><td>nsbtx</td><td></td></tr>
+</tr>
+<tr>
+<td>9</td><td>max</td><td></td></tr>
 </tr>
 </table>
 <a name='enum-bioware_type_ids-xoreos_file_type_id'></a>
@@ -1463,6 +1501,111 @@ References:
 </tr>
 <tr>
 <td>40000</td><td>xeositex</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_type_ids-xoreos_game_id'></a>
+<h2>Enum: xoreos_game_id</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>-1</td><td>unknown</td><td></td></tr>
+</tr>
+<tr>
+<td>0</td><td>nwn</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>nwn2</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>kotor</td><td></td></tr>
+</tr>
+<tr>
+<td>3</td><td>kotor2</td><td></td></tr>
+</tr>
+<tr>
+<td>4</td><td>jade</td><td></td></tr>
+</tr>
+<tr>
+<td>5</td><td>witcher</td><td></td></tr>
+</tr>
+<tr>
+<td>6</td><td>sonic</td><td></td></tr>
+</tr>
+<tr>
+<td>7</td><td>dragon_age</td><td></td></tr>
+</tr>
+<tr>
+<td>8</td><td>dragon_age2</td><td></td></tr>
+</tr>
+<tr>
+<td>9</td><td>max</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_type_ids-xoreos_platform_id'></a>
+<h2>Enum: xoreos_platform_id</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>windows</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>mac_osx</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>linux</td><td></td></tr>
+</tr>
+<tr>
+<td>3</td><td>xbox</td><td></td></tr>
+</tr>
+<tr>
+<td>4</td><td>xbox360</td><td></td></tr>
+</tr>
+<tr>
+<td>5</td><td>ps3</td><td></td></tr>
+</tr>
+<tr>
+<td>6</td><td>nds</td><td></td></tr>
+</tr>
+<tr>
+<td>7</td><td>android</td><td></td></tr>
+</tr>
+<tr>
+<td>8</td><td>ios</td><td></td></tr>
+</tr>
+<tr>
+<td>9</td><td>unknown</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-bioware_type_ids-xoreos_resource_category'></a>
+<h2>Enum: xoreos_resource_category</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>image</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>video</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>sound</td><td></td></tr>
+</tr>
+<tr>
+<td>3</td><td>music</td><td></td></tr>
+</tr>
+<tr>
+<td>4</td><td>cursor</td><td></td></tr>
+</tr>
+<tr>
+<td>5</td><td>max</td><td></td></tr>
 </tr>
 </table>
 
