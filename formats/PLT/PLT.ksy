@@ -7,28 +7,25 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_mcp_program_context: |
-      PLT is **NWN / general Aurora** palette-indexed wire (`PLTFile` in xoreos). Odyssey MCP (`user-agdec-http`) inventory:
-      **`/Other BioWare Engines/Aurora/nwmain.exe`** defines **`class CResPLT`** and **`CResHelper<class CResPLT,6>`** (NWN-style PLT resource).
-      **`/K1/k1_win_gog_swkotor.exe`** has **no** `CResPLT` / `ResPLT` structure or class hit in a structures/classes/symbols-scoped search
-      (aligns with KotOR not shipping PLT bodies while retaining Aurora type id **6** in tables — see `meta.xref.github_openkotor_pykotor_resource_type_plt`).
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra `/K1/k1_win_gog_swkotor.exe`: no `CResPLT` symbol; use **`nwmain.exe`** for NWN PLT loader parity with `pltfile.cpp`.
+    nwn_k1_plt_res_symbols: |
+      PLT is **NWN / general Aurora** palette-indexed wire (`PLTFile` in xoreos). In the **nwmain.exe** (Aurora) program tree,
+      **`class CResPLT`** and **`CResHelper<class CResPLT,6>`** (type id **6**). The KotOR I build **`k1_win_gog_swkotor.exe`**
+      has **no** `CResPLT` / `ResPLT` hit in a structures/classes/symbol-scoped inventory (KotOR keeps type id **6** in ID tables
+      but does not ship PLT resources — `meta.xref.github_openkotor_pykotor_resource_type_plt`).
     pykotor_wiki_plt: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy
     github_openkotor_pykotor_resource_type_plt: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/type.py`: **`ResourceType.PLT`** **374–380** (NWN-era type id **6**; KotOR does not ship PLT bodies — see `doc`).
-    xoreos_docs_plt: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
-    xoreos_pltfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp#L102-L145
+    xoreos_docs_plt: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/plt.html
+    xoreos_pltfile_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/pltfile.cpp#L102-L145
     github_xoreos_pltfile: |
       https://github.com/xoreos/xoreos — `src/graphics/aurora/pltfile.cpp`: **`PLTFile::load`** **102–145**; **`PLTFile::build`** **147+** (palette expansion / surface build).
-    github_xoreos_types_kfiletype_plt: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L63
-    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
+    github_xoreos_types_kfiletype_plt: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L63
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
     xoreos_tools_upstream_note_plt: |
       No dedicated `plt*` extractor surfaced in a quick `xoreos-tools` `src/images/` scan on `master` — treat Torlack HTML + xoreos `pltfile.cpp` as primary wire references.
     reone_resource_type_plt_note: |
       `modawan/reone` `master`: no `*plt*` wire reader path in-tree; engine lists `Plt = 6` next to other Aurora type ids —
-      https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L35
+      https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L35
 doc: |
   PLT (Palette Texture) is a texture format used in Neverwinter Nights that allows runtime color
   palette selection. Instead of fixed colors, PLT files store palette group indices and color indices
@@ -65,12 +62,12 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy PyKotor wiki — PLT (NWN legacy)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L374-L380 PyKotor — `ResourceType.PLT` (NWN-era id 6)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html xoreos-docs — Torlack plt.html"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no PLT-specific tool on `master`)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp#L102-L145 xoreos — `PLTFile::load`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L63 xoreos — `kFileTypePLT`"
-  - "https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L35 reone — `ResourceType::Plt` (id 6; no `.plt` wire reader on default branch)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L374-L380 PyKotor — `ResourceType.PLT` (NWN-era id 6)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/plt.html xoreos-docs — Torlack plt.html"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no PLT-specific tool on `master`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/pltfile.cpp#L102-L145 xoreos — `PLTFile::load`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L63 xoreos — `kFileTypePLT`"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L35 reone — `ResourceType::Plt` (id 6; no `.plt` wire reader on default branch)"
 
 seq:
   - id: header

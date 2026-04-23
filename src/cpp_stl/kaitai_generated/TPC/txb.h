@@ -18,7 +18,7 @@ class txb_t;
  * (PyKotor / reone) route many TXB payloads through the same **128-byte TPC header** + tail layout as native **TPC**.
  * 
  * This capsule **reuses** `tpc::tpc_header` + opaque tail so emitters share one header struct. If a shipped TXB
- * variant diverges, split a dedicated header type and cite Ghidra / binary evidence (`TODO: VERIFY`).
+ * variant diverges, split a dedicated header type and cite **observed behavior** / tooling evidence (`TODO: VERIFY`).
  * \sa https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L182 xoreos — `kFileTypeTXB`
  * \sa https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66 xoreos — `TPC::load` (texture family)
  * \sa https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L51-L68 xoreos-tools — `TPC::load`

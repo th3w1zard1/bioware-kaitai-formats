@@ -1,6 +1,6 @@
 # xoreos ↔ in-tree `.ksy` coverage matrix
 
-This document is the **maintainer index** for mapping **BioWare-family binary wire formats** in [`formats/`](../formats/) to upstream **runtime** ([xoreos/xoreos](https://github.com/xoreos/xoreos)), **tools** ([xoreos/xoreos-tools](https://github.com/xoreos/xoreos-tools)), **documentation** ([xoreos/xoreos-docs](https://github.com/xoreos/xoreos-docs)), **PyKotor**, **reone**, and optional **Ghidra** evidence (Cursor MCP `user-agdec-http`, Odyssey repository — see [`AGENTS.md`](../AGENTS.md)).
+This document is the **maintainer index** for mapping **BioWare-family binary wire formats** in [`formats/`](../formats/) to upstream **runtime** ([xoreos/xoreos](https://github.com/xoreos/xoreos)), **tools** ([xoreos/xoreos-tools](https://github.com/xoreos/xoreos-tools)), **documentation** ([xoreos/xoreos-docs](https://github.com/xoreos/xoreos-docs)), **PyKotor**, and **reone**, plus in-repo notes of **observed behavior** in shipped executables when a spec records them in `meta.xref` (for example `formats/TPC/DDS.ksy`, `formats/GFF/GFF.ksy`).
 
 ## Terminology: `ResourceType` vs `FileType` (xoreos `types.h`)
 
@@ -71,7 +71,7 @@ Columns:
 | `formats/PLT/PLT.ksy` | `src/graphics/aurora/pltfile.cpp` | — | Torlack PLT | — | — | NWN-centric; KotOR notes in `.ksy` |
 | `formats/RIM/RIM.ksy` | `src/aurora/rimfile.cpp` | — | — | `resource/formats/rim/` | `rimreader.cpp` | KotOR RIM header nuance in `.ksy` |
 | `formats/SSF/SSF.ksy` | `src/sound/ssffile.cpp` (or equivalent) | — | — | `resource/formats/ssf/` | — | `kFileTypeSSF` / `2060` |
-| `formats/TPC/DDS.ksy` | `src/graphics/images/dds.cpp` | `src/images/dds.cpp` | — | `resource/formats/tpc/io_dds.py` | `TpcReader` / `CRes*` (Ghidra) | DDS + BioWare variant |
+| `formats/TPC/DDS.ksy` | `src/graphics/images/dds.cpp` | `src/images/dds.cpp` | — | `resource/formats/tpc/io_dds.py` | `TpcReader` / `CRes*` (**observed behavior** in `meta.xref`) | DDS + BioWare variant |
 | `formats/TPC/TGA.ksy` | `src/graphics/images/tga.cpp` | `src/images/tga.cpp` | — | `tpc/tga.py`, `io_tga.py` | `tgareader.cpp` | Truevision TGA |
 | `formats/TPC/TPC.ksy` | `src/graphics/images/tpc.cpp` | — | — | `resource/formats/tpc/` | `tpcreader.cpp` | KotOR native texture |
 | `formats/TPC/TXB.ksy` | `tpc.cpp` (texture family); `types.h` `kFileTypeTXB` | `src/images/tpc.cpp` (same `TPC::load` / `readHeader` stack as `TPC.ksy`) | — | `resource/formats/tpc/` | `tpcreader.cpp` | TPC-shaped header + tail (`TODO: VERIFY` divergences) |
@@ -105,11 +105,9 @@ python -m pytest -q
 
 CI: `.github/workflows/ksy-verify.yml` runs the same three steps on push/PR (initializes `vendor/xoreos`, `vendor/xoreos-tools`, `vendor/xoreos-docs` only).
 
-## 4. Ghidra (Odyssey) MCP
+## 4. Observed behavior in shipped executables
 
-For KotOR PC **binary** consumption (resource managers, not plaintext), use **`user-agdec-http`** with Odyssey paths such as `/K1/k1_win_gog_swkotor.exe` (see per-`.ksy` `ghidra_odyssey_k1` or `ghidra_*` xref blocks). MCP transport and submodule checkout are environment-dependent; the matrix above still lists **canonical** upstreams for static review.
-
-**Operational note:** `user-agdec-http` tools expect a **loaded / checked-out program** in the backing Ghidra project (for example after `sync-project` / `checkout-program`). If the MCP server responds but returns errors like no current program, finish that workflow first; static `github.com/xoreos/*` anchors remain valid without MCP.
+Some `meta.xref` entries document **observed behavior** (for example which offsets or vtable paths apply on `k1_win_gog_swkotor.exe` / related builds). Those notes are **optional** supplements to the PyKotor and xoreos **source** links in the table; when something is still uncertain, the owning `.ksy` should keep a **`TODO: VERIFY`** and prefer upstream parsers over guesswork.
 
 ---
 

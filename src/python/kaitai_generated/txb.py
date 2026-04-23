@@ -14,10 +14,10 @@ class Txb(KaitaiStruct):
     (PyKotor / reone) route many TXB payloads through the same **128-byte TPC header** + tail layout as native **TPC**.
     
     This capsule **reuses** `tpc::tpc_header` + opaque tail so emitters share one header struct. If a shipped TXB
-    variant diverges, split a dedicated header type and cite Ghidra / binary evidence (`TODO: VERIFY`).
+    variant diverges, split a dedicated header type and cite **observed behavior** / tooling evidence (`TODO: VERIFY`).
     
     .. seealso::
-       In-tree — Ghidra `CResTPC::OnResourceServiced` / 128-byte header evidence (K1 + TSL blocks) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/TPC/DDS.ksy
+       In-tree — `CResTPC::OnResourceServiced` (**observed behavior**; see `DDS.ksy` `meta.xref`) / 128-byte header evidence (K1 + TSL blocks) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/TPC/DDS.ksy
     
     
     .. seealso::

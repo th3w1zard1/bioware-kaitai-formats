@@ -14,7 +14,7 @@ class Txb2(KaitaiStruct):
     texture stacks. This capsule mirrors `TXB.ksy` (TPC header + opaque tail) until a divergent wire is proven.
     
     .. seealso::
-       In-tree — Ghidra `CResTPC::OnResourceServiced` (shared with TXB / TPC family) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/TPC/DDS.ksy
+       In-tree — `CResTPC::OnResourceServiced` (**observed behavior**; see `DDS.ksy` `meta.xref`) (shared with TXB / TPC family) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/TPC/DDS.ksy
     
     
     .. seealso::

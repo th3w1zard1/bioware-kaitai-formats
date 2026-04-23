@@ -9,21 +9,19 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: "Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: RIM module templates are loaded through the same Aurora resource stack as ERF (implicit 120-byte header+padding behavior is KotOR-specific; keep aligned with PyKotor)."
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/rim/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/rim/
     github_openkotor_pykotor_io_rim: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/rim/io_rim.py`:
       **`_load_rim_legacy`** **`RIM `** / **`V1.0`** + implicit **120**-byte key offset **39–62**; **`RIMBinaryReader.load`** **123–128**; **`RIMBinaryWriter.write`** **145+** (header + **96**-byte pad to **120**, then keyed resource layout — long method).
     github_modawan_reone_rimreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/rimreader.cpp`: **`RimReader::load`** **26–34**; **`readResource`** **46–58**.
-    xoreos_rimfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp#L35-L91
+    xoreos_rimfile_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/rimfile.cpp#L35-L91
     github_xoreos_rimfile: |
       https://github.com/xoreos/xoreos — `src/aurora/rimfile.cpp`: **`kRIMID`** / **`kVersion1`** **35–36**; **`RIMFile::load`** **49–75**; **`readResList`** **77–91** (`FileType` read at **85**).
-    github_xoreos_tools_unrim: https://github.com/xoreos/xoreos-tools/blob/master/src/unrim.cpp#L55-L85
-    github_xoreos_tools_rim_pack: https://github.com/xoreos/xoreos-tools/blob/master/src/rim.cpp#L43-L84
-    github_xoreos_docs_mod_torlack: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html
-    github_kobaltblu_kotor_js_rim: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/RIMObject.ts#L69-L93
+    github_xoreos_tools_unrim: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unrim.cpp#L55-L85
+    github_xoreos_tools_rim_pack: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/rim.cpp#L43-L84
+    github_xoreos_docs_mod_torlack: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/mod.html
+    github_kobaltblu_kotor_js_rim: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/RIMObject.ts#L69-L93
     pykotor_wiki_rim: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim
 doc: |
   RIM (Resource Information Manager) files are self-contained archives used for module templates.
@@ -45,16 +43,16 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#rim PyKotor wiki — RIM"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/rim/io_rim.py#L39-L128 PyKotor — `io_rim` (legacy + `RIMBinaryReader.load`)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/rimfile.cpp#L35-L91 xoreos — `RIMFile::load` + `readResList`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/unrim.cpp#L55-L85 xoreos-tools — `unrim` CLI (`main`)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/rim.cpp#L43-L84 xoreos-tools — `rim` packer CLI (`main`)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html xoreos-docs — Torlack mod.html (MOD/RIM family)"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/RIMObject.ts#L69-L93 KotOR.js — `RIMObject`"
-  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs#L23-L54 NickHugi/Kotor.NET — `RIMBinaryStructure.FileRoot` read/write"
-  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/rimreader.cpp#L26-L58 reone — `RimReader`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394 xoreos — `enum FileType` (numeric IDs in RIM/ERF/KEY tables)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` (tooling superset)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/rim/io_rim.py#L39-L128 PyKotor — `io_rim` (legacy + `RIMBinaryReader.load`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/rimfile.cpp#L35-L91 xoreos — `RIMFile::load` + `readResList`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unrim.cpp#L55-L85 xoreos-tools — `unrim` CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/rim.cpp#L43-L84 xoreos-tools — `rim` packer CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/mod.html xoreos-docs — Torlack mod.html (MOD/RIM family)"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/RIMObject.ts#L69-L93 KotOR.js — `RIMObject`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorRIM/RIMBinaryStructure.cs#L23-L54 NickHugi/Kotor.NET — `RIMBinaryStructure.FileRoot` read/write"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/rimreader.cpp#L26-L58 reone — `RimReader`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L394 xoreos — `enum FileType` (numeric IDs in RIM/ERF/KEY tables)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` (tooling superset)"
 
 seq:
   - id: header

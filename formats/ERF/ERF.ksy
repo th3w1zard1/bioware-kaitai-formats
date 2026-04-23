@@ -13,11 +13,10 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CERFHeader is 160 bytes with the same field order as erf_header
-      (file_type, version, language_count, localized_string_size, entry_count, three offsets, build_year, build_day, description_str_ref, 116-byte reserved tail).
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/
+    k1_erf_header_alignment: |
+      **CERFHeader** in the K1 build is 160 B with the same field order as `erf_header` here
+      (file type, version, language count, localized string size, entry count, three offsets, build year/day, description strref, 116-byte reserved tail).
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/erf/
     github_openkotor_pykotor_io_erf: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py`:
       **`_load_erf_from_kaitai`** **22–83**; legacy **`V1.0`** **86–119**; **`ERFBinaryReader.load`** **206–215**; **`ERFBinaryWriter.write`** **247+** (160-byte header block **247–294**, then localized strings, key table, resource table, and payload writes — long method); header size constants **234–236**.
@@ -26,18 +25,18 @@ meta:
       **`ERFType`** (`ERF` / `MOD` / `SAV` / `HAK`) **91–107**; header field overview **14–22**; **`class ERF`** **123+**.
     github_modawan_reone_erfreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/erfreader.cpp`: **`ErfReader::load`** **26–39**; **`checkSignature`** (`ERF V1.0` / `MOD V1.0`) **41–51**; **`readKeyEntry`** **62–72**; **`readResourceEntry`** **83–92**.
-    xoreos_erffile: https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp#L50-L335
-    github_xoreos_types_kfiletype_erf: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L207
+    xoreos_erffile: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/erffile.cpp#L50-L335
+    github_xoreos_types_kfiletype_erf: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L207
     github_xoreos_erffile: |
       https://github.com/xoreos/xoreos — `src/aurora/erffile.cpp`: type tags **`kERFID` / `kMODID` / `kHAKID` / `kSAVID`** + **`kVersion10`** **50–59**; **`ERFFile::load`** **281–306**; **`readV10Header`** **318–333**; **`readV11Header`** from **335**.
     github_xoreos_types_erf_family: |
       https://github.com/xoreos/xoreos — `src/aurora/types.h`: **`kFileTypeERF`** **207**; **`kFileTypeMOD`** (and related Aurora ids nearby — see full enum).
-    github_xoreos_tools_unerf: https://github.com/xoreos/xoreos-tools/blob/master/src/unerf.cpp#L69-L106
-    github_xoreos_tools_erf_pack: https://github.com/xoreos/xoreos-tools/blob/master/src/erf.cpp#L49-L96
-    github_xoreos_docs_erf_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/ERF_Format.pdf
-    github_xoreos_docs_torlack_mod: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html
-    github_kobaltblu_kotor_js_erf: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/ERFObject.ts#L70-L115
-    kotor_net_erf_tree: https://github.com/NickHugi/Kotor.NET/tree/master/Kotor.NET/Formats/KotorERF
+    github_xoreos_tools_unerf: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unerf.cpp#L69-L106
+    github_xoreos_tools_erf_pack: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/erf.cpp#L49-L96
+    github_xoreos_docs_erf_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/ERF_Format.pdf
+    github_xoreos_docs_torlack_mod: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/mod.html
+    github_kobaltblu_kotor_js_erf: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/ERFObject.ts#L70-L115
+    kotor_net_erf_tree: https://github.com/NickHugi/Kotor.NET/tree/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorERF
     pykotor_wiki: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf
     bioware_aurora: https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf
 doc: |
@@ -83,18 +82,18 @@ doc: |
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#erf PyKotor wiki — ERF"
   - "https://github.com/OpenKotOR/PyKotor/wiki/Bioware-Aurora-Core-Formats#erf PyKotor wiki — Aurora ERF notes"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py#L22-L316 PyKotor — `io_erf` (Kaitai + legacy + `ERFBinaryWriter.write`)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py#L91-L130 PyKotor — `ERFType` + `ERF` model (opening)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/erffile.cpp#L50-L335 xoreos — ERF type tags + `ERFFile::load` + `readV10Header` start"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/unerf.cpp#L69-L106 xoreos-tools — `unerf` CLI (`main`)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/erf.cpp#L49-L96 xoreos-tools — `erf` packer CLI (`main`)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/mod.html xoreos-docs — Torlack mod.html"
-  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/erfreader.cpp#L26-L92 reone — `ErfReader`"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/ERFObject.ts#L70-L115 KotOR.js — `ERFObject`"
-  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorERF/ERFBinaryStructure.cs#L25-L66 NickHugi/Kotor.NET — `ERFBinaryStructure.FileRoot` read/write"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/ERF_Format.pdf xoreos-docs — ERF_Format.pdf"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394 xoreos — `enum FileType` (numeric IDs in KEY/ERF/RIM tables)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` (tooling superset; overlaps FileType for KotOR rows)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/erf/io_erf.py#L22-L316 PyKotor — `io_erf` (Kaitai + legacy + `ERFBinaryWriter.write`)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/erf/erf_data.py#L91-L130 PyKotor — `ERFType` + `ERF` model (opening)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/erffile.cpp#L50-L335 xoreos — ERF type tags + `ERFFile::load` + `readV10Header` start"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unerf.cpp#L69-L106 xoreos-tools — `unerf` CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/erf.cpp#L49-L96 xoreos-tools — `erf` packer CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/mod.html xoreos-docs — Torlack mod.html"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/erfreader.cpp#L26-L92 reone — `ErfReader`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/ERFObject.ts#L70-L115 KotOR.js — `ERFObject`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorERF/ERFBinaryStructure.cs#L25-L66 NickHugi/Kotor.NET — `ERFBinaryStructure.FileRoot` read/write"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/ERF_Format.pdf xoreos-docs — ERF_Format.pdf"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L394 xoreos — `enum FileType` (numeric IDs in KEY/ERF/RIM tables)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` (tooling superset; overlaps FileType for KotOR rows)"
 
 seq:
   - id: header

@@ -27,7 +27,7 @@ class Gff(KaitaiStruct):
     - 12-byte struct rows (`struct_entry`), 12-byte field rows (`field_entry`); root struct index **0**; single-field
       vs multi-field vs lists per wiki *Struct array* / *Field indices* / *List indices*.
     
-    **Ghidra / VMA:** engine record names and addresses live on the `seq` / `types` nodes they justify, not in this blurb.
+    **Observed behavior:** engine record names and addresses live on the `seq` / `types` nodes they justify, not in this blurb.
     
     **Pinned URLs and tool history:** `meta.xref` (alphabetical keys). Coverage matrix: `docs/XOREOS_FORMAT_COVERAGE.md`.
     
@@ -322,7 +322,7 @@ class Gff(KaitaiStruct):
 
         @property
         def field_array(self):
-            """Field dictionary: `header.field_count` × 12 B at `header.field_offset`. Ghidra: `GFFFieldData`.
+            """Field dictionary: `header.field_count` × 12 B at `header.field_offset`. **Observed behavior**: `GFFFieldData`.
             `CResGFF::GetField` @ `0x00410990` uses 12-byte stride on this table.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-array
                 PyKotor `_load_fields_batch` / `_load_field`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L145-L180 — https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L182-L195 — reone `readField`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L67-L149
@@ -341,7 +341,7 @@ class Gff(KaitaiStruct):
 
         @property
         def field_data(self):
-            """Complex-type payload heap. Ghidra: `field_data_offset` @ +0x20, size `field_data_count` @ +0x24.
+            """Complex-type payload heap. **Observed behavior**: `field_data_offset` @ +0x20, size `field_data_count` @ +0x24.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-data
                 PyKotor seeks `field_data_offset + offset` for “complex” IDs: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L211-L213 — reone helpers from `_fieldDataOffset`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L160-L216
             """
@@ -360,7 +360,7 @@ class Gff(KaitaiStruct):
         @property
         def field_indices_array(self):
             """Flat `u4` stream (`field_indices_count` elements). Multi-field structs slice via `GFFStructData.data_or_data_offset`.
-            Ghidra: `field_indices_offset` @ +0x28, `field_indices_count` @ +0x2C.
+            **Observed behavior**: `field_indices_offset` @ +0x28, `field_indices_count` @ +0x2C.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#field-indices-multiple-element-map--multimap
                 PyKotor batch read: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L135-L139 — reone: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L156-L158 — Torlack MultiMap context: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html#L44-L49
             """
@@ -379,7 +379,7 @@ class Gff(KaitaiStruct):
         @property
         def label_array(self):
             """Label table: `header.label_count` entries ×16 bytes at `header.label_offset`.
-            Ghidra: slots indexed by `GFFFieldData.label_index` (+0x4); header fields `label_offset` / `label_count` @ +0x18 / +0x1C.
+            **Observed behavior**: slots indexed by `GFFFieldData.label_index` (+0x4); header fields `label_offset` / `label_count` @ +0x18 / +0x1C.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#label-array
                 PyKotor load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L108-L111 — reone `readLabel`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L151-L154
             """
@@ -398,7 +398,7 @@ class Gff(KaitaiStruct):
         @property
         def list_indices_array(self):
             """Packed list nodes (`u4` count + `u4` struct indices). List fields store byte offsets from this arena base.
-            Ghidra: `list_indices_offset` @ +0x30; `list_indices_count` @ +0x34 = span length in bytes (this `.ksy` `raw_data` size).
+            **Observed behavior**: `list_indices_offset` @ +0x30; `list_indices_count` @ +0x34 = span length in bytes (this `.ksy` `raw_data` size).
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#list-indices
                 PyKotor `_load_list`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L275-L294 — reone `readList`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L218-L223
             """
@@ -428,7 +428,7 @@ class Gff(KaitaiStruct):
 
         @property
         def struct_array(self):
-            """Struct table: `header.struct_count` × 12 B at `header.struct_offset`. Ghidra: `GFFStructData` rows.
+            """Struct table: `header.struct_count` × 12 B at `header.struct_offset`. **Observed behavior**: `GFFStructData` rows.
             Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#struct-array
                 PyKotor `_load_struct`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L116-L143 — reone `readStruct`: https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L46-L65
             """
@@ -534,7 +534,7 @@ class Gff(KaitaiStruct):
         """**GFF3** header continuation: **48 bytes** (twelve LE `u32` dwords) at file offsets **0x08–0x37**, immediately
         after the shared Aurora 8-byte prefix (`aurora_magic` / `aurora_version` on `gff_union_file`). Same layout as
         wiki [File Header](https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#file-header) rows from “Struct Array
-        Offset” through “List Indices Count”. Ghidra `/K1/k1_win_gog_swkotor.exe`: `GFFHeaderInfo` @ +0x8 … +0x34.
+        Offset” through “List Indices Count”. **Observed behavior** on `k1_win_gog_swkotor.exe`: `GFFHeaderInfo` @ +0x8 … +0x34.
         
         Sources (same DWORD order on disk after the 8-byte signature):
         - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L70-L114 (`file_type`/`file_version` L79–L80 then twelve header `u32`s L93–L106)
@@ -604,7 +604,7 @@ class Gff(KaitaiStruct):
 
     class LabelArray(KaitaiStruct):
         """Contiguous table of `label_count` fixed 16-byte ASCII name slots at `label_offset`.
-        Indexed by `GFFFieldData.label_index` (×16). Not a separate Ghidra struct — rows are `char[16]` in bulk.
+        Indexed by `GFFFieldData.label_index` (×16). Not a separate struct in **observed behavior** — rows are `char[16]` in bulk.
         Community tooling (16-byte label convention, KotOR-focused): https://www.lucasforumsarchive.com/thread/149407 — https://deadlystream.com/files/file/719-k-gff/
         """
         def __init__(self, _io, _parent=None, _root=None):
@@ -647,7 +647,7 @@ class Gff(KaitaiStruct):
 
     class LabelEntryTerminated(KaitaiStruct):
         """Kaitai helper: same 16-byte on-disk label as `label_entry`, but `str` ends at first NUL (`terminator: 0`).
-        Not a separate Ghidra datatype. Wire cite: `label_entry.name`.
+        Not a separate engine-local datatype. Wire cite: `label_entry.name`.
         """
         def __init__(self, _io, _parent=None, _root=None):
             super(Gff.LabelEntryTerminated, self).__init__(_io)
@@ -1230,7 +1230,7 @@ class Gff(KaitaiStruct):
 
         @property
         def entry(self):
-            """Raw `GFFStructData` (Ghidra 12-byte layout).
+            """Raw `GFFStructData` (12-byte layout in **observed behavior**).
             """
             if hasattr(self, '_m_entry'):
                 return self._m_entry
@@ -1292,7 +1292,7 @@ class Gff(KaitaiStruct):
 
 
     class StructArray(KaitaiStruct):
-        """Table of `GFFStructData` rows (`struct_count` × 12 bytes at `struct_offset`). Ghidra name `GFFStructData`.
+        """Table of `GFFStructData` rows (`struct_count` × 12 bytes at `struct_offset`). Name in **observed behavior**: `GFFStructData`.
         Cross-check: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L122-L127 (seek row base L122; three `u32` L123–L127) — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L47-L51
         """
         def __init__(self, _io, _parent=None, _root=None):

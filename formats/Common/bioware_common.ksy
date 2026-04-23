@@ -6,16 +6,12 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: GFF field-data layouts here match engine consumption
-      (CExoLocString substrings, ResRef, CExoString-style length-prefixed strings in files).
-    pykotor_ref: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/common
-    xoreos_tools: https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h#L28-L33
-    xoreos_language_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/language.h#L46-L73
-    xoreos_talktable_tlk_language_field: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L57-L92
-    reone_resource_types_h: https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L30-L99
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    pykotor_ref: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common
+    xoreos_tools: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/common/types.h#L28-L33
+    xoreos_language_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/language.h#L46-L73
+    xoreos_talktable_tlk_language_field: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable_tlk.cpp#L57-L92
+    reone_resource_types_h: https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L30-L99
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
 doc: |
   Shared enums and "common objects" used across the BioWare ecosystem that also appear
   in BioWare/Odyssey binary formats (notably TLK and GFF LocalizedStrings).
@@ -28,16 +24,16 @@ doc: |
   Canonical upstream links: `meta.doc-ref` and `meta.xref` (line-anchored where applicable).
 
 doc-ref:
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py#L13-L428 PyKotor — `Language` + `Gender` (substring language / gender ids)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py#L255-L265 PyKotor — `Game` (engine id)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py#L611-L625 PyKotor — `EquipmentSlot`"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py#L28-L45 PyKotor — `ObjectType`"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L220-L235 PyKotor — GFF field read path (LocalizedString via reader)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/language.h#L46-L73 xoreos — `Language` / `LanguageGender` (Aurora runtime; compare TLK / substring packing)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L57-L92 xoreos — `TalkTable_TLK::load` (TLK header + language id field)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h#L28-L33 xoreos-tools — `byte` / `uint` typedefs"
-  - "https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L30-L99 reone — `ResType` + `GameID` (numeric resource ids)"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree (discoverability)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/language.py#L13-L428 PyKotor — `Language` + `Gender` (substring language / gender ids)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/misc.py#L255-L265 PyKotor — `Game` (engine id)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/misc.py#L611-L625 PyKotor — `EquipmentSlot`"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/game_object.py#L28-L45 PyKotor — `ObjectType`"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L220-L235 PyKotor — GFF field read path (LocalizedString via reader)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/language.h#L46-L73 xoreos — `Language` / `LanguageGender` (Aurora runtime; compare TLK / substring packing)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable_tlk.cpp#L57-L92 xoreos — `TalkTable_TLK::load` (TLK header + language id field)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/common/types.h#L28-L33 xoreos-tools — `byte` / `uint` typedefs"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L30-L99 reone — `ResType` + `GameID` (numeric resource ids)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs PDF tree (discoverability)"
 
 types:
   # LocalizedString (CExoLocString) - Used in GFF field data section

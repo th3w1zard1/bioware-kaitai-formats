@@ -9,17 +9,14 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe--NCS bytecode executed by NWScript VM; big-endian wire format per PyKotor wiki.
-    pykotor_ncs_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
-    pykotor_io_ncs_load: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/io_ncs.py#L60-L90
-    pykotor_ncs_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L140
+    pykotor_ncs_tree: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
+    pykotor_io_ncs_load: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ncs/io_ncs.py#L60-L90
+    pykotor_ncs_data: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L140
     pykotor_wiki_ncs: https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format
-    xoreos_ncsfile_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/nwscript/ncsfile.cpp#L333-L355
-    xoreos_tools_ncsfile_load: https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137
-    xoreos_docs_torlack_ncs: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html
-    reone_ncsreader_load: https://github.com/modawan/reone/blob/master/src/libs/script/format/ncsreader.cpp#L28-L40
+    xoreos_ncsfile_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/nwscript/ncsfile.cpp#L333-L355
+    xoreos_tools_ncsfile_load: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/nwscript/ncsfile.cpp#L106-L137
+    xoreos_docs_torlack_ncs: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/ncs.html
+    reone_ncsreader_load: https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/script/format/ncsreader.cpp#L28-L40
 doc: |
   NCS (NWScript Compiled) files contain compiled NWScript bytecode used in KotOR and TSL.
   Scripts run inside a stack-based virtual machine shared across Aurora engine games.
@@ -38,12 +35,12 @@ doc: |
   Authoritative parsers and notes: `meta.xref` and `doc-ref` (PyKotor, xoreos, xoreos-tools, xoreos-docs Torlack, reone).
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format PyKotor wiki — NCS"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/io_ncs.py#L60-L90 PyKotor — compiled script load path"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/nwscript/ncsfile.cpp#L333-L355 xoreos — NCSFile::load"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137 xoreos-tools — NCSFile::load"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html xoreos-docs — Torlack ncs.html"
-  - "https://github.com/modawan/reone/blob/master/src/libs/script/format/ncsreader.cpp#L28-L40 reone — NcsReader::load"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L140 PyKotor — NCSByteCode / NCSInstructionQualifier (shared .ksy enums)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ncs/io_ncs.py#L60-L90 PyKotor — compiled script load path"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/nwscript/ncsfile.cpp#L333-L355 xoreos — NCSFile::load"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/nwscript/ncsfile.cpp#L106-L137 xoreos-tools — NCSFile::load"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/ncs.html xoreos-docs — Torlack ncs.html"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/script/format/ncsreader.cpp#L28-L40 reone — NcsReader::load"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L140 PyKotor — NCSByteCode / NCSInstructionQualifier (shared .ksy enums)"
 
 seq:
   - id: file_type

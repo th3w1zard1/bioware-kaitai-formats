@@ -12,7 +12,7 @@ class Bip(KaitaiStruct):
     """**BIP** (`kFileTypeBIP` **3028**): **binary** lipsync payload per xoreos `types.h`. The ASCII **`LIP `** / **`V1.0`**
     framed wire lives in `LIP.ksy`.
     
-    **TODO: VERIFY** full BIP layout against Odyssey Ghidra (`user-agdec-http`) and PyKotor; until then this spec
+    **TODO: VERIFY** full BIP layout against a KotOR PC build and PyKotor; until then this spec
     exposes a single opaque blob so the type id is tracked and tooling can attach evidence without guessing fields.
     
     .. seealso::
@@ -40,7 +40,7 @@ class Bip(KaitaiStruct):
     
     
     .. seealso::
-       xoreos-docs — BioWare specs tree (no BIP-specific Torlack/PDF; placeholder wire — verify in Ghidra) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+       xoreos-docs — BioWare specs tree (no BIP-specific Torlack/PDF; verify wire with PyKotor / **observed behavior** on shipped builds when possible) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Bip, self).__init__(_io)

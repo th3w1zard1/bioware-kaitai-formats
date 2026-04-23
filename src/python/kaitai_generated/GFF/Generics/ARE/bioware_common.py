@@ -2,67 +2,62 @@
 # type: ignore
 
 import kaitaistruct
-from kaitaistruct import KaitaiStruct, KaitaiStream
+from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import IntEnum
 
 
-if getattr(kaitaistruct, "API_VERSION", (0, 9)) < (0, 11):
-    raise Exception(
-        "Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s"
-        % (kaitaistruct.__version__)
-    )
-
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class BiowareCommon(KaitaiStruct):
     """Shared enums and "common objects" used across the BioWare ecosystem that also appear
     in BioWare/Odyssey binary formats (notably TLK and GFF LocalizedStrings).
-
+    
     This file is intended to be imported by other `.ksy` files to avoid repeating:
     - Language IDs (used in TLK headers and GFF LocalizedString substrings)
     - Gender IDs (used in GFF LocalizedString substrings)
     - The CExoLocString / LocalizedString binary layout
-
-    References:
-    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
-    - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h#L28-L33
-    - https://github.com/modawan/reone/blob/master/include/reone/resource/types.h
-
+    
+    Canonical upstream links: `meta.doc-ref` and `meta.xref` (line-anchored where applicable).
+    
     .. seealso::
-       PyKotor — Language (substring language IDs) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-
-
+       PyKotor — `Language` + `Gender` (substring language / gender ids) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/language.py#L13-L428
+    
+    
     .. seealso::
-       PyKotor — Gender / Game / EquipmentSlot - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-
-
+       PyKotor — `Game` (engine id) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/misc.py#L255-L265
+    
+    
     .. seealso::
-       PyKotor — ObjectType - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
-
-
+       PyKotor — `EquipmentSlot` - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/misc.py#L611-L625
+    
+    
     .. seealso::
-       PyKotor — GFF field read path (LocalizedString via reader) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L220-L235
-
-
+       PyKotor — `ObjectType` - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/common/game_object.py#L28-L45
+    
+    
     .. seealso::
-       xoreos — `Language` / `LanguageGender` (Aurora runtime; compare TLK / substring packing) - https://github.com/xoreos/xoreos/blob/master/src/aurora/language.h#L46-L73
-
-
+       PyKotor — GFF field read path (LocalizedString via reader) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L220-L235
+    
+    
     .. seealso::
-       xoreos — `TalkTable_TLK::load` (TLK header + language id field) - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L57-L92
-
-
+       xoreos — `Language` / `LanguageGender` (Aurora runtime; compare TLK / substring packing) - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/language.h#L46-L73
+    
+    
     .. seealso::
-       xoreos-tools — `byte` / `uint` typedefs - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h#L28-L33
-
-
+       xoreos — `TalkTable_TLK::load` (TLK header + language id field) - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable_tlk.cpp#L57-L92
+    
+    
     .. seealso::
-       reone — resource type / engine constants - https://github.com/modawan/reone/blob/master/include/reone/resource/types.h
-
-
+       xoreos-tools — `byte` / `uint` typedefs - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/common/types.h#L28-L33
+    
+    
     .. seealso::
-       xoreos-docs — BioWare specs PDF tree (discoverability) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+       reone — `ResType` + `GameID` (numeric resource ids) - https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L30-L99
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs PDF tree (discoverability) - https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
     """
 
     class BiowareDdsVariantBytesPerPixel(IntEnum):
@@ -260,7 +255,6 @@ class BiowareCommon(KaitaiStruct):
         dvi_ima_adpcm = 17
         mpeg_layer3 = 85
         wave_format_extensible = 65534
-
     def __init__(self, _io, _parent=None, _root=None):
         super(BiowareCommon, self).__init__(_io)
         self._parent = _parent
@@ -270,6 +264,7 @@ class BiowareCommon(KaitaiStruct):
     def _read(self):
         pass
 
+
     def _fetch_instances(self):
         pass
 
@@ -277,7 +272,6 @@ class BiowareCommon(KaitaiStruct):
         """Variable-length binary data with 4-byte length prefix.
         Used for Void/Binary fields in GFF files.
         """
-
         def __init__(self, _io, _parent=None, _root=None):
             super(BiowareCommon.BiowareBinaryData, self).__init__(_io)
             self._parent = _parent
@@ -288,14 +282,15 @@ class BiowareCommon(KaitaiStruct):
             self.len_value = self._io.read_u4le()
             self.value = self._io.read_bytes(self.len_value)
 
+
         def _fetch_instances(self):
             pass
+
 
     class BiowareCexoString(KaitaiStruct):
         """BioWare CExoString - variable-length string with 4-byte length prefix.
         Used for string fields in GFF files.
         """
-
         def __init__(self, _io, _parent=None, _root=None):
             super(BiowareCommon.BiowareCexoString, self).__init__(_io)
             self._parent = _parent
@@ -304,16 +299,17 @@ class BiowareCommon(KaitaiStruct):
 
         def _read(self):
             self.len_string = self._io.read_u4le()
-            self.value = (self._io.read_bytes(self.len_string)).decode("UTF-8")
+            self.value = (self._io.read_bytes(self.len_string)).decode(u"UTF-8")
+
 
         def _fetch_instances(self):
             pass
+
 
     class BiowareLocstring(KaitaiStruct):
         """BioWare "CExoLocString" (LocalizedString) binary layout, as embedded inside the GFF field-data
         section for field type "LocalizedString".
         """
-
         def __init__(self, _io, _parent=None, _root=None):
             super(BiowareCommon.BiowareLocstring, self).__init__(_io)
             self._parent = _parent
@@ -326,9 +322,9 @@ class BiowareCommon(KaitaiStruct):
             self.num_substrings = self._io.read_u4le()
             self.substrings = []
             for i in range(self.num_substrings):
-                self.substrings.append(
-                    BiowareCommon.Substring(self._io, self, self._root)
-                )
+                self.substrings.append(BiowareCommon.Substring(self._io, self, self._root))
+
+
 
         def _fetch_instances(self):
             pass
@@ -336,20 +332,21 @@ class BiowareCommon(KaitaiStruct):
                 pass
                 self.substrings[i]._fetch_instances()
 
+
         @property
         def has_strref(self):
             """True if this locstring references dialog.tlk."""
-            if hasattr(self, "_m_has_strref"):
+            if hasattr(self, '_m_has_strref'):
                 return self._m_has_strref
 
             self._m_has_strref = self.string_ref != 4294967295
-            return getattr(self, "_m_has_strref", None)
+            return getattr(self, '_m_has_strref', None)
+
 
     class BiowareResref(KaitaiStruct):
         """BioWare Resource Reference (ResRef) - max 16 character ASCII identifier.
         Used throughout GFF files to reference game resources by name.
         """
-
         def __init__(self, _io, _parent=None, _root=None):
             super(BiowareCommon.BiowareResref, self).__init__(_io)
             self._parent = _parent
@@ -359,19 +356,18 @@ class BiowareCommon(KaitaiStruct):
         def _read(self):
             self.len_resref = self._io.read_u1()
             if not self.len_resref <= 16:
-                raise kaitaistruct.ValidationGreaterThanError(
-                    16, self.len_resref, self._io, "/types/bioware_resref/seq/0"
-                )
-            self.value = (self._io.read_bytes(self.len_resref)).decode("ASCII")
+                raise kaitaistruct.ValidationGreaterThanError(16, self.len_resref, self._io, u"/types/bioware_resref/seq/0")
+            self.value = (self._io.read_bytes(self.len_resref)).decode(u"ASCII")
+
 
         def _fetch_instances(self):
             pass
+
 
     class BiowareVector3(KaitaiStruct):
         """3D vector (X, Y, Z coordinates).
         Used for positions, directions, etc. in game files.
         """
-
         def __init__(self, _io, _parent=None, _root=None):
             super(BiowareCommon.BiowareVector3, self).__init__(_io)
             self._parent = _parent
@@ -383,14 +379,15 @@ class BiowareCommon(KaitaiStruct):
             self.y = self._io.read_f4le()
             self.z = self._io.read_f4le()
 
+
         def _fetch_instances(self):
             pass
+
 
     class BiowareVector4(KaitaiStruct):
         """4D vector / Quaternion (X, Y, Z, W components).
         Used for orientations/rotations in game files.
         """
-
         def __init__(self, _io, _parent=None, _root=None):
             super(BiowareCommon.BiowareVector4, self).__init__(_io)
             self._parent = _parent
@@ -403,8 +400,10 @@ class BiowareCommon(KaitaiStruct):
             self.z = self._io.read_f4le()
             self.w = self._io.read_f4le()
 
+
         def _fetch_instances(self):
             pass
+
 
     class Substring(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
@@ -416,7 +415,8 @@ class BiowareCommon(KaitaiStruct):
         def _read(self):
             self.substring_id = self._io.read_u4le()
             self.len_text = self._io.read_u4le()
-            self.text = (self._io.read_bytes(self.len_text)).decode("UTF-8")
+            self.text = (self._io.read_bytes(self.len_text)).decode(u"UTF-8")
+
 
         def _fetch_instances(self):
             pass
@@ -424,39 +424,38 @@ class BiowareCommon(KaitaiStruct):
         @property
         def gender(self):
             """Gender as enum value."""
-            if hasattr(self, "_m_gender"):
+            if hasattr(self, '_m_gender'):
                 return self._m_gender
 
-            self._m_gender = KaitaiStream.resolve_enum(
-                BiowareCommon.BiowareGenderId, self.gender_raw
-            )
-            return getattr(self, "_m_gender", None)
+            self._m_gender = KaitaiStream.resolve_enum(BiowareCommon.BiowareGenderId, self.gender_raw)
+            return getattr(self, '_m_gender', None)
 
         @property
         def gender_raw(self):
             """Raw gender ID (0..255)."""
-            if hasattr(self, "_m_gender_raw"):
+            if hasattr(self, '_m_gender_raw'):
                 return self._m_gender_raw
 
             self._m_gender_raw = self.substring_id & 255
-            return getattr(self, "_m_gender_raw", None)
+            return getattr(self, '_m_gender_raw', None)
 
         @property
         def language(self):
             """Language as enum value."""
-            if hasattr(self, "_m_language"):
+            if hasattr(self, '_m_language'):
                 return self._m_language
 
-            self._m_language = KaitaiStream.resolve_enum(
-                BiowareCommon.BiowareLanguageId, self.language_raw
-            )
-            return getattr(self, "_m_language", None)
+            self._m_language = KaitaiStream.resolve_enum(BiowareCommon.BiowareLanguageId, self.language_raw)
+            return getattr(self, '_m_language', None)
 
         @property
         def language_raw(self):
             """Raw language ID (0..255)."""
-            if hasattr(self, "_m_language_raw"):
+            if hasattr(self, '_m_language_raw'):
                 return self._m_language_raw
 
             self._m_language_raw = self.substring_id >> 8 & 255
-            return getattr(self, "_m_language_raw", None)
+            return getattr(self, '_m_language_raw', None)
+
+
+

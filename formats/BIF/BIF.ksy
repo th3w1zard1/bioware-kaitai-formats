@@ -9,10 +9,7 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe loads BIF archives alongside KEY; BIFF V1 on-disk layout matches Aurora tooling (PyKotor/reone/xoreos).
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/
     github_openkotor_pykotor_io_bif: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/bif/io_bif.py`:
       **`_load_bif_from_kaitai`** **57–91**; legacy **`BIFF`** / **`BZF `** branch **94–166**; **`BIFBinaryReader.load`** **200–215** ( **`BZF `** fast path **209–213**).
@@ -21,30 +18,30 @@ meta:
       **`BIFType`** **`BIFF`** / **`BZF `** **59–71**; LZMA / mobile **BZF** notes in module doc **34–37**.
     github_modawan_reone_bifreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/bifreader.cpp`: **`BifReader::load`** **`BIFFV1  `** check **26–29**; **`loadHeader`** **32–38**; **`readResourceEntry`** **50–63**.
-    xoreos_biffile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L97
-    xoreos_types_kfiletype_bif: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L208
-    xoreos_bif_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L82
-    xoreos_bif_read_var_res_table: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L84-L97
+    xoreos_biffile_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L54-L97
+    xoreos_types_kfiletype_bif: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L208
+    xoreos_bif_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L54-L82
+    xoreos_bif_read_var_res_table: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L84-L97
     pykotor_wiki_bif: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif
-    xoreos_docs_torlack_bif: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/bif.html
-    github_xoreos_tools_unkeybif_bif_branch: https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L206-L209
-    github_xoreos_docs_keybif_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf
-    github_kobaltblu_kotor_js_bif: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/BIFObject.ts#L87-L123
+    xoreos_docs_torlack_bif: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/bif.html
+    github_xoreos_tools_unkeybif_bif_branch: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unkeybif.cpp#L206-L209
+    github_xoreos_docs_keybif_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/KeyBIF_Format.pdf
+    github_kobaltblu_kotor_js_bif: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/BIFObject.ts#L87-L123
 doc: |
   **BIF** (binary index file): Aurora archive of `(resource_id, type, offset, size)` rows; **ResRef** strings live in
   the paired **KEY** (`KEY.ksy`), not in the BIF.
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif PyKotor wiki — BIF"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/io_bif.py#L57-L215 PyKotor — `io_bif` (Kaitai + legacy + reader)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/bif_data.py#L59-L71 PyKotor — `BIFType`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L97 xoreos — `BIFFile::load` + `readVarResTable`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L208 xoreos — `kFileTypeBIF`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L206-L209 xoreos-tools — `unkeybif` (non-`.bzf` → `BIFFile`)"
-  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/bifreader.cpp#L26-L63 reone — `BifReader`"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/BIFObject.ts#L87-L123 KotOR.js — `BIFObject.readFromDisk` (header + variable resource table)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/bif.html xoreos-docs — Torlack bif.html"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf xoreos-docs — KeyBIF_Format.pdf"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/io_bif.py#L57-L215 PyKotor — `io_bif` (Kaitai + legacy + reader)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/bif_data.py#L59-L71 PyKotor — `BIFType`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L54-L97 xoreos — `BIFFile::load` + `readVarResTable`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L208 xoreos — `kFileTypeBIF`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unkeybif.cpp#L206-L209 xoreos-tools — `unkeybif` (non-`.bzf` → `BIFFile`)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/bifreader.cpp#L26-L63 reone — `BifReader`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/BIFObject.ts#L87-L123 KotOR.js — `BIFObject.readFromDisk` (header + variable resource table)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/bif.html xoreos-docs — Torlack bif.html"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/KeyBIF_Format.pdf xoreos-docs — KeyBIF_Format.pdf"
 
 seq:
   - id: file_type

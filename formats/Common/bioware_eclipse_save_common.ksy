@@ -6,7 +6,7 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (shared Eclipse save primitives; submodule section 0).
-      KotOR PC binary evidence: not applicable — Dragon Age saves (`DA2S`, `DAS`) use Eclipse binaries checked out separately in Odyssey (`user-agdec-http` per `AGENTS.md`).
+      Scope: Dragon Age `DAS` / `DA2S` (Eclipse) — not KotOR; wire authority is Andastra + `DAS.ksy` / `DA2S.ksy` (`meta.xref`).
     github_oldrepublicdevs_andastra_eclipse_save_base: |
       https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs`:
       UTF-8 length-prefixed strings **`WriteString` / `ReadString`** **35–61** (same wire as `length_prefixed_string` here).

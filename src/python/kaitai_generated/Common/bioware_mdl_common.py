@@ -2,56 +2,52 @@
 # type: ignore
 
 import kaitaistruct
-from kaitaistruct import KaitaiStruct
+from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import IntEnum
 
 
-if getattr(kaitaistruct, "API_VERSION", (0, 9)) < (0, 11):
-    raise Exception(
-        "Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s"
-        % (kaitaistruct.__version__)
-    )
-
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class BiowareMdlCommon(KaitaiStruct):
     """Wire enums shared by `formats/MDL/MDL.ksy` (imported there as `bioware_mdl_common`; field-bound on `model_type` and
     `controller.type`; `node_header.node_type` is a bitmask so MDL.ksy keeps it as raw `u2` and references this enum for docs).
     Tooling alignment: PyKotor / MDLOps / xoreos.
-
+    
     - `model_classification` — `model_header.model_type` (`u1`).
     - `node_type_value` — primary node discriminator in `node_header.node_type` (`u2`); bitmask flags on the same field are documented in MDL.ksy.
     - `controller_type` — **partial** list of `controller.type` (`u4`) values (common KotOR / Aurora); many emitter-specific IDs exist — see PyKotor wiki + torlack `binmdl` for the full set. `formats/MDL/MDL.ksy` attaches this enum to `controller.type`; unknown numeric IDs may still appear in data and should be treated as vendor-defined extensions.
-
+    
     .. seealso::
        PyKotor wiki — MDL/MDX - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
-
-
+    
+    
     .. seealso::
-       PyKotor — MDL package - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
-
-
+       PyKotor — MDL package - https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
+    
+    
     .. seealso::
-       xoreos — `Model_KotOR::load` - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267
-
-
+       xoreos — `Model_KotOR::load` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.cpp#L184-L267
+    
+    
     .. seealso::
-       xoreos — `kFileTypeMDL` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L81
-
-
+       xoreos — `kFileTypeMDL` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L81
+    
+    
     .. seealso::
-       xoreos-tools — shipped CLI inventory (no MDL/MDX-specific tool) - https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
-
-
+       xoreos-tools — shipped CLI inventory (no MDL/MDX-specific tool) - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
+    
+    
     .. seealso::
-       xoreos-docs — KotOR MDL overview - https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
-
-
+       xoreos-docs — KotOR MDL overview - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html
+    
+    
     .. seealso::
-       xoreos-docs — Torlack binmdl (controller IDs) - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
-
-
+       xoreos-docs — Torlack binmdl (controller IDs) - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/binmdl.html
+    
+    
     .. seealso::
-       Community MDLOps — `MDLOpsM.pm` controller name table (legacy PyKotor `vendor/MDLOps` path 404 on current default branch) - https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407
+       Community MDLOps — `MDLOpsM.pm` controller name table (legacy PyKotor `vendor/MDLOps` path 404 on current default branch) - https://github.com/th3w1zard1/mdlops/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L407
     """
 
     class ControllerType(IntEnum):
@@ -128,7 +124,6 @@ class BiowareMdlCommon(KaitaiStruct):
         danglymesh = 289
         aabb = 545
         lightsaber = 2081
-
     def __init__(self, _io, _parent=None, _root=None):
         super(BiowareMdlCommon, self).__init__(_io)
         self._parent = _parent
@@ -138,5 +133,8 @@ class BiowareMdlCommon(KaitaiStruct):
     def _read(self):
         pass
 
+
     def _fetch_instances(self):
         pass
+
+

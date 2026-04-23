@@ -8,11 +8,7 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: parsed tables use C2DA/CRes2DA in-memory layouts after load;
-      on-disk .2da text/binary hybrid format here matches PyKotor (not the C++ struct layout).
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/twoda/
     github_openkotor_pykotor_io_twoda: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py`:
       binary magic **`2DA `** / **`V2.b`** **25–26**; **`TwoDABinaryReader.load`** **146–170**; **`TwoDABinaryWriter.write`** **204–238** (writer emits **`2DA V2.b`** then **newline** **204–207**); ASCII **`V2.0`** / CSV / JSON routed elsewhere **126–129**.
@@ -21,16 +17,16 @@ meta:
     github_xoreos_2dafile: |
       https://github.com/xoreos/xoreos — `src/aurora/2dafile.cpp`: ids **`k2DAID` / `k2DAIDTab`** / versions **48–51**; **`TwoDAFile::load`** **145–172**;
       binary dispatch **`read2b`** **192–196**; V2.b helpers **`readHeaders2b`** **260–275**, **`skipRowNames2b`** **277–294**, **`readRows2b`** **296–336**; **`writeBinary`** **517–611**.
-    xoreos_2dafile_magic_ids: https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L48-L51
-    xoreos_2dafile_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L145-L172
-    xoreos_2dafile_read2b_binary: https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L192-L336
-    xoreos_2dafile_write_binary: https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L517-L611
-    xoreos_tools_convert2da_main: https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L64-L86
-    github_xoreos_tools_convert2da: https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L64-L159
-    github_xoreos_docs_2da_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/2DA_Format.pdf
+    xoreos_2dafile_magic_ids: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L48-L51
+    xoreos_2dafile_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L145-L172
+    xoreos_2dafile_read2b_binary: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L192-L336
+    xoreos_2dafile_write_binary: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L517-L611
+    xoreos_tools_convert2da_main: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L64-L86
+    github_xoreos_tools_convert2da: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L64-L159
+    github_xoreos_docs_2da_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/2DA_Format.pdf
     github_modawan_reone_2dareader: |
       https://github.com/modawan/reone — `src/libs/resource/format/2dareader.cpp`: **`TwoDAReader::load`** **`2DA V2.b`** + newline + token reads **29–39**; **`loadRows`** uint16 offsets + **`dataSize`** + CString cells **41–66**.
-    github_kobaltblu_kotor_js_twoda: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TwoDAObject.ts#L69-L155
+    github_kobaltblu_kotor_js_twoda: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TwoDAObject.ts#L69-L155
     pykotor_wiki_twoda: https://github.com/OpenKotOR/PyKotor/wiki/2DA-File-Format
 doc: |
   TwoDA (2D Array) files store tabular data in a binary format used by BioWare games
@@ -57,17 +53,17 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/2DA-File-Format PyKotor wiki — TwoDA"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py#L25-L238 PyKotor — `io_twoda` (binary `V2.b` + writer)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py#L8-L114 PyKotor — `twoda_data` (model + ASCII/binary notes)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L48-L51 xoreos — `k2DAID` / `k2DAIDTab` + version tags"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L145-L172 xoreos — `TwoDAFile::load`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L192-L336 xoreos — binary `V2.b` (`read2b` + `readHeaders2b` / `skipRowNames2b` / `readRows2b`)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L517-L611 xoreos — `TwoDAFile::writeBinary`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L64-L86 xoreos-tools — `convert2da` CLI (`main`)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L143-L159 xoreos-tools — `get2DAGDA` / `TwoDAFile` dispatch"
-  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/2dareader.cpp#L29-L66 reone — `TwoDAReader`"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TwoDAObject.ts#L69-L155 KotOR.js — `TwoDAObject`"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/2DA_Format.pdf xoreos-docs — 2DA_Format.pdf"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py#L25-L238 PyKotor — `io_twoda` (binary `V2.b` + writer)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py#L8-L114 PyKotor — `twoda_data` (model + ASCII/binary notes)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L48-L51 xoreos — `k2DAID` / `k2DAIDTab` + version tags"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L145-L172 xoreos — `TwoDAFile::load`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L192-L336 xoreos — binary `V2.b` (`read2b` + `readHeaders2b` / `skipRowNames2b` / `readRows2b`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L517-L611 xoreos — `TwoDAFile::writeBinary`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L64-L86 xoreos-tools — `convert2da` CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L143-L159 xoreos-tools — `get2DAGDA` / `TwoDAFile` dispatch"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/2dareader.cpp#L29-L66 reone — `TwoDAReader`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TwoDAObject.ts#L69-L155 KotOR.js — `TwoDAObject`"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/2DA_Format.pdf xoreos-docs — 2DA_Format.pdf"
 
 params:
   - id: column_count

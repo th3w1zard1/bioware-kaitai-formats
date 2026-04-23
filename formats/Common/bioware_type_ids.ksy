@@ -5,28 +5,24 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: archive entries use ResourceType (see CKeyTableEntry.type);
-      numeric IDs align with xoreos_file_type_id / PyKotor ResourceType tables in this file.
     vendor_xoreos_trees_note: |
       Local `vendor/xoreos`, `vendor/xoreos-tools`, and `vendor/xoreos-docs` may be **empty** until `git submodule update --init`
       (see `docs/XOREOS_FORMAT_COVERAGE.md` section 0). Until populated, rely on GitHub `blob/master/...#L` anchors in `meta.xref` / `doc-ref`
       and `scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges` for drift checks — not on-disk greps alone.
-    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
-    xoreos_types: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L443
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    xoreos_types: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L34-L443
     # Line anchors verified against upstream xoreos `master` (re-check if upstream moves).
-    xoreos_types_file_type_comment: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55
-    xoreos_types_file_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L450
-    xoreos_types_game_id_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
-    xoreos_types_resource_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L410-L417
-    xoreos_types_archive_type_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L419-L430
-    xoreos_types_platform_enum: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L432-L443
-    xoreos_resman_add_type_alias: https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612
+    xoreos_types_file_type_comment: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L34-L55
+    xoreos_types_file_type_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L450
+    xoreos_types_game_id_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
+    xoreos_types_resource_type_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L410-L417
+    xoreos_types_archive_type_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L419-L430
+    xoreos_types_platform_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L432-L443
+    xoreos_resman_add_type_alias: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/resman.cpp#L610-L612
     # Upstream uses two enum identifiers for the same integer (FaceFX metadata).
-    xoreos_types_fxr_fxt_duplicate: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L316-L317
-    pykotor_types: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322
+    xoreos_types_fxr_fxt_duplicate: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L316-L317
+    pykotor_types: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322
 doc: |
   This file provides **exhaustive enum mappings** for resource/type identifiers used across
   BioWare-family games and their tooling ecosystems.
@@ -58,17 +54,17 @@ doc: |
   References: `meta.doc-ref` and `meta.xref` (xoreos `types.h` bands; PyKotor `ResourceType`).
 
 doc-ref:
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55 xoreos — `FileType` comment block"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L450 xoreos — `enum FileType` (engine-facing archive type IDs; includes post-`kFileTypeXEOSITEX` entries such as `kFileTypeWBM`)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408 xoreos — `enum GameID`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L410-L417 xoreos — `enum ResourceType`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L419-L430 xoreos — `enum ArchiveType`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L432-L443 xoreos — `enum Platform`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L316-L317 xoreos — `FXR` / `FXT` duplicate numeric key"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612 xoreos — `ResourceManager::addTypeAlias`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — README tool inventory (which CLIs touch which formats)"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` members (engine + toolset-only ids)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L34-L55 xoreos — `FileType` comment block"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L450 xoreos — `enum FileType` (engine-facing archive type IDs; includes post-`kFileTypeXEOSITEX` entries such as `kFileTypeWBM`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408 xoreos — `enum GameID`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L410-L417 xoreos — `enum ResourceType`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L419-L430 xoreos — `enum ArchiveType`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L432-L443 xoreos — `enum Platform`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L316-L317 xoreos — `FXR` / `FXT` duplicate numeric key"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/resman.cpp#L610-L612 xoreos — `ResourceManager::addTypeAlias`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — README tool inventory (which CLIs touch which formats)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs PDF tree"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` members (engine + toolset-only ids)"
 
 enums:
   xoreos_file_type_id:
@@ -542,7 +538,7 @@ enums:
     50028: lip_json
     50029: res_xml
 
-  # Aurora::GameID — https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
+  # Aurora::GameID — https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
   xoreos_game_id:
     -1: unknown
     0: nwn

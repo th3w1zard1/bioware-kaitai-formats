@@ -8,11 +8,7 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: runtime talk tables use CSWTlkTable/CTlkTable (in-memory);
-      on-disk TLK V3.0 wire format remains as defined in this file (20-byte header + entries per wiki).
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
     github_openkotor_pykotor_io_tlk: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk.py`:
       **`_load_tlk_from_kaitai`** **33–64**; legacy header **67–76**; **`TLKBinaryReader.load`** **154–160**; **`TLKBinaryWriter.write`** **173–196**; constants **`_FILE_HEADER_SIZE` / `_ENTRY_SIZE`** **23–24**.
@@ -21,18 +17,18 @@ meta:
       wire overview **14–31**; **`class TLK`** **47–79**; **`TLKEntry`** 40-byte row **302–333**; **`V4.0`** (Jade) noted **17–18**.
     github_modawan_reone_tlkreader: |
       https://github.com/modawan/reone — `src/libs/resource/format/tlkreader.cpp`: **`StringFlags`** **27–31**; **`TlkReader::load`** **33–41**; **`loadStrings`** **43–67**.
-    xoreos_talktable_factory_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp#L35-L69
-    xoreos_talktable_tlk_blob: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L40-L114
+    xoreos_talktable_factory_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable.cpp#L35-L69
+    xoreos_talktable_tlk_blob: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable_tlk.cpp#L40-L114
     github_xoreos_talktable_factory: |
       https://github.com/xoreos/xoreos — `src/aurora/talktable.cpp`: **`TalkTable::load`** factory + stream dispatch **35–69** (delegates to TLK implementation).
     github_xoreos_talktable_tlk: |
       https://github.com/xoreos/xoreos — `src/aurora/talktable_tlk.cpp`: **`kTLKID`** / version tags **40–42**; **`TalkTable_TLK::load`** **57–92**; **`readEntryTableV3`** **94–105**; **`readEntryTableV4`** **107–114**; **`getLanguageID`** overloads **170–187**.
-    github_xoreos_types_kfiletype_tlk: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L87
-    xoreos_tools_tlk2xml_main: https://github.com/xoreos/xoreos-tools/blob/master/src/tlk2xml.cpp#L56-L80
-    xoreos_tools_xml2tlk_main: https://github.com/xoreos/xoreos-tools/blob/master/src/xml2tlk.cpp#L58-L85
-    kotor_net_tlk_binary: https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52
-    github_xoreos_docs_talktable_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/TalkTable_Format.pdf
-    github_kobaltblu_kotor_js_tlk: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TLKObject.ts#L16-L77
+    github_xoreos_types_kfiletype_tlk: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L87
+    xoreos_tools_tlk2xml_main: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/tlk2xml.cpp#L56-L80
+    xoreos_tools_xml2tlk_main: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/xml2tlk.cpp#L58-L85
+    kotor_net_tlk_binary: https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52
+    github_xoreos_docs_talktable_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/TalkTable_Format.pdf
+    github_kobaltblu_kotor_js_tlk: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TLKObject.ts#L16-L77
     pykotor_wiki_tlk: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
 doc: |
   TLK (Talk Table) files contain all text strings used in the game, both written and spoken.
@@ -55,17 +51,17 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk PyKotor wiki — TLK"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk.py#L23-L196 PyKotor — `io_tlk` (sizes, Kaitai + legacy + write)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp#L35-L69 xoreos — `TalkTable::load` (factory dispatch)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L40-L114 xoreos — TLK id/version + `TalkTable_TLK::load` + V3/V4 entry tables"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L87 xoreos — `kFileTypeTLK`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/language.h#L46-L73 xoreos — `Language` / `LanguageGender` (TLK `language_id` / substring packing)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/tlk2xml.cpp#L56-L80 xoreos-tools — `tlk2xml` CLI (`main`)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/xml2tlk.cpp#L58-L85 xoreos-tools — `xml2tlk` CLI (`main`)"
-  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/tlkreader.cpp#L27-L67 reone — `TlkReader`"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TLKObject.ts#L16-L77 KotOR.js — `TLKObject`"
-  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52 NickHugi/Kotor.NET — `TLKBinaryReader` (`Read` + constructors)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/TalkTable_Format.pdf xoreos-docs — TalkTable_Format.pdf"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk.py#L23-L196 PyKotor — `io_tlk` (sizes, Kaitai + legacy + write)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable.cpp#L35-L69 xoreos — `TalkTable::load` (factory dispatch)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable_tlk.cpp#L40-L114 xoreos — TLK id/version + `TalkTable_TLK::load` + V3/V4 entry tables"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L87 xoreos — `kFileTypeTLK`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/language.h#L46-L73 xoreos — `Language` / `LanguageGender` (TLK `language_id` / substring packing)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/tlk2xml.cpp#L56-L80 xoreos-tools — `tlk2xml` CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/xml2tlk.cpp#L58-L85 xoreos-tools — `xml2tlk` CLI (`main`)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/tlkreader.cpp#L27-L67 reone — `TlkReader`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TLKObject.ts#L16-L77 KotOR.js — `TLKObject`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52 NickHugi/Kotor.NET — `TLKBinaryReader` (`Read` + constructors)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/TalkTable_Format.pdf xoreos-docs — TalkTable_Format.pdf"
 
 seq:
   - id: header

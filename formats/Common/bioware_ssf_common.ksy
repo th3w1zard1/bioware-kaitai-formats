@@ -6,10 +6,9 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ SSF; submodule section 0).
-    ghidra_odyssey_k1: |
-      Same KotOR PC **`CResSSF`** inventory as `formats/SSF/SSF.ksy` (Odyssey MCP `user-agdec-http` — see `AGENTS.md`): **no**
-      dedicated `CResSSF`; this file documents only the **28×** `ssf_sound_slot` column semantics aligned with PyKotor / xoreos
-      `readEntriesKotOR` / xoreos-tools XML mapping (`doc-ref`).
+    k1_ssf_res_class_note: |
+      **Observed behavior** in KotOR I / Aurora inventories (with `formats/SSF/SSF.ksy`) shows **no** dedicated **`CResSSF`**; this file documents only
+      the **28×** `ssf_sound_slot` column semantics aligned with PyKotor, xoreos `readEntriesKotOR`, and xoreos-tools XML mapping (`doc-ref`).
     pykotor_wiki_ssf_hub: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf
     github_openkotor_pykotor_io_ssf: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py`:
@@ -29,7 +28,7 @@ doc: |
 doc-ref:
   - "formats/SSF/SSF.ksy#L94-L121 In-tree — SSF wire (`sound_array` / `sound_entry`) consuming this slot order"
   - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf PyKotor wiki — SSF hub"
-  - "https://github.com/OpenKotOR/PyKotor/blob/628a69df1b71a4537ce8a410b1c2e3c3604bd7f8/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py#L112-L165 PyKotor — `io_ssf` binary reader/writer (28 StrRefs)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py#L112-L165 PyKotor — `io_ssf` binary reader/writer (28 StrRefs)"
   - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/ssffile.cpp#L165-L170 xoreos — `SSFFile::readEntriesKotOR` (28× uint32)"
   - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/xml/ssfdumper.cpp#L133-L167 xoreos-tools — `SSFDumper::dump` (XML tag ↔ column)"
   - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/SSF_Format.pdf xoreos-docs — SSF_Format.pdf"

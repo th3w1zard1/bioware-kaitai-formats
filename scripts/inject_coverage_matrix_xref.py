@@ -10,7 +10,6 @@ FORMATS = ROOT / "formats"
 MARKER = "repo_coverage_matrix:"
 SNIPPET = f"""    {MARKER} |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule §0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
 """
 
 

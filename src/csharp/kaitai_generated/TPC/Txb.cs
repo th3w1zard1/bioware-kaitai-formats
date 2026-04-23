@@ -10,7 +10,7 @@ namespace Kaitai
     /// (PyKotor / reone) route many TXB payloads through the same **128-byte TPC header** + tail layout as native **TPC**.
     /// 
     /// This capsule **reuses** `tpc::tpc_header` + opaque tail so emitters share one header struct. If a shipped TXB
-    /// variant diverges, split a dedicated header type and cite Ghidra / binary evidence (`TODO: VERIFY`).
+    /// variant diverges, split a dedicated header type and cite **observed behavior** / tooling evidence (`TODO: VERIFY`).
     /// </summary>
     /// <remarks>
     /// Reference: <a href="https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L182">xoreos — `kFileTypeTXB`</a>

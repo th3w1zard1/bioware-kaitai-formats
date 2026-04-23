@@ -11,31 +11,26 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra `/K1/k1_win_gog_swkotor.exe` exposes **`class CResMDL`** (binary MDL resource). Decompiler output may not surface the
-      class name on every vtable method; use **`user-agdec-http`** structure / xref tools on **`CResMDL`** for loader evidence alongside
-      PyKotor `io_mdl` / xoreos `Model_KotOR::load`. Header unknowns remain `TODO: VERIFY` per `mdl_model_header_unknown_fields_policy`.
     mdl_model_header_unknown_fields_policy: |
       Several `model_header` u1/u4 slots and `offset_to_super_root` semantics still carry `TODO: VERIFY` in field `doc:` text.
-      They are retained for **PyKotor / MDLOps round-trip** compatibility until pinned with Odyssey **`user-agdec-http`** evidence
-      (see `AGENTS.md`). Treat unknowns as **opaque preserved fields**, not gameplay-authoritative layout.
+      They are retained for **PyKotor / MDLOps round-trip** compatibility until **observed behavior** in the game executables
+      or upstream parsers pins them. Treat unknowns as **opaque preserved fields**, not gameplay-authoritative layout.
     pykotor_wiki_mdl: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
-    pykotor_io_mdl_tree: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
-    pykotor_io_mdl_binary_reader: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408
-    pykotor_io_mdl_kaitai_probe: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2332-L2338
-    pykotor_mdl_data: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/mdl_data.py#L1283-L1322
-    pykotor_vendor_mdlops: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407
-    pykotor_mdlops_upstream_mirror: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L4698
-    xoreos_model_kotor_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267
-    xoreos_model_kotor_parser_context: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L123-L140
-    xoreos_model_kotor_h_parser_context: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79
-    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
-    xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
-    reone_mdlmdxreader_load: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118
-    kotor_js_mdl_loader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/MDLLoader.ts#L66-L156
-    kotor_js_odyssey_model_constructor: https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModel.ts#L56-L170
-    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
+    pykotor_io_mdl_tree: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
+    pykotor_io_mdl_binary_reader: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408
+    pykotor_io_mdl_kaitai_probe: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2332-L2338
+    pykotor_mdl_data: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/mdl_data.py#L1283-L1322
+    pykotor_vendor_mdlops: https://github.com/th3w1zard1/mdlops/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L407
+    pykotor_mdlops_upstream_mirror: https://github.com/th3w1zard1/mdlops/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L4698
+    xoreos_model_kotor_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.cpp#L184-L267
+    xoreos_model_kotor_parser_context: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.cpp#L123-L140
+    xoreos_model_kotor_h_parser_context: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.h#L45-L79
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html
+    xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/binmdl.html
+    reone_mdlmdxreader_load: https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118
+    kotor_js_mdl_loader: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/loaders/MDLLoader.ts#L66-L150
+    kotor_js_odyssey_model_constructor: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyModel.ts#L56-L170
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
 doc: |
   BioWare MDL Model Format
 
@@ -54,18 +49,18 @@ doc: |
   are field-bound to `model_classification` / `controller_type`. `node_type` is a bitmask (instances use `&`);
   compare numeric values against `bioware_mdl_common::node_type_value` in docs / tooling, not as a Kaitai `enum:`.
 doc-ref:
-  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/Common/bioware_mdl_common.ksy In-tree — shared MDL/MDX wire enums (`bioware_mdl_common`)"
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/f4700f43f20337e01b8ef751a7c7d42e0acfb00a/formats/Common/bioware_mdl_common.ksy In-tree — shared MDL/MDX wire enums (`bioware_mdl_common`)"
   - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format PyKotor wiki — MDL/MDX"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408 PyKotor — MDLBinaryReader (binary MDL/MDX)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267 xoreos — Model_KotOR::load"
-  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79 xoreos — `Model_KotOR::ParserContext` (MDL/MDX stream pointers + cached header fields consumed during binary load)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no MDL/MDX-specific tool)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl (controller / Aurora background)"
-  - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118 reone — MdlMdxReader::load"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModel.ts#L56-L170 KotOR.js — OdysseyModel binary constructor"
-  - "https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407 Community MDLOps — controller name table"
-  - "https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L3916-L4698 Community MDLOps — `readasciimdl` (ASCII MDL ingest)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408 PyKotor — MDLBinaryReader (binary MDL/MDX)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.cpp#L184-L267 xoreos — Model_KotOR::load"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.h#L45-L79 xoreos — `Model_KotOR::ParserContext` (MDL/MDX stream pointers + cached header fields consumed during binary load)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no MDL/MDX-specific tool)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl (controller / Aurora background)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118 reone — MdlMdxReader::load"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyModel.ts#L56-L170 KotOR.js — OdysseyModel binary constructor"
+  - "https://github.com/th3w1zard1/mdlops/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L407 Community MDLOps — controller name table"
+  - "https://github.com/th3w1zard1/mdlops/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L3916-L4698 Community MDLOps — `readasciimdl` (ASCII MDL ingest)"
 
 seq:
   - id: file_header
@@ -1077,8 +1072,8 @@ types:
           - 128: Alpha (transparency/opacity, 1 float)
 
           Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - Additional Controller Types section
-          Reference: https://github.com/th3w1zard1/mdlops/blob/master/MDLOpsM.pm#L342-L407 — Controller type definitions
-          Reference: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html - Comprehensive controller list
+          Reference: https://github.com/th3w1zard1/mdlops/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L407 — Controller type definitions
+          Reference: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/binmdl.html - Comprehensive controller list
       - id: unknown
         type: u2
         doc: Purpose unknown, typically 0xFFFF

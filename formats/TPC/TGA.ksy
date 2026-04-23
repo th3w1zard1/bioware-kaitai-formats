@@ -11,12 +11,6 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: TGA sources often converted to TPC for in-game use.
-    ghidra_mcp_odyssey_program_paths: |
-      Odyssey shared Ghidra (user-agdec-http): `sync-project` / `checkout-program` — correlate TGA ingest with `/K1/k1_win_gog_swkotor.exe`
-      and related Odyssey binaries (see `formats/TPC/DDS.ksy` `ghidra_mcp_odyssey_program_paths` for full program list; `AGENTS.md`).
     in_tree_tga_crossrefs: |
       Aurora `ResourceType` **3 = TGA** echoed as `tga` in: `formats/Common/bioware_type_ids.ksy` (enum slot **3** / `tga`),
       `formats/ERF/ERF.ksy` (**304**: `3: tga`), `formats/RIM/RIM.ksy` (**176**: `3: tga`). Dragon Age save wrappers mention TGA/DDS portraits/screens:
@@ -33,14 +27,14 @@ meta:
       **`_write_tga_rgba`** **60–85** writes an uncompressed true-colour TGA (type **2**, 32 bpp, origin/descriptor bits **76–77**, BGRA body **79–85**).
       **`TPCTGAReader`** **87–257**: docstring **88–99** (uncompressed/RLE, colour map, grayscale, cube 6:1); **`load`** **214–257** validates with `Tga.from_bytes` then **`read_tga`**, splits **6×1** cubemap faces (**232–236**), builds **`TPC`** layers.
       **`TPCTGAWriter`** **259+**: **`write`** **280+** stitches animated / cube-map frames then **`_write_tga_rgba`** for flat output.
-    xoreos_runtime_tga: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L75-L87
-    xoreos_types_kfiletype_tga: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L61
-    xoreos_tga_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L75-L87
-    xoreos_tga_read_header: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L89-L177
+    xoreos_runtime_tga: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tga.cpp#L75-L87
+    xoreos_types_kfiletype_tga: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L61
+    xoreos_tga_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tga.cpp#L75-L87
+    xoreos_tga_read_header: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tga.cpp#L89-L177
     xoreos_tga_read_data_rle: |
       Same file `tga.cpp`: **`TGA::readData`** **179+** (uncompressed pixel paths by `ImageType` + depth), **`TGA::readRLE`** **238+** (packet decode for RLE RGB/grayscale),
       plus earlier **`TGA::load`** **75–87** and **`readHeader`** **89–177** (already linked as `xoreos_tga_read_header`).
-    github_xoreos_xoreos_tools_tga: https://github.com/xoreos/xoreos-tools/blob/master/src/images/tga.cpp#L68-L241
+    github_xoreos_xoreos_tools_tga: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tga.cpp#L68-L241
     github_modawan_reone_tga: |
       https://github.com/modawan/reone (mirrored under `_upstream_refs/reone/` in this repo for line-accurate notes):
       **`ResType::Tga = 3`:** `include/reone/resource/types.h` **33**; extension **`"tga"`:** `src/libs/resource/typeutil.cpp` **29**.
@@ -68,8 +62,8 @@ meta:
       **`TGALoader` implementation:** `Assets/Scripts/ResourceLoader/TGALoader.cs` **19–62** — seeks to byte **12**, reads **width/height/bitDepth**, supports **24/32** BGRA channel order (**39–59**), rejects other depths **62**.
     tga_common_enums: |
       Header `color_map_type` / `image_type`: `formats/Common/tga_common.ksy` → `tga_color_map_type`, `tga_image_type`.
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
-    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html
 doc: |
   **TGA** (Truevision Targa): 18-byte header, optional color map, image id, then raw or RLE pixels. KotOR often
   converts authoring TGAs to **TPC** for shipping.
@@ -78,12 +72,12 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc PyKotor wiki — textures (TPC/TGA pipeline)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tga.py#L1-L40 PyKotor — compact TGA reader (`tga.py`)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_tga.py#L60-L120 PyKotor — TGA↔TPC bridge (`io_tga.py`, `_write_tga_rgba` + `TPCTGAReader`)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tga.cpp#L89-L177 xoreos — `TGA::readHeader`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/tga.cpp#L68-L241 xoreos-tools — `TGA::load` through `readRLE` (tooling reader)"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (texture pipeline context)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tga.py#L1-L40 PyKotor — compact TGA reader (`tga.py`)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_tga.py#L60-L120 PyKotor — TGA↔TPC bridge (`io_tga.py`, `_write_tga_rgba` + `TPCTGAReader`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tga.cpp#L89-L177 xoreos — `TGA::readHeader`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tga.cpp#L68-L241 xoreos-tools — `TGA::load` through `readRLE` (tooling reader)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs PDF tree"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (texture pipeline context)"
   - "https://github.com/lachjames/NorthernLights lachjames/NorthernLights — upstream Unity Aurora sample (fork: `th3w1zard1/NorthernLights` in `meta.xref`)"
 
 seq:

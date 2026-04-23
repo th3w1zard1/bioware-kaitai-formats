@@ -2,91 +2,85 @@
 # type: ignore
 
 import kaitaistruct
-from kaitaistruct import KaitaiStruct
+from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import IntEnum
 
 
-if getattr(kaitaistruct, "API_VERSION", (0, 9)) < (0, 11):
-    raise Exception(
-        "Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s"
-        % (kaitaistruct.__version__)
-    )
-
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class BiowareTypeIds(KaitaiStruct):
     """This file provides **exhaustive enum mappings** for resource/type identifiers used across
     BioWare-family games and their tooling ecosystems.
-
+    
     **Consumers:** KEY / ERF / RIM import `xoreos_file_type_id` from here instead of duplicating the archive
     type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
     `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
     Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
     mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
-
+    
     **xoreos naming (do not conflate):**
     - `Aurora::ResourceType` in `types.h` is a **tiny media-class enum** (`kResourceImage` … `kResourceMAX`) — not archive numeric IDs.
       It is mirrored here as `xoreos_resource_category` (`meta.xref.xoreos_types_resource_type_enum`).
     - Archive **numeric restype** values come from `Aurora::FileType` (`kFileType*` constants) — mirrored here as `xoreos_file_type_id`.
-
+    
     Why two ID columns?
     - `xoreos_file_type_id` mirrors xoreos `enum FileType` in `src/aurora/types.h` (`meta.xref.xoreos_types_file_type_enum`; full header band: `meta.xref.xoreos_types`) and is the
       canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
-    - `bioware_resource_type_id` mirrors `https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py` (`class ResourceType`)
+    - `bioware_resource_type_id` mirrors PyKotor `ResourceType` (`type.py#L123-L322`; see `meta.xref.pykotor_types`).
       and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
-
+    
     Important notes:
     - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
       `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
       so this file keeps a single canonical name per value.
     - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
       while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
-
-    References:
-    - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L443 xoreos — `types.h` (FileType comment + enums through `Platform`)
-    - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
-
+    
+    References: `meta.doc-ref` and `meta.xref` (xoreos `types.h` bands; PyKotor `ResourceType`).
+    
     .. seealso::
-       xoreos — `FileType` comment block - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L34-L55
-
-
+       xoreos — `FileType` comment block - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L34-L55
+    
+    
     .. seealso::
-       xoreos — `enum FileType` (engine-facing archive type IDs; includes post-`kFileTypeXEOSITEX` entries such as `kFileTypeWBM`) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L450
-
-
+       xoreos — `enum FileType` (engine-facing archive type IDs; includes post-`kFileTypeXEOSITEX` entries such as `kFileTypeWBM`) - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L450
+    
+    
     .. seealso::
-       xoreos — `enum GameID` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
-
-
+       xoreos — `enum GameID` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
+    
+    
     .. seealso::
-       xoreos — `enum ResourceType` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L410-L417
-
-
+       xoreos — `enum ResourceType` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L410-L417
+    
+    
     .. seealso::
-       xoreos — `enum ArchiveType` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L419-L430
-
-
+       xoreos — `enum ArchiveType` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L419-L430
+    
+    
     .. seealso::
-       xoreos — `enum Platform` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L432-L443
-
-
+       xoreos — `enum Platform` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L432-L443
+    
+    
     .. seealso::
-       xoreos — `FXR` / `FXT` duplicate numeric key - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L316-L317
-
-
+       xoreos — `FXR` / `FXT` duplicate numeric key - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L316-L317
+    
+    
     .. seealso::
-       xoreos — `ResourceManager::addTypeAlias` - https://github.com/xoreos/xoreos/blob/master/src/aurora/resman.cpp#L610-L612
-
-
+       xoreos — `ResourceManager::addTypeAlias` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/resman.cpp#L610-L612
+    
+    
     .. seealso::
-       xoreos-tools — README tool inventory (which CLIs touch which formats) - https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
-
-
+       xoreos-tools — README tool inventory (which CLIs touch which formats) - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
+    
+    
     .. seealso::
-       xoreos-docs — BioWare specs PDF tree - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
-
-
+       xoreos-docs — BioWare specs PDF tree - https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    
+    
     .. seealso::
-       PyKotor — `ResourceType` + tooling-only extensions - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py
+       PyKotor — `ResourceType` members (engine + toolset-only ids) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322
     """
 
     class BiowareResourceTypeId(IntEnum):
@@ -605,7 +599,6 @@ class BiowareTypeIds(KaitaiStruct):
         music = 3
         cursor = 4
         max = 5
-
     def __init__(self, _io, _parent=None, _root=None):
         super(BiowareTypeIds, self).__init__(_io)
         self._parent = _parent
@@ -615,5 +608,8 @@ class BiowareTypeIds(KaitaiStruct):
     def _read(self):
         pass
 
+
     def _fetch_instances(self):
         pass
+
+

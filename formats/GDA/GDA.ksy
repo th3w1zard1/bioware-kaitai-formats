@@ -9,25 +9,21 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Dragon Age **G2DA** wire (not KotOR `k1_win_gog_swkotor.exe`). For Eclipse / DA engine binaries checked out in Odyssey,
-      use **`user-agdec-http`** per `AGENTS.md` when correlating `GDAFile` / `GFF4File` consumption — same MCP id as other specs.
-    xoreos_gdafile_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/gdafile.cpp#L275-L305
-    github_xoreos_gdafile_add: https://github.com/xoreos/xoreos/blob/master/src/aurora/gdafile.cpp#L307
-    xoreos_gff4_ctor_type: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L87-L93
-    xoreos_types_kfiletype_gda: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L291
-    xoreos_gff4_g2da_fields: https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4fields.h#L1230-L1260
+    xoreos_gdafile_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gdafile.cpp#L275-L305
+    github_xoreos_gdafile_add: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gdafile.cpp#L307
+    xoreos_gff4_ctor_type: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gff4file.cpp#L87-L93
+    xoreos_types_kfiletype_gda: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L291
+    xoreos_gff4_g2da_fields: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gff4fields.h#L1230-L1260
     github_xoreos_2dafile_from_gda: |
       https://github.com/xoreos/xoreos — `src/aurora/2dafile.cpp`: **`TwoDAFile(const GDAFile &)`** **136–140**; **`TwoDAFile::load(const GDAFile &)`** **343–400** (GDA → classic TwoDA in-memory bridge).
-    xoreos_2dafile_ctor_from_gda: https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L136-L140
-    xoreos_2dafile_load_from_gda: https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L343-L400
-    github_xoreos_tools_convert2da_gda: https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L21-L181
+    xoreos_2dafile_ctor_from_gda: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L136-L140
+    xoreos_2dafile_load_from_gda: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L343-L400
+    github_xoreos_tools_convert2da_gda: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L21-L181
     github_openkotor_pykotor_resource_type_gda: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/type.py`: **`ResourceType.GDA`** **1466–1472** (Dragon Age table resource id **22008** class — no dedicated `formats/gda/` parser package on `master`).
-    xoreos_docs_gff_format_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/GFF_Format.pdf
-    xoreos_docs_common_gff_structs_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/CommonGFFStructs.pdf
-    xoreos_docs_2da_format_pdf: https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/2DA_Format.pdf
+    xoreos_docs_gff_format_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/GFF_Format.pdf
+    xoreos_docs_common_gff_structs_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/CommonGFFStructs.pdf
+    xoreos_docs_2da_format_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/2DA_Format.pdf
     bioware_twoda_note: |
       Classic Aurora `.2da` wire layout: `formats/TwoDA/TwoDA.ksy`. GDA is a distinct GFF4 container (`G2DA` + `V0.1`/`V0.2`).
     reone_gda_consumer_note: |
@@ -42,18 +38,18 @@ doc: |
 
 doc-ref:
   - "formats/Common/bioware_gff_common.ksy In-tree — `gff4_g2da_file_type_be` / `gff4_g2da_type_version_be` (G2DA fourCC + V0.x — compare to `GFF.ksy` `gff4_after_aurora`)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gdafile.cpp#L275-L305 xoreos — `GDAFile::load`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L87-L93 xoreos — `GFF4File` stream ctor (type dispatch)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4fields.h#L1230-L1260 xoreos — G2DA column field ids (excerpt)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L136-L140 xoreos — `TwoDAFile(const GDAFile &)`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L343-L400 xoreos — `TwoDAFile::load(const GDAFile &)`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L64-L86 xoreos-tools — `main`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L143-L159 xoreos-tools — `get2DAGDA`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L167-L181 xoreos-tools — multi-file `GDAFile` merge"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L1466-L1472 PyKotor — `ResourceType.GDA`"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/GFF_Format.pdf xoreos-docs — GFF_Format.pdf (GFF4 family; G2DA container)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/CommonGFFStructs.pdf xoreos-docs — CommonGFFStructs.pdf"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/2DA_Format.pdf xoreos-docs — 2DA_Format.pdf (classic `.2da`; contrast with GDA)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gdafile.cpp#L275-L305 xoreos — `GDAFile::load`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gff4file.cpp#L87-L93 xoreos — `GFF4File` stream ctor (type dispatch)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gff4fields.h#L1230-L1260 xoreos — G2DA column field ids (excerpt)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L136-L140 xoreos — `TwoDAFile(const GDAFile &)`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L343-L400 xoreos — `TwoDAFile::load(const GDAFile &)`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L64-L86 xoreos-tools — `main`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L143-L159 xoreos-tools — `get2DAGDA`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L167-L181 xoreos-tools — multi-file `GDAFile` merge"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L1466-L1472 PyKotor — `ResourceType.GDA`"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/GFF_Format.pdf xoreos-docs — GFF_Format.pdf (GFF4 family; G2DA container)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/CommonGFFStructs.pdf xoreos-docs — CommonGFFStructs.pdf"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/2DA_Format.pdf xoreos-docs — 2DA_Format.pdf (classic `.2da`; contrast with GDA)"
 
 seq:
   - id: as_gff4

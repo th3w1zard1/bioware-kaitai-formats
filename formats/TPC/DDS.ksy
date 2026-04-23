@@ -9,17 +9,7 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_mcp_odyssey_program_paths: |
-      Odyssey shared Ghidra (user-agdec-http): use `sync-project` then `checkout-program` with these repository paths.
-      Programs used for DDS/TPC wiring below: `/K1/k1_win_gog_swkotor.exe` (x86 LE), `/TSL/k2_win_gog_aspyr_swkotor2.exe` (x86 LE),
-      `/Other BioWare Engines/Aurora/nwmain.exe` (x64 LE). Jade Empire (`/JE/JadeEmpire.exe`) and Eclipse `daorigins.exe`
-      were also checked out for diversity; JE had no demangled `CResDDS` / `CResTPC` function names in a function-table sweep,
-      and a broad `search-everything` on `daorigins.exe` returned an MCP transport error (retry separately if needed).
-    ghidra_odyssey_k1: |
-      KotOR PC **DDS** consumption (`CResDDS`, type id **2033**): long-form Ghidra slices live in `ghidra_k1_*` / `ghidra_nwmain_*` /
-        `ghidra_tsl_*` xrefs below; MCP checkout paths are in `ghidra_mcp_odyssey_program_paths` (`AGENTS.md`).
-    ghidra_k1_win_gog_swkotor_exe: |
+    k1_gog_swkotor_observed_behavior: |
       Binary: `/K1/k1_win_gog_swkotor.exe` — `.text` 00401000–0073cfff, `.rdata` 0073d000–0078cfff.
       `CResHelper<class_CResDDS,2033>` dtor `~CResHelper<CResDDS,2033>` at `007104d0`; `CResDDS` ctor `00710ea0` stores vtable pointer `0x0075fbe4`
       in `*(this)` after `CRes::CRes` at `00406460`, zeroes `this+0x28..+0x34`, sets `this+0x20` to `1`.
@@ -32,14 +22,14 @@ meta:
       `CResDDS::GetDDSAttrib` (`00710ee0`): if `this+0x34` null, `RET 0x14` failure; else reads `uint32` at `[base+0]`, `[base+4]`, `uint8` at `[base+8]`, `uint32` at `[base+0xc]`, `uint32` at `[base+0x10]` from `this+0x34` into caller out-params (BioWare DDS prefix / first DWORDs of a Microsoft header, depending on what `+0x34` points at).
       `CAuroraCompressedTexture::GetCompressedTextureAttrib` (`007103c0`) calls `CRes::GetDemands` (`004064b0`) then dispatches to `GetDDSAttrib` (`00710ee0`) when `this+0x8` holds the `CResDDS` helper.
       `CResTPC::OnResourceServiced` (`00712ff0`): `LEA EDX,[ESI+0x80]` / `MOV [this+0x3c],EDX` with `ESI=*(this+0x10)` — **128-byte TPC header** before DDS-like layout; reads flags at `[ESI+0xc]`, dimensions `uint16` at `+8/+0xa`, mip count byte `+0xd`; `SUB EAX,0x80` at `00713156` when sizing tail payload — aligns with `TPC.ksy` wrapper + embedded DDS body.
-    ghidra_nwmain_aurora_exe: |
+    nwmain_aurora_observed_behavior: |
       Binary: `/Other BioWare Engines/Aurora/nwmain.exe` — x64, `.text` 140001000–140d7bfff; MSVC symbols present on `CResDDS`.
       `CResDDS::CResDDS` (`1400f9a60`): calls `CRes::CRes` (`14018d920`), installs vtable at `0x140d92a70`, clears `this+0x60`, `+0x68`, `+0x70`, `+0x78` (qword state) and sets `dword [this+0x38]=1`.
       `CResDDS::OnResourceServiced` (`1400f9d10`): loads raw buffer `RAX=[this+0x20]`; compares **`CMP dword ptr [RAX], 0x20534444`** (`'DDS '` LE) at `1400f9d34`. If magic matches: `MOV [this+0x78],RAX`, `MOV EDX,0x80`, else `MOV [this+0x70],RAX`, `MOV EDX,0x14`; then `ADD RAX,RDX`, `MOV [this+0x68],RAX`, `MOV dword [this+0x60],1`. So Aurora explicitly forks **Microsoft DDS** (payload after **0x80** bytes from the start of the resource view) vs **non-magic / BioWare-style** (payload after **0x14** bytes), and stores the discriminant in `+0x70` vs `+0x78` (`GetContainerFormat` `1400f9b70` returns `1` when `+0x70` is non-zero, else derives `0/2` from `+0x78`).
       `GetDDSAttrib` (`1400f9b90`): prefers `this+0x70`; if null uses `this+0x78` path and reads standard DDS header fields from `RAX+0x10` etc.; classifies **DXT** by comparing `dword [RAX+0x54]` to `0x35545844` (`DXT5`), `0x31545844` (`DXT1`), `0x32495441` / `0x31495441` (ATI1/ATI2-style FOURCCs), then chooses **8** vs **16** byte block sizes for footprint math (`MOV R8D,8` vs `16` at `1400f9c49` / `1400f9c53`).
       `GetDDSDataPtr` (`1400f9cc0`): returns `this+0x68` (the post-offset payload pointer wired in `OnResourceServiced`).
-      `CAuroraCompressedTextureDDS::CAuroraCompressedTextureDDS` (`1400f2c90`): allocates/`CResDDS` ctor (`1400f9a60`) and registers via `CExoResMan::SetResObject` (`140194470`) with Restype **`0x7f1`** (`R8D` before `SetResObject`); ties high-level texture objects to the same `CResDDS` Restype **2033** (`0x7f1`) seen in Odyssey KotOR classes.
-    ghidra_tsl_k2_win_gog_aspyr_swkotor2_exe: |
+      `CAuroraCompressedTextureDDS::CAuroraCompressedTextureDDS` (`1400f2c90`): allocates/`CResDDS` ctor (`1400f9a60`) and registers via `CExoResMan::SetResObject` (`140194470`) with Restype **`0x7f1`** (`R8D` before `SetResObject`); ties high-level texture objects to the same `CResDDS` Restype **2033** (`0x7f1`) as in the KotOR-class builds in **observed behavior** above.
+    k2_gog_aspyr_tsl_observed_behavior: |
       Binary: `/TSL/k2_win_gog_aspyr_swkotor2.exe` (KotOR II GOG Aspyr, x86 LE) — `.text` 00401000–00984bff, `.rdata` 00985000–009f1dff.
       `CResDDS` primary vtable pointer **`0x009a9180`** installed from `FUN_0090bfb0` (`0090bfb0`) used by `~CResDDS` (`0090bf80`); base teardown `FUN_0061ab00` shared with other `CRes*` types.
       Vtable slots (`.rdata` `0x009a9180`): slot0 `~CResDDS` `0090bf80`, slot1 `return_minus_one` `00663820`, slot2 `return_zero` `00410c20`, slot3 `FUN_0090c7a0` (`0090c7a0`, clears `this+0x28..+0x34`), slot4 `CResDDS::OnResourceServiced` **`0090c040`**.
@@ -67,20 +57,20 @@ meta:
     github_lachjames_northernlights_upstream: https://github.com/lachjames/NorthernLights
     github_th3w1zard1_northernlights_dds_tpc: |
       https://github.com/th3w1zard1/NorthernLights (fork of `lachjames/NorthernLights` — upstream: `meta.xref.github_lachjames_northernlights_upstream`) — pinned commit `e9a6cdedb9414de5ee89fe1cd766f1d1711fa247`.
-      **`ResourceType` table (xoreos-aligned comment):** `Assets/Scripts/ResourceLoader/Resources.cs` line **28** cites `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L56-L394` (`enum FileType`); **`DDS = 2033`** with comment **Texture, DirectDraw Surface** at line **72**; **`TPC = 3007`** at line **157** (`// Texture.`).
+      **`ResourceType` table (xoreos-aligned comment):** `Assets/Scripts/ResourceLoader/Resources.cs` line **28** cites `https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L394` (`enum FileType`); **`DDS = 2033`** with comment **Texture, DirectDraw Surface** at line **72**; **`TPC = 3007`** at line **157** (`// Texture.`).
       **Runtime loader (TPC then TGA; DDS enum present but not used in this function):** same file **`LoadTexture2D`** **388–415** — `GetStream(resref, ResourceType.TPC)` **394–405** builds `TPCObject` and `LoadRawTextureData`, else **`ResourceType.TGA`** **406–409**; no `ResourceType.DDS` branch (DDS wire parsing not implemented on this path).
       **TPC on-disk → Unity `TextureFormat` (DXT1/DXT5 block sizes = DDS DXT payload rules):** `Assets/Scripts/FileObjects/TPCObject.cs` — **`HEADER_SIZE = 128`** **36**; **`readHeader`** **71–176** (`dataSize` at **75–76** drives compressed vs uncompressed, **83** encoding byte, **86** mip count, **95–116** sets `TextureFormat.DXT1`/`DXT5` vs RGB/RGBA, **`getDataSize`** **219–233** DXT mip footprint `((w+3)/4)*((h+3)/4)*8|16` with `Math.Max(8|16, …)`).
       **Legacy / commented binary TPC sketch (DXT branches):** `Assets/Scripts/AuroraBinary/Types/TPC.cs` (entire file commented) lines **35–55** show the same compressed/uncompressed DXT1/DXT5 split.
     pykotor_wiki_dds: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds
-    pykotor_io_dds_reader: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
-    xoreos_tools_dds: https://github.com/xoreos/xoreos-tools/blob/master/src/images/dds.cpp#L69-L158
-    xoreos_types_kfiletype_dds: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L98
-    xoreos_dds_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L55-L67
-    xoreos_dds_read_bioware_header: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210
+    pykotor_io_dds_reader: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
+    xoreos_tools_dds: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/dds.cpp#L69-L158
+    xoreos_types_kfiletype_dds: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L98
+    xoreos_dds_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/dds.cpp#L55-L67
+    xoreos_dds_read_bioware_header: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/dds.cpp#L141-L210
     bioware_common_dds_variant_bpp: |
       `bioware_dds_header.bytes_per_pixel`: `formats/Common/bioware_common.ksy` → `bioware_dds_variant_bytes_per_pixel`.
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
-    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html
 doc: |
   **DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
   (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
@@ -89,15 +79,15 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds PyKotor wiki — DDS"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130 PyKotor — `TPCDDSReader` / `io_dds`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L98 xoreos — `kFileTypeDDS`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L55-L67 xoreos — `dds.cpp` load entry"
-  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210 xoreos — BioWare headerless / Microsoft DDS branches"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/dds.cpp#L69-L158 xoreos-tools — `dds.cpp` (image tooling)"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree (texture-adjacent PDFs)"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (engine texture pipeline context)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130 PyKotor — `TPCDDSReader` / `io_dds`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L98 xoreos — `kFileTypeDDS`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/dds.cpp#L55-L67 xoreos — `dds.cpp` load entry"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/dds.cpp#L141-L210 xoreos — BioWare headerless / Microsoft DDS branches"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/dds.cpp#L69-L158 xoreos-tools — `dds.cpp` (image tooling)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs PDF tree (texture-adjacent PDFs)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (engine texture pipeline context)"
   - "https://github.com/lachjames/NorthernLights lachjames/NorthernLights — upstream Unity Aurora sample (fork: `th3w1zard1/NorthernLights` in `meta.xref`)"
-  - "https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L57 reone — `ResourceType::Dds` (type id; TPC path in `tpcreader.cpp`)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L57 reone — `ResourceType::Dds` (type id; TPC path in `tpcreader.cpp`)"
 
 seq:
   - id: magic

@@ -9,22 +9,19 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe: CResLTR present; binary LTR wire format per PyKotor wiki.
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ltr/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ltr/
     github_openkotor_pykotor_io_ltr: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/ltr/io_ltr.py`:
       **`LTRBinaryReader`** **44–131** (`load` **70–131**, KotOR path hard-requires **`letter_count == 28`** **104–108**); **`LTRBinaryWriter`** **134+** (`write` from **143**).
-    xoreos_ltrfile_cpp: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L168
-    xoreos_types_kfiletype_ltr: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101
-    xoreos_ltr_load: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168
-    xoreos_ltr_read_letter_set: https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L133
-    kotor_js_ltrobject_read_buffer: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LTRObject.ts#L51-L122
+    xoreos_ltrfile_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/ltrfile.cpp#L121-L168
+    xoreos_types_kfiletype_ltr: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L101
+    xoreos_ltr_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/ltrfile.cpp#L135-L168
+    xoreos_ltr_read_letter_set: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/ltrfile.cpp#L121-L133
+    kotor_js_ltrobject_read_buffer: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/LTRObject.ts#L51-L122
     kaitai_user_guide_enums: https://doc.kaitai.io/user_guide.html
     pykotor_wiki_ltr: https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format
-    reone_ltrreader: https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp#L27-L74
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    reone_ltrreader: https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/ltrreader.cpp#L27-L74
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
 doc: |
   **LTR** (letter / Markov name tables): header + three float blobs (single / double / triple letter statistics).
   `letter_count` is **26** (NWN) vs **28** (KotOR `a-z` + `'` + `-`) — decode via `bioware_ltr_alphabet_length` in
@@ -32,13 +29,13 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/LTR-File-Format PyKotor wiki — LTR"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ltr/io_ltr.py#L44-L155 PyKotor — `io_ltr` reader/writer (start of `write`)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L101 xoreos — `kFileTypeLTR`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L121-L133 xoreos — `LTRFile::readLetterSet`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/ltrfile.cpp#L135-L168 xoreos — `LTRFile::load`"
-  - "https://github.com/modawan/reone/blob/master/src/libs/resource/format/ltrreader.cpp#L27-L74 reone — `LtrReader::load` + `readLetterSet`"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LTRObject.ts#L51-L122 KotOR.js — `LTRObject.readBuffer`"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree (no dedicated LTR Torlack page; use `ltrfile.cpp` + PyKotor)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ltr/io_ltr.py#L44-L155 PyKotor — `io_ltr` reader/writer (start of `write`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L101 xoreos — `kFileTypeLTR`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/ltrfile.cpp#L121-L133 xoreos — `LTRFile::readLetterSet`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/ltrfile.cpp#L135-L168 xoreos — `LTRFile::load`"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/ltrreader.cpp#L27-L74 reone — `LtrReader::load` + `readLetterSet`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/LTRObject.ts#L51-L122 KotOR.js — `LTRObject.readBuffer`"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree (no dedicated LTR Torlack page; use `ltrfile.cpp` + PyKotor)"
 
 seq:
   - id: file_type

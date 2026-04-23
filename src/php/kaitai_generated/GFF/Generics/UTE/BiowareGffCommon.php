@@ -5,7 +5,7 @@
  * Canonical Aurora **GFF3** `GFFFieldTypes` wire tags (`u4` at `GFFFieldData.field_type` / offset +0).
  * 
  * Imported by `formats/GFF/GFF.ksy`. Each enum member’s `doc:` is the **lowest-scope** narrative for that numeric ID
- * (Ghidra symbol names, `ReadField*` addresses, PyKotor / reone / wiki line anchors).
+ * (PyKotor / reone / wiki line anchors; `GFF.ksy` for per-field **observed behavior**.)
  * 
  * **GFF4** uses a different container/struct layout on disk (`GFF4File::Header::read` in `meta.xref.xoreos_gff4file_header_read`);
  * this enum remains the **GFF3** field-type table unless a future split spec proves wire-identical IDs across both.
@@ -27,7 +27,7 @@ namespace BiowareGffCommon {
     class GffFieldType {
 
         /**
-         * Numeric 0 — UINT8; value in `GFFFieldData.data_or_data_offset` (+8). Ghidra `/K1/k1_win_gog_swkotor.exe`:
+         * Numeric 0 — UINT8; value in `GFFFieldData.data_or_data_offset` (+8). **Observed behavior** on `k1_win_gog_swkotor.exe`:
          * `GFFFieldTypes` on `GFFFieldData.field_type` @ +0. Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types
          * PyKotor `GFFBinaryReader._load_field_value_by_id`: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L244-L246
          */
@@ -138,7 +138,7 @@ namespace BiowareGffCommon {
         /**
          * Numeric 18 — TLK StrRef (**KotOR / this schema:** inline `u32` at `GFFFieldData.data_or_data_offset`, i.e. file offset `field_offset + row*12 + 8`).
          * KotOR extension; same width as type 5, distinct field kind in data.
-         * Ghidra: `GFFFieldTypes` on `/K1/k1_win_gog_swkotor.exe`.
+         * **Observed behavior**: `GFFFieldTypes` on `/K1/k1_win_gog_swkotor.exe`.
          * Wiki: https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format#gff-data-types — row “StrRef”; StrRef semantics: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#string-references-strref
          * PyKotor `GFFFieldType` stops at `Vector3 = 17` (no enum member for 18): https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/gff_data.py#L347-L367; `GFFBinaryReader` documents missing branch: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L273
          * reone `Gff::FieldType::StrRef` + `readStrRefFieldData` (**`field_data` blob**, not inline +8): https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L141-L143 — https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L199-L204

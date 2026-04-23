@@ -40,12 +40,12 @@ Run these from the **repository root** (where [`pytest.ini`](pytest.ini) sets `p
 
 - On **Windows**, `uv run .\\scripts\\*.ps1` fails with **Win32 error 193** (`%1 is not a valid Win32 application`) because `uv run` tries to spawn the `.ps1` as an executable; use **`uv run pwsh -NoProfile -File .\\scripts\\….ps1`** or run the script **directly in PowerShell** (same pattern as other non-EXE launchers).
 - Keep **wire** documentation on the owning type/enum; consumers link to **`formats/Common/`** instead of pasting duplicate upstream mirrors.
-- For KotOR alignment, **Ghidra / PC binary** evidence outranks wiki-only guesses when layout or enum semantics are ambiguous; mark **`TODO: VERIFY`** when the binary is unclear.
+- For KotOR alignment, **observed behavior** in shipped executables (when documented) outranks wiki-only guesses when layout or enum semantics are ambiguous; mark **`TODO: VERIFY`** when the behavior is unclear.
 - **Submodule / fork caveat:** `.gitmodules` may point `vendor/xoreos*` at forks; line numbers can diverge from `github.com/xoreos/xoreos` `master`. In-tree proof links still target **upstream `master`** unless a doc explicitly pins a SHA for a regression snapshot.
 - When changing Kaitai syntax or compiler-facing constructs, **confirm against current Kaitai Struct compiler documentation** (for example via Context7); do not drop enum or xref detail purely to silence errors when the goal is exhaustive wire modeling.
 - **`scripts/verify_ksy_urls.py`** exercises HTTP(S) GitHub (and similar) anchors it extracts; **relative `vendor/…` wiki paths and other local `doc` references are outside that checker**, so broken wiki filenames still need manual or separate validation.
 - For documentation or `meta.xref` cleanup, **sweep `formats/**/*.ksy`** (not only a few high-churn formats) unless the task explicitly scopes a single file.
-- **`meta.xref`** is a **flat scalar map** in `include/ksy_schema.json` (each value must be a string/number/boolean/null or an array of those). Do **not** nest maps under keys (invalid in the schema). For prose, use a **block scalar on the key**, e.g. `ghidra_odyssey_k1: |` then indented lines, or one line `ghidra_odyssey_k1: "..."`. Also avoid `some_key: >` with the next non-blank line starting `note:` — YAML folded `>` treats that as one string, not a nested `note` key (`verify_ksy_urls.py` catches this).
+- **`meta.xref`** is a **flat scalar map** in `include/ksy_schema.json` (each value must be a string/number/boolean/null or an array of those). Do **not** nest maps under keys (invalid in the schema). For prose, use a **block scalar on the key** then indented lines. Also avoid `some_key: >` with the next non-blank line starting `note:` — YAML folded `>` treats that as one string, not a nested `note` key (`verify_ksy_urls.py` catches this).
 
 ## Root layout
 

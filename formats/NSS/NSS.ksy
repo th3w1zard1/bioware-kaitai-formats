@@ -9,15 +9,13 @@ meta:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (plaintext / tooling; submodule section 0).
       Binary bytecode wire: `formats/NSS/NCS.ksy`.
-    ghidra_odyssey_k1: |
-      Odyssey Ghidra /K1/k1_win_gog_swkotor.exe--NSS is tooling/source text compiled to NCS outside this binary wire spec.
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ncs/
     pykotor_wiki_nss: https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
-    xoreos_tools_ncsfile: https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137
-    xoreos_types_kfiletype_nss_ncs: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L85-L86
-    reone_nsswriter_save: https://github.com/modawan/reone/blob/master/src/libs/tools/script/format/nsswriter.cpp#L33-L45
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
-    xoreos_docs_torlack_ncs_html: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html
+    xoreos_tools_ncsfile: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/nwscript/ncsfile.cpp#L106-L137
+    xoreos_types_kfiletype_nss_ncs: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L85-L86
+    reone_nsswriter_save: https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/tools/script/format/nsswriter.cpp#L33-L45
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    xoreos_docs_torlack_ncs_html: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/ncs.html
 doc: |
   NSS (NWScript Source) files contain human-readable NWScript source code
   that compiles to NCS bytecode. NWScript is the scripting language used
@@ -38,11 +36,11 @@ doc: |
 
 doc-ref:
   - "https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format PyKotor wiki — NSS"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L85-L86 xoreos — `kFileTypeNSS` / `kFileTypeNCS` (Aurora `FileType` IDs; NSS plaintext, NCS bytecode)"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137 xoreos-tools — `NCSFile`"
-  - "https://github.com/modawan/reone/blob/master/src/libs/tools/script/format/nsswriter.cpp#L33-L45 reone — `NssWriter::save`"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html xoreos-docs — Torlack NCS (bytecode companion to plaintext NSS)"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L85-L86 xoreos — `kFileTypeNSS` / `kFileTypeNCS` (Aurora `FileType` IDs; NSS plaintext, NCS bytecode)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/nwscript/ncsfile.cpp#L106-L137 xoreos-tools — `NCSFile`"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/tools/script/format/nsswriter.cpp#L33-L45 reone — `NssWriter::save`"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/ncs.html xoreos-docs — Torlack NCS (bytecode companion to plaintext NSS)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree"
 
 seq:
   - id: bom

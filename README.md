@@ -258,6 +258,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Format definitions are derived from reverse engineering and community documentation
+- Format definitions are derived from **observed behavior** in game builds and from community documentation
 - Inspired by implementations in PyKotor, Xoreos, and other open-source projects
 - Special thanks to the BioWare modding community for format documentation

@@ -17,7 +17,7 @@ class BiowareGffCommon(KaitaiStruct):
     """Canonical Aurora **GFF3** `GFFFieldTypes` wire tags (`u4` at `GFFFieldData.field_type` / offset +0).
 
     Imported by `formats/GFF/GFF.ksy`. Each enum member’s `doc:` is the **lowest-scope** narrative for that numeric ID
-    (Ghidra symbol names, `ReadField*` addresses, PyKotor / reone / wiki line anchors).
+    (PyKotor / reone / wiki line anchors; `GFF.ksy` for per-field **observed behavior**.)
 
     **GFF4** uses a different container/struct layout on disk (`GFF4File::Header::read` in `meta.xref.xoreos_gff4file_header_read`);
     this enum remains the **GFF3** field-type table unless a future split spec proves wire-identical IDs across both.

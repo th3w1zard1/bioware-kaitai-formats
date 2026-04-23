@@ -15,7 +15,7 @@ class Tpc(KaitaiStruct):
     (`meta.xref`).
     
     .. seealso::
-       In-tree — Ghidra `CResTPC::OnResourceServiced` (128-byte header constant; K1 + TSL) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/TPC/DDS.ksy
+       In-tree — `CResTPC::OnResourceServiced` (**observed behavior**; see `DDS.ksy` `meta.xref`) (128-byte header constant; K1 + TSL) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/TPC/DDS.ksy
     
     
     .. seealso::

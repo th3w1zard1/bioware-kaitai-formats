@@ -9,28 +9,27 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey MCP `user-agdec-http` on `/K1/k1_win_gog_swkotor.exe` (classes+structures search for **`CResLIP`**): **no**
-      `CResLIP` symbol returned (contrast **`CResMDL`**, **`CResLTR`**, …). Lip-sync **wire** in this repo is therefore pinned to
-      **PyKotor `io_lip` / `lip_data`**, **reone `LipReader`**, and **KotOR.js** (`meta.xref`) until a Ghidra class/vtable name is recovered.
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/
+    k1_lip_symbol_search: |
+      **Observed behavior** on `k1_win_gog_swkotor.exe` (structures/classes inventory) for **`CResLIP`**: **no** matching class symbol
+      (unlike e.g. **`CResMDL`**, **`CResLTR`**). Wire in this repository is therefore taken from
+      **PyKotor** (`io_lip` / `lip_data`), **reone** `LipReader`, and **KotOR.js** (`meta.xref`) until a **`CRes*`** loader name is confirmed.
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/lip/
     github_openkotor_pykotor_io_lip: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip.py`:
       **`_load_lip_from_kaitai`** **24–36**; **`_load_lip_legacy`** **39–59**; **`LIPBinaryReader`** **63–92** (`load` **86–92**); **`LIPBinaryWriter`** **95–116** (`write` **108–116**).
     github_openkotor_pykotor_lip_data_lipshape: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/lip/lip_data.py`:
       **`LIPShape`** viseme **`IntEnum`** **47–127** (wire **`u8`** 0–15; mirrors `bioware_lip_viseme_id` in `bioware_common.ksy`).
-    kotor_js_lipobject_read_binary: https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LIPObject.ts#L99-L118
-    kotor_net_lip: https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorLIP/LIP.cs#L9-L39
-    xoreos_types_kfiletype_lip: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L180
+    kotor_js_lipobject_read_binary: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/LIPObject.ts#L99-L118
+    kotor_net_lip: https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorLIP/LIP.cs#L9-L39
+    xoreos_types_kfiletype_lip: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L180
     xoreos_upstream_note: |
       Upstream xoreos has no `lipfile.cpp`; LIP payloads are consumed via game render/audio paths.
       Use `kFileTypeLIP` in types.h for the numeric ID (3004) and community parsers (PyKotor/reone) for wire layout.
     pykotor_wiki_lip: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip
-    reone_lipreader_load: https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L41
-    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    reone_lipreader_load: https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/lipreader.cpp#L27-L41
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
 
 doc: |
   **LIP** (lip sync): sorted `(timestamp_f32, viseme_u8)` keyframes (`LIP ` / `V1.0`). Viseme ids 0–15 map through
@@ -39,15 +38,15 @@ doc: |
   xoreos does not ship a standalone `lipfile.cpp` reader — use PyKotor / reone / KotOR.js (`meta.xref`).
 
 doc-ref:
-  - "https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no LIP-specific tool)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no LIP-specific tool)"
   - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#lip PyKotor wiki — LIP"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip.py#L24-L116 PyKotor — `io_lip` (Kaitai + legacy read/write)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/lip/lip_data.py#L47-L127 PyKotor — `LIPShape` enum"
-  - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/lipreader.cpp#L27-L41 reone — `LipReader::load`"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/LIPObject.ts#L99-L118 KotOR.js — `LIPObject.readBinary`"
-  - "https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorLIP/LIP.cs#L9-L39 NickHugi/Kotor.NET — `LIP` / `MouthShape` (wire-oriented types)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L180 xoreos — `kFileTypeLIP` (numeric id; no standalone `lipfile.cpp`)"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs tree (no dedicated LIP Torlack/PDF; wire from PyKotor/reone)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/lip/io_lip.py#L24-L116 PyKotor — `io_lip` (Kaitai + legacy read/write)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/lip/lip_data.py#L47-L127 PyKotor — `LIPShape` enum"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/lipreader.cpp#L27-L41 reone — `LipReader::load`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/LIPObject.ts#L99-L118 KotOR.js — `LIPObject.readBinary`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorLIP/LIP.cs#L9-L39 NickHugi/Kotor.NET — `LIP` / `MouthShape` (wire-oriented types)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L180 xoreos — `kFileTypeLIP` (numeric id; no standalone `lipfile.cpp`)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree (no dedicated LIP Torlack/PDF; wire from PyKotor/reone)"
 
 seq:
   - id: file_type

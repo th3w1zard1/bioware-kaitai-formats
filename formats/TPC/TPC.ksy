@@ -10,15 +10,7 @@ meta:
   xref:
     repo_coverage_matrix: |
       Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
-      KotOR PC binary evidence: Cursor MCP user-agdec-http (Odyssey) — see AGENTS.md.
-    ghidra_odyssey_k1: |
-      Odyssey MCP `user-agdec-http` on `/K1/k1_win_gog_swkotor.exe`: datatype browser inventory lists **`CResTGA`** / **`CResDDS`**;
-      a shallow structures+classes search may **omit** `CResTPC` even though demangled **`CResTPC::OnResourceServiced`** is pinned with **128-byte** header math in **`formats/TPC/DDS.ksy`** (`meta.xref.ghidra_k1_win_gog_swkotor_exe` / TSL block). **TPC** wire authority remains **PyKotor `io_tpc`**, **reone `TpcReader`**, and **xoreos `TPC::load`**, cross-checked against those Ghidra slices.
-    ghidra_mcp_odyssey_program_paths: |
-      Odyssey shared Ghidra (`user-agdec-http`): `sync-project` / `checkout-program` for `/K1/k1_win_gog_swkotor.exe`,
-      `/TSL/k2_win_gog_aspyr_swkotor2.exe`, and `/Other BioWare Engines/Aurora/nwmain.exe` when tracing **texture** load paths
-      (`CResTGA`, `CResDDS`, … — same MCP workflow as `formats/TPC/DDS.ksy`; see `AGENTS.md`).
-    pykotor: https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/
     github_openkotor_pykotor_io_tpc: |
       https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_tpc.py`:
       **`TPCBinaryReader`** **93+**; **`TPCBinaryReader.load`** **121–303**; **`TPCBinaryWriter.write`** **391+** (long writer).
@@ -31,39 +23,39 @@ meta:
       https://github.com/modawan/reone — `src/libs/graphics/format/tpcreader.cpp`: **`TpcReader::load`** **29–62**;
       **`loadLayers`** **64–81**; **`loadFeatures`** (**TXI** tail via **`TxiReader`**) **83–96**; **`loadTexture`** **98–105**;
       **`getMipMapDataSize`** **112+**; **`getPixelFormat`** **136+**.
-    kotor_js_tpcloader: https://github.com/KobaltBlu/KotOR.js/blob/master/src/loaders/TPCLoader.ts#L26-L96
+    kotor_js_tpcloader: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/loaders/TPCLoader.ts#L26-L96
     github_kobaltblu_kotor_js_tpcobject: |
       https://github.com/KobaltBlu/KotOR.js — `src/resource/TPCObject.ts`: **`TPCObject`** **25+**; **`readHeader`** **290–380** (wire layout; pairs with this `.ksy` header).
-    xoreos_tpc_cpp: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66
-    xoreos_types_kfiletype_tpc: https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L183
-    xoreos_tpc_load: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L66
-    xoreos_tpc_read_header: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L68-L252
-    xoreos_tpc_read_data: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L326
-    xoreos_tpc_read_txi: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L362
-    xoreos_tools_tpc_cpp_load: https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L51-L68
-    xoreos_tools_tpc_cpp_read_header: https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L77-L224
+    xoreos_tpc_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L52-L66
+    xoreos_types_kfiletype_tpc: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L183
+    xoreos_tpc_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L52-L66
+    xoreos_tpc_read_header: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L68-L252
+    xoreos_tpc_read_data: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L326
+    xoreos_tpc_read_txi: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L362
+    xoreos_tools_tpc_cpp_load: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L51-L68
+    xoreos_tools_tpc_cpp_read_header: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L77-L224
     pykotor_wiki_tpc: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc
-    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
-    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html
 doc: |
   **TPC** (KotOR native texture): 128-byte header (`pixel_encoding` etc. via `bioware_common`) + opaque tail
   (mips / cube faces / optional **TXI** suffix). Per-mip byte sizes are format-specific — see PyKotor `io_tpc.py`
   (`meta.xref`).
 
 doc-ref:
-  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/TPC/DDS.ksy In-tree — Ghidra `CResTPC::OnResourceServiced` (128-byte header constant; K1 + TSL)"
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/f4700f43f20337e01b8ef751a7c7d42e0acfb00a/formats/TPC/DDS.ksy In-tree — `CResTPC::OnResourceServiced` (128-byte header; K1 + TSL **observed behavior** in `DDS.ksy` `meta.xref`)"
   - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc PyKotor wiki — TPC"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_tpc.py#L93-L303 PyKotor — `TPCBinaryReader` + `load`"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py#L74-L120 PyKotor — `TPCTextureFormat` (opening)"
-  - "https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py#L499-L520 PyKotor — `class TPC` (opening)"
-  - "https://github.com/modawan/reone/blob/master/src/libs/graphics/format/tpcreader.cpp#L29-L105 reone — `TpcReader` (body + TXI features)"
-  - "https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L183 xoreos — `kFileTypeTPC`"
-  - "https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L52-L362 xoreos — `TPC::load` through `readTXI` entrypoints"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L51-L68 xoreos-tools — `TPC::load`"
-  - "https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L77-L224 xoreos-tools — `TPC::readHeader`"
-  - "https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware xoreos-docs — BioWare specs PDF tree"
-  - "https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (texture pipeline context)"
-  - "https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TPCObject.ts#L290-L380 KotOR.js — `TPCObject.readHeader`"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_tpc.py#L93-L303 PyKotor — `TPCBinaryReader` + `load`"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py#L74-L120 PyKotor — `TPCTextureFormat` (opening)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py#L499-L520 PyKotor — `class TPC` (opening)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/tpcreader.cpp#L29-L105 reone — `TpcReader` (body + TXI features)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L183 xoreos — `kFileTypeTPC`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L52-L362 xoreos — `TPC::load` through `readTXI` entrypoints"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L51-L68 xoreos-tools — `TPC::load`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L77-L224 xoreos-tools — `TPC::readHeader`"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs PDF tree"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (texture pipeline context)"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TPCObject.ts#L290-L380 KotOR.js — `TPCObject.readHeader`"
 
 seq:
   - id: header
