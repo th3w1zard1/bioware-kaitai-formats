@@ -5,25 +5,25 @@ meta:
   endian: le
   file-extension: da2s
   xref:
-    runtime: src/Andastra/Runtime/Games/Eclipse/DragonAge2/Save/DragonAge2SaveSerializer.cs
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    github_oldrepublicdevs_andastra_da2_save_serializer: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/DragonAge2/Save/DragonAge2SaveSerializer.cs`:
+      **`SaveSignature = "DA2S"`** **24**; **`SerializeSaveNfo`** **30–67**; **`DeserializeSaveNfo`** **72–115**; **`SerializeSaveArchive`** **120+**; **`DeserializeSaveArchive`** **169+**.
+    github_oldrepublicdevs_andastra_eclipse_save_base: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs`:
+      shared UTF-8 length-prefixed strings + common metadata helpers **35–126** (same base as **DAS**).
+    github_xoreos_types_game_id_dragon_age2: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
 doc: |
-  DA2S (Dragon Age 2 Save) files are binary save game files used by the Eclipse Engine
-  (Dragon Age 2). They contain save game metadata and optionally full game state.
-  
-  DA2S files are binary format files with the following structure:
-  - Signature (4 bytes): "DA2S" (Dragon Age 2 Save)
-  - Version (int32): Save format version (1 for DA2)
-  - Metadata fields (strings, integers, timestamps, etc.)
-  - Optional: Full game state (party, inventory, journal, globals)
-  
-  Based on DragonAge2.exe: SaveGameMessage @ 0x00be37a8, DeleteSaveGameMessage @ 0x00be389c
-  Located via string references: "SaveGameMessage" @ 0x00be37a8, "GameModeController::HandleMessage(SaveGameMessage)" @ 0x00d2b330
-  Original implementation: UnrealScript message-based save system, binary serialization
-  Note: DA2 save format may differ from DA:O format (different game engine version)
-  
-  References:
-  - src/Andastra/Runtime/Games/Eclipse/DragonAge2/Save/DragonAge2SaveSerializer.cs
-  - src/Andastra/Runtime/Games/Eclipse/Save/EclipseSaveSerializer.cs (base class)
+  **DA2S** (Dragon Age 2 save): Eclipse binary save — `DA2S` signature, `version==1`, length-prefixed strings + tagged
+  blocks (party/inventory/journal/etc.). **Not KotOR** — Andastra serializers under `Game/Games/Eclipse/DragonAge2/Save/` (`meta.xref`).
+
+doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408 xoreos — `GameID` (`kGameIDDragonAge2` = 8)"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/9f49a4d88fc144f819488a0cc37de471eaa0f01b/src/Andastra/Game/Games/Eclipse/DragonAge2/Save/DragonAge2SaveSerializer.cs#L24-L180 Andastra — `DragonAge2SaveSerializer`"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/9f49a4d88fc144f819488a0cc37de471eaa0f01b/src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs#L35-L126 Andastra — `EclipseSaveSerializer` helpers"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree (Dragon Age saves documented via Andastra + `GameID`; no DA2S-specific PDF here)"
 
 seq:
   - id: signature
@@ -63,26 +63,26 @@ seq:
       Save creation timestamp as Windows FILETIME (int64).
       Convert using DateTime.FromFileTime().
   
-  - id: screenshot_length
+  - id: num_screenshot_data
     type: s4
     doc: Length of screenshot data in bytes (0 if no screenshot)
   
   - id: screenshot_data
     type: u1
     repeat: expr
-    repeat-expr: screenshot_length
-    if: screenshot_length > 0
+    repeat-expr: num_screenshot_data
+    if: num_screenshot_data > 0
     doc: Screenshot image data (typically TGA or DDS format)
   
-  - id: portrait_length
+  - id: num_portrait_data
     type: s4
     doc: Length of portrait data in bytes (0 if no portrait)
   
   - id: portrait_data
     type: u1
     repeat: expr
-    repeat-expr: portrait_length
-    if: portrait_length > 0
+    repeat-expr: num_portrait_data
+    if: num_portrait_data > 0
     doc: Portrait image data (typically TGA or DDS format)
   
   - id: player_name

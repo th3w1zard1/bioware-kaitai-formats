@@ -17,27 +17,46 @@ fi
 
 echo "Generating $LANGUAGE code from Kaitai Struct definitions..." >&2
 
-# Prefer kaitai-struct-compiler (e.g. .deb on Linux). KSC 0.11 on Unix-like shells
-# requires --outdir instead of -d unless arguments are separated with -- (see ksc --help).
-KSC_BIN=""
-if command -v kaitai-struct-compiler &> /dev/null; then
-    KSC_BIN="kaitai-struct-compiler"
-elif command -v ksc &> /dev/null; then
-    KSC_BIN="ksc"
-fi
+# Prefer `ksc` (short shim); fall back to full `kaitai-struct-compiler` name (some installs expose only one).
+resolve_ksc_cmd() {
+    if command -v ksc &> /dev/null; then
+        echo "ksc"
+    elif command -v kaitai-struct-compiler &> /dev/null; then
+        echo "kaitai-struct-compiler"
+    else
+        echo ""
+    fi
+}
 
-if [ -z "$KSC_BIN" ]; then
-    echo "Installing Kaitai Struct compiler $KSC_VERSION via pip..." >&2
+KSC_CMD="$(resolve_ksc_cmd)"
+if [ -z "$KSC_CMD" ]; then
+    echo "Installing Kaitai Struct compiler $KSC_VERSION..." >&2
     pip install "kaitai-struct-compiler==$KSC_VERSION" || {
-        echo "Failed to install kaitai-struct-compiler (pip has no wheel for this platform; install the .deb/.zip from https://kaitai.io/#download )" >&2
+        echo "Failed to install kaitai-struct-compiler (pip has no wheel on some Linux images; use apt/.deb from https://kaitai.io/#download )" >&2
         exit 1
     }
-    KSC_BIN="kaitai-struct-compiler"
+    KSC_CMD="$(resolve_ksc_cmd)"
 fi
 
-INSTALLED_VERSION=$("$KSC_BIN" --version 2>&1 | head -n1 || echo "")
-if [[ "$INSTALLED_VERSION" != *"$KSC_VERSION"* ]]; then
-    echo "Warning: expected Kaitai Struct compiler $KSC_VERSION, found: $INSTALLED_VERSION" >&2
+if [ -z "$KSC_CMD" ]; then
+    echo "Could not find ksc or kaitai-struct-compiler after install" >&2
+    exit 1
+fi
+
+INSTALLED_VERSION=$("$KSC_CMD" --version 2>&1 | head -n1 || echo "")
+if [[ "$INSTALLED_VERSION" == *"$KSC_VERSION"* ]]; then
+    echo "Kaitai Struct compiler $KSC_VERSION is already installed ($KSC_CMD)" >&2
+else
+    echo "Installing Kaitai Struct compiler $KSC_VERSION (found: $INSTALLED_VERSION)..." >&2
+    pip install "kaitai-struct-compiler==$KSC_VERSION" || {
+        echo "Failed to install kaitai-struct-compiler" >&2
+        exit 1
+    }
+    KSC_CMD="$(resolve_ksc_cmd)"
+    if [ -z "$KSC_CMD" ]; then
+        echo "Could not find ksc or kaitai-struct-compiler after install" >&2
+        exit 1
+    fi
 fi
 
 # Find all .ksy files
@@ -62,13 +81,21 @@ FORMATS_BASE=$(cd "$FORMATS_DIR" && pwd)
 while IFS= read -r ksy_file; do
     # Calculate relative path from formats directory
     RELATIVE_PATH="${ksy_file#$FORMATS_BASE/}"
+    RELATIVE_DIR=$(dirname "$RELATIVE_PATH")
 
-    mkdir -p "$OUTPUT_DIR"
+    # Calculate output path maintaining directory structure
+    if [ "$RELATIVE_DIR" != "." ]; then
+        TARGET_DIR="$OUTPUT_DIR/$RELATIVE_DIR"
+    else
+        TARGET_DIR="$OUTPUT_DIR"
+    fi
+
+    mkdir -p "$TARGET_DIR"
 
     echo "  Processing: $RELATIVE_PATH" >&2
 
-    # -I formats: resolve imports (e.g. gff -> bioware_common) from repo root
-    if "$KSC_BIN" -t "$LANGUAGE" --outdir "$OUTPUT_DIR" -I "$FORMATS_DIR" "$ksy_file"; then
+    # KSC 0.11 on Unix: use --outdir (not -d) unless args are split with --; -I resolves cross-format imports
+    if "$KSC_CMD" -t "$LANGUAGE" --outdir "$TARGET_DIR" -I "$FORMATS_DIR" "$ksy_file"; then
         SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     else
         echo "  Warning: Failed to generate code for $RELATIVE_PATH" >&2
@@ -85,4 +112,3 @@ if [ $FAIL_COUNT -gt 0 ]; then
 else
     echo "  Failed: $FAIL_COUNT" >&2
 fi
-

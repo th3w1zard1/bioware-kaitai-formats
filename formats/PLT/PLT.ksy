@@ -5,9 +5,27 @@ meta:
   endian: le
   file-extension: plt
   xref:
-    pykotor_wiki_plt: https://github.com/OldRepublicDevs/PyKotor/wiki/PLT-File-Format.md
-    xoreos_docs_plt: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    nwn_k1_plt_res_symbols: |
+      PLT is **NWN / general Aurora** palette-indexed wire (`PLTFile` in xoreos). In the **nwmain.exe** (Aurora) program tree,
+      **`class CResPLT`** and **`CResHelper<class CResPLT,6>`** (type id **6**). The KotOR I build **`k1_win_gog_swkotor.exe`**
+      has **no** `CResPLT` / `ResPLT` hit in a structures/classes/symbol-scoped inventory (KotOR keeps type id **6** in ID tables
+      but does not ship PLT resources — `meta.xref.github_openkotor_pykotor_resource_type_plt`).
+    pykotor_wiki_plt: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy
+    github_openkotor_pykotor_resource_type_plt: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/type.py`: **`ResourceType.PLT`** **374–380** (NWN-era type id **6**; KotOR does not ship PLT bodies — see `doc`).
+    xoreos_docs_plt: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/plt.html
+    xoreos_pltfile_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/pltfile.cpp#L102-L145
+    github_xoreos_pltfile: |
+      https://github.com/xoreos/xoreos — `src/graphics/aurora/pltfile.cpp`: **`PLTFile::load`** **102–145**; **`PLTFile::build`** **147+** (palette expansion / surface build).
+    github_xoreos_types_kfiletype_plt: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L63
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
+    xoreos_tools_upstream_note_plt: |
+      No dedicated `plt*` extractor surfaced in a quick `xoreos-tools` `src/images/` scan on `master` — treat Torlack HTML + xoreos `pltfile.cpp` as primary wire references.
+    reone_resource_type_plt_note: |
+      `modawan/reone` `master`: no `*plt*` wire reader path in-tree; engine lists `Plt = 6` next to other Aurora type ids —
+      https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L35
 doc: |
   PLT (Palette Texture) is a texture format used in Neverwinter Nights that allows runtime color
   palette selection. Instead of fixed colors, PLT files store palette group indices and color indices
@@ -18,10 +36,12 @@ doc: |
   resource type (0x0006) exists in KotOR's resource system due to shared Aurora engine heritage, KotOR
   does not load, parse, or use PLT files. KotOR uses standard TPC/TGA/DDS textures for all textures,
   including character models. This documentation is provided for reference only.
+
+  **reone:** the KotOR-focused fork does not ship a standalone PLT body reader; see `meta.xref.reone_resource_type_plt_note` for the numeric `Plt` type id only.
   
   Binary Format Structure:
-  - Header (24 bytes): Signature, Version, Unknown fields, Width, Height
-  - Pixel Data: Array of 2-byte pixel entries (color index + palette group index)
+  - Header (24 (0x18) bytes): Signature, Version, Unknown fields, Width, Height
+  - Pixel Data: Array of 2 (0x2)-byte pixel entries (color index + palette group index)
   
   Palette System:
   PLT files work in conjunction with external palette files (.pal files) that contain the actual
@@ -38,19 +58,25 @@ doc: |
   0 = Skin, 1 = Hair, 2 = Metal 1, 3 = Metal 2, 4 = Cloth 1, 5 = Cloth 2,
   6 = Leather 1, 7 = Leather 2, 8 = Tattoo 1, 9 = Tattoo 2
   
-  References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/PLT-File-Format.md
-  - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
-  - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp
+  Canonical upstream links: `meta.doc-ref` and `meta.xref`.
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy PyKotor wiki — PLT (NWN legacy)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L374-L380 PyKotor — `ResourceType.PLT` (NWN-era id 6)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/plt.html xoreos-docs — Torlack plt.html"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no PLT-specific tool on `master`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/pltfile.cpp#L102-L145 xoreos — `PLTFile::load`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L63 xoreos — `kFileTypePLT`"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/include/reone/resource/types.h#L35 reone — `ResourceType::Plt` (id 6; no `.plt` wire reader on default branch)"
 
 seq:
   - id: header
     type: plt_header
-    doc: PLT file header (24 bytes)
+    doc: PLT file header (24 (0x18) bytes)
   
   - id: pixel_data
     type: pixel_data_section
-    doc: Array of pixel entries (width × height entries, 2 bytes each)
+    doc: Array of pixel entries (width × height entries, 2 (0x2) bytes each)
 
 types:
   plt_header:
@@ -76,13 +102,13 @@ types:
       - id: unknown1
         type: u4
         doc: |
-          Unknown field (4 bytes).
+          Unknown field (4 (0x4) bytes).
           Purpose is unknown, may be reserved for future use or internal engine flags.
       
       - id: unknown2
         type: u4
         doc: |
-          Unknown field (4 bytes).
+          Unknown field (4 (0x4) bytes).
           Purpose is unknown, may be reserved for future use or internal engine flags.
       
       - id: width
@@ -106,7 +132,7 @@ types:
         repeat-expr: _root.header.width * _root.header.height
         doc: |
           Array of pixel entries, stored row by row, left to right, top to bottom.
-          Total size = width × height × 2 bytes.
+          Total size = width × height × 2 (0x2) bytes.
           Each pixel entry contains a color index and palette group index.
   
   plt_pixel:

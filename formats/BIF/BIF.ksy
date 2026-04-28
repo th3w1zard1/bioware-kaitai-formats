@@ -4,21 +4,44 @@ meta:
   license: MIT
   endian: le
   file-extension: bif
+  imports:
+    - ../Common/bioware_type_ids
   xref:
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/
-    reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/bifreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/
+    github_openkotor_pykotor_io_bif: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/bif/io_bif.py`:
+      **`_load_bif_from_kaitai`** **57–91**; legacy **`BIFF`** / **`BZF `** branch **94–166**; **`BIFBinaryReader.load`** **200–215** ( **`BZF `** fast path **209–213**).
+    github_openkotor_pykotor_bif_data: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/bif/bif_data.py`:
+      **`BIFType`** **`BIFF`** / **`BZF `** **59–71**; LZMA / mobile **BZF** notes in module doc **34–37**.
+    github_modawan_reone_bifreader: |
+      https://github.com/modawan/reone — `src/libs/resource/format/bifreader.cpp`: **`BifReader::load`** **`BIFFV1  `** check **26–29**; **`loadHeader`** **32–38**; **`readResourceEntry`** **50–63**.
+    xoreos_biffile_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L54-L97
+    xoreos_types_kfiletype_bif: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L208
+    xoreos_bif_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L54-L82
+    xoreos_bif_read_var_res_table: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L84-L97
+    pykotor_wiki_bif: https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif
+    xoreos_docs_torlack_bif: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/bif.html
+    github_xoreos_tools_unkeybif_bif_branch: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unkeybif.cpp#L206-L209
+    github_xoreos_docs_keybif_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/KeyBIF_Format.pdf
+    github_kobaltblu_kotor_js_bif: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/BIFObject.ts#L87-L123
 doc: |
-  BIF (BioWare Index File) files are archive containers that store game resources.
-  They work in tandem with KEY files which provide the filename-to-resource mappings.
-  
-  BIF files contain only resource IDs, types, and data - the actual filenames (ResRefs)
-  are stored in the KEY file and matched via the resource ID.
-  
-  References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/BIF-File-Format.md
-  - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/bif.html
-  - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/bifreader.cpp
+  **BIF** (binary index file): Aurora archive of `(resource_id, type, offset, size)` rows; **ResRef** strings live in
+  the paired **KEY** (`KEY.ksy`), not in the BIF.
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Container-Formats#bif PyKotor wiki — BIF"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/io_bif.py#L57-L215 PyKotor — `io_bif` (Kaitai + legacy + reader)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/bif_data.py#L59-L71 PyKotor — `BIFType`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L54-L97 xoreos — `BIFFile::load` + `readVarResTable`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L208 xoreos — `kFileTypeBIF`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unkeybif.cpp#L206-L209 xoreos-tools — `unkeybif` (non-`.bzf` → `BIFFile`)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/bifreader.cpp#L26-L63 reone — `BifReader`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/BIFObject.ts#L87-L123 KotOR.js — `BIFObject.readFromDisk` (header + variable resource table)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/bif.html xoreos-docs — Torlack bif.html"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/KeyBIF_Format.pdf xoreos-docs — KeyBIF_Format.pdf"
 
 seq:
   - id: file_type
@@ -86,319 +109,9 @@ types:
       
       - id: resource_type
         type: u4
-        doc: Resource type identifier (see ResourceType enum).
-        enum: xoreos_file_type_id
-
-    instances:
-      data:
-        pos: offset
-        size: file_size
-        doc: Raw binary data for the resource (read at specified offset).
-
-enums:
-  # NOTE: Mirrors `https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h` (`enum FileType`).
-  # TODO: VERIFY - Aliases exist upstream (e.g. 2045 also known as DTF) but Kaitai enums cannot
-  # represent multiple names for the same numeric key.
-  xoreos_file_type_id:
-    -1: none
-    0: res
-    1: bmp
-    2: mve
-    3: tga
-    4: wav
-    6: plt
-    7: ini
-    8: bmu
-    9: mpg
-    10: txt
-    11: wma
-    12: wmv
-    13: xmv
-    2000: plh
-    2001: tex
-    2002: mdl
-    2003: thg
-    2005: fnt
-    2007: lua
-    2008: slt
-    2009: nss
-    2010: ncs
-    2011: mod
-    2012: are
-    2013: set
-    2014: ifo
-    2015: bic
-    2016: wok
-    2017: two_da
-    2018: tlk
-    2022: txi
-    2023: git
-    2024: bti
-    2025: uti
-    2026: btc
-    2027: utc
-    2029: dlg
-    2030: itp
-    2031: btt
-    2032: utt
-    2033: dds
-    2034: bts
-    2035: uts
-    2036: ltr
-    2037: gff
-    2038: fac
-    2039: bte
-    2040: ute
-    2041: btd
-    2042: utd
-    2043: btp
-    2044: utp
-    2045: dft
-    2046: gic
-    2047: gui
-    2048: css
-    2049: ccs
-    2050: btm
-    2051: utm
-    2052: dwk
-    2053: pwk
-    2054: btg
-    2055: utg
-    2056: jrl
-    2057: sav
-    2058: utw
-    2059: four_pc
-    2060: ssf
-    2061: hak
-    2062: nwm
-    2063: bik
-    2064: ndb
-    2065: ptm
-    2066: ptt
-    2067: ncm
-    2068: mfx
-    2069: mat
-    2070: mdb
-    2071: say
-    2072: ttf
-    2073: ttc
-    2074: cut
-    2075: ka
-    2076: jpg
-    2077: ico
-    2078: ogg
-    2079: spt
-    2080: spw
-    2081: wfx
-    2082: ugm
-    2083: qdb
-    2084: qst
-    2085: npc
-    2086: spn
-    2087: utx
-    2088: mmd
-    2089: smm
-    2090: uta
-    2091: mde
-    2092: mdv
-    2093: mda
-    2094: mba
-    2095: oct
-    2096: bfx
-    2097: pdb
-    2098: the_witcher_save
-    2099: pvs
-    2100: cfx
-    2101: luc
-    2103: prb
-    2104: cam
-    2105: vds
-    2106: bin
-    2107: wob
-    2108: api
-    2109: properties
-    2110: png
-    3000: lyt
-    3001: vis
-    3002: rim
-    3003: pth
-    3004: lip
-    3005: bwm
-    3006: txb
-    3007: tpc
-    3008: mdx
-    3009: rsv
-    3010: sig
-    3011: mab
-    3012: qst2
-    3013: sto
-    3015: hex
-    3016: mdx2
-    3017: txb2
-    3022: fsm
-    3023: art
-    3024: amp
-    3025: cwa
-    3028: bip
-    4000: mdb2
-    4001: mda2
-    4002: spt2
-    4003: gr2
-    4004: fxa
-    4005: fxe
-    4007: jpg2
-    4008: pwc
-    9996: one_da
-    9997: erf
-    9998: bif
-    9999: key
-    19000: exe
-    19001: dbf
-    19002: cdx
-    19003: fpt
-    20000: zip
-    20001: fxm
-    20002: fxs
-    20003: xml
-    20004: wlk
-    20005: utr
-    20006: sef
-    20007: pfx
-    20008: tfx
-    20009: ifx
-    20010: lfx
-    20011: bbx
-    20012: pfb
-    20013: upe
-    20014: usc
-    20015: ult
-    20016: fx
-    20017: max
-    20018: doc
-    20019: scc
-    20020: wmp
-    20021: osc
-    20022: trn
-    20023: uen
-    20024: ros
-    20025: rst
-    20026: ptx
-    20027: ltx
-    20028: trx
-    21000: nds
-    21001: herf
-    21002: dict
-    21003: small
-    21004: cbgt
-    21005: cdpth
-    21006: emit
-    21007: itm
-    21008: nanr
-    21009: nbfp
-    21010: nbfs
-    21011: ncer
-    21012: ncgr
-    21013: nclr
-    21014: nftr
-    21015: nsbca
-    21016: nsbmd
-    21017: nsbta
-    21018: nsbtp
-    21019: nsbtx
-    21020: pal
-    21021: raw
-    21022: sadl
-    21023: sdat
-    21024: smp
-    21025: spl
-    21026: vx
-    22000: anb
-    22001: ani
-    22002: cns
-    22003: cur
-    22004: evt
-    22005: fdl
-    22006: fxo
-    22007: gad
-    22008: gda
-    22009: gfx
-    22010: ldf
-    22011: lst
-    22012: mal
-    22013: mao
-    22014: mmh
-    22015: mop
-    22016: mor
-    22017: msh
-    22018: mtx
-    22019: ncc
-    22020: phy
-    22021: plo
-    22022: stg
-    22023: tbi
-    22024: tnt
-    22025: arl
-    22026: fev
-    22027: fsb
-    22028: opf
-    22029: crf
-    22030: rimp
-    22031: met
-    22032: meta
-    22033: fxr
-    22034: cif
-    22035: cub
-    22036: dlb
-    22037: nsc
-    23000: mov
-    23001: curs
-    23002: pict
-    23003: rsrc
-    23004: plist
-    24000: cre
-    24001: pso
-    24002: vso
-    24003: abc
-    24004: sbm
-    24005: pvd
-    24006: pla
-    24007: trg
-    24008: pk
-    25000: als
-    25001: apl
-    25002: assembly
-    25003: bak
-    25004: bnk
-    25005: cl
-    25006: cnv
-    25007: con
-    25008: dat
-    25009: dx11
-    25010: ids
-    25011: log
-    25012: map
-    25013: mml
-    25014: mp3
-    25015: pck
-    25016: rml
-    25017: s
-    25018: sta
-    25019: svr
-    25020: vlm
-    25021: wbd
-    25022: xbx
-    25023: xls
-    26000: bzf
-    27000: adv
-    28000: json
-    28001: tlk_expert
-    28002: tlk_mobile
-    28003: tlk_touch
-    28004: otf
-    28005: par
-    29000: xwb
-    29001: xsb
-    30000: xds
-    30001: wnd
-    40000: xeositex
+        enum: bioware_type_ids::xoreos_file_type_id
+        doc: |
+          Aurora resource type id (`u4` on disk). Payloads are not embedded here; KotOR tools may
+          read beyond `file_size` for some types (e.g. WOK/BWM). Canonical enum:
+          `formats/Common/bioware_type_ids.ksy` → `xoreos_file_type_id`.
 

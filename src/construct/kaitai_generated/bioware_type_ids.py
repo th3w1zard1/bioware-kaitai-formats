@@ -146,8 +146,6 @@ class bioware_type_ids__bioware_resource_type_id(enum.IntEnum):
 	wav_deob = 25015
 	tlk_xml = 50001
 	mdl_ascii = 50002
-	gff_xml = 50004
-	gff_json = 50005
 	ifo_xml = 50006
 	git_xml = 50007
 	uti_xml = 50008
@@ -171,6 +169,18 @@ class bioware_type_ids__bioware_resource_type_id(enum.IntEnum):
 	tlk_json = 50027
 	lip_json = 50028
 	res_xml = 50029
+
+class bioware_type_ids__xoreos_archive_type(enum.IntEnum):
+	key = 0
+	bif = 1
+	erf = 2
+	rim = 3
+	zip = 4
+	exe = 5
+	nds = 6
+	herf = 7
+	nsbtx = 8
+	max = 9
 
 class bioware_type_ids__xoreos_file_type_id(enum.IntEnum):
 	none = -1
@@ -474,6 +484,39 @@ class bioware_type_ids__xoreos_file_type_id(enum.IntEnum):
 	xds = 30000
 	wnd = 30001
 	xeositex = 40000
+
+class bioware_type_ids__xoreos_game_id(enum.IntEnum):
+	unknown = -1
+	nwn = 0
+	nwn2 = 1
+	kotor = 2
+	kotor2 = 3
+	jade = 4
+	witcher = 5
+	sonic = 6
+	dragon_age = 7
+	dragon_age2 = 8
+	max = 9
+
+class bioware_type_ids__xoreos_platform_id(enum.IntEnum):
+	windows = 0
+	mac_osx = 1
+	linux = 2
+	xbox = 3
+	xbox360 = 4
+	ps3 = 5
+	nds = 6
+	android = 7
+	ios = 8
+	unknown = 9
+
+class bioware_type_ids__xoreos_resource_category(enum.IntEnum):
+	image = 0
+	video = 1
+	sound = 2
+	music = 3
+	cursor = 4
+	max = 5
 
 bioware_type_ids = Struct(
 )

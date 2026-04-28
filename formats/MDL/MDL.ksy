@@ -6,23 +6,61 @@ meta:
   ks-version: 0.11
   license: MIT
   title: BioWare MDL (Model) Binary Format
+  imports:
+    - ../Common/bioware_mdl_common
   xref:
-    pykotor_mdlops: https://github.com/th3w1zard1/MDLOpsM.pm
-    pykotor_wiki_mdl: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    mdl_model_header_unknown_fields_policy: |
+      Several `model_header` u1/u4 slots and `offset_to_super_root` semantics still carry `TODO: VERIFY` in field `doc:` text.
+      They are retained for **PyKotor / MDLOps round-trip** compatibility until **observed behavior** in the game executables
+      or upstream parsers pins them. Treat unknowns as **opaque preserved fields**, not gameplay-authoritative layout.
+    pykotor_wiki_mdl: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
+    pykotor_io_mdl_tree: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/
+    pykotor_io_mdl_binary_reader: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408
+    pykotor_io_mdl_kaitai_probe: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2332-L2338
+    pykotor_mdl_data: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/mdl_data.py#L1283-L1322
+    mdlops: https://github.com/OpenKotOR/MDLOps/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L407
+    mdlops_upstream_mirror: https://github.com/OpenKotOR/MDLOps/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L4698
+    xoreos_model_kotor_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.cpp#L184-L267
+    xoreos_model_kotor_parser_context: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.cpp#L123-L140
+    xoreos_model_kotor_h_parser_context: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.h#L45-L79
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html
+    xoreos_docs_torlack_binmdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/binmdl.html
+    reone_mdlmdxreader_load: https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118
+    kotor_js_mdl_loader: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/loaders/MDLLoader.ts#L66-L150
+    kotor_js_odyssey_model_constructor: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyModel.ts#L56-L170
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
 doc: |
   BioWare MDL Model Format
 
   The MDL file contains:
-  - File header (12 bytes)
-  - Model header (196 bytes) which begins with a Geometry header (80 bytes)
+  - File header (12 (0xc) bytes)
+  - Model header (196 (0xc4) bytes) which begins with a Geometry header (80 (0x50) bytes)
   - Name offset array + name strings
   - Animation offset array + animation headers + animation nodes
   - Node hierarchy with geometry data
 
-  Reference implementations:
-  - https://github.com/th3w1zard1/MDLOpsM.pm
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md
-doc-ref: https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md
+  Authoritative cross-implementations: `meta.xref` (PyKotor `io_mdl` / `mdl_data`, xoreos `Model_KotOR::load`, reone `MdlMdxReader::load`, KotOR.js loaders) and `doc-ref`.
+
+  Unknown `model_header` fields marked `TODO: VERIFY` in `seq` docs: see `meta.xref.mdl_model_header_unknown_fields_policy`.
+
+  Shared wire enums: imported from `formats/Common/bioware_mdl_common.ksy` — `model_type` and `controller.type`
+  are field-bound to `model_classification` / `controller_type`. `node_type` is a bitmask (instances use `&`);
+  compare numeric values against `bioware_mdl_common::node_type_value` in docs / tooling, not as a Kaitai `enum:`.
+doc-ref:
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/f4700f43f20337e01b8ef751a7c7d42e0acfb00a/formats/Common/bioware_mdl_common.ksy In-tree — shared MDL/MDX wire enums (`bioware_mdl_common`)"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format PyKotor wiki — MDL/MDX"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408 PyKotor — MDLBinaryReader (binary MDL/MDX)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.cpp#L184-L267 xoreos — Model_KotOR::load"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/aurora/model_kotor.h#L45-L79 xoreos — `Model_KotOR::ParserContext` (MDL/MDX stream pointers + cached header fields consumed during binary load)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no MDL/MDX-specific tool)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/binmdl.html xoreos-docs — Torlack binmdl (controller / Aurora background)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118 reone — MdlMdxReader::load"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyModel.ts#L56-L170 KotOR.js — OdysseyModel binary constructor"
+  - "https://github.com/OpenKotOR/MDLOps/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L407 Community MDLOps — controller name table"
+  - "https://github.com/OpenKotOR/MDLOps/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L3916-L4698 Community MDLOps — `readasciimdl` (ASCII MDL ingest)"
 
 seq:
   - id: file_header
@@ -35,7 +73,7 @@ instances:
     value: 12
     doc: |
       MDL "data start" offset. Most offsets in this file are relative to the start of the MDL data
-      section, which begins immediately after the 12-byte file header.
+      section, which begins immediately after the 12 (0xc)-byte file header.
 
   name_offsets:
     type: u4
@@ -62,13 +100,18 @@ instances:
     pos: data_start + model_header.offset_to_animations
     doc: Animation header offsets (relative to data_start)
 
+  # Per Kaitai Struct user guide § sparse offset tables: `pos` on a repeated *instance*
+  # is not applied per element the way we need here; the Python backend hoists a single
+  # seek using `_index` / `i` *before* the repeat loop (broken). Use a parametric wrapper
+  # that receives `_index` and reads `animation_header` at `animation_offsets[anim_index]`.
   animations:
-    type: animation_header
+    type: mdl_animation_entry(_index)
     repeat: expr
     repeat-expr: model_header.animation_count
     if: model_header.animation_count > 0
-    pos: data_start + animation_offsets[_index]
-    doc: Animation headers (resolved via animation_offsets)
+    doc: |
+      Animation headers (via offset table). Each list element is `mdl_animation_entry`;
+      the parsed header is `element.header` (same wire layout as `animation_header`).
 
   root_node:
     type: node
@@ -77,7 +120,7 @@ instances:
 
 types:
   file_header:
-    doc: MDL file header (12 bytes)
+    doc: MDL file header (12 (0xc) bytes)
     seq:
       - id: unused
         type: u4
@@ -90,16 +133,16 @@ types:
         doc: Size of MDX file in bytes
 
   geometry_header:
-    doc: Geometry header (80 bytes) - Located at offset 12
+    doc: Geometry header is 80 (0x50) bytes long, located at offset 12 (0xC)
     seq:
       - id: function_pointer_0
         type: u4
         doc: |
           Game engine version identifier:
-          - KOTOR 1 PC: 4273776 (0x413750)
-          - KOTOR 2 PC: 4285200 (0x416610)
-          - KOTOR 1 Xbox: 4254992 (0x40EE90)
-          - KOTOR 2 Xbox: 4285872 (0x416950)
+          - KOTOR 1 PC: 4273776 (0x413670)
+          - KOTOR 2 PC: 4285200 (0x416310)
+          - KOTOR 1 Xbox: 4254992 (0x40ED10)
+          - KOTOR 2 Xbox: 4285872 (0x4165B0)
       - id: function_pointer_1
         type: u4
         doc: Function pointer to ASCII model parser
@@ -108,13 +151,13 @@ types:
         size: 32
         encoding: ASCII
         terminator: 0
-        doc: Model name (null-terminated string, max 32 bytes)
+        doc: Model name, null-terminated string, max 32 (0x20) bytes
       - id: root_node_offset
         type: u4
-        doc: Offset to root node structure (relative to MDL data start, offset 12)
+        doc: Offset to root node structure, relative to MDL data start, offset 12 (0xC) bytes
       - id: node_count
         type: u4
-        doc: Total number of nodes in model hierarchy
+        doc: Total number of nodes in model hierarchy, unsigned 32-bit integer
       - id: unknown_array_1
         type: array_definition
         doc: Unknown array definition (offset, count, count duplicate)
@@ -147,7 +190,7 @@ types:
     seq:
       - id: offset
         type: s4
-        doc: Offset to array (relative to MDL data start, offset 12)
+        doc: Offset to array (relative to MDL data start, offset 12 (0xc))
       - id: count
         type: u4
         doc: Number of used entries
@@ -157,15 +200,16 @@ types:
 
   model_header:
     doc: |
-      Model header (196 bytes) starting at offset 12 (data_start).
+      Model header (196 (0xc4) bytes) starting at offset 12 (0xc) (data_start).
       This matches MDLOps / PyKotor's _ModelHeader layout: a geometry header followed by
       model-wide metadata, offsets, and counts.
     seq:
       - id: geometry
         type: geometry_header
-        doc: Geometry header (80 bytes)
+        doc: Geometry header (80 (0x50) bytes)
       - id: model_type
         type: u1
+        enum: bioware_mdl_common::model_classification
         doc: Model classification byte
       - id: unknown0
         type: u1
@@ -266,12 +310,24 @@ types:
         encoding: ASCII
         terminator: 0
 
+  mdl_animation_entry:
+    doc: |
+      One animation slot: reads `animation_header` at `data_start + animation_offsets[anim_index]`.
+      Wraps the header so repeated root instances can use parametric types (user guide).
+    params:
+      - id: anim_index
+        type: u4
+    instances:
+      header:
+        type: animation_header
+        pos: _root.data_start + _root.animation_offsets[anim_index]
+
   animation_header:
-    doc: Animation header (136 bytes = 80 byte geometry header + 56 byte animation header)
+    doc: Animation header (136 (0x88) bytes = 80 (0x50) byte geometry header + 56 (0x38) byte animation header)
     seq:
       - id: geo_header
         type: geometry_header
-        doc: Standard 80-byte geometry header (geometry_type = 0x01 for animation)
+        doc: Standard 80 (0x50)-byte geometry header (geometry_type = 0x01 for animation)
       - id: animation_length
         type: f4
         doc: Duration of animation in seconds
@@ -298,7 +354,7 @@ types:
         doc: Purpose unknown
 
   animation_event:
-    doc: Animation event (36 bytes)
+    doc: Animation event (36 (0x24) bytes)
     seq:
       - id: activation_time
         type: f4
@@ -311,7 +367,7 @@ types:
         doc: Name of event (null-terminated string, e.g., "detonate")
 
   node:
-    doc: Node structure - starts with 80-byte header, followed by type-specific sub-header
+    doc: Node structure - starts with 80 (0x50)-byte header, followed by type-specific sub-header
     seq:
       - id: header
         type: node_header
@@ -344,12 +400,13 @@ types:
         if: header.node_type == 2081
 
   node_header:
-    doc: Node header (80 bytes) - present in all node types
+    doc: Node header (80 (0x50) bytes) - present in all node types
     seq:
       - id: node_type
         type: u2
         doc: |
-          Bitmask indicating node features:
+          Bitmask indicating node features (also carries the primary node kind in the composite values listed in
+          `bioware_mdl_common::node_type_value`; do not attach `enum:` here — instances below use bitwise `&` tests).
           - 0x0001: NODE_HAS_HEADER
           - 0x0002: NODE_HAS_LIGHT
           - 0x0004: NODE_HAS_EMITTER
@@ -431,7 +488,7 @@ types:
 
 
   light_header:
-    doc: Light header (92 bytes)
+    doc: Light header (92 (0x5c) bytes)
     seq:
       - id: unknown
         type: f4
@@ -500,7 +557,7 @@ types:
         doc: 1 if light intensity fades with distance, 0 otherwise
 
   emitter_header:
-    doc: Emitter header (224 bytes)
+    doc: Emitter header (224 (0xe0) bytes)
     seq:
       - id: dead_space
         type: f4
@@ -582,7 +639,7 @@ types:
         doc: Emitter behavior flags bitmask (P2P, bounce, inherit, etc.)
 
   reference_header:
-    doc: Reference header (36 bytes)
+    doc: Reference header (36 (0x24) bytes)
     seq:
       - id: model_resref
         type: str
@@ -595,7 +652,7 @@ types:
         doc: 1 if model can be detached and reattached dynamically, 0 if permanent
 
   trimesh_header:
-    doc: Trimesh header (332 bytes KOTOR 1, 340 bytes KOTOR 2)
+    doc: Trimesh header (332 (0x14c) bytes KOTOR 1, 340 (0x154) bytes KOTOR 2)
     seq:
       - id: function_pointer_0
         type: u4
@@ -806,7 +863,7 @@ types:
         doc: Offset to vertex coordinate array in MDL file (for walkmesh/AABB nodes)
 
   skinmesh_header:
-    doc: Skinmesh header (432 bytes KOTOR 1, 440 bytes KOTOR 2) - extends trimesh_header
+    doc: Skinmesh header (432 (0x1b0) bytes KOTOR 1, 440 (0x1b8) bytes KOTOR 2) - extends trimesh_header
     seq:
       - id: trimesh_base
         type: trimesh_header
@@ -862,7 +919,7 @@ types:
         doc: Padding for alignment
 
   animmesh_header:
-    doc: Animmesh header (388 bytes KOTOR 1, 396 bytes KOTOR 2) - extends trimesh_header
+    doc: Animmesh header (388 (0x184) bytes KOTOR 1, 396 (0x18c) bytes KOTOR 2) - extends trimesh_header
     seq:
       - id: trimesh_base
         type: trimesh_header
@@ -880,7 +937,7 @@ types:
         doc: Unknown float values
 
   danglymesh_header:
-    doc: Danglymesh header (360 bytes KOTOR 1, 368 bytes KOTOR 2) - extends trimesh_header
+    doc: Danglymesh header (360 (0x168) bytes KOTOR 1, 368 (0x170) bytes KOTOR 2) - extends trimesh_header
     seq:
       - id: trimesh_base
         type: trimesh_header
@@ -908,7 +965,7 @@ types:
         doc: Purpose unknown
 
   aabb_header:
-    doc: AABB (Axis-Aligned Bounding Box) header (336 bytes KOTOR 1, 344 bytes KOTOR 2) - extends trimesh_header
+    doc: AABB (Axis-Aligned Bounding Box) header (336 (0x150) bytes KOTOR 1, 344 (0x158) bytes KOTOR 2) - extends trimesh_header
     seq:
       - id: trimesh_base
         type: trimesh_header
@@ -918,7 +975,7 @@ types:
         doc: Purpose unknown
 
   lightsaber_header:
-    doc: Lightsaber header (352 bytes KOTOR 1, 360 bytes KOTOR 2) - extends trimesh_header
+    doc: Lightsaber header (352 (0x160) bytes KOTOR 1, 360 (0x168) bytes KOTOR 2) - extends trimesh_header
     seq:
       - id: trimesh_base
         type: trimesh_header
@@ -940,10 +997,11 @@ types:
         doc: Purpose unknown
 
   controller:
-    doc: Controller structure (16 bytes) - defines animation data for a node property over time
+    doc: Controller structure (16 (0x10) bytes) - defines animation data for a node property over time
     seq:
       - id: type
         type: u4
+        enum: bioware_mdl_common::controller_type
         doc: |
           Controller type identifier. Controllers define animation data for node properties over time.
 
@@ -1013,9 +1071,9 @@ types:
           - 100: SelfIllumColor (self-illumination color, 3 floats: R, G, B)
           - 128: Alpha (transparency/opacity, 1 float)
 
-          Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md - Additional Controller Types section
-          Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:342-407 - Controller type definitions
-          Reference: https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html - Comprehensive controller list
+          Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format - Additional Controller Types section
+          Reference: https://github.com/OpenKotOR/MDLOps/blob/7e40846d36acb5118e2e9feb2fd53620c29be540/MDLOpsM.pm#L342-L407 — Controller type definitions
+          Reference: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/binmdl.html - Comprehensive controller list
       - id: unknown
         type: u2
         doc: Purpose unknown, typically 0xFFFF
@@ -1037,42 +1095,8 @@ types:
         type: u1
         repeat: expr
         repeat-expr: 3
-        doc: Padding bytes for 16-byte alignment
+        doc: Padding bytes for 16 (0x10)-byte alignment
     instances:
       uses_bezier:
         value: (column_count & 0x10) != 0
         doc: True if controller uses Bezier interpolation
-
-enums:
-  model_classification:
-    0x00: other
-    0x01: effect
-    0x02: tile
-    0x04: character
-    0x08: door
-    0x10: lightsaber
-    0x20: placeable
-    0x40: flyer
-
-  node_type_value:
-    0x001: dummy
-    0x003: light
-    0x005: emitter
-    0x011: reference
-    0x021: trimesh
-    0x061: skinmesh
-    0x0a1: animmesh
-    0x121: danglymesh
-    0x221: aabb
-    0x821: lightsaber
-
-  controller_type:
-    8: position
-    20: orientation
-    36: scale
-    76: color
-    88: radius
-    96: shadow_radius
-    100: vertical_displacement_or_drag_or_selfillumcolor
-    132: alpha
-    140: multiplier_or_randvel

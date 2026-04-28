@@ -8,11 +8,40 @@ meta:
     - pwk
     - wok
   xref:
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/
-    reone: https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/bwmreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp
-    kotor_js: https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts
-    wiki: https://github.com/OldRepublicDevs/PyKotor/wiki/BWM-File-Format.md
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    pykotor_bwm_tree: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bwm/
+    pykotor_io_bwm_kaitai: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L56-L110
+    pykotor_io_bwm_reader: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L187-L253
+    pykotor_bwm_data: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bwm/bwm_data.py#L96-L120
+    github_modawan_reone_bwmreader: |
+      https://github.com/modawan/reone — `src/libs/graphics/format/bwmreader.cpp`:
+      **`BwmReader::load`** **27–92**; **vertex / adjacency / AABB table reads** **94–171**.
+    xoreos_walkmeshloader_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/engines/kotorbase/path/walkmeshloader.cpp#L42-L113
+    xoreos_walkmeshloader_append_tables: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/engines/kotorbase/path/walkmeshloader.cpp#L119-L216
+    xoreos_walkmeshloader_getaabb_stream: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/engines/kotorbase/path/walkmeshloader.cpp#L218-L249
+    kotor_js_odyssey_walkmesh_binary: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyWalkMesh.ts#L301-L395
+    kotor_js_odyssey_walkmesh_header: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyWalkMesh.ts#L490-L516
+    wiki: https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
+    xoreos_tools_no_walkmesh_cli: |
+      `xoreos-tools` ships no dedicated BWM/`.wok` decode CLI (see `README.md` tool list); walkmesh bytes are consumed in-engine
+      (`walkmeshloader.cpp`) and in PyKotor/reone/KotOR.js (`meta.xref` above).
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+doc-ref:
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — shipped CLI inventory (no BWM-specific tool)"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm PyKotor wiki — BWM"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L56-L110 PyKotor — Kaitai-backed BWM struct load"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L187-L253 PyKotor — BWMBinaryReader.load"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/engines/kotorbase/path/walkmeshloader.cpp#L42-L113 xoreos — WalkmeshLoader::load"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/engines/kotorbase/path/walkmeshloader.cpp#L119-L216 xoreos — WalkmeshLoader (append tables / WOK-only paths)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/engines/kotorbase/path/walkmeshloader.cpp#L218-L249 xoreos — WalkmeshLoader::getAABB"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/bwmreader.cpp#L27-L92 reone — BwmReader::load"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/bwmreader.cpp#L94-L171 reone — BwmReader (AABB / adjacency tables)"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyWalkMesh.ts#L301-L395 KotOR.js — readBinary"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/odyssey/OdysseyWalkMesh.ts#L490-L516 KotOR.js — header / version constants"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree (no dedicated BWM / walkmesh Torlack page; use engine + PyKotor xrefs above)"
+
 doc: |
   BWM (Binary WalkMesh) files define walkable surfaces for pathfinding and collision detection
   in Knights of the Old Republic (KotOR) games. BWM files are stored on disk with different
@@ -26,9 +55,9 @@ doc: |
   efficient random access to vertices, faces, materials, and acceleration structures.
 
   Binary Format Structure:
-  - File Header (8 bytes): Magic "BWM " and version "V1.0"
-  - Walkmesh Properties (52 bytes): Type, hook vectors, position
-  - Data Table Offsets (84 bytes): Counts and offsets for all data tables
+  - File Header (8 (0x8) bytes): Magic "BWM " and version "V1.0"
+  - Walkmesh Properties (52 (0x34) bytes): Type, hook vectors, position
+  - Data Table Offsets (84 (0x54) bytes): Counts and offsets for all data tables
   - Vertices Array: Array of float3 (x, y, z) per vertex
   - Face Indices Array: Array of uint32 triplets (vertex indices per face)
   - Materials Array: Array of uint32 (SurfaceMaterial ID per face)
@@ -39,24 +68,20 @@ doc: |
   - Edges Array: Array of (edge_index, transition) pairs (WOK only)
   - Perimeters Array: Array of edge indices (WOK only)
 
-  References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/BWM-File-Format.md
-  - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/bwmreader.cpp:27-171
-  - https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp:73-248
-  - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts:452-473
+  Authoritative cross-implementations (pinned paths and line bands): see `meta.xref` and `doc-ref`.
 
 seq:
   - id: header
     type: bwm_header
-    doc: BWM file header (8 bytes) - magic and version signature
+    doc: BWM file header (8 (0x8) bytes) - magic and version signature
 
   - id: walkmesh_properties
     type: walkmesh_properties
-    doc: Walkmesh properties section (52 bytes) - type, hooks, position
+    doc: Walkmesh properties section (52 (0x34) bytes) - type, hooks, position
 
   - id: data_table_offsets
     type: data_table_offsets
-    doc: Data table offsets section (84 bytes) - counts and offsets for all data tables
+    doc: Data table offsets section (84 (0x54) bytes) - counts and offsets for all data tables
 
 instances:
   vertices:

@@ -1,0 +1,13 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__mdx {
+		label="Mdx";
+		graph[style=dotted];
+
+		mdx__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="vertex_data_pos">0</TD><TD PORT="vertex_data_size">⇲</TD><TD></TD><TD PORT="vertex_data_type">vertex_data</TD></TR>
+		</TABLE>>];
+	}
+}

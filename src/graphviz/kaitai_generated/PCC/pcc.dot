@@ -1,0 +1,194 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__pcc {
+		label="Pcc";
+		graph[style=dotted];
+
+		pcc__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">122</TD><TD>FileHeader</TD><TD PORT="header_type">header</TD></TR>
+		</TABLE>>];
+		pcc__inst__compression_type [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+			<TR><TD>compression_type</TD><TD>header.compression_type</TD></TR>
+		</TABLE>>];
+		pcc__inst__export_table [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="export_table_pos">header.export_table_offset</TD><TD PORT="export_table_size">...</TD><TD>ExportTable</TD><TD PORT="export_table_type">export_table</TD></TR>
+			<TR><TD COLSPAN="4" PORT="export_table__if">if header.export_count &gt; 0</TD></TR>
+		</TABLE>>];
+		pcc__inst__import_table [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="import_table_pos">header.import_table_offset</TD><TD PORT="import_table_size">...</TD><TD>ImportTable</TD><TD PORT="import_table_type">import_table</TD></TR>
+			<TR><TD COLSPAN="4" PORT="import_table__if">if header.import_count &gt; 0</TD></TR>
+		</TABLE>>];
+		pcc__inst__is_compressed [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+			<TR><TD>is_compressed</TD><TD>header.package_flags &amp; 33554432 != 0</TD></TR>
+		</TABLE>>];
+		pcc__inst__name_table [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="name_table_pos">header.name_table_offset</TD><TD PORT="name_table_size">...</TD><TD>NameTable</TD><TD PORT="name_table_type">name_table</TD></TR>
+			<TR><TD COLSPAN="4" PORT="name_table__if">if header.name_count &gt; 0</TD></TR>
+		</TABLE>>];
+		subgraph cluster__export_entry {
+			label="Pcc::ExportEntry";
+			graph[style=dotted];
+
+			export_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="class_index_pos">0</TD><TD PORT="class_index_size">4</TD><TD>s4le</TD><TD PORT="class_index_type">class_index</TD></TR>
+				<TR><TD PORT="super_class_index_pos">4</TD><TD PORT="super_class_index_size">4</TD><TD>s4le</TD><TD PORT="super_class_index_type">super_class_index</TD></TR>
+				<TR><TD PORT="link_pos">8</TD><TD PORT="link_size">4</TD><TD>s4le</TD><TD PORT="link_type">link</TD></TR>
+				<TR><TD PORT="object_name_index_pos">12</TD><TD PORT="object_name_index_size">4</TD><TD>s4le</TD><TD PORT="object_name_index_type">object_name_index</TD></TR>
+				<TR><TD PORT="object_name_number_pos">16</TD><TD PORT="object_name_number_size">4</TD><TD>s4le</TD><TD PORT="object_name_number_type">object_name_number</TD></TR>
+				<TR><TD PORT="archetype_index_pos">20</TD><TD PORT="archetype_index_size">4</TD><TD>s4le</TD><TD PORT="archetype_index_type">archetype_index</TD></TR>
+				<TR><TD PORT="object_flags_pos">24</TD><TD PORT="object_flags_size">8</TD><TD>u8le</TD><TD PORT="object_flags_type">object_flags</TD></TR>
+				<TR><TD PORT="data_size_pos">32</TD><TD PORT="data_size_size">4</TD><TD>u4le</TD><TD PORT="data_size_type">data_size</TD></TR>
+				<TR><TD PORT="data_offset_pos">36</TD><TD PORT="data_offset_size">4</TD><TD>u4le</TD><TD PORT="data_offset_type">data_offset</TD></TR>
+				<TR><TD PORT="unknown1_pos">40</TD><TD PORT="unknown1_size">4</TD><TD>u4le</TD><TD PORT="unknown1_type">unknown1</TD></TR>
+				<TR><TD PORT="num_components_pos">44</TD><TD PORT="num_components_size">4</TD><TD>s4le</TD><TD PORT="num_components_type">num_components</TD></TR>
+				<TR><TD PORT="unknown2_pos">48</TD><TD PORT="unknown2_size">4</TD><TD>u4le</TD><TD PORT="unknown2_type">unknown2</TD></TR>
+				<TR><TD PORT="guid_pos">52</TD><TD PORT="guid_size">16</TD><TD>Guid</TD><TD PORT="guid_type">guid</TD></TR>
+				<TR><TD PORT="components_pos">68</TD><TD PORT="components_size">4</TD><TD>s4le</TD><TD PORT="components_type">components</TD></TR>
+				<TR><TD COLSPAN="4" PORT="components__repeat">repeat num_components times</TD></TR>
+				<TR><TD COLSPAN="4" PORT="components__if">if num_components &gt; 0</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__export_table {
+			label="Pcc::ExportTable";
+			graph[style=dotted];
+
+			export_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">...</TD><TD>ExportEntry</TD><TD PORT="entries_type">entries</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.header.export_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__file_header {
+			label="Pcc::FileHeader";
+			graph[style=dotted];
+
+			file_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="magic_pos">0</TD><TD PORT="magic_size">4</TD><TD>u4le</TD><TD PORT="magic_type">magic</TD></TR>
+				<TR><TD COLSPAN="4" PORT="magic__valid">must be equal to 2653586369</TD></TR>
+				<TR><TD PORT="version_pos">4</TD><TD PORT="version_size">4</TD><TD>u4le</TD><TD PORT="version_type">version</TD></TR>
+				<TR><TD PORT="licensee_version_pos">8</TD><TD PORT="licensee_version_size">4</TD><TD>u4le</TD><TD PORT="licensee_version_type">licensee_version</TD></TR>
+				<TR><TD PORT="header_size_pos">12</TD><TD PORT="header_size_size">4</TD><TD>s4le</TD><TD PORT="header_size_type">header_size</TD></TR>
+				<TR><TD PORT="package_name_pos">16</TD><TD PORT="package_name_size">10</TD><TD>str(UTF-16LE)</TD><TD PORT="package_name_type">package_name</TD></TR>
+				<TR><TD PORT="package_flags_pos">26</TD><TD PORT="package_flags_size">4</TD><TD>u4le</TD><TD PORT="package_flags_type">package_flags</TD></TR>
+				<TR><TD PORT="package_type_pos">30</TD><TD PORT="package_type_size">4</TD><TD>u4le→BiowareCommon::BiowarePccPackageKind</TD><TD PORT="package_type_type">package_type</TD></TR>
+				<TR><TD PORT="name_count_pos">34</TD><TD PORT="name_count_size">4</TD><TD>u4le</TD><TD PORT="name_count_type">name_count</TD></TR>
+				<TR><TD PORT="name_table_offset_pos">38</TD><TD PORT="name_table_offset_size">4</TD><TD>u4le</TD><TD PORT="name_table_offset_type">name_table_offset</TD></TR>
+				<TR><TD PORT="export_count_pos">42</TD><TD PORT="export_count_size">4</TD><TD>u4le</TD><TD PORT="export_count_type">export_count</TD></TR>
+				<TR><TD PORT="export_table_offset_pos">46</TD><TD PORT="export_table_offset_size">4</TD><TD>u4le</TD><TD PORT="export_table_offset_type">export_table_offset</TD></TR>
+				<TR><TD PORT="import_count_pos">50</TD><TD PORT="import_count_size">4</TD><TD>u4le</TD><TD PORT="import_count_type">import_count</TD></TR>
+				<TR><TD PORT="import_table_offset_pos">54</TD><TD PORT="import_table_offset_size">4</TD><TD>u4le</TD><TD PORT="import_table_offset_type">import_table_offset</TD></TR>
+				<TR><TD PORT="depend_offset_pos">58</TD><TD PORT="depend_offset_size">4</TD><TD>u4le</TD><TD PORT="depend_offset_type">depend_offset</TD></TR>
+				<TR><TD PORT="depend_count_pos">62</TD><TD PORT="depend_count_size">4</TD><TD>u4le</TD><TD PORT="depend_count_type">depend_count</TD></TR>
+				<TR><TD PORT="guid_part1_pos">66</TD><TD PORT="guid_part1_size">4</TD><TD>u4le</TD><TD PORT="guid_part1_type">guid_part1</TD></TR>
+				<TR><TD PORT="guid_part2_pos">70</TD><TD PORT="guid_part2_size">4</TD><TD>u4le</TD><TD PORT="guid_part2_type">guid_part2</TD></TR>
+				<TR><TD PORT="guid_part3_pos">74</TD><TD PORT="guid_part3_size">4</TD><TD>u4le</TD><TD PORT="guid_part3_type">guid_part3</TD></TR>
+				<TR><TD PORT="guid_part4_pos">78</TD><TD PORT="guid_part4_size">4</TD><TD>u4le</TD><TD PORT="guid_part4_type">guid_part4</TD></TR>
+				<TR><TD PORT="generations_pos">82</TD><TD PORT="generations_size">4</TD><TD>u4le</TD><TD PORT="generations_type">generations</TD></TR>
+				<TR><TD PORT="export_count_dup_pos">86</TD><TD PORT="export_count_dup_size">4</TD><TD>u4le</TD><TD PORT="export_count_dup_type">export_count_dup</TD></TR>
+				<TR><TD PORT="name_count_dup_pos">90</TD><TD PORT="name_count_dup_size">4</TD><TD>u4le</TD><TD PORT="name_count_dup_type">name_count_dup</TD></TR>
+				<TR><TD PORT="unknown1_pos">94</TD><TD PORT="unknown1_size">4</TD><TD>u4le</TD><TD PORT="unknown1_type">unknown1</TD></TR>
+				<TR><TD PORT="engine_version_pos">98</TD><TD PORT="engine_version_size">4</TD><TD>u4le</TD><TD PORT="engine_version_type">engine_version</TD></TR>
+				<TR><TD PORT="cooker_version_pos">102</TD><TD PORT="cooker_version_size">4</TD><TD>u4le</TD><TD PORT="cooker_version_type">cooker_version</TD></TR>
+				<TR><TD PORT="compression_flags_pos">106</TD><TD PORT="compression_flags_size">4</TD><TD>u4le</TD><TD PORT="compression_flags_type">compression_flags</TD></TR>
+				<TR><TD PORT="package_source_pos">110</TD><TD PORT="package_source_size">4</TD><TD>u4le</TD><TD PORT="package_source_type">package_source</TD></TR>
+				<TR><TD PORT="compression_type_pos">114</TD><TD PORT="compression_type_size">4</TD><TD>u4le→BiowareCommon::BiowarePccCompressionCodec</TD><TD PORT="compression_type_type">compression_type</TD></TR>
+				<TR><TD PORT="chunk_count_pos">118</TD><TD PORT="chunk_count_size">4</TD><TD>u4le</TD><TD PORT="chunk_count_type">chunk_count</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__guid {
+			label="Pcc::Guid";
+			graph[style=dotted];
+
+			guid__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="part1_pos">0</TD><TD PORT="part1_size">4</TD><TD>u4le</TD><TD PORT="part1_type">part1</TD></TR>
+				<TR><TD PORT="part2_pos">4</TD><TD PORT="part2_size">4</TD><TD>u4le</TD><TD PORT="part2_type">part2</TD></TR>
+				<TR><TD PORT="part3_pos">8</TD><TD PORT="part3_size">4</TD><TD>u4le</TD><TD PORT="part3_type">part3</TD></TR>
+				<TR><TD PORT="part4_pos">12</TD><TD PORT="part4_size">4</TD><TD>u4le</TD><TD PORT="part4_type">part4</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__import_entry {
+			label="Pcc::ImportEntry";
+			graph[style=dotted];
+
+			import_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="package_name_index_pos">0</TD><TD PORT="package_name_index_size">8</TD><TD>s8le</TD><TD PORT="package_name_index_type">package_name_index</TD></TR>
+				<TR><TD PORT="class_name_index_pos">8</TD><TD PORT="class_name_index_size">4</TD><TD>s4le</TD><TD PORT="class_name_index_type">class_name_index</TD></TR>
+				<TR><TD PORT="link_pos">12</TD><TD PORT="link_size">8</TD><TD>s8le</TD><TD PORT="link_type">link</TD></TR>
+				<TR><TD PORT="import_name_index_pos">20</TD><TD PORT="import_name_index_size">8</TD><TD>s8le</TD><TD PORT="import_name_index_type">import_name_index</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__import_table {
+			label="Pcc::ImportTable";
+			graph[style=dotted];
+
+			import_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">28</TD><TD>ImportEntry</TD><TD PORT="entries_type">entries</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.header.import_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__name_entry {
+			label="Pcc::NameEntry";
+			graph[style=dotted];
+
+			name_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="length_pos">0</TD><TD PORT="length_size">4</TD><TD>s4le</TD><TD PORT="length_type">length</TD></TR>
+				<TR><TD PORT="name_pos">4</TD><TD PORT="name_size">(length &lt; 0 ? -(length) : length) * 2</TD><TD>str(UTF-16LE)</TD><TD PORT="name_type">name</TD></TR>
+			</TABLE>>];
+			name_entry__inst__abs_length [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>abs_length</TD><TD>(length &lt; 0 ? -(length) : length)</TD></TR>
+			</TABLE>>];
+			name_entry__inst__name_size [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>name_size</TD><TD>abs_length * 2</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__name_table {
+			label="Pcc::NameTable";
+			graph[style=dotted];
+
+			name_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">...</TD><TD>NameEntry</TD><TD PORT="entries_type">entries</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.header.name_count times</TD></TR>
+			</TABLE>>];
+		}
+	}
+	pcc__seq:header_type -> file_header__seq [style=bold];
+	file_header__seq:compression_type_type -> pcc__inst__compression_type [color="#404040"];
+	file_header__seq:export_table_offset_type -> pcc__inst__export_table:export_table_pos [color="#404040"];
+	pcc__inst__export_table:export_table_type -> export_table__seq [style=bold];
+	file_header__seq:export_count_type -> pcc__inst__export_table:export_table__if [color="#404040"];
+	file_header__seq:import_table_offset_type -> pcc__inst__import_table:import_table_pos [color="#404040"];
+	pcc__inst__import_table:import_table_type -> import_table__seq [style=bold];
+	file_header__seq:import_count_type -> pcc__inst__import_table:import_table__if [color="#404040"];
+	file_header__seq:package_flags_type -> pcc__inst__is_compressed [color="#404040"];
+	file_header__seq:name_table_offset_type -> pcc__inst__name_table:name_table_pos [color="#404040"];
+	pcc__inst__name_table:name_table_type -> name_table__seq [style=bold];
+	file_header__seq:name_count_type -> pcc__inst__name_table:name_table__if [color="#404040"];
+	export_entry__seq:guid_type -> guid__seq [style=bold];
+	export_entry__seq:num_components_type -> export_entry__seq:components__repeat [color="#404040"];
+	export_entry__seq:num_components_type -> export_entry__seq:components__if [color="#404040"];
+	export_table__seq:entries_type -> export_entry__seq [style=bold];
+	file_header__seq:export_count_type -> export_table__seq:entries__repeat [color="#404040"];
+	import_table__seq:entries_type -> import_entry__seq [style=bold];
+	file_header__seq:import_count_type -> import_table__seq:entries__repeat [color="#404040"];
+	name_entry__seq:length_type -> name_entry__seq:name_size [color="#404040"];
+	name_entry__seq:length_type -> name_entry__inst__abs_length [color="#404040"];
+	name_entry__inst__abs_length:abs_length_type -> name_entry__inst__name_size [color="#404040"];
+	name_table__seq:entries_type -> name_entry__seq [style=bold];
+	file_header__seq:name_count_type -> name_table__seq:entries__repeat [color="#404040"];
+}

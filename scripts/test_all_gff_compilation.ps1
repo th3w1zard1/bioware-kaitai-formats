@@ -1,6 +1,14 @@
 # Test compilation of all GFF generic formats
 # This script systematically tests each format and reports results
 
+$ErrorActionPreference = "Continue"
+. "$PSScriptRoot/KscResolve.ps1"
+$kscExe = Get-ResolvedKscExecutable
+if (-not $kscExe) {
+    Write-Error "Could not find ksc or kaitai-struct-compiler. Add to PATH or set KAITAI_STRUCT_COMPILER."
+    exit 1
+}
+
 $formats = @('ARE', 'CNV', 'DLG', 'FAC', 'GAM', 'GIT', 'GUI', 'GVT', 'IFO', 'JRL', 'NFO', 'PT', 'PTH', 'UTC', 'UTD', 'UTE', 'UTI', 'UTM', 'UTP', 'UTS', 'UTT', 'UTW')
 $results = @{}
 
@@ -17,7 +25,7 @@ foreach ($fmt in $formats) {
     }
     
     Write-Host "Testing ${fmt}..."
-    $output = kaitai-struct-compiler -t csharp -d test_output $path 2>&1
+    $output = & $kscExe -t csharp -d test_output $path 2>&1
     $exitCode = $LASTEXITCODE
     
     if ($exitCode -eq 0) {

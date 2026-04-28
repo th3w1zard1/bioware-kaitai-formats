@@ -1,0 +1,41 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__tpc {
+		label="Tpc";
+		graph[style=dotted];
+
+		tpc__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">128</TD><TD>TpcHeader</TD><TD PORT="header_type">header</TD></TR>
+			<TR><TD PORT="body_pos">128</TD><TD PORT="body_size">⇲</TD><TD></TD><TD PORT="body_type">body</TD></TR>
+		</TABLE>>];
+		subgraph cluster__tpc_header {
+			label="Tpc::TpcHeader";
+			graph[style=dotted];
+
+			tpc_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="data_size_pos">0</TD><TD PORT="data_size_size">4</TD><TD>u4le</TD><TD PORT="data_size_type">data_size</TD></TR>
+				<TR><TD PORT="alpha_test_pos">4</TD><TD PORT="alpha_test_size">4</TD><TD>f4le</TD><TD PORT="alpha_test_type">alpha_test</TD></TR>
+				<TR><TD PORT="width_pos">8</TD><TD PORT="width_size">2</TD><TD>u2le</TD><TD PORT="width_type">width</TD></TR>
+				<TR><TD PORT="height_pos">10</TD><TD PORT="height_size">2</TD><TD>u2le</TD><TD PORT="height_type">height</TD></TR>
+				<TR><TD PORT="pixel_encoding_pos">12</TD><TD PORT="pixel_encoding_size">1</TD><TD>u1→BiowareCommon::BiowareTpcPixelFormatId</TD><TD PORT="pixel_encoding_type">pixel_encoding</TD></TR>
+				<TR><TD PORT="mipmap_count_pos">13</TD><TD PORT="mipmap_count_size">1</TD><TD>u1</TD><TD PORT="mipmap_count_type">mipmap_count</TD></TR>
+				<TR><TD PORT="reserved_pos">14</TD><TD PORT="reserved_size">1</TD><TD>u1</TD><TD PORT="reserved_type">reserved</TD></TR>
+				<TR><TD COLSPAN="4" PORT="reserved__repeat">repeat 114 times</TD></TR>
+			</TABLE>>];
+			tpc_header__inst__is_compressed [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_compressed</TD><TD>data_size != 0</TD></TR>
+			</TABLE>>];
+			tpc_header__inst__is_uncompressed [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+				<TR><TD>is_uncompressed</TD><TD>data_size == 0</TD></TR>
+			</TABLE>>];
+		}
+	}
+	tpc__seq:header_type -> tpc_header__seq [style=bold];
+	tpc_header__seq:data_size_type -> tpc_header__inst__is_compressed [color="#404040"];
+	tpc_header__seq:data_size_type -> tpc_header__inst__is_uncompressed [color="#404040"];
+}

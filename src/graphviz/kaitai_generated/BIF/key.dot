@@ -1,0 +1,101 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__key {
+		label="Key";
+		graph[style=dotted];
+
+		key__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="file_type_pos">0</TD><TD PORT="file_type_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_type_type">file_type</TD></TR>
+			<TR><TD COLSPAN="4" PORT="file_type__valid">must be equal to &quot;KEY &quot;</TD></TR>
+			<TR><TD PORT="file_version_pos">4</TD><TD PORT="file_version_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_version_type">file_version</TD></TR>
+			<TR><TD COLSPAN="4" PORT="file_version__valid">must be any of &quot;V1  &quot;, &quot;V1.1&quot;</TD></TR>
+			<TR><TD PORT="bif_count_pos">8</TD><TD PORT="bif_count_size">4</TD><TD>u4le</TD><TD PORT="bif_count_type">bif_count</TD></TR>
+			<TR><TD PORT="key_count_pos">12</TD><TD PORT="key_count_size">4</TD><TD>u4le</TD><TD PORT="key_count_type">key_count</TD></TR>
+			<TR><TD PORT="file_table_offset_pos">16</TD><TD PORT="file_table_offset_size">4</TD><TD>u4le</TD><TD PORT="file_table_offset_type">file_table_offset</TD></TR>
+			<TR><TD PORT="key_table_offset_pos">20</TD><TD PORT="key_table_offset_size">4</TD><TD>u4le</TD><TD PORT="key_table_offset_type">key_table_offset</TD></TR>
+			<TR><TD PORT="build_year_pos">24</TD><TD PORT="build_year_size">4</TD><TD>u4le</TD><TD PORT="build_year_type">build_year</TD></TR>
+			<TR><TD PORT="build_day_pos">28</TD><TD PORT="build_day_size">4</TD><TD>u4le</TD><TD PORT="build_day_type">build_day</TD></TR>
+			<TR><TD PORT="reserved_pos">32</TD><TD PORT="reserved_size">32</TD><TD></TD><TD PORT="reserved_type">reserved</TD></TR>
+		</TABLE>>];
+		key__inst__file_table [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="file_table_pos">file_table_offset</TD><TD PORT="file_table_size">...</TD><TD>FileTable</TD><TD PORT="file_table_type">file_table</TD></TR>
+			<TR><TD COLSPAN="4" PORT="file_table__if">if bif_count &gt; 0</TD></TR>
+		</TABLE>>];
+		key__inst__key_table [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="key_table_pos">key_table_offset</TD><TD PORT="key_table_size">...</TD><TD>KeyTable</TD><TD PORT="key_table_type">key_table</TD></TR>
+			<TR><TD COLSPAN="4" PORT="key_table__if">if key_count &gt; 0</TD></TR>
+		</TABLE>>];
+		subgraph cluster__file_entry {
+			label="Key::FileEntry";
+			graph[style=dotted];
+
+			file_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="file_size_pos">0</TD><TD PORT="file_size_size">4</TD><TD>u4le</TD><TD PORT="file_size_type">file_size</TD></TR>
+				<TR><TD PORT="filename_offset_pos">4</TD><TD PORT="filename_offset_size">4</TD><TD>u4le</TD><TD PORT="filename_offset_type">filename_offset</TD></TR>
+				<TR><TD PORT="filename_size_pos">8</TD><TD PORT="filename_size_size">2</TD><TD>u2le</TD><TD PORT="filename_size_type">filename_size</TD></TR>
+				<TR><TD PORT="drives_pos">10</TD><TD PORT="drives_size">2</TD><TD>u2le</TD><TD PORT="drives_type">drives</TD></TR>
+			</TABLE>>];
+			file_entry__inst__filename [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="filename_pos">filename_offset</TD><TD PORT="filename_size">filename_size</TD><TD>str(ASCII)</TD><TD PORT="filename_type">filename</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__file_table {
+			label="Key::FileTable";
+			graph[style=dotted];
+
+			file_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">12</TD><TD>FileEntry</TD><TD PORT="entries_type">entries</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.bif_count times</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__filename_table {
+			label="Key::FilenameTable";
+			graph[style=dotted];
+
+			filename_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="filenames_pos">0</TD><TD PORT="filenames_size">⇲</TD><TD>str(ASCII)</TD><TD PORT="filenames_type">filenames</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__key_entry {
+			label="Key::KeyEntry";
+			graph[style=dotted];
+
+			key_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="resref_pos">0</TD><TD PORT="resref_size">16</TD><TD>str(ASCII)</TD><TD PORT="resref_type">resref</TD></TR>
+				<TR><TD PORT="resource_type_pos">16</TD><TD PORT="resource_type_size">2</TD><TD>u2le→BiowareTypeIds::XoreosFileTypeId</TD><TD PORT="resource_type_type">resource_type</TD></TR>
+				<TR><TD PORT="resource_id_pos">18</TD><TD PORT="resource_id_size">4</TD><TD>u4le</TD><TD PORT="resource_id_type">resource_id</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__key_table {
+			label="Key::KeyTable";
+			graph[style=dotted];
+
+			key_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">22</TD><TD>KeyEntry</TD><TD PORT="entries_type">entries</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.key_count times</TD></TR>
+			</TABLE>>];
+		}
+	}
+	key__seq:file_table_offset_type -> key__inst__file_table:file_table_pos [color="#404040"];
+	key__inst__file_table:file_table_type -> file_table__seq [style=bold];
+	key__seq:bif_count_type -> key__inst__file_table:file_table__if [color="#404040"];
+	key__seq:key_table_offset_type -> key__inst__key_table:key_table_pos [color="#404040"];
+	key__inst__key_table:key_table_type -> key_table__seq [style=bold];
+	key__seq:key_count_type -> key__inst__key_table:key_table__if [color="#404040"];
+	file_entry__seq:filename_offset_type -> file_entry__inst__filename:filename_pos [color="#404040"];
+	file_entry__seq:filename_size_type -> file_entry__inst__filename:filename_size [color="#404040"];
+	file_table__seq:entries_type -> file_entry__seq [style=bold];
+	key__seq:bif_count_type -> file_table__seq:entries__repeat [color="#404040"];
+	key_table__seq:entries_type -> key_entry__seq [style=bold];
+	key__seq:key_count_type -> key_table__seq:entries__repeat [color="#404040"];
+}

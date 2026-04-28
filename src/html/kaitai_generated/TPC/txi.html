@@ -1,0 +1,89 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Txi format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>Txi format specification</h1>
+
+      
+<a name='type-txi'></a>
+<h1>Type: Txi</h1>
+
+<p>**Policy:** TXI is **plaintext** (line-oriented ASCII). This `.ksy` models only an opaque string span for tooling;
+authoritative command semantics live in PyKotor / reone parsers (`meta.xref`). xoreos consumes embedded TXI via **`TPC::readTXI`**
+(`meta.xref.xoreos_tpc_read_txi`), not a standalone `txifile.cpp`.
+
+TXI (Texture Info) files are compact ASCII descriptors that attach metadata to TPC textures.
+They control mipmap usage, filtering, flipbook animation, environment mapping, font atlases,
+and platform-specific downsampling. Every TXI file is parsed at runtime to configure how
+a TPC image is rendered.
+
+Format Structure:
+- Line-based ASCII text file (UTF-8 or Windows-1252)
+- Commands are case-insensitive but conventionally lowercase
+- Empty TXI files (0 bytes) are valid and use default settings
+- A TXI can be embedded at the end of a .tpc file or exist as a separate .txi file
+
+Command Formats (from PyKotor implementation):
+1. Simple commands: "command value" (e.g., "mipmap 0", "blending additive")
+2. Multi-value commands: "command v1 v2 v3" (e.g., "channelscale 1.0 0.5 0.5")
+3. Coordinate commands: "command count" followed by count coordinate lines
+   Coordinate format: "x y z" (normalized floats + int, typically z=0)
+
+Parsing Behavior (matches PyKotor TXIReaderMode):
+- Lines parsed sequentially, whitespace stripped
+- Empty lines ignored
+- Commands recognized by uppercase comparison against TXICommand enum
+- Invalid commands logged but don't stop parsing
+- Coordinate commands switch parser to coordinate mode until count reached
+- Commands can interrupt coordinate parsing
+
+All Supported Commands (from TXICommand enum in txi_data.py):
+- alphamean, arturoheight, arturowidth, baselineheight, blending, bumpmapscaling, bumpmaptexture
+- bumpyshinytexture, candownsample, caretindent, channelscale, channeltranslate, clamp, codepage
+- cols, compresstexture, controllerscript, cube, decal, defaultbpp, defaultheight, defaultwidth
+- distort, distortangle, distortionamplitude, downsamplefactor, downsamplemax, downsamplemin
+- envmaptexture, filerange, filter, fontheight, fontwidth, fps, isbumpmap, isdiffusebumpmap
+- islightmap, isspecularbumpmap, lowerrightcoords, maxsizehq, maxsizelq, minsizehq, minsizelq
+- mipmap, numchars, numcharspersheet, numx, numy, ondemand, priority, proceduretype, rows
+- spacingb, spacingr, speed, temporary, texturewidth, unique, upperleftcoords, wateralpha
+- waterheight, waterwidth, xbox_downsample
+
+Index: `meta.xref` and `doc-ref`.
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>content</td>
+<td>str(ASCII)</td>
+<td>Complete TXI file content as raw ASCII text.
+The PyKotor parser processes this line-by-line with special handling for:
+- Coordinate commands (upperleftcoords, lowerrightcoords) followed by coordinate data
+- Multi-value commands (channelscale, channeltranslate, filerange)
+- Boolean/numeric/string single-value commands
+- Empty files (valid, indicates default settings)
+</td>
+</tr>
+</table>
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

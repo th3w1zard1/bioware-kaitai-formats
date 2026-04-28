@@ -344,8 +344,8 @@ erf__localized_string_list = Struct(
 
 erf__resource_entry = Struct(
 	'offset_to_data' / Int32ul,
-	'resource_size' / Int32ul,
-	'data' / Pointer(this.offset_to_data, FixedSized(this.resource_size, GreedyBytes)),
+	'len_data' / Int32ul,
+	'data' / Pointer(this.offset_to_data, FixedSized(this.len_data, GreedyBytes)),
 )
 
 erf__resource_list = Struct(

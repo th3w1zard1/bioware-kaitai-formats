@@ -4,7 +4,13 @@ meta:
   license: MIT
   endian: le
   xref:
-    pykotor_ref: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/tslpatcher/
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    pykotor_ref: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/
+    pykotor_tslpatcher_mod_installer: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/patcher.py#L43-L120
+    pykotor_tslpatcher_memory: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/memory.py#L1-L65
+    xoreos_aurora_types_filetype_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L53-L60
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
 doc: |
   Shared enums and small helper types used by TSLPatcher-style tooling.
 
@@ -12,11 +18,18 @@ doc: |
   - Several upstream enums are string-valued (Python `Enum` of strings). Kaitai enums are numeric,
     so string-valued enums are modeled here as small string wrapper types with `valid` constraints.
 
-  References:
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/twoda.py
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/mods/ncs.py
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/logger.py
-  - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/tslpatcher/diff/objects.py
+  Canonical upstream links: `meta.doc-ref` (line-anchored GitHub URLs; avoid duplicating bare URLs here).
+
+doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L53-L60 xoreos — `FileType` enum start (engine archive IDs; TSLPatcher enums here are community patch metadata, not read from `swkotor.exe`)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/patcher.py#L43-L120 PyKotor — `ModInstaller` (apply / backup entry band)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/memory.py#L1-L65 PyKotor — `memory` (patch address space / token helpers)"
+  - "https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/ PyKotor — `tslpatcher/` package"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/mods/twoda.py#L1-L566 PyKotor — TwoDA patch helpers (full module band; large file)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/mods/ncs.py#L1-L246 PyKotor — NCS patch helpers (full module band)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/logger.py#L1-L79 PyKotor — TSLPatcher logging (full module band)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/tslpatcher/diff/objects.py#L1-L391 PyKotor — diff resource objects (full module band)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree (TSLPatcher metadata; no dedicated PDF)"
 
 types:
   bioware_ncs_token_type_str:

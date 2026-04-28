@@ -1,0 +1,390 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Erf format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>Erf format specification</h1>
+
+      
+<a name='type-erf'></a>
+<h1>Type: Erf</h1>
+
+<p>ERF (Encapsulated Resource File) files are self-contained archives used for modules, save games,
+texture packs, and hak paks. Unlike BIF files which require a KEY file for filename lookups,
+ERF files store both resource names (ResRefs) and data in the same file. They also support
+localized strings for descriptions in multiple languages.
+
+Format Variants:
+- ERF: Generic encapsulated resource file (texture packs, etc.)
+- HAK: Hak pak file (contains override resources). Used for mod content distribution
+- MOD: Module file (game areas/levels). Contains area resources, scripts, and module-specific data
+- SAV: Save game file (contains saved game state). Uses MOD signature but typically has `description_strref == 0`
+
+All variants use the same binary format structure, differing only in the file type signature.
+
+Archive `resource_type` values use the shared **`bioware_type_ids::xoreos_file_type_id`** enum (xoreos `FileType`); see `formats/Common/bioware_type_ids.ksy`.
+
+Binary Format Structure:
+- Header (160 bytes): File type, version, entry counts, offsets, build date, description
+- Localized String List (optional, variable size): Multi-language descriptions. MOD files may
+  include localized module names for the load screen. Each entry contains language_id (u4),
+  string_size (u4), and string_data (UTF-8 encoded text)
+- Key List (24 bytes per entry): ResRef to resource index mapping. Each entry contains:
+  - resref (16 bytes, ASCII, null-padded): Resource filename
+  - resource_id (u4): Index into resource_list
+  - resource_type (u2): Resource type identifier (`bioware_type_ids::xoreos_file_type_id`, xoreos `FileType`)
+  - unused (u2): Padding/unused field (typically 0)
+- Resource List (8 bytes per entry): Resource offset and size. Each entry contains:
+  - offset_to_data (u4): Byte offset to resource data from beginning of file
+  - len_data (u4): Uncompressed size of resource data in bytes (Kaitai id for byte size of `data`)
+- Resource Data (variable size): Raw binary data for each resource, stored at offsets specified
+  in resource_list
+
+File Access Pattern:
+1. Read header to get entry_count and offsets
+2. Read key_list to map ResRefs to resource_ids
+3. Use resource_id to index into resource_list
+4. Read resource data from offset_to_data with byte length len_data
+
+Authoritative index: `meta.xref` and `doc-ref` (PyKotor `io_erf` / `erf_data`, xoreos `ERFFile`, xoreos-tools `unerf` / `erf`, reone `ErfReader`, KotOR.js `ERFObject`, NickHugi `Kotor.NET/Formats/KotorERF`).
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>header</td>
+<td><a href="#type-erf-erf_header">ErfHeader</a></td>
+<td>ERF file header (160 bytes)</td>
+</tr>
+</table>
+<p><b>Parse instance</b>: key_list</p>
+<table class="table">
+<tr>
+<td>header.offset_to_key_list</td>
+<td>...</td>
+<td>key_list</td>
+<td><a href="#type-erf-key_list">KeyList</a></td>
+<td>Array of key entries mapping ResRefs to resource indices</td>
+</tr>
+</table>
+<p><b>Parse instance</b>: localized_string_list</p>
+<table class="table">
+<tr>
+<td>header.offset_to_localized_string_list</td>
+<td>...</td>
+<td>localized_string_list</td>
+<td><a href="#type-erf-localized_string_list">LocalizedStringList</a></td>
+<td>Optional localized string entries for multi-language descriptions</td>
+</tr>
+</table>
+<p><b>Parse instance</b>: resource_list</p>
+<table class="table">
+<tr>
+<td>header.offset_to_resource_list</td>
+<td>...</td>
+<td>resource_list</td>
+<td><a href="#type-erf-resource_list">ResourceList</a></td>
+<td>Array of resource entries containing offset and size information</td>
+</tr>
+</table>
+<a name='type-erf-erf_header'></a>
+<h2>Type: ErfHeader</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>file_type</td>
+<td>str(ASCII)</td>
+<td>File type signature. Must be one of:
+- "ERF " (0x45 0x52 0x46 0x20) - Generic ERF archive
+- "MOD " (0x4D 0x4F 0x44 0x20) - Module file
+- "SAV " (0x53 0x41 0x56 0x20) - Save game file
+- "HAK " (0x48 0x41 0x4B 0x20) - Hak pak file
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>file_version</td>
+<td>str(ASCII)</td>
+<td>File format version. Always "V1.0" for KotOR ERF files.
+Other versions may exist in Neverwinter Nights but are not supported in KotOR.
+</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>language_count</td>
+<td>u4le</td>
+<td>Number of localized string entries. Typically 0 for most ERF files.
+MOD files may include localized module names for the load screen.
+</td>
+</tr>
+<tr>
+<td>12</td>
+<td>...</td>
+<td>localized_string_size</td>
+<td>u4le</td>
+<td>Total size of localized string data in bytes.
+Includes all language entries (language_id + string_size + string_data for each).
+</td>
+</tr>
+<tr>
+<td>16</td>
+<td>...</td>
+<td>entry_count</td>
+<td>u4le</td>
+<td>Number of resources in the archive. This determines:
+- Number of entries in key_list
+- Number of entries in resource_list
+- Number of resource data blocks stored at various offsets
+</td>
+</tr>
+<tr>
+<td>20</td>
+<td>...</td>
+<td>offset_to_localized_string_list</td>
+<td>u4le</td>
+<td>Byte offset to the localized string list from the beginning of the file.
+Typically 160 (right after header) if present, or 0 if not present.
+</td>
+</tr>
+<tr>
+<td>24</td>
+<td>...</td>
+<td>offset_to_key_list</td>
+<td>u4le</td>
+<td>Byte offset to the key list from the beginning of the file.
+Typically 160 (right after header) if no localized strings, or after localized strings.
+</td>
+</tr>
+<tr>
+<td>28</td>
+<td>...</td>
+<td>offset_to_resource_list</td>
+<td>u4le</td>
+<td>Byte offset to the resource list from the beginning of the file.
+Located after the key list.
+</td>
+</tr>
+<tr>
+<td>32</td>
+<td>...</td>
+<td>build_year</td>
+<td>u4le</td>
+<td>Build year (years since 1900).
+Example: 103 = year 2003
+Primarily informational, used by development tools to track module versions.
+</td>
+</tr>
+<tr>
+<td>36</td>
+<td>...</td>
+<td>build_day</td>
+<td>u4le</td>
+<td>Build day (days since January 1, with January 1 = day 1).
+Example: 247 = September 4th (the 247th day of the year)
+Primarily informational, used by development tools to track module versions.
+</td>
+</tr>
+<tr>
+<td>40</td>
+<td>...</td>
+<td>description_strref</td>
+<td>s4le</td>
+<td>Description StrRef (TLK string reference) for the archive description.
+Values vary by file type:
+- MOD files: -1 (0xFFFFFFFF, uses localized strings instead)
+- SAV files: 0 (typically no description)
+- ERF/HAK files: Unpredictable (may contain valid StrRef or -1)
+</td>
+</tr>
+<tr>
+<td>44</td>
+<td>...</td>
+<td>reserved</td>
+<td></td>
+<td>Reserved padding (usually zeros).
+Total header size is 160 bytes:
+file_type (4) + file_version (4) + language_count (4) + localized_string_size (4) +
+entry_count (4) + offset_to_localized_string_list (4) + offset_to_key_list (4) +
+offset_to_resource_list (4) + build_year (4) + build_day (4) + description_strref (4) +
+reserved (116) = 160 bytes
+</td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(is_save_file),List(types, erf_header, instances, is_save_file),BoolOp(And,List(Compare(Name(identifier(file_type)),Eq,Str(MOD )), Compare(Name(identifier(description_strref)),Eq,IntNum(0)))),None,Some(CalcBooleanType),DocSpec(Some(Heuristic to detect save game files.
+Save games use MOD signature but typically have description_strref = 0.
+),List()))
+<a name='type-erf-key_entry'></a>
+<h2>Type: KeyEntry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>resref</td>
+<td>str(ASCII)</td>
+<td>Resource filename (ResRef), null-padded to 16 bytes.
+Maximum 16 characters. If exactly 16 characters, no null terminator exists.
+Resource names can be mixed case, though most are lowercase in practice.
+</td>
+</tr>
+<tr>
+<td>16</td>
+<td>...</td>
+<td>resource_id</td>
+<td>u4le</td>
+<td>Resource ID (index into resource_list).
+Maps this key entry to the corresponding resource entry.
+</td>
+</tr>
+<tr>
+<td>20</td>
+<td>...</td>
+<td>resource_type</td>
+<td>u2le→BiowareTypeIds::XoreosFileTypeId</td>
+<td>Resource type identifier (xoreos `FileType` numeric space; canonical enum in `formats/Common/bioware_type_ids.ksy`).
+Examples: 0x000B (TPC/texture), 0x000A (MOD/module), 0x0000 (RES/unknown)
+</td>
+</tr>
+<tr>
+<td>22</td>
+<td>...</td>
+<td>unused</td>
+<td>u2le</td>
+<td>Padding/unused field (typically 0)</td>
+</tr>
+</table>
+<a name='type-erf-key_list'></a>
+<h2>Type: KeyList</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-erf-key_entry">KeyEntry</a></td>
+<td>Array of key entries mapping ResRefs to resource indices</td>
+</tr>
+</table>
+<a name='type-erf-localized_string_entry'></a>
+<h2>Type: LocalizedStringEntry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>language_id</td>
+<td>u4le</td>
+<td>Language identifier:
+- 0 = English
+- 1 = French
+- 2 = German
+- 3 = Italian
+- 4 = Spanish
+- 5 = Polish
+- Additional languages for Asian releases
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>string_size</td>
+<td>u4le</td>
+<td>Length of string data in bytes</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>string_data</td>
+<td>str(UTF-8)</td>
+<td>UTF-8 encoded text string</td>
+</tr>
+</table>
+<a name='type-erf-localized_string_list'></a>
+<h2>Type: LocalizedStringList</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-erf-localized_string_entry">LocalizedStringEntry</a></td>
+<td>Array of localized string entries, one per language</td>
+</tr>
+</table>
+<a name='type-erf-resource_entry'></a>
+<h2>Type: ResourceEntry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>offset_to_data</td>
+<td>u4le</td>
+<td>Byte offset to resource data from the beginning of the file.
+Points to the actual binary data for this resource.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>len_data</td>
+<td>u4le</td>
+<td>Size of resource data in bytes.
+Uncompressed size of the resource.
+</td>
+</tr>
+</table>
+<p><b>Parse instance</b>: data</p>
+<table class="table">
+<tr>
+<td>offset_to_data</td>
+<td>...</td>
+<td>data</td>
+<td></td>
+<td>Raw binary data for this resource</td>
+</tr>
+</table>
+<a name='type-erf-resource_list'></a>
+<h2>Type: ResourceList</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-erf-resource_entry">ResourceEntry</a></td>
+<td>Array of resource entries containing offset and size information</td>
+</tr>
+</table>
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

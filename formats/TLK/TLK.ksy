@@ -6,18 +6,38 @@ meta:
   file-extension:
     - tlk
   xref:
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
-    reone: https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/tlkreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp
-    pykotor_wiki_tlk: https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tlk/
+    github_openkotor_pykotor_io_tlk: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk.py`:
+      **`_load_tlk_from_kaitai`** **33–64**; legacy header **67–76**; **`TLKBinaryReader.load`** **154–160**; **`TLKBinaryWriter.write`** **173–196**; constants **`_FILE_HEADER_SIZE` / `_ENTRY_SIZE`** **23–24**.
+    github_openkotor_pykotor_tlk_data: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tlk/tlk_data.py`:
+      wire overview **14–31**; **`class TLK`** **47–79**; **`TLKEntry`** 40 (0x28)-byte row **302–333**; **`V4.0`** (Jade) noted **17–18**.
+    github_modawan_reone_tlkreader: |
+      https://github.com/modawan/reone — `src/libs/resource/format/tlkreader.cpp`: **`StringFlags`** **27–31**; **`TlkReader::load`** **33–41**; **`loadStrings`** **43–67**.
+    xoreos_talktable_factory_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable.cpp#L35-L69
+    xoreos_talktable_tlk_blob: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable_tlk.cpp#L40-L114
+    github_xoreos_talktable_factory: |
+      https://github.com/xoreos/xoreos — `src/aurora/talktable.cpp`: **`TalkTable::load`** factory + stream dispatch **35–69** (delegates to TLK implementation).
+    github_xoreos_talktable_tlk: |
+      https://github.com/xoreos/xoreos — `src/aurora/talktable_tlk.cpp`: **`kTLKID`** / version tags **40–42**; **`TalkTable_TLK::load`** **57–92**; **`readEntryTableV3`** **94–105**; **`readEntryTableV4`** **107–114**; **`getLanguageID`** overloads **170–187**.
+    github_xoreos_types_kfiletype_tlk: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L87
+    xoreos_tools_tlk2xml_main: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/tlk2xml.cpp#L56-L80
+    xoreos_tools_xml2tlk_main: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/xml2tlk.cpp#L58-L85
+    kotor_net_tlk_binary: https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52
+    github_xoreos_docs_talktable_pdf: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/TalkTable_Format.pdf
+    github_kobaltblu_kotor_js_tlk: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TLKObject.ts#L16-L77
+    pykotor_wiki_tlk: https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
 doc: |
   TLK (Talk Table) files contain all text strings used in the game, both written and spoken.
   They enable easy localization by providing a lookup table from string reference numbers (StrRef)
   to localized text and associated voice-over audio files.
 
   Binary Format Structure:
-  - File Header (20 bytes): File type signature, version, language ID, string count, entries offset
-  - String Data Table (40 bytes per entry): Metadata for each string entry (flags, sound ResRef, offsets, lengths)
+  - File Header (20 (0x14) bytes): File type signature, version, language ID, string count, entries offset
+  - String Data Table (40 (0x28) bytes per entry): Metadata for each string entry (flags, sound ResRef, offsets, lengths)
   - String Entries (variable size): Sequential null-terminated text strings starting at entries_offset
 
   The format uses a two-level structure:
@@ -27,21 +47,30 @@ doc: |
   String references (StrRef) are 0-based indices into the string_data_table array. StrRef 0 refers to
   the first entry, StrRef 1 to the second, etc. StrRef -1 indicates no string reference.
 
-  References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
-  - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/tlkreader.cpp:31-84
-  - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp:42-176
-  - https://github.com/TSLPatcher/TSLPatcher/blob/master/lib/site/Bioware/TLK.pm:1-533
-  - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryStructure.cs:11-132
+  Authoritative index: `meta.xref` and `doc-ref` (PyKotor, xoreos `talktable*` + `talktable_tlk`, xoreos-tools CLIs, reone, KotOR.js, NickHugi/Kotor.NET). Legacy Perl / archived community URLs are omitted when they no longer resolve on GitHub.
+
+doc-ref:
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk PyKotor wiki — TLK"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk.py#L23-L196 PyKotor — `io_tlk` (sizes, Kaitai + legacy + write)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable.cpp#L35-L69 xoreos — `TalkTable::load` (factory dispatch)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/talktable_tlk.cpp#L40-L114 xoreos — TLK id/version + `TalkTable_TLK::load` + V3/V4 entry tables"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L87 xoreos — `kFileTypeTLK`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/language.h#L46-L73 xoreos — `Language` / `LanguageGender` (TLK `language_id` / substring packing)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/tlk2xml.cpp#L56-L80 xoreos-tools — `tlk2xml` CLI (`main`)"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/xml2tlk.cpp#L58-L85 xoreos-tools — `xml2tlk` CLI (`main`)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/tlkreader.cpp#L27-L67 reone — `TlkReader`"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TLKObject.ts#L16-L77 KotOR.js — `TLKObject`"
+  - "https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52 NickHugi/Kotor.NET — `TLKBinaryReader` (`Read` + constructors)"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/TalkTable_Format.pdf xoreos-docs — TalkTable_Format.pdf"
 
 seq:
   - id: header
     type: tlk_header
-    doc: TLK file header (20 bytes) - contains file signature, version, language, and counts
+    doc: TLK file header (20 (0x14) bytes) - contains file signature, version, language, and counts
 
   - id: string_data_table
     type: string_data_table
-    doc: Array of string data entries (metadata for each string) - 40 bytes per entry
+    doc: Array of string data entries (metadata for each string) - 40 (0x28) bytes per entry
 
 types:
   tlk_header:
@@ -134,7 +163,7 @@ types:
         size: 16
         doc: |
           Voice-over audio filename (ResRef), null-terminated ASCII, max 16 chars.
-          If the string is shorter than 16 bytes, it is null-padded.
+          If the string is shorter than 16 (0x10) bytes, it is null-padded.
           Empty string (all nulls) indicates no voice-over audio.
 
       - id: volume_variance
@@ -154,7 +183,7 @@ types:
         doc: |
           Offset to string text relative to entries_offset.
           The actual file offset is: header.entries_offset + text_offset.
-          First string starts at offset 0, subsequent strings follow sequentially.
+          First string starts at offset 0 (0x0), subsequent strings follow sequentially.
 
       - id: text_length
         type: u4
@@ -223,5 +252,5 @@ types:
         doc: |
           Size of each string_data_entry in bytes.
           Breakdown: flags (4) + sound_resref (16) + volume_variance (4) + pitch_variance (4) + 
-          text_offset (4) + text_length (4) + sound_length (4) = 40 bytes total.
+          text_offset (4) + text_length (4) + sound_length (4) = 40 (0x28) bytes total.
 

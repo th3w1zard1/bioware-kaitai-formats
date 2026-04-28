@@ -4,26 +4,36 @@ meta:
   license: MIT
   endian: le
   file-extension: pcc
+  imports:
+    - ../Common/bioware_common
   xref:
-    me3explorer: https://me3explorer.fandom.com/wiki/PCC_File_Format
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    legendary_explorer_wiki: https://github.com/ME3Tweaks/LegendaryExplorer/wiki/PCC-File-Format
+    bioware_common_pcc_enums: |
+      Canonical `u4` enums: `formats/Common/bioware_common.ksy` → `bioware_pcc_package_kind`, `bioware_pcc_compression_codec`
+      (lowest-scope narrative: LegendaryExplorer wiki; xoreos does not ship a PCC reader).
+    xoreos_upstream_note: |
+      Upstream xoreos does not implement Mass Effect / Unreal-style PCC packages; there is no `*pcc*.cpp` reader to cite.
+      This `.ksy` documents the LegendaryExplorer / ME3Tweaks ecosystem, not xoreos runtime code.
+    repo_coverage_pcc_row: |
+      Maintainer matrix row for this spec (explicit **not** xoreos Aurora): `docs/XOREOS_FORMAT_COVERAGE.md` — `formats/PCC/PCC.ksy` → Runtime/Tools/Docs **not** xoreos KotOR stack.
+    pykotor_upstream_note_pcc: |
+      `OpenKotOR/PyKotor` `master` has **no** `formats/pcc/` (or similarly named) package under `Libraries/PyKotor/src/pykotor/resource/formats/` — treat **ME3Tweaks LegendaryExplorer** wiki + UEE-derived tooling as the primary wire narrative for this spec.
+    xoreos_aurora_types_filetype_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L53-L60
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
 doc: |
-  PCC (Package) files are BioWare's proprietary version of Unreal Engine package files.
-  They store game resources including textures, meshes, materials, scripts, and more.
-  
-  PCC files can be either compressed or uncompressed:
-  - Uncompressed: Direct structure with header, tables, and data
-  - Compressed: Chunks containing compressed blocks using zlib or LZO
-  
-  The file structure consists of:
-  1. File Header - Contains magic number, version, table offsets, and metadata
-  2. Name Table - Contains all string names used in the package
-  3. Import Table - Contains references to external packages/classes
-  4. Export Table - Contains all objects stored in the package
-  5. Export Data - Raw binary data for each export
-  
-  References:
-  - https://me3explorer.fandom.com/wiki/PCC_File_Format
-  - Unreal Engine package format (BioWare variant)
+  **PCC** (Mass Effect–era Unreal package): BioWare variant of UE packages — `file_header`, name/import/export
+  tables, then export blobs. May be zlib/LZO chunked (`bioware_pcc_compression_codec` in `bioware_common`).
+
+  **Not KotOR:** no `k1_win_gog_swkotor.exe` grounding — follow LegendaryExplorer wiki + `meta.xref`.
+
+doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L53-L60 xoreos — `FileType` enum start (Aurora/BioWare family IDs; **PCC/Unreal packages are not in this table** — included only as canonical upstream anchor for “what this repo’s xoreos stack is”)"
+  - "https://github.com/ME3Tweaks/LegendaryExplorer/wiki/PCC-File-Format ME3Tweaks — PCC file format"
+  - "https://github.com/ME3Tweaks/LegendaryExplorer/wiki/Package-Handling ME3Tweaks — Package handling (export/import tables, UE3-era BioWare packages)"
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/f4700f43f20337e01b8ef751a7c7d42e0acfb00a/docs/XOREOS_FORMAT_COVERAGE.md In-tree — coverage matrix (PCC is out-of-xoreos Aurora scope; see table)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree (KotOR-era PDFs; PCC is Mass Effect / UE3 — use LegendaryExplorer wiki as wire authority)"
 
 seq:
   - id: header
@@ -96,10 +106,10 @@ types:
       
       - id: package_type
         type: u4
+        enum: bioware_common::bioware_pcc_package_kind
         doc: |
-          Package type indicator.
-          0 = Normal Package
-          1 = Patch Package (only for use in Patch_001.sfar)
+          Package type indicator (`u4`). Canonical: `formats/Common/bioware_common.ksy` → `bioware_pcc_package_kind`
+          (LegendaryExplorer PCC wiki).
       
       - id: name_count
         type: u4
@@ -183,12 +193,10 @@ types:
       
       - id: compression_type
         type: u4
+        enum: bioware_common::bioware_pcc_compression_codec
         doc: |
-          Compression algorithm type.
-          0 = None
-          1 = Zlib
-          2 = LZO
-          Unused if package is not compressed.
+          Compression codec when package is compressed (`u4`). Canonical: `formats/Common/bioware_common.ksy` → `bioware_pcc_compression_codec`
+          (LegendaryExplorer PCC wiki). Unused / undefined when uncompressed.
       
       - id: chunk_count
         type: u4
@@ -219,7 +227,7 @@ types:
         size: "(length < 0 ? -length : length) * 2"
         doc: |
           Name string encoded as UTF-16LE (WCHAR).
-          Size is absolute value of length * 2 bytes per character.
+          Size is absolute value of length * 2 (0x2) bytes per character.
           Negative length indicates WCHAR count (use absolute value).
     
     instances:
@@ -229,7 +237,7 @@ types:
       
       name_size:
         value: abs_length * 2
-        doc: Size of name string in bytes (absolute length * 2 bytes per WCHAR)
+        doc: Size of name string in bytes (absolute length * 2 (0x2) bytes per WCHAR)
   
   import_table:
     seq:
@@ -324,7 +332,7 @@ types:
         type: u4
         doc: Unknown field.
       
-      - id: component_count
+      - id: num_components
         type: s4
         doc: Number of component entries (can be negative).
       
@@ -339,11 +347,11 @@ types:
       - id: components
         type: s4
         repeat: expr
-        repeat-expr: component_count
-        if: component_count > 0
+        repeat-expr: num_components
+        if: num_components > 0
         doc: |
           Array of component indices.
-          Only present if component_count > 0.
+          Only present if num_components > 0.
   
   guid:
     seq:
