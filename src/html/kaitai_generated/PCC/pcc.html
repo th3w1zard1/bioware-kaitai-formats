@@ -1,0 +1,558 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Pcc format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>Pcc format specification</h1>
+
+      
+<a name='type-pcc'></a>
+<h1>Type: Pcc</h1>
+
+<p>**PCC** (Mass Effect–era Unreal package): BioWare variant of UE packages — `file_header`, name/import/export
+tables, then export blobs. May be zlib/LZO chunked (`bioware_pcc_compression_codec` in `bioware_common`).
+
+**Not KotOR:** no `k1_win_gog_swkotor.exe` grounding — follow LegendaryExplorer wiki + `meta.xref`.
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>header</td>
+<td><a href="#type-pcc-file_header">FileHeader</a></td>
+<td>File header containing format metadata and table offsets.</td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(compression_type),List(instances, compression_type),Attribute(Name(identifier(header)),identifier(compression_type)),None,Some(EnumType(List(bioware_common, bioware_pcc_compression_codec),IntMultiType(false,Width4,Some(LittleEndian)))),DocSpec(Some(Compression algorithm used (0=None, 1=Zlib, 2=LZO).),List()))
+<p><b>Parse instance</b>: export_table</p>
+<table class="table">
+<tr>
+<td>header.export_table_offset</td>
+<td>...</td>
+<td>export_table</td>
+<td><a href="#type-pcc-export_table">ExportTable</a></td>
+<td>Table containing all objects exported from this package.</td>
+</tr>
+</table>
+<p><b>Parse instance</b>: import_table</p>
+<table class="table">
+<tr>
+<td>header.import_table_offset</td>
+<td>...</td>
+<td>import_table</td>
+<td><a href="#type-pcc-import_table">ImportTable</a></td>
+<td>Table containing references to external packages and classes.</td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(is_compressed),List(instances, is_compressed),Compare(BinOp(Attribute(Name(identifier(header)),identifier(package_flags)),BitAnd,IntNum(33554432)),NotEq,IntNum(0)),None,Some(CalcBooleanType),DocSpec(Some(True if package uses compressed chunks (bit 25 of package_flags).),List()))
+<p><b>Parse instance</b>: name_table</p>
+<table class="table">
+<tr>
+<td>header.name_table_offset</td>
+<td>...</td>
+<td>name_table</td>
+<td><a href="#type-pcc-name_table">NameTable</a></td>
+<td>Table containing all string names used in the package.</td>
+</tr>
+</table>
+<a name='type-pcc-export_entry'></a>
+<h2>Type: ExportEntry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>class_index</td>
+<td>s4le</td>
+<td>Object index for the class.
+Negative = import table index
+Positive = export table index
+Zero = no class
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>super_class_index</td>
+<td>s4le</td>
+<td>Object index for the super class.
+Negative = import table index
+Positive = export table index
+Zero = no super class
+</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>link</td>
+<td>s4le</td>
+<td>Link to other objects (internal reference).</td>
+</tr>
+<tr>
+<td>12</td>
+<td>...</td>
+<td>object_name_index</td>
+<td>s4le</td>
+<td>Index into name table for the object name.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>...</td>
+<td>object_name_number</td>
+<td>s4le</td>
+<td>Object name number (for duplicate names).</td>
+</tr>
+<tr>
+<td>20</td>
+<td>...</td>
+<td>archetype_index</td>
+<td>s4le</td>
+<td>Object index for the archetype.
+Negative = import table index
+Positive = export table index
+Zero = no archetype
+</td>
+</tr>
+<tr>
+<td>24</td>
+<td>...</td>
+<td>object_flags</td>
+<td>u8le</td>
+<td>Object flags bitfield (64-bit).</td>
+</tr>
+<tr>
+<td>32</td>
+<td>...</td>
+<td>data_size</td>
+<td>u4le</td>
+<td>Size of the export data in bytes.</td>
+</tr>
+<tr>
+<td>36</td>
+<td>...</td>
+<td>data_offset</td>
+<td>u4le</td>
+<td>Byte offset to the export data from the beginning of the file.</td>
+</tr>
+<tr>
+<td>40</td>
+<td>...</td>
+<td>unknown1</td>
+<td>u4le</td>
+<td>Unknown field.</td>
+</tr>
+<tr>
+<td>44</td>
+<td>...</td>
+<td>num_components</td>
+<td>s4le</td>
+<td>Number of component entries (can be negative).</td>
+</tr>
+<tr>
+<td>48</td>
+<td>...</td>
+<td>unknown2</td>
+<td>u4le</td>
+<td>Unknown field.</td>
+</tr>
+<tr>
+<td>52</td>
+<td>...</td>
+<td>guid</td>
+<td><a href="#type-pcc-guid">Guid</a></td>
+<td>GUID for this export object.</td>
+</tr>
+<tr>
+<td>68</td>
+<td>...</td>
+<td>components</td>
+<td>s4le</td>
+<td>Array of component indices.
+Only present if num_components > 0.
+</td>
+</tr>
+</table>
+<a name='type-pcc-export_table'></a>
+<h2>Type: ExportTable</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-pcc-export_entry">ExportEntry</a></td>
+<td>Array of export entries.</td>
+</tr>
+</table>
+<a name='type-pcc-file_header'></a>
+<h2>Type: FileHeader</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>magic</td>
+<td>u4le</td>
+<td>Magic number identifying PCC format. Must be 0x9E2A83C1.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>version</td>
+<td>u4le</td>
+<td>File format version.
+Encoded as: (major << 16) | (minor << 8) | patch
+Example: 0xC202AC = 194/684 (major=194, minor=684)
+</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>licensee_version</td>
+<td>u4le</td>
+<td>Licensee-specific version field (typically 0x67C).</td>
+</tr>
+<tr>
+<td>12</td>
+<td>...</td>
+<td>header_size</td>
+<td>s4le</td>
+<td>Header size field (typically -5 = 0xFFFFFFFB).</td>
+</tr>
+<tr>
+<td>16</td>
+<td>...</td>
+<td>package_name</td>
+<td>str(UTF-16LE)</td>
+<td>Package name (typically "None" = 0x4E006F006E006500).</td>
+</tr>
+<tr>
+<td>26</td>
+<td>...</td>
+<td>package_flags</td>
+<td>u4le</td>
+<td>Package flags bitfield.
+Bit 25 (0x2000000): Compressed package
+Bit 20 (0x100000): ME3Explorer edited format flag
+Other bits: Various package attributes
+</td>
+</tr>
+<tr>
+<td>30</td>
+<td>...</td>
+<td>package_type</td>
+<td>u4le→BiowareCommon::BiowarePccPackageKind</td>
+<td>Package type indicator (`u4`). Canonical: `formats/Common/bioware_common.ksy` → `bioware_pcc_package_kind`
+(LegendaryExplorer PCC wiki).
+</td>
+</tr>
+<tr>
+<td>34</td>
+<td>...</td>
+<td>name_count</td>
+<td>u4le</td>
+<td>Number of entries in the name table.</td>
+</tr>
+<tr>
+<td>38</td>
+<td>...</td>
+<td>name_table_offset</td>
+<td>u4le</td>
+<td>Byte offset to the name table from the beginning of the file.</td>
+</tr>
+<tr>
+<td>42</td>
+<td>...</td>
+<td>export_count</td>
+<td>u4le</td>
+<td>Number of entries in the export table.</td>
+</tr>
+<tr>
+<td>46</td>
+<td>...</td>
+<td>export_table_offset</td>
+<td>u4le</td>
+<td>Byte offset to the export table from the beginning of the file.</td>
+</tr>
+<tr>
+<td>50</td>
+<td>...</td>
+<td>import_count</td>
+<td>u4le</td>
+<td>Number of entries in the import table.</td>
+</tr>
+<tr>
+<td>54</td>
+<td>...</td>
+<td>import_table_offset</td>
+<td>u4le</td>
+<td>Byte offset to the import table from the beginning of the file.</td>
+</tr>
+<tr>
+<td>58</td>
+<td>...</td>
+<td>depend_offset</td>
+<td>u4le</td>
+<td>Offset to dependency table (typically 0x664).</td>
+</tr>
+<tr>
+<td>62</td>
+<td>...</td>
+<td>depend_count</td>
+<td>u4le</td>
+<td>Number of dependencies (typically 0x67C).</td>
+</tr>
+<tr>
+<td>66</td>
+<td>...</td>
+<td>guid_part1</td>
+<td>u4le</td>
+<td>First 32 bits of package GUID.</td>
+</tr>
+<tr>
+<td>70</td>
+<td>...</td>
+<td>guid_part2</td>
+<td>u4le</td>
+<td>Second 32 bits of package GUID.</td>
+</tr>
+<tr>
+<td>74</td>
+<td>...</td>
+<td>guid_part3</td>
+<td>u4le</td>
+<td>Third 32 bits of package GUID.</td>
+</tr>
+<tr>
+<td>78</td>
+<td>...</td>
+<td>guid_part4</td>
+<td>u4le</td>
+<td>Fourth 32 bits of package GUID.</td>
+</tr>
+<tr>
+<td>82</td>
+<td>...</td>
+<td>generations</td>
+<td>u4le</td>
+<td>Number of generation entries.</td>
+</tr>
+<tr>
+<td>86</td>
+<td>...</td>
+<td>export_count_dup</td>
+<td>u4le</td>
+<td>Duplicate export count (should match export_count).</td>
+</tr>
+<tr>
+<td>90</td>
+<td>...</td>
+<td>name_count_dup</td>
+<td>u4le</td>
+<td>Duplicate name count (should match name_count).</td>
+</tr>
+<tr>
+<td>94</td>
+<td>...</td>
+<td>unknown1</td>
+<td>u4le</td>
+<td>Unknown field (typically 0x0).</td>
+</tr>
+<tr>
+<td>98</td>
+<td>...</td>
+<td>engine_version</td>
+<td>u4le</td>
+<td>Engine version (typically 0x18EF = 6383).</td>
+</tr>
+<tr>
+<td>102</td>
+<td>...</td>
+<td>cooker_version</td>
+<td>u4le</td>
+<td>Cooker version (typically 0x3006B = 196715).</td>
+</tr>
+<tr>
+<td>106</td>
+<td>...</td>
+<td>compression_flags</td>
+<td>u4le</td>
+<td>Compression flags (typically 0x15330000).</td>
+</tr>
+<tr>
+<td>110</td>
+<td>...</td>
+<td>package_source</td>
+<td>u4le</td>
+<td>Package source identifier (typically 0x8AA0000).</td>
+</tr>
+<tr>
+<td>114</td>
+<td>...</td>
+<td>compression_type</td>
+<td>u4le→BiowareCommon::BiowarePccCompressionCodec</td>
+<td>Compression codec when package is compressed (`u4`). Canonical: `formats/Common/bioware_common.ksy` → `bioware_pcc_compression_codec`
+(LegendaryExplorer PCC wiki). Unused / undefined when uncompressed.
+</td>
+</tr>
+<tr>
+<td>118</td>
+<td>...</td>
+<td>chunk_count</td>
+<td>u4le</td>
+<td>Number of compressed chunks (0 for uncompressed, 1 for compressed).
+If > 0, file uses compressed structure with chunks.
+</td>
+</tr>
+</table>
+<a name='type-pcc-guid'></a>
+<h2>Type: Guid</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>part1</td>
+<td>u4le</td>
+<td>First 32 bits of GUID.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>part2</td>
+<td>u4le</td>
+<td>Second 32 bits of GUID.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>part3</td>
+<td>u4le</td>
+<td>Third 32 bits of GUID.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>...</td>
+<td>part4</td>
+<td>u4le</td>
+<td>Fourth 32 bits of GUID.</td>
+</tr>
+</table>
+<a name='type-pcc-import_entry'></a>
+<h2>Type: ImportEntry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>package_name_index</td>
+<td>s8le</td>
+<td>Index into name table for package name.
+Negative value indicates import from external package.
+Positive value indicates import from this package.
+</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>class_name_index</td>
+<td>s4le</td>
+<td>Index into name table for class name.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>...</td>
+<td>link</td>
+<td>s8le</td>
+<td>Link to import/export table entry.
+Used to resolve the actual object reference.
+</td>
+</tr>
+<tr>
+<td>20</td>
+<td>...</td>
+<td>import_name_index</td>
+<td>s8le</td>
+<td>Index into name table for the imported object name.</td>
+</tr>
+</table>
+<a name='type-pcc-import_table'></a>
+<h2>Type: ImportTable</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-pcc-import_entry">ImportEntry</a></td>
+<td>Array of import entries.</td>
+</tr>
+</table>
+<a name='type-pcc-name_entry'></a>
+<h2>Type: NameEntry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>length</td>
+<td>s4le</td>
+<td>Length of the name string in characters (signed).
+Negative value indicates the number of WCHAR characters.
+Positive value is also valid but less common.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>name</td>
+<td>str(UTF-16LE)</td>
+<td>Name string encoded as UTF-16LE (WCHAR).
+Size is absolute value of length * 2 bytes per character.
+Negative length indicates WCHAR count (use absolute value).
+</td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(abs_length),List(types, name_entry, instances, abs_length),IfExp(Compare(Name(identifier(length)),Lt,IntNum(0)),UnaryOp(Minus,Name(identifier(length))),Name(identifier(length))),None,Some(CalcIntType),DocSpec(Some(Absolute value of length for size calculation),List()))
+value instance: ValueInstanceSpec(InstanceIdentifier(name_size),List(types, name_entry, instances, name_size),BinOp(Name(identifier(abs_length)),Mult,IntNum(2)),None,Some(CalcIntType),DocSpec(Some(Size of name string in bytes (absolute length * 2 bytes per WCHAR)),List()))
+<a name='type-pcc-name_table'></a>
+<h2>Type: NameTable</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-pcc-name_entry">NameEntry</a></td>
+<td>Array of name entries.</td>
+</tr>
+</table>
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

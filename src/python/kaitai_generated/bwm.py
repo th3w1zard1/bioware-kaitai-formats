@@ -34,11 +34,54 @@ class Bwm(KaitaiStruct):
     - Edges Array: Array of (edge_index, transition) pairs (WOK only)
     - Perimeters Array: Array of edge indices (WOK only)
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/BWM-File-Format.md
-    - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/bwmreader.cpp:27-171
-    - https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp:73-248
-    - https://github.com/KotOR-Community-Patches/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts:452-473
+    Authoritative cross-implementations (pinned paths and line bands): see `meta.xref` and `doc-ref`.
+    
+    .. seealso::
+       xoreos-tools — shipped CLI inventory (no BWM-specific tool) - https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
+    
+    
+    .. seealso::
+       PyKotor wiki — BWM - https://github.com/OpenKotOR/PyKotor/wiki/Level-Layout-Formats#bwm
+    
+    
+    .. seealso::
+       PyKotor — Kaitai-backed BWM struct load - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L56-L110
+    
+    
+    .. seealso::
+       PyKotor — BWMBinaryReader.load - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bwm/io_bwm.py#L187-L253
+    
+    
+    .. seealso::
+       xoreos — WalkmeshLoader::load - https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp#L42-L113
+    
+    
+    .. seealso::
+       xoreos — WalkmeshLoader (append tables / WOK-only paths) - https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp#L119-L216
+    
+    
+    .. seealso::
+       xoreos — WalkmeshLoader::getAABB - https://github.com/xoreos/xoreos/blob/master/src/engines/kotorbase/path/walkmeshloader.cpp#L218-L249
+    
+    
+    .. seealso::
+       reone — BwmReader::load - https://github.com/modawan/reone/blob/master/src/libs/graphics/format/bwmreader.cpp#L27-L92
+    
+    
+    .. seealso::
+       reone — BwmReader (AABB / adjacency tables) - https://github.com/modawan/reone/blob/master/src/libs/graphics/format/bwmreader.cpp#L94-L171
+    
+    
+    .. seealso::
+       KotOR.js — readBinary - https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts#L301-L395
+    
+    
+    .. seealso::
+       KotOR.js — header / version constants - https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyWalkMesh.ts#L490-L516
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs tree (no dedicated BWM / walkmesh Torlack page; use engine + PyKotor xrefs above) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Bwm, self).__init__(_io)

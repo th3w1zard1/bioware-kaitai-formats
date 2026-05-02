@@ -3,28 +3,51 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+import bioware_common
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Wav(KaitaiStruct):
-    """WAV (Waveform Audio Format) files used in KotOR. KotOR stores both standard WAV voice-over lines
-    and Bioware-obfuscated sound-effect files. Voice-over assets are regular RIFF containers with PCM
-    headers, while SFX assets prepend a 470-byte custom block before the RIFF data.
+    """**KotOR WAV:** standard **RIFF/WAVE** (`fmt ` + `data`) plus engine-specific cases (VO vs SFX obfuscation wrappers,
+    MP3-in-WAV quirks) described on the PyKotor wiki — this `.ksy` models the **core RIFF chunk tree**; 470-byte SFX /
+    20-byte VO prefixes are application-level.
     
-    Format Types:
-    - VO (Voice-over): Plain RIFF/WAVE PCM files readable by any media player
-    - SFX (Sound effects): Contains a Bioware 470-byte obfuscation header followed by RIFF data
-    - MP3-in-WAV: Special RIFF container with MP3 data (RIFF size = 50)
+    `wFormatTag` / PCM layout notes: `bioware_common.ksy` → `riff_wave_format_tag`.
     
-    Note: This Kaitai Struct definition documents the core RIFF/WAVE structure. SFX and VO headers
-    (470-byte and 20-byte prefixes respectively) are handled by application-level deobfuscation.
+    The `xoreos-tools` tree does not ship a RIFF/WAVE wire parser on `master` (see `meta.xref.xoreos_tools_wav_note`); use xoreos `wave.cpp` / `sound.cpp` and PyKotor `io_wav.py` for chunk behavior.
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/WAV-File-Format.md
-    - https://github.com/seedhartha/reone/blob/master/src/libs/audio/format/wavreader.cpp:30-56
-    - https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp:34-84
+    .. seealso::
+       PyKotor wiki — WAV - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#wav
+    
+    
+    .. seealso::
+       PyKotor — `io_wav` (Kaitai RIFF parse + `WAVBinaryReader.load` + legacy) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/io_wav.py#L43-L187
+    
+    
+    .. seealso::
+       reone — `WavReader` (fake header + chunk loop) - https://github.com/modawan/reone/blob/master/src/libs/audio/format/wavreader.cpp#L30-L72
+    
+    
+    .. seealso::
+       xoreos — `makeWAVStream` / chunk scan - https://github.com/xoreos/xoreos/blob/master/src/sound/decoders/wave.cpp#L38-L106
+    
+    
+    .. seealso::
+       xoreos — `SoundManager::makeAudioStream` KotOR WAVE quirks - https://github.com/xoreos/xoreos/blob/master/src/sound/sound.cpp#L256-L340
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeWAV` (numeric id) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L62
+    
+    
+    .. seealso::
+       KotOR.js — `AudioFile` (prefix + MP3-in-WAV) - https://github.com/KobaltBlu/KotOR.js/blob/master/src/audio/AudioFile.ts#L10-L145
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs PDF tree (no dedicated WAV PDF; discoverability anchor) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Wav, self).__init__(_io)
@@ -132,7 +155,7 @@ class Wav(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.audio_format = self._io.read_u2le()
+            self.audio_format = KaitaiStream.resolve_enum(bioware_common.BiowareCommon.RiffWaveFormatTag, self._io.read_u2le())
             self.channels = self._io.read_u2le()
             self.sample_rate = self._io.read_u4le()
             self.bytes_per_sec = self._io.read_u4le()
@@ -156,7 +179,7 @@ class Wav(KaitaiStruct):
             if hasattr(self, '_m_is_ima_adpcm'):
                 return self._m_is_ima_adpcm
 
-            self._m_is_ima_adpcm = self.audio_format == 17
+            self._m_is_ima_adpcm = self.audio_format == bioware_common.BiowareCommon.RiffWaveFormatTag.dvi_ima_adpcm
             return getattr(self, '_m_is_ima_adpcm', None)
 
         @property
@@ -165,7 +188,7 @@ class Wav(KaitaiStruct):
             if hasattr(self, '_m_is_mp3'):
                 return self._m_is_mp3
 
-            self._m_is_mp3 = self.audio_format == 85
+            self._m_is_mp3 = self.audio_format == bioware_common.BiowareCommon.RiffWaveFormatTag.mpeg_layer3
             return getattr(self, '_m_is_mp3', None)
 
         @property
@@ -174,7 +197,7 @@ class Wav(KaitaiStruct):
             if hasattr(self, '_m_is_pcm'):
                 return self._m_is_pcm
 
-            self._m_is_pcm = self.audio_format == 1
+            self._m_is_pcm = self.audio_format == bioware_common.BiowareCommon.RiffWaveFormatTag.pcm
             return getattr(self, '_m_is_pcm', None)
 
 
@@ -201,7 +224,7 @@ class Wav(KaitaiStruct):
         @property
         def is_mp3_in_wav(self):
             """MP3-in-WAV format detected when RIFF size = 50
-            Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py:60-64
+            Reference: https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/wav/wav_obfuscation.py#L98-L103 (`riff_size` read + `MP3_IN_WAV_RIFF_SIZE` check)
             """
             if hasattr(self, '_m_is_mp3_in_wav'):
                 return self._m_is_mp3_in_wav

@@ -39,9 +39,50 @@ class Ssf(KaitaiStruct):
     26: Rejoined Party
     27: Poisoned
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_reader.py
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/ssf_binary_writer.py
+    Authoritative implementations: `meta.xref` and `doc-ref` (PyKotor `io_ssf`, xoreos `ssffile.cpp`, xoreos-tools `ssf2xml` / `xml2ssf`, xoreos-docs `SSF_Format.pdf`, reone `SsfReader`).
+    
+    .. seealso::
+       PyKotor wiki — SSF - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#ssf
+    
+    
+    .. seealso::
+       PyKotor — `io_ssf` (Kaitai bridge + binary read/write) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py#L102-L166
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeSSF` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L126
+    
+    
+    .. seealso::
+       xoreos — `SSFFile::load` + `readSSFHeader` + `readEntries` - https://github.com/xoreos/xoreos/blob/master/src/aurora/ssffile.cpp#L72-L141
+    
+    
+    .. seealso::
+       xoreos — `readEntriesKotOR` - https://github.com/xoreos/xoreos/blob/master/src/aurora/ssffile.cpp#L165-L170
+    
+    
+    .. seealso::
+       xoreos-tools — `ssf2xml` CLI - https://github.com/xoreos/xoreos-tools/blob/master/src/ssf2xml.cpp#L51-L70
+    
+    
+    .. seealso::
+       xoreos-tools — `xml2ssf` CLI (`main`) - https://github.com/xoreos/xoreos-tools/blob/master/src/xml2ssf.cpp#L54-L75
+    
+    
+    .. seealso::
+       xoreos-tools — `SSFDumper::dump` (XML mapping for `ssf2xml`) - https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfdumper.cpp#L133-L167
+    
+    
+    .. seealso::
+       xoreos-tools — `SSFCreator::create` (XML mapping for `xml2ssf`) - https://github.com/xoreos/xoreos-tools/blob/master/src/xml/ssfcreator.cpp#L38-L74
+    
+    
+    .. seealso::
+       xoreos-docs — SSF_Format.pdf - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/SSF_Format.pdf
+    
+    
+    .. seealso::
+       reone — `SsfReader::load` - https://github.com/modawan/reone/blob/master/src/libs/resource/format/ssfreader.cpp#L26-L32
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Ssf, self).__init__(_io)

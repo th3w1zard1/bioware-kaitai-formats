@@ -1,0 +1,30 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__lip {
+		label="Lip";
+		graph[style=dotted];
+
+		lip__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="file_type_pos">0</TD><TD PORT="file_type_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_type_type">file_type</TD></TR>
+			<TR><TD PORT="file_version_pos">4</TD><TD PORT="file_version_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_version_type">file_version</TD></TR>
+			<TR><TD PORT="length_pos">8</TD><TD PORT="length_size">4</TD><TD>f4le</TD><TD PORT="length_type">length</TD></TR>
+			<TR><TD PORT="num_keyframes_pos">12</TD><TD PORT="num_keyframes_size">4</TD><TD>u4le</TD><TD PORT="num_keyframes_type">num_keyframes</TD></TR>
+			<TR><TD PORT="keyframes_pos">16</TD><TD PORT="keyframes_size">5</TD><TD>KeyframeEntry</TD><TD PORT="keyframes_type">keyframes</TD></TR>
+			<TR><TD COLSPAN="4" PORT="keyframes__repeat">repeat num_keyframes times</TD></TR>
+		</TABLE>>];
+		subgraph cluster__keyframe_entry {
+			label="Lip::KeyframeEntry";
+			graph[style=dotted];
+
+			keyframe_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="timestamp_pos">0</TD><TD PORT="timestamp_size">4</TD><TD>f4le</TD><TD PORT="timestamp_type">timestamp</TD></TR>
+				<TR><TD PORT="shape_pos">4</TD><TD PORT="shape_size">1</TD><TD>u1→BiowareCommon::BiowareLipVisemeId</TD><TD PORT="shape_type">shape</TD></TR>
+			</TABLE>>];
+		}
+	}
+	lip__seq:keyframes_type -> keyframe_entry__seq [style=bold];
+	lip__seq:num_keyframes_type -> lip__seq:keyframes__repeat [color="#404040"];
+}

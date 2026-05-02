@@ -3,7 +3,6 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from enum import IntEnum
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
@@ -16,100 +15,42 @@ class MdlAscii(KaitaiStruct):
     The ASCII format represents the model structure using plain text with keyword-based syntax.
     Lines are parsed sequentially, with keywords indicating sections, nodes, properties, and data arrays.
     
-    Reference: https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md - ASCII MDL Format section
-    Reference: https://github.com/OldRepublicDevs/PyKotor/blob/master/vendor/MDLOps/MDLOpsM.pm:3916-4698 - readasciimdl function implementation
+    Repository policy: NWScript source (`.nss`) and other plaintext interchange (including ASCII MDL) are
+    documented in `.ksy` only where a line-oriented schema is useful for tooling; see `AGENTS.md` for the
+    full binary-vs-text scope rule.
+    
+    Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format — ASCII MDL Format section
+    Reference: https://github.com/OpenKotOR/MDLOps/blob/master/MDLOpsM.pm#L3916-L4698 — `readasciimdl` (Perl; line band matches former PyKotor vendor drop)
+    Binary wire IDs (for cross-checking ASCII integers): PyKotor wiki binary MDL section, xoreos-docs Torlack `binmdl.html`,
+    and `formats/Common/bioware_mdl_common.ksy` (canonical enum tables; this ASCII spec does not duplicate them as local `enums:`).
     
     .. seealso::
-       Source - https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md#ascii-mdl-format
+       xoreos — `Model_KotOR::ParserContext` (binary KotOR MDL reader state; contrast with this plaintext ASCII wire) - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeMDL` / `kFileTypeMDX` (`FileType` IDs) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L81-L88
+    
+    
+    .. seealso::
+       PyKotor wiki — ASCII MDL - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#ascii-mdl-format
+    
+    
+    .. seealso::
+       PyKotor wiki — binary MDL (wire vs ASCII) - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format#binary-mdl-format
+    
+    
+    .. seealso::
+       xoreos-docs — Torlack binmdl - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
+    
+    
+    .. seealso::
+       In-tree — shared MDL/MDX wire enums (cross-check ASCII numeric keywords) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/Common/bioware_mdl_common.ksy
+    
+    
+    .. seealso::
+       Community MDLOps — readasciimdl - https://github.com/OpenKotOR/MDLOps/blob/master/MDLOpsM.pm#L3916-L4698
     """
-
-    class ControllerTypeCommon(IntEnum):
-        position = 8
-        orientation = 20
-        scale = 36
-        alpha = 132
-
-    class ControllerTypeEmitter(IntEnum):
-        alpha_end = 80
-        alpha_start = 84
-        birthrate = 88
-        bounce_co = 92
-        combinetime = 96
-        drag = 100
-        fps = 104
-        frame_end = 108
-        frame_start = 112
-        grav = 116
-        life_exp = 120
-        mass = 124
-        p2p_bezier2 = 128
-        p2p_bezier3 = 132
-        particle_rot = 136
-        randvel = 140
-        size_start = 144
-        size_end = 148
-        size_start_y = 152
-        size_end_y = 156
-        spread = 160
-        threshold = 164
-        velocity = 168
-        xsize = 172
-        ysize = 176
-        blurlength = 180
-        lightning_delay = 184
-        lightning_radius = 188
-        lightning_scale = 192
-        lightning_sub_div = 196
-        lightningzigzag = 200
-        alpha_mid = 216
-        percent_start = 220
-        percent_mid = 224
-        percent_end = 228
-        size_mid = 232
-        size_mid_y = 236
-        m_f_random_birth_rate = 240
-        targetsize = 252
-        numcontrolpts = 256
-        controlptradius = 260
-        controlptdelay = 264
-        tangentspread = 268
-        tangentlength = 272
-        color_mid = 284
-        color_end = 380
-        color_start = 392
-        detonate = 502
-
-    class ControllerTypeLight(IntEnum):
-        color = 76
-        radius = 88
-        shadowradius = 96
-        verticaldisplacement = 100
-        multiplier = 140
-
-    class ControllerTypeMesh(IntEnum):
-        selfillumcolor = 100
-
-    class ModelClassification(IntEnum):
-        other = 0
-        effect = 1
-        tile = 2
-        character = 4
-        door = 8
-        lightsaber = 16
-        placeable = 32
-        flyer = 64
-
-    class NodeType(IntEnum):
-        dummy = 1
-        light = 3
-        emitter = 5
-        reference = 17
-        trimesh = 33
-        skinmesh = 97
-        animmesh = 161
-        danglymesh = 289
-        aabb = 545
-        lightsaber = 2081
     def __init__(self, _io, _parent=None, _root=None):
         super(MdlAscii, self).__init__(_io)
         self._parent = _parent

@@ -9,7 +9,11 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Txi(KaitaiStruct):
-    """TXI (Texture Info) files are compact ASCII descriptors that attach metadata to TPC textures.
+    """**Policy:** TXI is **plaintext** (line-oriented ASCII). This `.ksy` models only an opaque string span for tooling;
+    authoritative command semantics live in PyKotor / reone parsers (`meta.xref`). xoreos consumes embedded TXI via **`TPC::readTXI`**
+    (`meta.xref.xoreos_tpc_read_txi`), not a standalone `txifile.cpp`.
+    
+    TXI (Texture Info) files are compact ASCII descriptors that attach metadata to TPC textures.
     They control mipmap usage, filtering, flipbook animation, environment mapping, font atlases,
     and platform-specific downsampling. Every TXI file is parsed at runtime to configure how
     a TPC image is rendered.
@@ -45,11 +49,50 @@ class Txi(KaitaiStruct):
     - spacingb, spacingr, speed, temporary, texturewidth, unique, upperleftcoords, wateralpha
     - waterheight, waterwidth, xbox_downsample
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py - Complete parser
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py - Data structures
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/TXI-File-Format.md - Format documentation
-    - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/txireader.cpp - C++ reference implementation
+    Index: `meta.xref` and `doc-ref`.
+    
+    .. seealso::
+       In-tree — `xoreos_file_type_id` / restype **2022** (`txi`) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/Common/bioware_type_ids.ksy
+    
+    
+    .. seealso::
+       PyKotor wiki — TXI - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#txi
+    
+    
+    .. seealso::
+       PyKotor — TXI reader (`TXIReaderMode`, `TXIBinaryReader.load` start) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/io_txi.py#L20-L50
+    
+    
+    .. seealso::
+       PyKotor — `TXICommand` enum block - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/txi/txi_data.py#L619-L684
+    
+    
+    .. seealso::
+       reone — `TxiReader` ASCII parse (`load` + `processLine`) - https://github.com/modawan/reone/blob/master/src/libs/graphics/format/txireader.cpp#L28-L125
+    
+    
+    .. seealso::
+       xoreos — `TPC::readTXI` (embedded TXI tail) - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp#L362-L373
+    
+    
+    .. seealso::
+       xoreos-tools — `TPC::readHeader` (texture tool stack; TXI pairs with TPC) - https://github.com/xoreos/xoreos-tools/blob/master/src/images/tpc.cpp#L77-L224
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeTXI` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L88
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs PDF tree - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    
+    
+    .. seealso::
+       xoreos-docs — KotOR MDL overview (TPC-attached TXI context) - https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
+    
+    
+    .. seealso::
+       KotOR.js — `TXI` + `ParseInfo` (ASCII command switch) - https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TXI.ts#L16-L120
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Txi, self).__init__(_io)

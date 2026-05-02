@@ -25,12 +25,54 @@ class Tlk(KaitaiStruct):
     String references (StrRef) are 0-based indices into the string_data_table array. StrRef 0 refers to
     the first entry, StrRef 1 to the second, etc. StrRef -1 indicates no string reference.
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/TLK-File-Format.md
-    - https://github.com/seedhartha/reone/blob/master/src/libs/resource/format/tlkreader.cpp:31-84
-    - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp:42-176
-    - https://github.com/TSLPatcher/TSLPatcher/blob/master/lib/site/Bioware/TLK.pm:1-533
-    - https://github.com/KotOR-Community-Patches/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryStructure.cs:11-132
+    Authoritative index: `meta.xref` and `doc-ref` (PyKotor, xoreos `talktable*` + `talktable_tlk`, xoreos-tools CLIs, reone, KotOR.js, NickHugi/Kotor.NET). Legacy Perl / archived community URLs are omitted when they no longer resolve on GitHub.
+    
+    .. seealso::
+       PyKotor wiki — TLK - https://github.com/OpenKotOR/PyKotor/wiki/Audio-and-Localization-Formats#tlk
+    
+    
+    .. seealso::
+       PyKotor — `io_tlk` (sizes, Kaitai + legacy + write) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tlk/io_tlk.py#L23-L196
+    
+    
+    .. seealso::
+       xoreos — `TalkTable::load` (factory dispatch) - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable.cpp#L35-L69
+    
+    
+    .. seealso::
+       xoreos — TLK id/version + `TalkTable_TLK::load` + V3/V4 entry tables - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L40-L114
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeTLK` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L87
+    
+    
+    .. seealso::
+       xoreos — `Language` / `LanguageGender` (TLK `language_id` / substring packing) - https://github.com/xoreos/xoreos/blob/master/src/aurora/language.h#L46-L73
+    
+    
+    .. seealso::
+       xoreos-tools — `tlk2xml` CLI (`main`) - https://github.com/xoreos/xoreos-tools/blob/master/src/tlk2xml.cpp#L56-L80
+    
+    
+    .. seealso::
+       xoreos-tools — `xml2tlk` CLI (`main`) - https://github.com/xoreos/xoreos-tools/blob/master/src/xml2tlk.cpp#L58-L85
+    
+    
+    .. seealso::
+       reone — `TlkReader` - https://github.com/modawan/reone/blob/master/src/libs/resource/format/tlkreader.cpp#L27-L67
+    
+    
+    .. seealso::
+       KotOR.js — `TLKObject` - https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TLKObject.ts#L16-L77
+    
+    
+    .. seealso::
+       NickHugi/Kotor.NET — `TLKBinaryReader` (`Read` + constructors) - https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Formats/KotorTLK/TLKBinaryReader.cs#L16-L52
+    
+    
+    .. seealso::
+       xoreos-docs — TalkTable_Format.pdf - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/TalkTable_Format.pdf
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Tlk, self).__init__(_io)

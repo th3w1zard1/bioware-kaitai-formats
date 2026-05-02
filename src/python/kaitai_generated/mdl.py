@@ -3,7 +3,7 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from enum import IntEnum
+import bioware_mdl_common
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
@@ -19,46 +19,61 @@ class Mdl(KaitaiStruct):
     - Animation offset array + animation headers + animation nodes
     - Node hierarchy with geometry data
     
-    Reference implementations:
-    - https://github.com/th3w1zard1/MDLOpsM.pm
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/MDL-MDX-File-Format.md
+    Authoritative cross-implementations: `meta.xref` (PyKotor `io_mdl` / `mdl_data`, xoreos `Model_KotOR::load`, reone `MdlMdxReader::load`, KotOR.js loaders) and `doc-ref`.
+    
+    Unknown `model_header` fields marked `TODO: VERIFY` in `seq` docs: see `meta.xref.mdl_model_header_unknown_fields_policy`.
+    
+    Shared wire enums: imported from `formats/Common/bioware_mdl_common.ksy` — `model_type` and `controller.type`
+    are field-bound to `model_classification` / `controller_type`. `node_type` is a bitmask (instances use `&`);
+    compare numeric values against `bioware_mdl_common::node_type_value` in docs / tooling, not as a Kaitai `enum:`.
     
     .. seealso::
-       Source - https://github.com/th3w1zard1/PyKotor/wiki/MDL-MDX-File-Format.md
+       In-tree — shared MDL/MDX wire enums (`bioware_mdl_common`) - https://github.com/OpenKotOR/bioware-kaitai-formats/blob/master/formats/Common/bioware_mdl_common.ksy
+    
+    
+    .. seealso::
+       PyKotor wiki — MDL/MDX - https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format
+    
+    
+    .. seealso::
+       PyKotor — MDLBinaryReader (binary MDL/MDX) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/mdl/io_mdl.py#L2260-L2408
+    
+    
+    .. seealso::
+       xoreos — Model_KotOR::load - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.cpp#L184-L267
+    
+    
+    .. seealso::
+       xoreos — `Model_KotOR::ParserContext` (MDL/MDX stream pointers + cached header fields consumed during binary load) - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/model_kotor.h#L45-L79
+    
+    
+    .. seealso::
+       xoreos-tools — shipped CLI inventory (no MDL/MDX-specific tool) - https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
+    
+    
+    .. seealso::
+       xoreos-docs — KotOR MDL overview - https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
+    
+    
+    .. seealso::
+       xoreos-docs — Torlack binmdl (controller / Aurora background) - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/binmdl.html
+    
+    
+    .. seealso::
+       reone — MdlMdxReader::load - https://github.com/modawan/reone/blob/master/src/libs/graphics/format/mdlmdxreader.cpp#L55-L118
+    
+    
+    .. seealso::
+       KotOR.js — OdysseyModel binary constructor - https://github.com/KobaltBlu/KotOR.js/blob/master/src/odyssey/OdysseyModel.ts#L56-L170
+    
+    
+    .. seealso::
+       Community MDLOps — controller name table - https://github.com/OpenKotOR/MDLOps/blob/master/MDLOpsM.pm#L342-L407
+    
+    
+    .. seealso::
+       Community MDLOps — `readasciimdl` (ASCII MDL ingest) - https://github.com/OpenKotOR/MDLOps/blob/master/MDLOpsM.pm#L3916-L4698
     """
-
-    class ControllerType(IntEnum):
-        position = 8
-        orientation = 20
-        scale = 36
-        color = 76
-        radius = 88
-        shadow_radius = 96
-        vertical_displacement_or_drag_or_selfillumcolor = 100
-        alpha = 132
-        multiplier_or_randvel = 140
-
-    class ModelClassification(IntEnum):
-        other = 0
-        effect = 1
-        tile = 2
-        character = 4
-        door = 8
-        lightsaber = 16
-        placeable = 32
-        flyer = 64
-
-    class NodeTypeValue(IntEnum):
-        dummy = 1
-        light = 3
-        emitter = 5
-        reference = 17
-        trimesh = 33
-        skinmesh = 97
-        animmesh = 161
-        danglymesh = 289
-        aabb = 545
-        lightsaber = 2081
     def __init__(self, _io, _parent=None, _root=None):
         super(Mdl, self).__init__(_io)
         self._parent = _parent
@@ -220,7 +235,7 @@ class Mdl(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.type = self._io.read_u4le()
+            self.type = KaitaiStream.resolve_enum(bioware_mdl_common.BiowareMdlCommon.ControllerType, self._io.read_u4le())
             self.unknown = self._io.read_u2le()
             self.row_count = self._io.read_u2le()
             self.time_index = self._io.read_u2le()
@@ -326,7 +341,7 @@ class Mdl(KaitaiStruct):
 
 
     class GeometryHeader(KaitaiStruct):
-        """Geometry header (80 bytes) - Located at offset 12."""
+        """Geometry header is 80 (0x50) bytes long, located at offset 12 (0xC)."""
         def __init__(self, _io, _parent=None, _root=None):
             super(Mdl.GeometryHeader, self).__init__(_io)
             self._parent = _parent
@@ -431,6 +446,41 @@ class Mdl(KaitaiStruct):
             self.trimesh_base._fetch_instances()
 
 
+    class MdlAnimationEntry(KaitaiStruct):
+        """One animation slot: reads `animation_header` at `data_start + animation_offsets[anim_index]`.
+        Wraps the header so repeated root instances can use parametric types (user guide).
+        """
+        def __init__(self, anim_index, _io, _parent=None, _root=None):
+            super(Mdl.MdlAnimationEntry, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.anim_index = anim_index
+            self._read()
+
+        def _read(self):
+            pass
+
+
+        def _fetch_instances(self):
+            pass
+            _ = self.header
+            if hasattr(self, '_m_header'):
+                pass
+                self._m_header._fetch_instances()
+
+
+        @property
+        def header(self):
+            if hasattr(self, '_m_header'):
+                return self._m_header
+
+            _pos = self._io.pos()
+            self._io.seek(self._root.data_start + self._root.animation_offsets[self.anim_index])
+            self._m_header = Mdl.AnimationHeader(self._io, self, self._root)
+            self._io.seek(_pos)
+            return getattr(self, '_m_header', None)
+
+
     class ModelHeader(KaitaiStruct):
         """Model header (196 bytes) starting at offset 12 (data_start).
         This matches MDLOps / PyKotor's _ModelHeader layout: a geometry header followed by
@@ -444,7 +494,7 @@ class Mdl(KaitaiStruct):
 
         def _read(self):
             self.geometry = Mdl.GeometryHeader(self._io, self, self._root)
-            self.model_type = self._io.read_u1()
+            self.model_type = KaitaiStream.resolve_enum(bioware_mdl_common.BiowareMdlCommon.ModelClassification, self._io.read_u1())
             self.unknown0 = self._io.read_u1()
             self.padding0 = self._io.read_u1()
             self.fog = self._io.read_u1()
@@ -916,19 +966,18 @@ class Mdl(KaitaiStruct):
 
     @property
     def animations(self):
-        """Animation headers (resolved via animation_offsets)."""
+        """Animation headers (via offset table). Each list element is `mdl_animation_entry`;
+        the parsed header is `element.header` (same wire layout as `animation_header`).
+        """
         if hasattr(self, '_m_animations'):
             return self._m_animations
 
         if self.model_header.animation_count > 0:
             pass
-            _pos = self._io.pos()
-            self._io.seek(self.data_start + self.animation_offsets[i])
             self._m_animations = []
             for i in range(self.model_header.animation_count):
-                self._m_animations.append(Mdl.AnimationHeader(self._io, self, self._root))
+                self._m_animations.append(Mdl.MdlAnimationEntry(i, self._io, self, self._root))
 
-            self._io.seek(_pos)
 
         return getattr(self, '_m_animations', None)
 

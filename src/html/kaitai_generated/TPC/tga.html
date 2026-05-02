@@ -1,0 +1,186 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Tga format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>Tga format specification</h1>
+
+      
+<a name='type-tga'></a>
+<h1>Type: Tga</h1>
+
+<p>**TGA** (Truevision Targa): 18-byte header, optional color map, image id, then raw or RLE pixels. KotOR often
+converts authoring TGAs to **TPC** for shipping.
+
+Shared header enums: `formats/Common/tga_common.ksy`.
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>id_length</td>
+<td>u1</td>
+<td>Length of image ID field (0-255 bytes)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>...</td>
+<td>color_map_type</td>
+<td>u1→TgaCommon::TgaColorMapType</td>
+<td>Color map type (`u1`). Canonical: `formats/Common/tga_common.ksy` → `tga_color_map_type`.
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>...</td>
+<td>image_type</td>
+<td>u1→TgaCommon::TgaImageType</td>
+<td>Image type / compression (`u1`). Canonical: `formats/Common/tga_common.ksy` → `tga_image_type`.
+</td>
+</tr>
+<tr>
+<td>3</td>
+<td>...</td>
+<td>color_map_spec</td>
+<td><a href="#type-tga-color_map_specification">ColorMapSpecification</a></td>
+<td>Color map specification (only present if color_map_type == present)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>image_spec</td>
+<td><a href="#type-tga-image_specification">ImageSpecification</a></td>
+<td>Image specification (dimensions and pixel format)</td>
+</tr>
+<tr>
+<td>18</td>
+<td>...</td>
+<td>image_id</td>
+<td>str(ASCII)</td>
+<td>Image identification field (optional ASCII string)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>color_map_data</td>
+<td>u1</td>
+<td>Color map data (palette entries)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>image_data</td>
+<td>u1</td>
+<td>Image pixel data (raw or RLE-compressed).
+Size depends on image dimensions, pixel format, and compression.
+For uncompressed formats: width × height × bytes_per_pixel
+For RLE formats: Variable size depending on compression ratio
+</td>
+</tr>
+</table>
+<a name='type-tga-color_map_specification'></a>
+<h2>Type: ColorMapSpecification</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>first_entry_index</td>
+<td>u2le</td>
+<td>Index of first color map entry</td>
+</tr>
+<tr>
+<td>2</td>
+<td>...</td>
+<td>length</td>
+<td>u2le</td>
+<td>Number of color map entries</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>entry_size</td>
+<td>u1</td>
+<td>Size of each color map entry in bits (15, 16, 24, or 32)</td>
+</tr>
+</table>
+<a name='type-tga-image_specification'></a>
+<h2>Type: ImageSpecification</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>x_origin</td>
+<td>u2le</td>
+<td>X coordinate of lower-left corner of image</td>
+</tr>
+<tr>
+<td>2</td>
+<td>...</td>
+<td>y_origin</td>
+<td>u2le</td>
+<td>Y coordinate of lower-left corner of image</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>width</td>
+<td>u2le</td>
+<td>Image width in pixels</td>
+</tr>
+<tr>
+<td>6</td>
+<td>...</td>
+<td>height</td>
+<td>u2le</td>
+<td>Image height in pixels</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>pixel_depth</td>
+<td>u1</td>
+<td>Bits per pixel:
+- 8 = Greyscale or indexed
+- 16 = RGB 5-5-5 or RGBA 1-5-5-5
+- 24 = RGB
+- 32 = RGBA
+</td>
+</tr>
+<tr>
+<td>9</td>
+<td>...</td>
+<td>image_descriptor</td>
+<td>u1</td>
+<td>Image descriptor byte:
+- Bits 0-3: Number of attribute bits per pixel (alpha channel)
+- Bit 4: Reserved
+- Bit 5: Screen origin (0 = bottom-left, 1 = top-left)
+- Bits 6-7: Interleaving (usually 0)
+</td>
+</tr>
+</table>
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

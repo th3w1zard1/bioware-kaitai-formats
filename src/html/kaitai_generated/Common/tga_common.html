@@ -1,0 +1,82 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>TgaCommon format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>TgaCommon format specification</h1>
+
+      
+<a name='type-tga_common'></a>
+<h1>Type: TgaCommon</h1>
+
+<p>Canonical enumerations for the TGA file header fields `color_map_type` and `image_type` (`u1` each),
+per the Truevision TGA specification (also mirrored in xoreos `tga.cpp`).
+
+Import from `formats/TPC/TGA.ksy` as `../Common/tga_common` (must match `meta.id`). Lowest-scope anchors: `meta.xref`.
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+</table>
+<a name='enum-tga_common-tga_color_map_type'></a>
+<h2>Enum: tga_color_map_type</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>none</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>present</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-tga_common-tga_image_type'></a>
+<h2>Enum: tga_image_type</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>no_image_data</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>uncompressed_color_mapped</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>uncompressed_rgb</td><td></td></tr>
+</tr>
+<tr>
+<td>3</td><td>uncompressed_greyscale</td><td></td></tr>
+</tr>
+<tr>
+<td>9</td><td>rle_color_mapped</td><td></td></tr>
+</tr>
+<tr>
+<td>10</td><td>rle_rgb</td><td></td></tr>
+</tr>
+<tr>
+<td>11</td><td>rle_greyscale</td><td></td></tr>
+</tr>
+</table>
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

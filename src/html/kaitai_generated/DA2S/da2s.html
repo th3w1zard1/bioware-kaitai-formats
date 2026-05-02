@@ -1,0 +1,164 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Da2s format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>Da2s format specification</h1>
+
+      
+<a name='type-da2s'></a>
+<h1>Type: Da2s</h1>
+
+<p>**DA2S** (Dragon Age 2 save): Eclipse binary save — `DA2S` signature, `version==1`, length-prefixed strings + tagged
+blocks (party/inventory/journal/etc.). **Not KotOR** — Andastra serializers under `Game/Games/Eclipse/DragonAge2/Save/` (`meta.xref`).
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>signature</td>
+<td>str(ASCII)</td>
+<td>File signature. Must be "DA2S" for Dragon Age 2 save files.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>version</td>
+<td>s4le</td>
+<td>Save format version. Must be 1 for Dragon Age 2.
+</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>save_name</td>
+<td><a href="#type-da2s-length_prefixed_string">LengthPrefixedString</a></td>
+<td>User-entered save name displayed in UI</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>module_name</td>
+<td><a href="#type-da2s-length_prefixed_string">LengthPrefixedString</a></td>
+<td>Current module resource name</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>area_name</td>
+<td><a href="#type-da2s-length_prefixed_string">LengthPrefixedString</a></td>
+<td>Current area name for display</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>time_played_seconds</td>
+<td>s4le</td>
+<td>Total play time in seconds</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>timestamp_filetime</td>
+<td>s8le</td>
+<td>Save creation timestamp as Windows FILETIME (int64).
+Convert using DateTime.FromFileTime().
+</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>num_screenshot_data</td>
+<td>s4le</td>
+<td>Length of screenshot data in bytes (0 if no screenshot)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>screenshot_data</td>
+<td>u1</td>
+<td>Screenshot image data (typically TGA or DDS format)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>num_portrait_data</td>
+<td>s4le</td>
+<td>Length of portrait data in bytes (0 if no portrait)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>portrait_data</td>
+<td>u1</td>
+<td>Portrait image data (typically TGA or DDS format)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>player_name</td>
+<td><a href="#type-da2s-length_prefixed_string">LengthPrefixedString</a></td>
+<td>Player character name</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>party_member_count</td>
+<td>s4le</td>
+<td>Number of party members (from PartyState)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>player_level</td>
+<td>s4le</td>
+<td>Player character level (from PartyState.PlayerCharacter)</td>
+</tr>
+</table>
+<a name='type-da2s-length_prefixed_string'></a>
+<h2>Type: LengthPrefixedString</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>length</td>
+<td>s4le</td>
+<td>String length in bytes (UTF-8 encoding).
+Must be >= 0 and <= 65536 (sanity check).
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>value</td>
+<td>str(UTF-8)</td>
+<td>String value (UTF-8 encoded)</td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(value_trimmed),List(types, length_prefixed_string, instances, value_trimmed),Name(identifier(value)),None,Some(StrFromBytesType(BytesLimitType(Name(identifier(length)),Some(List(0)),false,None,None),UTF-8,false)),DocSpec(Some(String value.
+Note: trailing null bytes are already excluded via `terminator: 0` and `include: false`.
+),List()))
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

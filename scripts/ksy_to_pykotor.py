@@ -23,13 +23,14 @@ from dataclasses import dataclass
 @dataclass
 class KsyField:
     """Represents a field in a .ksy type definition."""
+
     id: str
     type: str
     doc: str = ""
     repeat: str | None = None
     size: Any = None
     encoding: str | None = None
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> KsyField:
         return cls(
@@ -45,11 +46,12 @@ class KsyField:
 @dataclass
 class KsyType:
     """Represents a type definition in .ksy file."""
+
     name: str
     seq: List[KsyField]
     doc: str = ""
     instances: Dict[str, Any] = None
-    
+
     @classmethod
     def from_dict(cls, name: str, data: Dict[str, Any]) -> KsyType:
         seq = [KsyField.from_dict(f) for f in data.get("seq", [])]
@@ -64,6 +66,7 @@ class KsyType:
 @dataclass
 class KsySpec:
     """Parsed .ksy specification."""
+
     id: str
     title: str
     file_extension: str
@@ -72,26 +75,26 @@ class KsySpec:
     types: Dict[str, KsyType]
     root_type: KsyType | None
     imports: List[str]
-    
+
     @classmethod
     def from_file(cls, ksy_path: Path) -> KsySpec:
         """Parse .ksy file into specification."""
-        with open(ksy_path, 'r', encoding='utf-8') as f:
+        with open(ksy_path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f)
-        
+
         meta = data.get("meta", {})
-        
+
         # Parse types
         types = {}
         if "types" in data:
             for name, type_data in data["types"].items():
                 types[name] = KsyType.from_dict(name, type_data)
-        
+
         # Parse root sequence as a type
         root_type = None
         if "seq" in data:
             root_type = KsyType.from_dict("_root", {"seq": data["seq"]})
-        
+
         return cls(
             id=meta.get("id", ""),
             title=meta.get("title", ""),
@@ -106,12 +109,12 @@ class KsySpec:
 
 class PyKotorCodeGenerator:
     """Generate PyKotor-compatible code from .ksy specs."""
-    
+
     def __init__(self, spec: KsySpec):
         self.spec = spec
         self.format_name = spec.id.upper()
         self.class_name = spec.id.upper()
-    
+
     def generate_data_class(self) -> str:
         """Generate <Format> data class."""
         return f'''"""
@@ -143,7 +146,7 @@ class {self.class_name}(GenericBase):
         # TODO: Auto-generate fields from .ksy spec
         # Fields would be extracted from {self.spec.id}.ksy types/seq sections
 '''
-    
+
     def generate_binary_reader(self) -> str:
         """Generate BinaryReader class."""
         return f'''"""
@@ -176,7 +179,7 @@ class {self.class_name}BinaryReader(GFFBinaryReader):
         # TODO: Implement based on .ksy spec
         return target
 '''
-    
+
     def generate_binary_writer(self) -> str:
         """Generate BinaryWriter class."""
         return f'''"""
@@ -209,7 +212,7 @@ class {self.class_name}BinaryWriter(GFFBinaryWriter):
         # TODO: Implement based on .ksy spec
         pass
 '''
-    
+
     def generate_api_functions(self) -> str:
         """Generate read/write/bytes functions."""
         return f'''"""
@@ -270,7 +273,7 @@ def bytes_{self.spec.id}(
     write_{self.spec.id}({self.spec.id}, buffer, file_format=file_format)
     return buffer.getvalue()
 '''
-    
+
     def generate_test_suite(self) -> str:
         """Generate test suite matching PyKotor patterns."""
         return f'''"""
@@ -313,27 +316,29 @@ class Test{self.class_name}(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 '''
-    
+
     def generate_all(self, output_dir: Path):
         """Generate all code files for this format."""
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Generate data class
         (output_dir / f"{self.spec.id}.py").write_text(self.generate_data_class())
-        
+
         # Generate reader
         (output_dir / f"io_{self.spec.id}.py").write_text(
             self.generate_binary_reader() + "\n\n" + self.generate_binary_writer()
         )
-        
+
         # Generate API functions
-        (output_dir / f"{self.spec.id}_auto.py").write_text(self.generate_api_functions())
-        
+        (output_dir / f"{self.spec.id}_auto.py").write_text(
+            self.generate_api_functions()
+        )
+
         # Generate tests
         test_dir = output_dir.parent.parent / "tests" / "resource" / "generics"
         test_dir.mkdir(parents=True, exist_ok=True)
         (test_dir / f"test_{self.spec.id}.py").write_text(self.generate_test_suite())
-        
+
         print(f"OK Generated {self.class_name} code and tests")
 
 
@@ -341,16 +346,17 @@ def main():
     """Generate PyKotor-compatible code for all GFF generic formats."""
     formats_dir = Path("formats/GFF/Generics")
     output_dir = Path("src/python/generated")
-    
+
     # Find all GFF generic .ksy files (not XML variants)
     ksy_files = [
-        f for f in formats_dir.rglob("*.ksy")
+        f
+        for f in formats_dir.rglob("*.ksy")
         if not f.stem.endswith("_XML") and not f.stem.endswith("_JSON")
     ]
-    
+
     print(f"Found {len(ksy_files)} GFF generic formats")
     print("=" * 80)
-    
+
     for ksy_file in sorted(ksy_files):
         try:
             print(f"Processing {ksy_file.stem}...")
@@ -359,7 +365,7 @@ def main():
             generator.generate_all(output_dir)
         except Exception as e:
             print(f"  ✗ Error: {e}")
-    
+
     print("=" * 80)
     print("Code generation complete!")
     print(f"Generated files in: {output_dir}")
@@ -367,4 +373,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

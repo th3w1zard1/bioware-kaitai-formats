@@ -17,23 +17,45 @@ fi
 
 echo "Generating $LANGUAGE code from Kaitai Struct definitions..." >&2
 
-# Check if kaitai-struct-compiler is installed
-if ! command -v ksc &> /dev/null; then
+# Prefer `ksc` (short shim); fall back to full `kaitai-struct-compiler` name (some installs expose only one).
+resolve_ksc_cmd() {
+    if command -v ksc &> /dev/null; then
+        echo "ksc"
+    elif command -v kaitai-struct-compiler &> /dev/null; then
+        echo "kaitai-struct-compiler"
+    else
+        echo ""
+    fi
+}
+
+KSC_CMD="$(resolve_ksc_cmd)"
+if [ -z "$KSC_CMD" ]; then
     echo "Installing Kaitai Struct compiler $KSC_VERSION..." >&2
     pip install "kaitai-struct-compiler==$KSC_VERSION" || {
         echo "Failed to install kaitai-struct-compiler" >&2
         exit 1
     }
+    KSC_CMD="$(resolve_ksc_cmd)"
+fi
+
+if [ -z "$KSC_CMD" ]; then
+    echo "Could not find ksc or kaitai-struct-compiler after install" >&2
+    exit 1
+fi
+
+INSTALLED_VERSION=$("$KSC_CMD" --version 2>&1 | head -n1 || echo "")
+if [[ "$INSTALLED_VERSION" == *"$KSC_VERSION"* ]]; then
+    echo "Kaitai Struct compiler $KSC_VERSION is already installed ($KSC_CMD)" >&2
 else
-    INSTALLED_VERSION=$(ksc --version 2>&1 | head -n1 || echo "")
-    if [[ "$INSTALLED_VERSION" == *"$KSC_VERSION"* ]]; then
-        echo "Kaitai Struct compiler $KSC_VERSION is already installed" >&2
-    else
-        echo "Installing Kaitai Struct compiler $KSC_VERSION..." >&2
-        pip install "kaitai-struct-compiler==$KSC_VERSION" || {
-            echo "Failed to install kaitai-struct-compiler" >&2
-            exit 1
-        }
+    echo "Installing Kaitai Struct compiler $KSC_VERSION (found: $INSTALLED_VERSION)..." >&2
+    pip install "kaitai-struct-compiler==$KSC_VERSION" || {
+        echo "Failed to install kaitai-struct-compiler" >&2
+        exit 1
+    }
+    KSC_CMD="$(resolve_ksc_cmd)"
+    if [ -z "$KSC_CMD" ]; then
+        echo "Could not find ksc or kaitai-struct-compiler after install" >&2
+        exit 1
     fi
 fi
 
@@ -72,7 +94,7 @@ while IFS= read -r ksy_file; do
 
     echo "  Processing: $RELATIVE_PATH" >&2
 
-    if ksc -t "$LANGUAGE" -d "$TARGET_DIR" "$ksy_file"; then
+    if "$KSC_CMD" -t "$LANGUAGE" -d "$TARGET_DIR" "$ksy_file"; then
         ((SUCCESS_COUNT++))
     else
         echo "  Warning: Failed to generate code for $RELATIVE_PATH" >&2

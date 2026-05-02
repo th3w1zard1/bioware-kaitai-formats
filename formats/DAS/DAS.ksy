@@ -5,24 +5,26 @@ meta:
   endian: le
   file-extension: das
   xref:
-    runtime: src/Andastra/Runtime/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    github_oldrepublicdevs_andastra_dao_save_serializer: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs`:
+      **`SaveSignature = "DAS "`** **23**; **`SerializeSaveNfo`** **29–66**; **`DeserializeSaveNfo`** **71–114**; **`SerializeSaveArchive`** **119+**; **`DeserializeSaveArchive`** **168+**.
+    github_oldrepublicdevs_andastra_eclipse_save_base: |
+      https://github.com/OldRepublicDevs/Andastra — `src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs`:
+      UTF-8 length-prefixed strings **`WriteString` / `ReadString`** **35–61**; **`ValidateSignature`** **67–75**; **`ValidateVersion`** **81–88**;
+      **`WriteCommonMetadata` / `ReadCommonMetadata`** **93–126**.
+    github_xoreos_types_game_id_dragon_age: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
 doc: |
-  DAS (Dragon Age: Origins Save) files are binary save game files used by the Eclipse Engine
-  (Dragon Age: Origins). They contain save game metadata and optionally full game state.
-  
-  DAS files are binary format files with the following structure:
-  - Signature (4 bytes): "DAS " (Dragon Age Save)
-  - Version (int32): Save format version (1 for DA:O)
-  - Metadata fields (strings, integers, timestamps, etc.)
-  - Optional: Full game state (party, inventory, journal, globals)
-  
-  Based on daorigins.exe: SaveGameMessage @ 0x00ae6276, COMMAND_SAVEGAME @ 0x00af15d4
-  Located via string references: "SaveGameMessage" @ 0x00ae6276, "COMMAND_SAVEGAME" @ 0x00af15d4
-  Original implementation: UnrealScript message-based save system, binary serialization
-  
-  References:
-  - src/Andastra/Runtime/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs
-  - src/Andastra/Runtime/Games/Eclipse/Save/EclipseSaveSerializer.cs (base class)
+  **DAS** (Dragon Age: Origins save): Eclipse binary save — `DAS ` signature, `version==1`, length-prefixed strings +
+  tagged blocks. **Not KotOR** — reference serializers live under **Andastra** `Game/Games/Eclipse/...` on GitHub (`meta.xref`), not `Runtime/...`.
+
+doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408 xoreos — `GameID` (`kGameIDDragonAge` = 7)"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/9f49a4d88fc144f819488a0cc37de471eaa0f01b/src/Andastra/Game/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs#L23-L180 Andastra — `DragonAgeOriginsSaveSerializer` (signature + nfo + archive entrypoints)"
+  - "https://github.com/OldRepublicDevs/Andastra/blob/9f49a4d88fc144f819488a0cc37de471eaa0f01b/src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs#L35-L126 Andastra — `EclipseSaveSerializer` string + metadata helpers"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs tree (DAO saves via Andastra; no DAS-specific PDF here)"
 
 seq:
   - id: signature
@@ -62,26 +64,26 @@ seq:
       Save creation timestamp as Windows FILETIME (int64).
       Convert using DateTime.FromFileTime().
   
-  - id: screenshot_length
+  - id: num_screenshot_data
     type: s4
     doc: Length of screenshot data in bytes (0 if no screenshot)
   
   - id: screenshot_data
     type: u1
     repeat: expr
-    repeat-expr: screenshot_length
-    if: screenshot_length > 0
+    repeat-expr: num_screenshot_data
+    if: num_screenshot_data > 0
     doc: Screenshot image data (typically TGA or DDS format)
   
-  - id: portrait_length
+  - id: num_portrait_data
     type: s4
     doc: Length of portrait data in bytes (0 if no portrait)
   
   - id: portrait_data
     type: u1
     repeat: expr
-    repeat-expr: portrait_length
-    if: portrait_length > 0
+    repeat-expr: num_portrait_data
+    if: num_portrait_data > 0
     doc: Portrait image data (typically TGA or DDS format)
   
   - id: player_name

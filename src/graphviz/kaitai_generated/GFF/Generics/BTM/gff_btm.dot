@@ -1,0 +1,14 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__gff_btm {
+		label="GffBtm";
+		graph[style=dotted];
+
+		gff_btm__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="contents_pos">0</TD><TD PORT="contents_size">...</TD><TD>Gff::GffUnionFile</TD><TD PORT="contents_type">contents</TD></TR>
+		</TABLE>>];
+	}
+	gff_btm__seq:contents_type -> gff_union_file__seq [style=bold];
+}

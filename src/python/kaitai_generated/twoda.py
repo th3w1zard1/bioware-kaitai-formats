@@ -29,9 +29,54 @@ class Twoda(KaitaiStruct):
     The format uses an offset-based string table for cell values, allowing efficient
     storage of duplicate values (shared strings are stored once and referenced by offset).
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py
+    Authoritative index: `meta.xref` and `doc-ref` (PyKotor `io_twoda` / `twoda_data`, xoreos `TwoDAFile`, xoreos-tools `convert2da`, reone `TwoDAReader`, KotOR.js `TwoDAObject`).
+    
+    .. seealso::
+       PyKotor wiki — TwoDA - https://github.com/OpenKotOR/PyKotor/wiki/2DA-File-Format
+    
+    
+    .. seealso::
+       PyKotor — `io_twoda` (binary `V2.b` + writer) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/io_twoda.py#L25-L238
+    
+    
+    .. seealso::
+       PyKotor — `twoda_data` (model + ASCII/binary notes) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/twoda/twoda_data.py#L8-L114
+    
+    
+    .. seealso::
+       xoreos — `k2DAID` / `k2DAIDTab` + version tags - https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L48-L51
+    
+    
+    .. seealso::
+       xoreos — `TwoDAFile::load` - https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L145-L172
+    
+    
+    .. seealso::
+       xoreos — binary `V2.b` (`read2b` + `readHeaders2b` / `skipRowNames2b` / `readRows2b`) - https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L192-L336
+    
+    
+    .. seealso::
+       xoreos — `TwoDAFile::writeBinary` - https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L517-L611
+    
+    
+    .. seealso::
+       xoreos-tools — `convert2da` CLI (`main`) - https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L64-L86
+    
+    
+    .. seealso::
+       xoreos-tools — `get2DAGDA` / `TwoDAFile` dispatch - https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L143-L159
+    
+    
+    .. seealso::
+       reone — `TwoDAReader` - https://github.com/modawan/reone/blob/master/src/libs/resource/format/2dareader.cpp#L29-L66
+    
+    
+    .. seealso::
+       KotOR.js — `TwoDAObject` - https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/TwoDAObject.ts#L69-L155
+    
+    
+    .. seealso::
+       xoreos-docs — 2DA_Format.pdf - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/2DA_Format.pdf
     """
     def __init__(self, column_count, _io, _parent=None, _root=None):
         super(Twoda, self).__init__(_io)

@@ -1,0 +1,35 @@
+-- This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+--
+-- This file is compatible with Lua 5.3
+
+local class = require("class")
+require("kaitaistruct")
+require("gff")
+
+-- 
+-- **SAV** resources are **GFF3** on disk (Aurora `GFF ` prefix + V3.x version). Wire layout is fully defined by
+-- `formats/GFF/GFF.ksy` and `formats/Common/bioware_gff_common.ksy`; this file is a **template capsule** for tooling,
+-- `meta.xref` anchors, and game-specific `doc` without duplicating the GFF3 grammar.
+-- 
+-- FileType / restype id **2057** — see `bioware_type_ids::xoreos_file_type_id` enum member `sav`.
+-- See also: xoreos — GFF3 header read (https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63)
+-- See also: PyKotor wiki — GFF binary (https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format)
+-- See also: xoreos-docs — GFF_Format.pdf (GFF3 wire) (https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/GFF_Format.pdf)
+-- See also: xoreos-docs — CommonGFFStructs.pdf (https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/CommonGFFStructs.pdf)
+-- See also: xoreos-docs — BioWare specs PDF tree (https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware)
+GffSav = class.class(KaitaiStruct)
+
+function GffSav:_init(io, parent, root)
+  KaitaiStruct._init(self, io)
+  self._parent = parent
+  self._root = root or self
+  self:_read()
+end
+
+function GffSav:_read()
+  self.contents = Gff.GffUnionFile(self._io)
+end
+
+-- 
+-- Full GFF3/GFF4 union (see `GFF.ksy`); interpret struct labels per SAV template docs / PyKotor `gff_auto`.
+

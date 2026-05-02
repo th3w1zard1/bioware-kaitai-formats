@@ -2,10 +2,13 @@
 .SYNOPSIS
     Compiles all Kaitai Struct (.ksy) format definition files to target programming languages.
 
+    Windows + uv: use `uv run pwsh -NoProfile -File .\scripts\compile_all_ksy.ps1` (not `uv run .\scripts\compile_all_ksy.ps1` — Win32 error 193).
+
 .DESCRIPTION
     This script recursively finds all .ksy files in the formats directory and compiles them
-    to the specified target language using the Kaitai Struct compiler. It provides detailed
-    progress reporting and error handling.
+    to the specified target language using the Kaitai Struct compiler. Output mirrors the
+    formats/ subdirectory layout under the output root (same as generate_code.ps1). It
+    provides detailed progress reporting and error handling.
 
 .PARAMETER TargetLanguage
     The target programming language to compile to. Supported languages include:
@@ -65,22 +68,23 @@ param(
 )
 
 begin {
+    . "$PSScriptRoot/KscResolve.ps1"
+
     # Set default output directory based on target language
     if (-not $OutputDirectory) {
         $OutputDirectory = "src/$TargetLanguage/kaitai_generated"
     }
 
-    # Validate that kaitai-struct-compiler is available
-    try {
-        $compilerCommand = Get-Command 'kaitai-struct-compiler' -ErrorAction Stop
-        Write-Verbose "Found Kaitai Struct compiler at: $($compilerCommand.Source)"
+    $script:kscExe = Get-ResolvedKscExecutable
+    if (-not $script:kscExe) {
+        throw "Could not find ksc or kaitai-struct-compiler. Add to PATH or set KAITAI_STRUCT_COMPILER."
     }
-    catch {
-        throw "kaitai-struct-compiler is not installed or not in PATH. Please install it first."
-    }
+    Write-Verbose "Using Kaitai Struct compiler at: $script:kscExe"
 
-    # Resolve paths to absolute paths
-    $formatsDir = Resolve-Path $FormatsDirectory
+    # Resolve paths to absolute paths (Resolve-Path can return a single PathInfo or an array)
+    $formatsResolved = @(Resolve-Path $FormatsDirectory)
+    $formatsDir = $formatsResolved[0]
+    $formatsBasePath = $formatsDir.Path
     $outputDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($OutputDirectory)
 
     Write-Verbose "Formats directory: $formatsDir"
@@ -129,7 +133,7 @@ process {
         # Process each file
         foreach ($file in $ksyFiles) {
             $script:processedCount++
-            $relativePath = $file.FullName.Replace("$formatsDir\", "").Replace("$formatsDir/", "")
+            $relativePath = $file.FullName.Substring($formatsBasePath.Length + 1)
 
             Write-Progress -Activity "Compiling Kaitai Struct files" `
                           -Status "Processing: $relativePath" `
@@ -139,23 +143,42 @@ process {
 
             if ($PSCmdlet.ShouldProcess($relativePath, "Compile to $TargetLanguage")) {
                 try {
-                    # Execute compiler with error handling
-                    $process = Start-Process -FilePath 'kaitai-struct-compiler' `
-                                           -ArgumentList "-t", $TargetLanguage, "-d", $outputDir, $file.FullName `
-                                           -NoNewWindow `
-                                           -Wait `
-                                           -RedirectStandardOutput "$env:TEMP\ksc_stdout.txt" `
-                                           -RedirectStandardError "$env:TEMP\ksc_stderr.txt" `
-                                           -PassThru
+                    $relativeDir = Split-Path -Parent $relativePath
+                    if ($relativeDir) {
+                        $targetDir = Join-Path $outputDir $relativeDir
+                    }
+                    else {
+                        $targetDir = $outputDir
+                    }
+                    if (-not (Test-Path $targetDir)) {
+                        New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+                    }
 
-                    $stdout = Get-Content "$env:TEMP\ksc_stdout.txt" -Raw -ErrorAction SilentlyContinue
-                    $stderr = Get-Content "$env:TEMP\ksc_stderr.txt" -Raw -ErrorAction SilentlyContinue
-                    $output = ($stdout + $stderr).Trim()
+                    # Call the compiler directly. Avoid Start-Process + empty redirected streams:
+                    # ($null + $null).Trim() throws "You cannot call a method on a null-valued expression".
+                    $prevEap = $ErrorActionPreference
+                    $ErrorActionPreference = 'Continue'
+                    try {
+                        $allOutput = & $script:kscExe -t $TargetLanguage -d $targetDir $file.FullName 2>&1
+                    }
+                    finally {
+                        $ErrorActionPreference = $prevEap
+                    }
 
-                    # Clean up temp files
-                    Remove-Item "$env:TEMP\ksc_stdout.txt", "$env:TEMP\ksc_stderr.txt" -ErrorAction SilentlyContinue
+                    # Native process exit code (set after external `&` invocation)
+                    $exitCode = $LASTEXITCODE
 
-                    if ($process.ExitCode -eq 0) {
+                    $output = if ($null -eq $allOutput) {
+                        ''
+                    }
+                    elseif ($allOutput -is [System.Array]) {
+                        (($allOutput | ForEach-Object { "$_" }) -join [Environment]::NewLine).Trim()
+                    }
+                    else {
+                        "$allOutput".Trim()
+                    }
+
+                    if ($exitCode -eq 0) {
                         if ([string]::IsNullOrWhiteSpace($output)) {
                             Write-Host "OK" -ForegroundColor Green
                         }
@@ -171,9 +194,9 @@ process {
                         $script:failedFiles += [PSCustomObject]@{
                             File = $relativePath
                             Output = $output
-                            ExitCode = $process.ExitCode
+                            ExitCode = $exitCode
                         }
-                        Write-Verbose "Compiler failed for $relativePath with exit code $($process.ExitCode)"
+                        Write-Verbose "Compiler failed for $relativePath with exit code $exitCode"
                     }
                 }
                 catch {

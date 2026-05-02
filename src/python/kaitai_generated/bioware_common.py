@@ -18,13 +18,51 @@ class BiowareCommon(KaitaiStruct):
     - Gender IDs (used in GFF LocalizedString substrings)
     - The CExoLocString / LocalizedString binary layout
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py
-    - https://github.com/OldRepublicDevs/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py
-    - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h
-    - https://github.com/seedhartha/reone/blob/master/include/reone/resource/types.h
+    Canonical upstream links: `meta.doc-ref` and `meta.xref` (line-anchored where applicable).
+    
+    .. seealso::
+       PyKotor — `Language` + `Gender` (substring language / gender ids) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/language.py#L13-L428
+    
+    
+    .. seealso::
+       PyKotor — `Game` (engine id) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py#L255-L265
+    
+    
+    .. seealso::
+       PyKotor — `EquipmentSlot` - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/misc.py#L611-L625
+    
+    
+    .. seealso::
+       PyKotor — `ObjectType` - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/common/game_object.py#L28-L45
+    
+    
+    .. seealso::
+       PyKotor — GFF field read path (LocalizedString via reader) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff.py#L220-L235
+    
+    
+    .. seealso::
+       xoreos — `Language` / `LanguageGender` (Aurora runtime; compare TLK / substring packing) - https://github.com/xoreos/xoreos/blob/master/src/aurora/language.h#L46-L73
+    
+    
+    .. seealso::
+       xoreos — `TalkTable_TLK::load` (TLK header + language id field) - https://github.com/xoreos/xoreos/blob/master/src/aurora/talktable_tlk.cpp#L57-L92
+    
+    
+    .. seealso::
+       xoreos-tools — `byte` / `uint` typedefs - https://github.com/xoreos/xoreos-tools/blob/master/src/common/types.h#L28-L33
+    
+    
+    .. seealso::
+       reone — `ResType` + `GameID` (numeric resource ids) - https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L30-L99
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs PDF tree (discoverability) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     """
+
+    class BiowareDdsVariantBytesPerPixel(IntEnum):
+        dxt1 = 3
+        dxt5 = 4
 
     class BiowareEquipmentSlotFlag(IntEnum):
         invalid = 0
@@ -157,6 +195,28 @@ class BiowareCommon(KaitaiStruct):
         japanese = 131
         unknown = 2147483646
 
+    class BiowareLipVisemeId(IntEnum):
+        neutral = 0
+        ee = 1
+        eh = 2
+        ah = 3
+        oh = 4
+        ooh = 5
+        y = 6
+        sts = 7
+        fv = 8
+        ng = 9
+        th = 10
+        mpb = 11
+        td = 12
+        sh = 13
+        l = 14
+        kg = 15
+
+    class BiowareLtrAlphabetLength(IntEnum):
+        neverwinter_nights = 26
+        kotor = 28
+
     class BiowareObjectTypeId(IntEnum):
         invalid = 0
         creature = 1
@@ -170,6 +230,31 @@ class BiowareCommon(KaitaiStruct):
         area = 9
         sound = 10
         camera = 11
+
+    class BiowarePccCompressionCodec(IntEnum):
+        none = 0
+        zlib = 1
+        lzo = 2
+
+    class BiowarePccPackageKind(IntEnum):
+        normal_package = 0
+        patch_package = 1
+
+    class BiowareTpcPixelFormatId(IntEnum):
+        greyscale = 1
+        rgb_or_dxt1 = 2
+        rgba_or_dxt5 = 4
+        bgra_xbox_swizzle = 12
+
+    class RiffWaveFormatTag(IntEnum):
+        pcm = 1
+        adpcm_ms = 2
+        ieee_float = 3
+        alaw = 6
+        mulaw = 7
+        dvi_ima_adpcm = 17
+        mpeg_layer3 = 85
+        wave_format_extensible = 65534
     def __init__(self, _io, _parent=None, _root=None):
         super(BiowareCommon, self).__init__(_io)
         self._parent = _parent

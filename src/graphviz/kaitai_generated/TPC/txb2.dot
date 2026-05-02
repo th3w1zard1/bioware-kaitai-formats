@@ -1,0 +1,15 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__txb2 {
+		label="Txb2";
+		graph[style=dotted];
+
+		txb2__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">128</TD><TD>Tpc::TpcHeader</TD><TD PORT="header_type">header</TD></TR>
+			<TR><TD PORT="body_pos">128</TD><TD PORT="body_size">⇲</TD><TD></TD><TD PORT="body_type">body</TD></TR>
+		</TABLE>>];
+	}
+	txb2__seq:header_type -> tpc_header__seq [style=bold];
+}

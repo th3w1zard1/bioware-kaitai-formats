@@ -1,0 +1,589 @@
+meta:
+  id: bioware_type_ids
+  title: BioWare Type ID Enums (xoreos FileType + PyKotor ResourceType)
+  license: MIT
+  xref:
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    vendor_xoreos_trees_note: |
+      Local `vendor/xoreos`, `vendor/xoreos-tools`, and `vendor/xoreos-docs` may be **empty** until `git submodule update --init`
+      (see `docs/XOREOS_FORMAT_COVERAGE.md` section 0). Until populated, rely on GitHub `blob/master/...#L` anchors in `meta.xref` / `doc-ref`
+      and `scripts/verify_ksy_urls.py --check-xoreos-github-line-ranges` for drift checks — not on-disk greps alone.
+    xoreos_tools_readme_inventory: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    xoreos_types: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L34-L443
+    # Line anchors verified against upstream xoreos `master` (re-check if upstream moves).
+    xoreos_types_file_type_comment: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L34-L55
+    xoreos_types_file_type_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L450
+    xoreos_types_game_id_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
+    xoreos_types_resource_type_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L410-L417
+    xoreos_types_archive_type_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L419-L430
+    xoreos_types_platform_enum: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L432-L443
+    xoreos_resman_add_type_alias: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/resman.cpp#L610-L612
+    # Upstream uses two enum identifiers for the same integer (FaceFX metadata).
+    xoreos_types_fxr_fxt_duplicate: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L316-L317
+    pykotor_types: https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322
+doc: |
+  This file provides **exhaustive enum mappings** for resource/type identifiers used across
+  BioWare-family games and their tooling ecosystems.
+
+  **Consumers:** KEY / ERF / RIM import `xoreos_file_type_id` from here instead of duplicating the archive
+  type table; cite this file for upstream alias/conflict notes. TLK/ERF language ids and LIP visemes live in
+  `bioware_common.ksy` (`bioware_language_id`, `bioware_lip_viseme_id`).
+  Additional **xoreos-only** Aurora enums (`xoreos_game_id`, `xoreos_archive_type`, `xoreos_resource_category`, `xoreos_platform_id`)
+  mirror the same `types.h` header (distinct from PyKotor `ResourceType` / archive `FileType` IDs).
+
+  **xoreos naming (do not conflate):**
+  - `Aurora::ResourceType` in `types.h` is a **tiny media-class enum** (`kResourceImage` … `kResourceMAX`) — not archive numeric IDs.
+    It is mirrored here as `xoreos_resource_category` (`meta.xref.xoreos_types_resource_type_enum`).
+  - Archive **numeric restype** values come from `Aurora::FileType` (`kFileType*` constants) — mirrored here as `xoreos_file_type_id`.
+
+  Why two ID columns?
+  - `xoreos_file_type_id` mirrors xoreos `enum FileType` in `src/aurora/types.h` (`meta.xref.xoreos_types_file_type_enum`; full header band: `meta.xref.xoreos_types`) and is the
+    canonical set of **engine-facing** numeric type IDs found in archives (KEY/BIF/ERF/RIM, etc).
+  - `bioware_resource_type_id` mirrors PyKotor `ResourceType` (`type.py#L123-L322`; see `meta.xref.pykotor_types`).
+    and includes additional **toolset-only** IDs (e.g. XML/JSON abstractions).
+
+  Important notes:
+  - **Duplicates / aliases** exist in upstream definitions (e.g., `DFT`/`DTF` share `2045`,
+    `FXR`/`FXT` share `22033` — see `meta.xref.xoreos_types_fxr_fxt_duplicate`). Kaitai enums cannot represent multiple names for the same numeric key,
+    so this file keeps a single canonical name per value.
+  - **Conflicts between ecosystems** exist: PyKotor assigns `25015` to `wav_deob` for toolset use,
+    while xoreos uses `25015` for `pck` (Dragon Age II). Keeping the enums separate preserves both.
+  
+  References: `meta.doc-ref` and `meta.xref` (xoreos `types.h` bands; PyKotor `ResourceType`).
+
+doc-ref:
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L34-L55 xoreos — `FileType` comment block"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L56-L450 xoreos — `enum FileType` (engine-facing archive type IDs; includes post-`kFileTypeXEOSITEX` entries such as `kFileTypeWBM`)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408 xoreos — `enum GameID`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L410-L417 xoreos — `enum ResourceType`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L419-L430 xoreos — `enum ArchiveType`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L432-L443 xoreos — `enum Platform`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L316-L317 xoreos — `FXR` / `FXT` duplicate numeric key"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/resman.cpp#L610-L612 xoreos — `ResourceManager::addTypeAlias`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/README.md#L17-L43 xoreos-tools — README tool inventory (which CLIs touch which formats)"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs PDF tree"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L123-L322 PyKotor — `ResourceType` members (engine + toolset-only ids)"
+
+enums:
+  xoreos_file_type_id:
+    -1: none
+    0: res
+    1: bmp
+    2: mve
+    3: tga
+    4: wav
+    6: plt
+    7: ini
+    8: bmu
+    9: mpg
+    10: txt
+    11: wma
+    12: wmv
+    13: xmv
+    2000: plh
+    2001: tex
+    2002: mdl
+    2003: thg
+    2005: fnt
+    2007: lua
+    2008: slt
+    2009: nss
+    2010: ncs
+    2011: mod
+    2012: are
+    2013: set
+    2014: ifo
+    2015: bic
+    2016: wok
+    2017: two_da
+    2018: tlk
+    2022: txi
+    2023: git
+    2024: bti
+    2025: uti
+    2026: btc
+    2027: utc
+    2029: dlg
+    2030: itp
+    2031: btt
+    2032: utt
+    2033: dds
+    2034: bts
+    2035: uts
+    2036: ltr
+    2037: gff
+    2038: fac
+    2039: bte
+    2040: ute
+    2041: btd
+    2042: utd
+    2043: btp
+    2044: utp
+    2045: dft
+    2046: gic
+    2047: gui
+    2048: css
+    2049: ccs
+    2050: btm
+    2051: utm
+    2052: dwk
+    2053: pwk
+    2054: btg
+    2055: utg
+    2056: jrl
+    2057: sav
+    2058: utw
+    2059: four_pc
+    2060: ssf
+    2061: hak
+    2062: nwm
+    2063: bik
+    2064: ndb
+    2065: ptm
+    2066: ptt
+    2067: ncm
+    2068: mfx
+    2069: mat
+    2070: mdb
+    2071: say
+    2072: ttf
+    2073: ttc
+    2074: cut
+    2075: ka
+    2076: jpg
+    2077: ico
+    2078: ogg
+    2079: spt
+    2080: spw
+    2081: wfx
+    2082: ugm
+    2083: qdb
+    2084: qst
+    2085: npc
+    2086: spn
+    2087: utx
+    2088: mmd
+    2089: smm
+    2090: uta
+    2091: mde
+    2092: mdv
+    2093: mda
+    2094: mba
+    2095: oct
+    2096: bfx
+    2097: pdb
+    2098: the_witcher_save
+    2099: pvs
+    2100: cfx
+    2101: luc
+    2103: prb
+    2104: cam
+    2105: vds
+    2106: bin
+    2107: wob
+    2108: api
+    2109: properties
+    2110: png
+    3000: lyt
+    3001: vis
+    3002: rim
+    3003: pth
+    3004: lip
+    3005: bwm
+    3006: txb
+    3007: tpc
+    3008: mdx
+    3009: rsv
+    3010: sig
+    3011: mab
+    3012: qst2
+    3013: sto
+    3015: hex
+    3016: mdx2
+    3017: txb2
+    3022: fsm
+    3023: art
+    3024: amp
+    3025: cwa
+    3028: bip
+    4000: mdb2
+    4001: mda2
+    4002: spt2
+    4003: gr2
+    4004: fxa
+    4005: fxe
+    4007: jpg2
+    4008: pwc
+    9996: one_da
+    9997: erf
+    9998: bif
+    9999: key
+    19000: exe
+    19001: dbf
+    19002: cdx
+    19003: fpt
+    20000: zip
+    20001: fxm
+    20002: fxs
+    20003: xml
+    20004: wlk
+    20005: utr
+    20006: sef
+    20007: pfx
+    20008: tfx
+    20009: ifx
+    20010: lfx
+    20011: bbx
+    20012: pfb
+    20013: upe
+    20014: usc
+    20015: ult
+    20016: fx
+    20017: max
+    20018: doc
+    20019: scc
+    20020: wmp
+    20021: osc
+    20022: trn
+    20023: uen
+    20024: ros
+    20025: rst
+    20026: ptx
+    20027: ltx
+    20028: trx
+    21000: nds
+    21001: herf
+    21002: dict
+    21003: small
+    21004: cbgt
+    21005: cdpth
+    21006: emit
+    21007: itm
+    21008: nanr
+    21009: nbfp
+    21010: nbfs
+    21011: ncer
+    21012: ncgr
+    21013: nclr
+    21014: nftr
+    21015: nsbca
+    21016: nsbmd
+    21017: nsbta
+    21018: nsbtp
+    21019: nsbtx
+    21020: pal
+    21021: raw
+    21022: sadl
+    21023: sdat
+    21024: smp
+    21025: spl
+    21026: vx
+    22000: anb
+    22001: ani
+    22002: cns
+    22003: cur
+    22004: evt
+    22005: fdl
+    22006: fxo
+    22007: gad
+    22008: gda
+    22009: gfx
+    22010: ldf
+    22011: lst
+    22012: mal
+    22013: mao
+    22014: mmh
+    22015: mop
+    22016: mor
+    22017: msh
+    22018: mtx
+    22019: ncc
+    22020: phy
+    22021: plo
+    22022: stg
+    22023: tbi
+    22024: tnt
+    22025: arl
+    22026: fev
+    22027: fsb
+    22028: opf
+    22029: crf
+    22030: rimp
+    22031: met
+    22032: meta
+    22033: fxr
+    22034: cif
+    22035: cub
+    22036: dlb
+    22037: nsc
+    23000: mov
+    23001: curs
+    23002: pict
+    23003: rsrc
+    23004: plist
+    24000: cre
+    24001: pso
+    24002: vso
+    24003: abc
+    24004: sbm
+    24005: pvd
+    24006: pla
+    24007: trg
+    24008: pk
+    25000: als
+    25001: apl
+    25002: assembly
+    25003: bak
+    25004: bnk
+    25005: cl
+    25006: cnv
+    25007: con
+    25008: dat
+    25009: dx11
+    25010: ids
+    25011: log
+    25012: map
+    25013: mml
+    25014: mp3
+    25015: pck
+    25016: rml
+    25017: s
+    25018: sta
+    25019: svr
+    25020: vlm
+    25021: wbd
+    25022: xbx
+    25023: xls
+    26000: bzf
+    27000: adv
+    28000: json
+    28001: tlk_expert
+    28002: tlk_mobile
+    28003: tlk_touch
+    28004: otf
+    28005: par
+    29000: xwb
+    29001: xsb
+    30000: xds
+    30001: wnd
+    40000: xeositex
+    41000: wbm
+  bioware_resource_type_id:
+    -1: invalid
+    0: res
+    1: bmp
+    2: mve
+    3: tga
+    4: wav
+    6: plt
+    7: ini
+    8: bmu
+    9: mpg
+    10: txt
+    11: wma
+    12: wmv
+    13: xmv
+    2000: plh
+    2001: tex
+    2002: mdl
+    2003: thg
+    2005: fnt
+    2007: lua
+    2008: slt
+    2009: nss
+    2010: ncs
+    2011: mod
+    2012: are
+    2013: set
+    2014: ifo
+    2015: bic
+    2016: wok
+    2018: tlk
+    2022: txi
+    2023: git
+    2024: bti
+    2025: uti
+    2026: btc
+    2027: utc
+    2029: dlg
+    2030: itp
+    2031: btt
+    2032: utt
+    2033: dds
+    2034: bts
+    2035: uts
+    2036: ltr
+    2037: gff
+    2038: fac
+    2039: bte
+    2040: ute
+    2041: btd
+    2042: utd
+    2043: btp
+    2044: utp
+    2045: dft
+    2046: gic
+    2047: gui
+    2048: css
+    2049: ccs
+    2050: btm
+    2051: utm
+    2052: dwk
+    2053: pwk
+    2054: btg
+    2055: utg
+    2056: jrl
+    2057: sav
+    2058: utw
+    2060: ssf
+    2061: hak
+    2062: nwm
+    2063: bik
+    2064: ndb
+    2065: ptm
+    2066: ptt
+    2067: ncm
+    2068: mfx
+    2069: mat
+    2070: mdb
+    2071: say
+    2072: ttf
+    2073: ttc
+    2074: cut
+    2075: ka
+    2076: jpg
+    2077: ico
+    2078: ogg
+    2079: spt
+    2080: spw
+    2081: wfx
+    2082: ugm
+    2083: qdb
+    2084: qst
+    2085: npc
+    2086: spn
+    2087: utx
+    2088: mmd
+    2089: smm
+    2090: uta
+    2091: mde
+    2092: mdv
+    2093: mda
+    2094: mba
+    2095: oct
+    2096: bfx
+    2097: pdb
+    2099: pvs
+    2100: cfx
+    2101: luc
+    2103: prb
+    2104: cam
+    2105: vds
+    2106: bin
+    2107: wob
+    2108: api
+    2110: png
+    3000: lyt
+    3001: vis
+    3002: rim
+    3003: pth
+    3004: lip
+    3005: bwm
+    3006: txb
+    3007: tpc
+    3008: mdx
+    3009: rsv
+    3010: sig
+    3011: mab
+    3012: qst2
+    3013: sto
+    3015: hex
+    3016: mdx2
+    3017: txb2
+    3022: fsm
+    3023: art
+    3024: amp
+    3025: cwa
+    3028: bip
+    9997: erf
+    9998: bif
+    9999: key
+    25014: mp3
+    25015: wav_deob
+    50001: tlk_xml
+    50002: mdl_ascii
+    50006: ifo_xml
+    50007: git_xml
+    50008: uti_xml
+    50009: utc_xml
+    50010: dlg_xml
+    50011: itp_xml
+    50012: utt_xml
+    50013: uts_xml
+    50014: fac_xml
+    50015: ute_xml
+    50016: utd_xml
+    50017: utp_xml
+    50018: gui_xml
+    50019: utm_xml
+    50020: jrl_xml
+    50021: utw_xml
+    50022: pth_xml
+    50023: lip_xml
+    50024: ssf_xml
+    50025: are_xml
+    50027: tlk_json
+    50028: lip_json
+    50029: res_xml
+
+  # Aurora::GameID — https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
+  xoreos_game_id:
+    -1: unknown
+    0: nwn
+    1: nwn2
+    2: kotor
+    3: kotor2
+    4: jade
+    5: witcher
+    6: sonic
+    7: dragon_age
+    8: dragon_age2
+    9: max
+
+  # Aurora::ArchiveType (sequential 0..8, then sentinel MAX) — types.h#L419-L430
+  xoreos_archive_type:
+    0: key
+    1: bif
+    2: erf
+    3: rim
+    4: zip
+    5: exe
+    6: nds
+    7: herf
+    8: nsbtx
+    9: max
+
+  # Aurora::ResourceType (media class, not archive extension id) — types.h#L410-L417
+  xoreos_resource_category:
+    0: image
+    1: video
+    2: sound
+    3: music
+    4: cursor
+    5: max
+
+  # Aurora::Platform — types.h#L432-L443
+  xoreos_platform_id:
+    0: windows
+    1: mac_osx
+    2: linux
+    3: xbox
+    4: xbox360
+    5: ps3
+    6: nds
+    7: android
+    8: ios
+    9: unknown
+

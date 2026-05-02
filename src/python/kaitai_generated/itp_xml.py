@@ -14,13 +14,30 @@ class ItpXml(KaitaiStruct):
     Uses GFF XML structure with root element <gff3> containing <struct> elements.
     Each field has a label attribute and appropriate type element (byte, uint32, exostring, etc.).
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/itp/itp.py
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/gff/io_gff_xml.py
-    - https://github.com/seedhartha/reone/tree/master/src/libs/resource/parser/gff/itp.cpp
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/GFF-File-Format.md
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/ITP-File-Format.md
-    - https://github.com/xoreos/xoreos/tree/master/src/aurora/gff3file.cpp
+    Canonical links: `meta.doc-ref` and `meta.xref`.
+    
+    .. seealso::
+       PyKotor wiki — GFF (ITP is GFF-shaped) - https://github.com/OpenKotOR/PyKotor/wiki/GFF-File-Format
+    
+    
+    .. seealso::
+       xoreos — `GFF3File::readHeader` - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63
+    
+    
+    .. seealso::
+       reone — `GffReader` (GFF3 / template ingestion; no standalone `itp.cpp` on `master`) - https://github.com/modawan/reone/blob/master/src/libs/resource/format/gffreader.cpp#L27-L225
+    
+    
+    .. seealso::
+       xoreos-docs — GFF_Format.pdf (binary GFF family behind ITP) - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/GFF_Format.pdf
+    
+    
+    .. seealso::
+       xoreos-docs — Torlack ITP / MultiMap (GFF-family context) - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/itp.html#L44-L49
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs PDF tree - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(ItpXml, self).__init__(_io)

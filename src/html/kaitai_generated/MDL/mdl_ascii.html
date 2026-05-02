@@ -1,0 +1,751 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>MdlAscii format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>MdlAscii format specification</h1>
+
+      
+<a name='type-mdl_ascii'></a>
+<h1>Type: MdlAscii</h1>
+
+<p>MDL ASCII format is a human-readable ASCII text representation of MDL (Model) binary files.
+Used by modding tools for easier editing than binary MDL format.
+
+The ASCII format represents the model structure using plain text with keyword-based syntax.
+Lines are parsed sequentially, with keywords indicating sections, nodes, properties, and data arrays.
+
+Repository policy: NWScript source (`.nss`) and other plaintext interchange (including ASCII MDL) are
+documented in `.ksy` only where a line-oriented schema is useful for tooling; see `AGENTS.md` for the
+full binary-vs-text scope rule.
+
+Reference: https://github.com/OpenKotOR/PyKotor/wiki/MDL-MDX-File-Format — ASCII MDL Format section
+Reference: https://github.com/OpenKotOR/MDLOps/blob/master/MDLOpsM.pm#L3916-L4698 — `readasciimdl` (Perl; line band matches former PyKotor vendor drop)
+Binary wire IDs (for cross-checking ASCII integers): PyKotor wiki binary MDL section, xoreos-docs Torlack `binmdl.html`,
+and `formats/Common/bioware_mdl_common.ksy` (canonical enum tables; this ASCII spec does not duplicate them as local `enums:`).
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>lines</td>
+<td><a href="#type-mdl_ascii-ascii_line">AsciiLine</a></td>
+<td></td>
+</tr>
+</table>
+<a name='type-mdl_ascii-animation_section'></a>
+<h2>Type: AnimationSection</h2>
+
+<p>Animation section keywords</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>newanim</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>newanim <animation_name> <model_name> - Start of animation definition</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>doneanim</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>doneanim <animation_name> <model_name> - End of animation definition</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>length</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>length <duration> - Animation duration in seconds</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>transtime</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>transtime <transition_time> - Transition/blend time to this animation in seconds</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>animroot</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>animroot <root_node_name> - Root node name for animation</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>event</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>event <time> <event_name> - Animation event (triggers at specified time)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>eventlist</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>eventlist - Start of animation events list</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>endlist</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>endlist - End of list (controllers, events, etc.)</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-ascii_line'></a>
+<h2>Type: AsciiLine</h2>
+
+<p>Single line in ASCII MDL file</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>content</td>
+<td>str(term=10, ignore EOS, UTF-8)</td>
+<td></td>
+</tr>
+</table>
+<a name='type-mdl_ascii-controller_bezier'></a>
+<h2>Type: ControllerBezier</h2>
+
+<p>Bezier (smooth animated) controller format</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>controller_name</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>Controller name followed by 'bezierkey' (e.g., positionbezierkey, orientationbezierkey)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>keyframes</td>
+<td><a href="#type-mdl_ascii-controller_bezier_keyframe">ControllerBezierKeyframe</a></td>
+<td>Keyframe entries until endlist keyword</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-controller_bezier_keyframe'></a>
+<h2>Type: ControllerBezierKeyframe</h2>
+
+<p>Single keyframe in Bezier controller (stores value + in_tangent + out_tangent per column)</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>time</td>
+<td>str(UTF-8)</td>
+<td>Time value (float)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>value_data</td>
+<td>str(UTF-8)</td>
+<td>Space-separated values (3 times column_count floats: value, in_tangent, out_tangent for each column)</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-controller_keyed'></a>
+<h2>Type: ControllerKeyed</h2>
+
+<p>Keyed (animated) controller format</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>controller_name</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>Controller name followed by 'key' (e.g., positionkey, orientationkey)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>keyframes</td>
+<td><a href="#type-mdl_ascii-controller_keyframe">ControllerKeyframe</a></td>
+<td>Keyframe entries until endlist keyword</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-controller_keyframe'></a>
+<h2>Type: ControllerKeyframe</h2>
+
+<p>Single keyframe in keyed controller</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>time</td>
+<td>str(UTF-8)</td>
+<td>Time value (float)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>values</td>
+<td>str(UTF-8)</td>
+<td>Space-separated property values (number depends on controller type and column count)</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-controller_single'></a>
+<h2>Type: ControllerSingle</h2>
+
+<p>Single (constant) controller format</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>controller_name</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>Controller name (position, orientation, scale, color, radius, etc.)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>values</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>Space-separated controller values (number depends on controller type)</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-danglymesh_properties'></a>
+<h2>Type: DanglymeshProperties</h2>
+
+<p>Danglymesh node properties</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>displacement</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>displacement <value> - Maximum displacement distance for physics simulation</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>tightness</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>tightness <value> - Tightness/stiffness of spring simulation (0.0-1.0)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>period</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>period <value> - Oscillation period in seconds</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-data_arrays'></a>
+<h2>Type: DataArrays</h2>
+
+<p>Data array keywords</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>verts</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>verts <count> - Start vertex positions array (count vertices, 3 floats each: X, Y, Z)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>faces</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>faces <count> - Start faces array (count faces, format: normal_x normal_y normal_z plane_coeff mat_id adj1 adj2 adj3 v1 v2 v3 [t1 t2 t3])</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>tverts</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>tverts <count> - Start primary texture coordinates array (count UVs, 2 floats each: U, V)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>tverts1</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>tverts1 <count> - Start secondary texture coordinates array (count UVs, 2 floats each: U, V)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>lightmaptverts</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>lightmaptverts <count> - Start lightmap texture coordinates (magnusll export compatibility, same as tverts1)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>tverts2</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>tverts2 <count> - Start tertiary texture coordinates array (count UVs, 2 floats each: U, V)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>tverts3</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>tverts3 <count> - Start quaternary texture coordinates array (count UVs, 2 floats each: U, V)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>texindices1</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>texindices1 <count> - Start texture indices array for 2nd texture (count face indices, 3 indices per face)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>texindices2</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>texindices2 <count> - Start texture indices array for 3rd texture (count face indices, 3 indices per face)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>texindices3</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>texindices3 <count> - Start texture indices array for 4th texture (count face indices, 3 indices per face)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>colors</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>colors <count> - Start vertex colors array (count colors, 3 floats each: R, G, B)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>colorindices</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>colorindices <count> - Start vertex color indices array (count face indices, 3 indices per face)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>weights</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>weights <count> - Start bone weights array (count weights, format: bone1 weight1 [bone2 weight2 [bone3 weight3 [bone4 weight4]]])</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>constraints</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>constraints <count> - Start vertex constraints array for danglymesh (count floats, one per vertex)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>aabb</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>aabb [min_x min_y min_z max_x max_y max_z leaf_part] - AABB tree node (can be inline or multi-line)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>saber_verts</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>saber_verts <count> - Start lightsaber vertex positions array (count vertices, 3 floats each: X, Y, Z)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>saber_norms</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>saber_norms <count> - Start lightsaber vertex normals array (count normals, 3 floats each: X, Y, Z)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>name</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>name <node_name> - MDLedit-style name entry for walkmesh nodes (fakenodes)</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-emitter_flags'></a>
+<h2>Type: EmitterFlags</h2>
+
+<p>Emitter behavior flags</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>p2p</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>p2p <0_or_1> - Point-to-point flag (bit 0x0001)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>p2p_sel</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>p2p_sel <0_or_1> - Point-to-point selection flag (bit 0x0002)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>affected_by_wind</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>affectedByWind <0_or_1> - Affected by wind flag (bit 0x0004)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>m_is_tinted</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>m_isTinted <0_or_1> - Is tinted flag (bit 0x0008)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>bounce</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>bounce <0_or_1> - Bounce flag (bit 0x0010)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>random</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>random <0_or_1> - Random flag (bit 0x0020)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>inherit</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>inherit <0_or_1> - Inherit flag (bit 0x0040)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>inheritvel</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>inheritvel <0_or_1> - Inherit velocity flag (bit 0x0080)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>inherit_local</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>inherit_local <0_or_1> - Inherit local flag (bit 0x0100)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>splat</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>splat <0_or_1> - Splat flag (bit 0x0200)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>inherit_part</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>inherit_part <0_or_1> - Inherit part flag (bit 0x0400)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>depth_texture</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>depth_texture <0_or_1> - Depth texture flag (bit 0x0800)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>emitterflag13</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>emitterflag13 <0_or_1> - Emitter flag 13 (bit 0x1000)</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-emitter_properties'></a>
+<h2>Type: EmitterProperties</h2>
+
+<p>Emitter node properties</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>deadspace</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>deadspace <value> - Minimum distance from emitter before particles become visible</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>blast_radius</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>blastRadius <value> - Radius of explosive/blast particle effects</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>blast_length</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>blastLength <value> - Length/duration of blast effects</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>num_branches</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>numBranches <value> - Number of branching paths for particle trails</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>controlptsmoothing</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>controlptsmoothing <value> - Smoothing factor for particle path control points</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>xgrid</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>xgrid <value> - Grid subdivisions along X axis for particle spawning</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>ygrid</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>ygrid <value> - Grid subdivisions along Y axis for particle spawning</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>spawntype</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>spawntype <value> - Particle spawn type</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>update</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>update <script_name> - Update behavior script name (e.g., single, fountain)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>render</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>render <script_name> - Render mode script name (e.g., normal, billboard_to_local_z)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>blend</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>blend <script_name> - Blend mode script name (e.g., normal, lighten)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>texture</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>texture <texture_name> - Particle texture name</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>chunkname</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>chunkname <chunk_name> - Associated model chunk name</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>twosidedtex</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>twosidedtex <0_or_1> - Whether texture should render two-sided (1=two-sided, 0=single-sided)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>loop</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>loop <0_or_1> - Whether particle system loops (1=loops, 0=single playback)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>renderorder</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>renderorder <value> - Rendering priority/order for particle sorting</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>m_b_frame_blending</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>m_bFrameBlending <0_or_1> - Whether frame blending is enabled (1=enabled, 0=disabled)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>m_s_depth_texture_name</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>m_sDepthTextureName <texture_name> - Depth/softparticle texture name</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-light_properties'></a>
+<h2>Type: LightProperties</h2>
+
+<p>Light node properties</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>flareradius</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>flareradius <value> - Radius of lens flare effect</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>flarepositions</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>flarepositions <count> - Start flare positions array (count floats, 0.0-1.0 along light ray)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>flaresizes</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>flaresizes <count> - Start flare sizes array (count floats)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>flarecolorshifts</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>flarecolorshifts <count> - Start flare color shifts array (count RGB floats)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>texturenames</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>texturenames <count> - Start flare texture names array (count strings)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>ambientonly</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>ambientonly <0_or_1> - Whether light only affects ambient (1=ambient only, 0=full lighting)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>ndynamictype</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>ndynamictype <value> - Type of dynamic lighting behavior</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>affectdynamic</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>affectdynamic <0_or_1> - Whether light affects dynamic objects (1=affects, 0=static only)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>flare</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>flare <0_or_1> - Whether lens flare effect is enabled (1=enabled, 0=disabled)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>lightpriority</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>lightpriority <value> - Rendering priority for light culling/sorting</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>fadinglight</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>fadinglight <0_or_1> - Whether light intensity fades with distance (1=fades, 0=constant)</td>
+</tr>
+</table>
+<a name='type-mdl_ascii-line_text'></a>
+<h2>Type: LineText</h2>
+
+<p>A single UTF-8 text line (without the trailing newline).
+Used to make doc-oriented keyword/type listings schema-valid for Kaitai.
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>value</td>
+<td>str(term=10, ignore EOS, UTF-8)</td>
+<td></td>
+</tr>
+</table>
+<a name='type-mdl_ascii-reference_properties'></a>
+<h2>Type: ReferenceProperties</h2>
+
+<p>Reference node properties</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>refmodel</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>refmodel <model_resref> - Referenced model resource name without extension</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>reattachable</td>
+<td><a href="#type-mdl_ascii-line_text">LineText</a></td>
+<td>reattachable <0_or_1> - Whether model can be detached and reattached dynamically (1=reattachable, 0=permanent)</td>
+</tr>
+</table>
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      

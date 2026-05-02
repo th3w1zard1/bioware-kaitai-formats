@@ -1,0 +1,52 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__bif {
+		label="Bif";
+		graph[style=dotted];
+
+		bif__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="file_type_pos">0</TD><TD PORT="file_type_size">4</TD><TD>str(ASCII)</TD><TD PORT="file_type_type">file_type</TD></TR>
+			<TR><TD COLSPAN="4" PORT="file_type__valid">must be equal to &quot;BIFF&quot;</TD></TR>
+			<TR><TD PORT="version_pos">4</TD><TD PORT="version_size">4</TD><TD>str(ASCII)</TD><TD PORT="version_type">version</TD></TR>
+			<TR><TD COLSPAN="4" PORT="version__valid">must be any of &quot;V1  &quot;, &quot;V1.1&quot;</TD></TR>
+			<TR><TD PORT="var_res_count_pos">8</TD><TD PORT="var_res_count_size">4</TD><TD>u4le</TD><TD PORT="var_res_count_type">var_res_count</TD></TR>
+			<TR><TD PORT="fixed_res_count_pos">12</TD><TD PORT="fixed_res_count_size">4</TD><TD>u4le</TD><TD PORT="fixed_res_count_type">fixed_res_count</TD></TR>
+			<TR><TD COLSPAN="4" PORT="fixed_res_count__valid">must be equal to 0</TD></TR>
+			<TR><TD PORT="var_table_offset_pos">16</TD><TD PORT="var_table_offset_size">4</TD><TD>u4le</TD><TD PORT="var_table_offset_type">var_table_offset</TD></TR>
+		</TABLE>>];
+		bif__inst__var_resource_table [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="var_resource_table_pos">var_table_offset</TD><TD PORT="var_resource_table_size">...</TD><TD>VarResourceTable</TD><TD PORT="var_resource_table_type">var_resource_table</TD></TR>
+			<TR><TD COLSPAN="4" PORT="var_resource_table__if">if var_res_count &gt; 0</TD></TR>
+		</TABLE>>];
+		subgraph cluster__var_resource_entry {
+			label="Bif::VarResourceEntry";
+			graph[style=dotted];
+
+			var_resource_entry__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="resource_id_pos">0</TD><TD PORT="resource_id_size">4</TD><TD>u4le</TD><TD PORT="resource_id_type">resource_id</TD></TR>
+				<TR><TD PORT="offset_pos">4</TD><TD PORT="offset_size">4</TD><TD>u4le</TD><TD PORT="offset_type">offset</TD></TR>
+				<TR><TD PORT="file_size_pos">8</TD><TD PORT="file_size_size">4</TD><TD>u4le</TD><TD PORT="file_size_type">file_size</TD></TR>
+				<TR><TD PORT="resource_type_pos">12</TD><TD PORT="resource_type_size">4</TD><TD>u4le→BiowareTypeIds::XoreosFileTypeId</TD><TD PORT="resource_type_type">resource_type</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__var_resource_table {
+			label="Bif::VarResourceTable";
+			graph[style=dotted];
+
+			var_resource_table__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="entries_pos">0</TD><TD PORT="entries_size">16</TD><TD>VarResourceEntry</TD><TD PORT="entries_type">entries</TD></TR>
+				<TR><TD COLSPAN="4" PORT="entries__repeat">repeat _root.var_res_count times</TD></TR>
+			</TABLE>>];
+		}
+	}
+	bif__seq:var_table_offset_type -> bif__inst__var_resource_table:var_resource_table_pos [color="#404040"];
+	bif__inst__var_resource_table:var_resource_table_type -> var_resource_table__seq [style=bold];
+	bif__seq:var_res_count_type -> bif__inst__var_resource_table:var_resource_table__if [color="#404040"];
+	var_resource_table__seq:entries_type -> var_resource_entry__seq [style=bold];
+	bif__seq:var_res_count_type -> var_resource_table__seq:entries__repeat [color="#404040"];
+}

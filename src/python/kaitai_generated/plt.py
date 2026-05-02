@@ -19,6 +19,8 @@ class Plt(KaitaiStruct):
     does not load, parse, or use PLT files. KotOR uses standard TPC/TGA/DDS textures for all textures,
     including character models. This documentation is provided for reference only.
     
+    **reone:** the KotOR-focused fork does not ship a standalone PLT body reader; see `meta.xref.reone_resource_type_plt_note` for the numeric `Plt` type id only.
+    
     Binary Format Structure:
     - Header (24 bytes): Signature, Version, Unknown fields, Width, Height
     - Pixel Data: Array of 2-byte pixel entries (color index + palette group index)
@@ -38,10 +40,34 @@ class Plt(KaitaiStruct):
     0 = Skin, 1 = Hair, 2 = Metal 1, 3 = Metal 2, 4 = Cloth 1, 5 = Cloth 2,
     6 = Leather 1, 7 = Leather 2, 8 = Tattoo 1, 9 = Tattoo 2
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/PLT-File-Format.md
-    - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
-    - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp
+    Canonical upstream links: `meta.doc-ref` and `meta.xref`.
+    
+    .. seealso::
+       PyKotor wiki — PLT (NWN legacy) - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#kotor-plt-file-format-documentation-nwn-legacy
+    
+    
+    .. seealso::
+       PyKotor — `ResourceType.PLT` (NWN-era id 6) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L374-L380
+    
+    
+    .. seealso::
+       xoreos-docs — Torlack plt.html - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/plt.html
+    
+    
+    .. seealso::
+       xoreos-tools — shipped CLI inventory (no PLT-specific tool on `master`) - https://github.com/xoreos/xoreos-tools/blob/master/README.md#L17-L43
+    
+    
+    .. seealso::
+       xoreos — `PLTFile::load` - https://github.com/xoreos/xoreos/blob/master/src/graphics/aurora/pltfile.cpp#L102-L145
+    
+    
+    .. seealso::
+       xoreos — `kFileTypePLT` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L63
+    
+    
+    .. seealso::
+       reone — `ResourceType::Plt` (id 6; no `.plt` wire reader on default branch) - https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L35
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Plt, self).__init__(_io)

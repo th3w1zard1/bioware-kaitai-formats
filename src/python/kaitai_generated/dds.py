@@ -3,23 +3,56 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+import bioware_common
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Dds(KaitaiStruct):
-    """DDS (DirectDraw Surface) files appear in two variants in KotOR:
+    """**DDS** in KotOR: either standard **DirectX** `DDS ` + 124-byte `DDS_HEADER`, or a **BioWare headerless** prefix
+    (`width`, `height`, `bytes_per_pixel`, `data_size`) before DXT/RGBA bytes. DXT mips / cube faces follow usual DDS rules.
     
-    1. Standard DirectX DDS: Header magic "DDS " (0x44445320), 124-byte header
-    2. BioWare DDS variant: No magic; width/height/bpp/dataSize leading integers
+    BioWare BPP enum: `bioware_dds_variant_bytes_per_pixel` in `bioware_common.ksy`.
     
-    DDS files support DXT1/DXT3/DXT5 block compression, uncompressed RGB/RGBA,
-    and various other pixel formats. They can include mipmaps and cube maps.
+    .. seealso::
+       PyKotor wiki — DDS - https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#dds
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/DDS-File-Format.md - Complete DDS format documentation
-    - Standard DirectX DDS format specification
+    
+    .. seealso::
+       PyKotor — `TPCDDSReader` / `io_dds` - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_dds.py#L50-L130
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeDDS` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L98
+    
+    
+    .. seealso::
+       xoreos — `dds.cpp` load entry - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L55-L67
+    
+    
+    .. seealso::
+       xoreos — BioWare headerless / Microsoft DDS branches - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/dds.cpp#L141-L210
+    
+    
+    .. seealso::
+       xoreos-tools — `dds.cpp` (image tooling) - https://github.com/xoreos/xoreos-tools/blob/master/src/images/dds.cpp#L69-L158
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs PDF tree (texture-adjacent PDFs) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+    
+    
+    .. seealso::
+       xoreos-docs — KotOR MDL overview (engine texture pipeline context) - https://github.com/xoreos/xoreos-docs/blob/master/specs/kotor_mdl.html
+    
+    
+    .. seealso::
+       lachjames/NorthernLights — upstream Unity Aurora sample (fork: `th3w1zard1/NorthernLights` in `meta.xref`) - https://github.com/lachjames/NorthernLights
+    
+    
+    .. seealso::
+       reone — `ResourceType::Dds` (type id; TPC path in `tpcreader.cpp`) - https://github.com/modawan/reone/blob/master/include/reone/resource/types.h#L57
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Dds, self).__init__(_io)
@@ -39,12 +72,7 @@ class Dds(KaitaiStruct):
             pass
             self.bioware_header = Dds.BiowareDdsHeader(self._io, self, self._root)
 
-        self.pixel_data = []
-        i = 0
-        while not self._io.is_eof():
-            self.pixel_data.append(self._io.read_u1())
-            i += 1
-
+        self.pixel_data = self._io.read_bytes_full()
 
 
     def _fetch_instances(self):
@@ -57,9 +85,6 @@ class Dds(KaitaiStruct):
             pass
             self.bioware_header._fetch_instances()
 
-        for i in range(len(self.pixel_data)):
-            pass
-
 
     class BiowareDdsHeader(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
@@ -71,7 +96,7 @@ class Dds(KaitaiStruct):
         def _read(self):
             self.width = self._io.read_u4le()
             self.height = self._io.read_u4le()
-            self.bytes_per_pixel = self._io.read_u4le()
+            self.bytes_per_pixel = KaitaiStream.resolve_enum(bioware_common.BiowareCommon.BiowareDdsVariantBytesPerPixel, self._io.read_u4le())
             self.data_size = self._io.read_u4le()
             self.unused_float = self._io.read_f4le()
 

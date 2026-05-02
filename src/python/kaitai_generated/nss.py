@@ -24,10 +24,30 @@ class Nss(KaitaiStruct):
     - Comments: // for single-line, /* */ for multi-line
     - Preprocessor directives: #include, #define, etc.
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/NSS-File-Format.md
-    - https://github.com/xoreos/xoreos-tools/tree/master/src/nwscript/ (NWScript compiler)
-    - https://github.com/seedhartha/reone/blob/master/src/libs/script/ (Script execution engine)
+    Authoritative links: `meta.doc-ref` (PyKotor wiki, xoreos `types.h` `kFileTypeNSS`, xoreos-tools `NCSFile`, reone `NssWriter`).
+    
+    .. seealso::
+       PyKotor wiki — NSS - https://github.com/OpenKotOR/PyKotor/wiki/NSS-File-Format
+    
+    
+    .. seealso::
+       xoreos — `kFileTypeNSS` / `kFileTypeNCS` (Aurora `FileType` IDs; NSS plaintext, NCS bytecode) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L85-L86
+    
+    
+    .. seealso::
+       xoreos-tools — `NCSFile` - https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137
+    
+    
+    .. seealso::
+       reone — `NssWriter::save` - https://github.com/modawan/reone/blob/master/src/libs/tools/script/format/nsswriter.cpp#L33-L45
+    
+    
+    .. seealso::
+       xoreos-docs — Torlack NCS (bytecode companion to plaintext NSS) - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs tree - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Nss, self).__init__(_io)

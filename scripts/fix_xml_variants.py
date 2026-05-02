@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fix all GFF XML variant .ksy files to have proper imports and xrefs."""
+
 from __future__ import annotations
 
 from pathlib import Path

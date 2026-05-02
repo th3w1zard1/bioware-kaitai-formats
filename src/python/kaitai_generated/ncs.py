@@ -3,6 +3,7 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+import bioware_ncs_common
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
@@ -18,9 +19,39 @@ class Ncs(KaitaiStruct):
     
     All multi-byte values in NCS files are stored in BIG-ENDIAN byte order (network byte order).
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/wiki/NCS-File-Format.md - Complete NCS format documentation
-    - NSS.ksy - NWScript source code that compiles to NCS
+    NWScript **source** (`.nss`) is plaintext tooling; it is intentionally not modeled as Kaitai in this repository
+    (see `AGENTS.md`). This spec covers the **binary** `.ncs` wire format only.
+    
+    Opcode / qualifier enumerations: imported from `formats/Common/bioware_ncs_common.ksy` (mirrors PyKotor `ncs_data.py`).
+    
+    Authoritative parsers and notes: `meta.xref` and `doc-ref` (PyKotor, xoreos, xoreos-tools, xoreos-docs Torlack, reone).
+    
+    .. seealso::
+       PyKotor wiki — NCS - https://github.com/OpenKotOR/PyKotor/wiki/NCS-File-Format
+    
+    
+    .. seealso::
+       PyKotor — compiled script load path - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/io_ncs.py#L60-L90
+    
+    
+    .. seealso::
+       xoreos — NCSFile::load - https://github.com/xoreos/xoreos/blob/master/src/aurora/nwscript/ncsfile.cpp#L333-L355
+    
+    
+    .. seealso::
+       xoreos-tools — NCSFile::load - https://github.com/xoreos/xoreos-tools/blob/master/src/nwscript/ncsfile.cpp#L106-L137
+    
+    
+    .. seealso::
+       xoreos-docs — Torlack ncs.html - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/ncs.html
+    
+    
+    .. seealso::
+       reone — NcsReader::load - https://github.com/modawan/reone/blob/master/src/libs/script/format/ncsreader.cpp#L28-L40
+    
+    
+    .. seealso::
+       PyKotor — NCSByteCode / NCSInstructionQualifier (shared .ksy enums) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/ncs/ncs_data.py#L69-L140
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Ncs, self).__init__(_io)
@@ -79,8 +110,8 @@ class Ncs(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.opcode = self._io.read_u1()
-            self.qualifier = self._io.read_u1()
+            self.opcode = KaitaiStream.resolve_enum(bioware_ncs_common.BiowareNcsCommon.NcsBytecode, self._io.read_u1())
+            self.qualifier = KaitaiStream.resolve_enum(bioware_ncs_common.BiowareNcsCommon.NcsInstructionQualifier, self._io.read_u1())
             self.arguments = []
             i = 0
             while True:

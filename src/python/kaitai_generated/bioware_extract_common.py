@@ -12,8 +12,26 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
 class BiowareExtractCommon(KaitaiStruct):
     """Enums and small helper types used by installation/extraction tooling.
     
-    References:
-    - https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/installation.py
+    Canonical links: `meta.doc-ref` and `meta.xref` (PyKotor `installation.py`; NickHugi `Installation.cs` for parallel .NET layout).
+    
+    .. seealso::
+       xoreos — `FileType` enum start (Aurora resource type IDs; no dedicated extraction-layout parser — this `.ksy` is tooling-side) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60
+    
+    
+    .. seealso::
+       PyKotor — `SearchLocation` / `TexturePackNames` (maps to enums in this `.ksy`) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py#L67-L122
+    
+    
+    .. seealso::
+       PyKotor — `extract/` package - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/
+    
+    
+    .. seealso::
+       NickHugi/Kotor.NET — `Installation` ctor (texture packs / capsules / folders) - https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Common/Installation.cs#L11-L79
+    
+    
+    .. seealso::
+       xoreos-docs — BioWare specs tree (tooling enums; no extraction-specific PDF) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
     """
 
     class BiowareSearchLocationId(IntEnum):

@@ -5,39 +5,67 @@ meta:
   endian: le
   file-extension:
     - tpc
+  imports:
+    - ../Common/bioware_common
   xref:
-    pykotor: https://github.com/OldRepublicDevs/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/resource/formats/tpc/
-    reone: https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/tpcreader.cpp
-    xoreos: https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp
-    pykotor_wiki_tpc: https://github.com/OldRepublicDevs/PyKotor/wiki/TPC-File-Format.md
+    repo_coverage_matrix: |
+      Maintainer index: docs/XOREOS_FORMAT_COVERAGE.md (xoreos / xoreos-tools / xoreos-docs ↔ this spec; submodule section 0).
+    pykotor: https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/
+    github_openkotor_pykotor_io_tpc: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_tpc.py`:
+      **`TPCBinaryReader`** **93+**; **`TPCBinaryReader.load`** **121–303**; **`TPCBinaryWriter.write`** **391+** (long writer).
+    github_openkotor_pykotor_tpc_data: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py`:
+      **`TPCTextureFormat`** **74+**; **`TPCMipmap`** **218+**; **`TPCLayer`** **414+**; **`class TPC`** **499+** (resource model + mip/layer helpers).
+    github_openkotor_pykotor_resource_type_tpc: |
+      https://github.com/OpenKotOR/PyKotor — `Libraries/PyKotor/src/pykotor/resource/type.py`:       **`ResourceType.TPC`** tuple **1040–1045** (`type_id` **3007**).
+    github_modawan_reone_tpcreader: |
+      https://github.com/modawan/reone — `src/libs/graphics/format/tpcreader.cpp`: **`TpcReader::load`** **29–62**;
+      **`loadLayers`** **64–81**; **`loadFeatures`** (**TXI** tail via **`TxiReader`**) **83–96**; **`loadTexture`** **98–105**;
+      **`getMipMapDataSize`** **112+**; **`getPixelFormat`** **136+**.
+    kotor_js_tpcloader: https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/loaders/TPCLoader.ts#L26-L96
+    github_kobaltblu_kotor_js_tpcobject: |
+      https://github.com/KobaltBlu/KotOR.js — `src/resource/TPCObject.ts`: **`TPCObject`** **25+**; **`readHeader`** **290–380** (wire layout; pairs with this `.ksy` header).
+    xoreos_tpc_cpp: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L52-L66
+    xoreos_types_kfiletype_tpc: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L183
+    xoreos_tpc_load: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L52-L66
+    xoreos_tpc_read_header: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L68-L252
+    xoreos_tpc_read_data: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L326
+    xoreos_tpc_read_txi: https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L362
+    xoreos_tools_tpc_cpp_load: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L51-L68
+    xoreos_tools_tpc_cpp_read_header: https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L77-L224
+    pykotor_wiki_tpc: https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc
+    xoreos_docs_bioware_specs_tree: https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
+    xoreos_docs_kotor_mdl: https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html
 doc: |
-  TPC (Texture Pack Container) is KotOR's native texture format. It supports paletteless RGB/RGBA,
-  greyscale, and block-compressed DXT1/DXT3/DXT5 data, optional mipmaps, cube maps, and flipbook
-  animations controlled by companion TXI files.
+  **TPC** (KotOR native texture): 128 (0x80)-byte header (`pixel_encoding` etc. via `bioware_common`) + opaque tail
+  (mips / cube faces / optional **TXI** suffix). Per-mip byte sizes are format-specific — see PyKotor `io_tpc.py`
+  (`meta.xref`).
 
-  Binary Format Structure:
-  - Header (128 bytes): data_size, alpha_test, width, height, pixel_encoding, mipmap_count, reserved
-  - Texture Data: Per layer, per mipmap compressed/uncompressed pixel data
-  - Optional TXI Footer: ASCII text metadata appended after texture data
-
-  References:
-  - https://github.com/OldRepublicDevs/PyKotor/wiki/TPC-File-Format.md
-  - https://github.com/seedhartha/reone/blob/master/src/libs/graphics/format/tpcreader.cpp
-  - https://github.com/xoreos/xoreos/blob/master/src/graphics/images/tpc.cpp
+doc-ref:
+  - "https://github.com/OpenKotOR/bioware-kaitai-formats/blob/f4700f43f20337e01b8ef751a7c7d42e0acfb00a/formats/TPC/DDS.ksy In-tree — `CResTPC::OnResourceServiced` (128 (0x80)-byte header; K1 + TSL **observed behavior** in `DDS.ksy` `meta.xref`)"
+  - "https://github.com/OpenKotOR/PyKotor/wiki/Texture-Formats#tpc PyKotor wiki — TPC"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/io_tpc.py#L93-L303 PyKotor — `TPCBinaryReader` + `load`"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py#L74-L120 PyKotor — `TPCTextureFormat` (opening)"
+  - "https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/tpc/tpc_data.py#L499-L520 PyKotor — `class TPC` (opening)"
+  - "https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/graphics/format/tpcreader.cpp#L29-L105 reone — `TpcReader` (body + TXI features)"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L183 xoreos — `kFileTypeTPC`"
+  - "https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/graphics/images/tpc.cpp#L52-L362 xoreos — `TPC::load` through `readTXI` entrypoints"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L51-L68 xoreos-tools — `TPC::load`"
+  - "https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/images/tpc.cpp#L77-L224 xoreos-tools — `TPC::readHeader`"
+  - "https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware xoreos-docs — BioWare specs PDF tree"
+  - "https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/kotor_mdl.html xoreos-docs — KotOR MDL overview (texture pipeline context)"
+  - "https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/TPCObject.ts#L290-L380 KotOR.js — `TPCObject.readHeader`"
 
 seq:
   - id: header
     type: tpc_header
-    doc: TPC file header (128 bytes total)
+    doc: TPC file header (128 (0x80) bytes total)
 
-  - id: texture_data
-    type: texture_data_section
-    doc: Texture pixel data (compressed or uncompressed) for all layers and mipmaps
-
-  - id: txi_footer
-    type: txi_footer_section
-    if: _io.pos < _io.size
-    doc: Optional ASCII TXI metadata appended after texture data
+  - id: body
+    size-eos: true
+    doc: |
+      Remaining file bytes after the header (texture data for all layers/mipmaps, then optional TXI).
 
 types:
   tpc_header:
@@ -69,12 +97,10 @@ types:
 
       - id: pixel_encoding
         type: u1
+        enum: bioware_common::bioware_tpc_pixel_format_id
         doc: |
-          Pixel encoding flag:
-          - 0x01 = Greyscale (8-bit luminance)
-          - 0x02 = RGB (24-bit) or DXT1 (if compressed)
-          - 0x04 = RGBA (32-bit) or DXT5 (if compressed)
-          - 0x0C = BGRA (32-bit, Xbox-specific swizzle)
+          Pixel encoding byte (`u1`). Canonical values: `formats/Common/bioware_common.ksy` →
+          `bioware_tpc_pixel_format_id` (PyKotor wiki TPC header; xoreos `tpc.cpp` `readHeader`).
 
       - id: mipmap_count
         type: u1
@@ -87,7 +113,7 @@ types:
         repeat: expr
         repeat-expr: 114
         doc: |
-          Reserved/padding bytes (0x72 = 114 bytes).
+          Reserved/padding bytes (0x72 = 114 (0x72) bytes).
           KotOR stores platform hints here but all implementations skip them.
 
     instances:
@@ -98,51 +124,3 @@ types:
       is_uncompressed:
         value: data_size == 0
         doc: True if texture data is uncompressed (raw pixels)
-
-  texture_data_section:
-    seq:
-      - id: layers
-        type: texture_layer
-        repeat: expr
-        repeat-expr: |
-          (_root.header.is_compressed and _root.header.height != 0 and _root.header.width != 0 and (_root.header.height / _root.header.width) == 6) ?
-            6 : 1
-        doc: Array of texture layers (1 for regular, 6 for cube maps)
-
-  texture_layer:
-    seq:
-      - id: mipmaps
-        type: texture_mipmap
-        repeat: expr
-        repeat-expr: _root.header.mipmap_count
-        doc: Array of mipmap levels for this layer
-
-  texture_mipmap:
-    seq:
-      - id: pixel_data
-        type: pixel_data_block
-        doc: Compressed or uncompressed pixel data for this mipmap level
-
-  pixel_data_block:
-    seq:
-      - id: data
-        type: u1
-        repeat: until
-        repeat-until: _io.pos >= _io.size
-        doc: |
-          Pixel data bytes (size calculated based on format and mipmap level).
-          For DXT: block-compressed data (8 bytes per 4x4 block for DXT1, 16 for DXT3/DXT5).
-          For uncompressed: raw pixel data (1 byte per pixel for greyscale, 3 for RGB, 4 for RGBA/BGRA).
-          Note: Actual size should be calculated in application code based on format, width, height, and mip level.
-          The data section continues until end of file or until TXI footer starts (if present).
-
-  txi_footer_section:
-    seq:
-      - id: txi_data
-        type: str
-        encoding: ASCII
-        size-eos: true
-        doc: |
-          ASCII TXI metadata appended after texture data.
-          Contains texture rendering properties, animation parameters, etc.
-          Parsed as line-based command/value pairs.
