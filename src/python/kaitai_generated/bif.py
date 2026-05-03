@@ -18,39 +18,39 @@ class Bif(KaitaiStruct):
     
     
     .. seealso::
-       PyKotor — `io_bif` (Kaitai + legacy + reader) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/io_bif.py#L57-L215
+       PyKotor — `io_bif` (Kaitai + legacy + reader) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/io_bif.py#L57-L215
     
     
     .. seealso::
-       PyKotor — `BIFType` - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/bif/bif_data.py#L59-L71
+       PyKotor — `BIFType` - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/bif/bif_data.py#L59-L71
     
     
     .. seealso::
-       xoreos — `BIFFile::load` + `readVarResTable` - https://github.com/xoreos/xoreos/blob/master/src/aurora/biffile.cpp#L54-L97
+       xoreos — `BIFFile::load` + `readVarResTable` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/biffile.cpp#L54-L97
     
     
     .. seealso::
-       xoreos — `kFileTypeBIF` - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L208
+       xoreos — `kFileTypeBIF` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L208
     
     
     .. seealso::
-       xoreos-tools — `unkeybif` (non-`.bzf` → `BIFFile`) - https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L206-L209
+       xoreos-tools — `unkeybif` (non-`.bzf` → `BIFFile`) - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unkeybif.cpp#L206-L209
     
     
     .. seealso::
-       reone — `BifReader` - https://github.com/modawan/reone/blob/master/src/libs/resource/format/bifreader.cpp#L26-L63
+       reone — `BifReader` - https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/bifreader.cpp#L26-L63
     
     
     .. seealso::
-       KotOR.js — `BIFObject.readFromDisk` (header + variable resource table) - https://github.com/KobaltBlu/KotOR.js/blob/master/src/resource/BIFObject.ts#L87-L123
+       KotOR.js — `BIFObject.readFromDisk` (header + variable resource table) - https://github.com/KobaltBlu/KotOR.js/blob/83b27e2b4c61dfa6723e67995592c53ac88b21d9/src/resource/BIFObject.ts#L87-L123
     
     
     .. seealso::
-       xoreos-docs — Torlack bif.html - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/bif.html
+       xoreos-docs — Torlack bif.html - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/bif.html
     
     
     .. seealso::
-       xoreos-docs — KeyBIF_Format.pdf - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf
+       xoreos-docs — KeyBIF_Format.pdf - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/KeyBIF_Format.pdf
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Bif, self).__init__(_io)

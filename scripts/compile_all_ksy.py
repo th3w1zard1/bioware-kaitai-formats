@@ -52,8 +52,10 @@ def compile_ksy(ksy_file: Path, output_dir: Path, *, cwd: Path) -> Tuple[bool, s
         ksc,
         "-t",
         "python",
-        "-d",
+        "--outdir",
         str(output_dir),
+        "-I",
+        "formats",
         str(ksy_file),
     ]
 

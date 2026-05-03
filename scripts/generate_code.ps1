@@ -96,7 +96,7 @@ foreach ($ksyFile in $ksyFiles) {
     Write-Host "  Processing: $relativePath" -ForegroundColor Gray
 
     try {
-        & $kscExe -t $Language -d $targetDir $ksyFile.FullName
+        & $kscExe -t $Language --outdir $targetDir -I $FormatsDir $ksyFile.FullName
         if ($LASTEXITCODE -eq 0) {
             $successCount++
         } else {

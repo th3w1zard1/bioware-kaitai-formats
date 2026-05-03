@@ -15,23 +15,23 @@ class BiowareExtractCommon(KaitaiStruct):
     Canonical links: `meta.doc-ref` and `meta.xref` (PyKotor `installation.py`; NickHugi `Installation.cs` for parallel .NET layout).
     
     .. seealso::
-       xoreos — `FileType` enum start (Aurora resource type IDs; no dedicated extraction-layout parser — this `.ksy` is tooling-side) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L53-L60
+       xoreos — `FileType` enum start (Aurora resource type IDs; no dedicated extraction-layout parser — this `.ksy` is tooling-side) - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L53-L60
     
     
     .. seealso::
-       PyKotor — `SearchLocation` / `TexturePackNames` (maps to enums in this `.ksy`) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/extract/installation.py#L67-L122
+       PyKotor — `SearchLocation` / `TexturePackNames` (maps to enums in this `.ksy`) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/extract/installation.py#L67-L122
     
     
     .. seealso::
-       PyKotor — `extract/` package - https://github.com/OpenKotOR/PyKotor/tree/master/Libraries/PyKotor/src/pykotor/extract/
+       PyKotor — `extract/` package - https://github.com/OpenKotOR/PyKotor/tree/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/extract/
     
     
     .. seealso::
-       NickHugi/Kotor.NET — `Installation` ctor (texture packs / capsules / folders) - https://github.com/NickHugi/Kotor.NET/blob/master/Kotor.NET/Common/Installation.cs#L11-L79
+       NickHugi/Kotor.NET — `Installation` ctor (texture packs / capsules / folders) - https://github.com/NickHugi/Kotor.NET/blob/6dca4a6a1af2fee6e36befb9a6f127c8ba04d3e2/Kotor.NET/Common/Installation.cs#L11-L79
     
     
     .. seealso::
-       xoreos-docs — BioWare specs tree (tooling enums; no extraction-specific PDF) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+       xoreos-docs — BioWare specs tree (tooling enums; no extraction-specific PDF) - https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
     """
 
     class BiowareSearchLocationId(IntEnum):

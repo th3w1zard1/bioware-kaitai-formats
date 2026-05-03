@@ -32,7 +32,7 @@ KSC_CMD="$(resolve_ksc_cmd)"
 if [ -z "$KSC_CMD" ]; then
     echo "Installing Kaitai Struct compiler $KSC_VERSION..." >&2
     pip install "kaitai-struct-compiler==$KSC_VERSION" || {
-        echo "Failed to install kaitai-struct-compiler" >&2
+        echo "Failed to install kaitai-struct-compiler (pip has no wheel on some Linux images; use apt/.deb from https://kaitai.io/#download )" >&2
         exit 1
     }
     KSC_CMD="$(resolve_ksc_cmd)"
@@ -94,11 +94,12 @@ while IFS= read -r ksy_file; do
 
     echo "  Processing: $RELATIVE_PATH" >&2
 
-    if "$KSC_CMD" -t "$LANGUAGE" -d "$TARGET_DIR" "$ksy_file"; then
-        ((SUCCESS_COUNT++))
+    # KSC 0.11 on Unix: use --outdir (not -d) unless args are split with --; -I resolves cross-format imports
+    if "$KSC_CMD" -t "$LANGUAGE" --outdir "$TARGET_DIR" -I "$FORMATS_DIR" "$ksy_file"; then
+        SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     else
         echo "  Warning: Failed to generate code for $RELATIVE_PATH" >&2
-        ((FAIL_COUNT++))
+        FAIL_COUNT=$((FAIL_COUNT + 1))
     fi
 done <<< "$KSY_FILES"
 
@@ -111,4 +112,3 @@ if [ $FAIL_COUNT -gt 0 ]; then
 else
     echo "  Failed: $FAIL_COUNT" >&2
 fi
-

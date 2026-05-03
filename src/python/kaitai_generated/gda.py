@@ -22,51 +22,51 @@ class Gda(KaitaiStruct):
     
     
     .. seealso::
-       xoreos — `GDAFile::load` - https://github.com/xoreos/xoreos/blob/master/src/aurora/gdafile.cpp#L275-L305
+       xoreos — `GDAFile::load` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gdafile.cpp#L275-L305
     
     
     .. seealso::
-       xoreos — `GFF4File` stream ctor (type dispatch) - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4file.cpp#L87-L93
+       xoreos — `GFF4File` stream ctor (type dispatch) - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gff4file.cpp#L87-L93
     
     
     .. seealso::
-       xoreos — G2DA column field ids (excerpt) - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff4fields.h#L1230-L1260
+       xoreos — G2DA column field ids (excerpt) - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gff4fields.h#L1230-L1260
     
     
     .. seealso::
-       xoreos — `TwoDAFile(const GDAFile &)` - https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L136-L140
+       xoreos — `TwoDAFile(const GDAFile &)` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L136-L140
     
     
     .. seealso::
-       xoreos — `TwoDAFile::load(const GDAFile &)` - https://github.com/xoreos/xoreos/blob/master/src/aurora/2dafile.cpp#L343-L400
+       xoreos — `TwoDAFile::load(const GDAFile &)` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/2dafile.cpp#L343-L400
     
     
     .. seealso::
-       xoreos-tools — `main` - https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L64-L86
+       xoreos-tools — `main` - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L64-L86
     
     
     .. seealso::
-       xoreos-tools — `get2DAGDA` - https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L143-L159
+       xoreos-tools — `get2DAGDA` - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L143-L159
     
     
     .. seealso::
-       xoreos-tools — multi-file `GDAFile` merge - https://github.com/xoreos/xoreos-tools/blob/master/src/convert2da.cpp#L167-L181
+       xoreos-tools — multi-file `GDAFile` merge - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/convert2da.cpp#L167-L181
     
     
     .. seealso::
-       PyKotor — `ResourceType.GDA` - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/type.py#L1466-L1472
+       PyKotor — `ResourceType.GDA` - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/type.py#L1466-L1472
     
     
     .. seealso::
-       xoreos-docs — GFF_Format.pdf (GFF4 family; G2DA container) - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/GFF_Format.pdf
+       xoreos-docs — GFF_Format.pdf (GFF4 family; G2DA container) - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/GFF_Format.pdf
     
     
     .. seealso::
-       xoreos-docs — CommonGFFStructs.pdf - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/CommonGFFStructs.pdf
+       xoreos-docs — CommonGFFStructs.pdf - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/CommonGFFStructs.pdf
     
     
     .. seealso::
-       xoreos-docs — 2DA_Format.pdf (classic `.2da`; contrast with GDA) - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/2DA_Format.pdf
+       xoreos-docs — 2DA_Format.pdf (classic `.2da`; contrast with GDA) - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/2DA_Format.pdf
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Gda, self).__init__(_io)

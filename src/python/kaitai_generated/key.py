@@ -18,27 +18,27 @@ class Key(KaitaiStruct):
     
     
     .. seealso::
-       PyKotor — `io_key` (Kaitai + legacy + header write) - https://github.com/OpenKotOR/PyKotor/blob/master/Libraries/PyKotor/src/pykotor/resource/formats/key/io_key.py#L26-L183
+       PyKotor — `io_key` (Kaitai + legacy + header write) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/key/io_key.py#L26-L183
     
     
     .. seealso::
-       reone — `KeyReader` - https://github.com/modawan/reone/blob/master/src/libs/resource/format/keyreader.cpp#L26-L80
+       reone — `KeyReader` - https://github.com/modawan/reone/blob/61531089341caf5827abbc54346c8c959b03d449/src/libs/resource/format/keyreader.cpp#L26-L80
     
     
     .. seealso::
-       xoreos — `KEYFile::load` - https://github.com/xoreos/xoreos/blob/master/src/aurora/keyfile.cpp#L50-L88
+       xoreos — `KEYFile::load` - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/keyfile.cpp#L50-L88
     
     
     .. seealso::
-       xoreos-tools — `openKEYs` / `openKEYDataFiles` - https://github.com/xoreos/xoreos-tools/blob/master/src/unkeybif.cpp#L192-L210
+       xoreos-tools — `openKEYs` / `openKEYDataFiles` - https://github.com/xoreos/xoreos-tools/blob/b2ebf4fb98b423d94adf5092fd2d10f5d128ffd3/src/unkeybif.cpp#L192-L210
     
     
     .. seealso::
-       xoreos-docs — KeyBIF_Format.pdf - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/KeyBIF_Format.pdf
+       xoreos-docs — KeyBIF_Format.pdf - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/KeyBIF_Format.pdf
     
     
     .. seealso::
-       xoreos-docs — Torlack key.html - https://github.com/xoreos/xoreos-docs/blob/master/specs/torlack/key.html
+       xoreos-docs — Torlack key.html - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/torlack/key.html
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Key, self).__init__(_io)

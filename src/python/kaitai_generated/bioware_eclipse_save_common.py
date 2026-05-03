@@ -17,7 +17,7 @@ class BiowareEclipseSaveCommon(KaitaiStruct):
     Import this file from `formats/DAS/DAS.ksy` and `formats/DA2S/DA2S.ksy` instead of duplicating `length_prefixed_string`.
     
     .. seealso::
-       formats/Common/bioware_type_ids.ksy#L558-L559 In-tree — `xoreos_game_id` excerpt (**`dragon_age` (7)** / **`dragon_age2` (8)**; full `-1`..`max` table; mirrors `types.h` `GameID`)
+       formats/Common/bioware_type_ids.ksy#L555-L556 In-tree — `xoreos_game_id` excerpt (**`dragon_age` (7)** / **`dragon_age2` (8)**; full `-1`..`max` table; mirrors `types.h` `GameID`)
     
     
     .. seealso::

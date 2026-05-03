@@ -47,6 +47,10 @@ Run these from the **repository root** (where [`pytest.ini`](pytest.ini) sets `p
 - For documentation or `meta.xref` cleanup, **sweep `formats/**/*.ksy`** (not only a few high-churn formats) unless the task explicitly scopes a single file.
 - **`meta.xref`** is a **flat scalar map** in `include/ksy_schema.json` (each value must be a string/number/boolean/null or an array of those). Do **not** nest maps under keys (invalid in the schema). For prose, use a **block scalar on the key** then indented lines. Also avoid `some_key: >` with the next non-blank line starting `note:` — YAML folded `>` treats that as one string, not a nested `note` key (`verify_ksy_urls.py` catches this).
 
+## Linux / case-sensitive checkouts
+
+Several `.ksy` imports use the lower_snake `meta.id` of another format (for example `../../gff` from GFF generics, or `tpc` from `formats/TPC/TXB.ksy`). The on-disk file may be `GFF.ksy` / `TPC.ksy`. **macOS/Windows** resolve that; on **Linux** the compiler can fail to find `gff.ksy` / `tpc.ksy`. The repository carries **symlinks** `formats/GFF/gff.ksy` → `GFF.ksy` and `formats/TPC/tpc.ksy` → `TPC.ksy` so KSC resolves imports. Do not remove them without updating every relative import to match the real filename.
+
 ## Root layout
 
 Allowed root files include `README.md`, `.gitignore`, `.cursorrules`, **`AGENTS.md`**, `LICENSE` — see `.cursorrules` section 1. Keep scratch **`ksc`** output under `tmp_ksc*/` or `src/**/kaitai_generated/`, not the repo root.

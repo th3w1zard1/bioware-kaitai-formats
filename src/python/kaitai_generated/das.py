@@ -13,19 +13,19 @@ class Das(KaitaiStruct):
     tagged blocks. **Not KotOR** — reference serializers live under **Andastra** `Game/Games/Eclipse/...` on GitHub (`meta.xref`), not `Runtime/...`.
     
     .. seealso::
-       xoreos — `GameID` (`kGameIDDragonAge` = 7) - https://github.com/xoreos/xoreos/blob/master/src/aurora/types.h#L396-L408
+       xoreos — `GameID` (`kGameIDDragonAge` = 7) - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/types.h#L396-L408
     
     
     .. seealso::
-       Andastra — `DragonAgeOriginsSaveSerializer` (signature + nfo + archive entrypoints) - https://github.com/OldRepublicDevs/Andastra/blob/master/src/Andastra/Game/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs#L23-L180
+       Andastra — `DragonAgeOriginsSaveSerializer` (signature + nfo + archive entrypoints) - https://github.com/OldRepublicDevs/Andastra/blob/9f49a4d88fc144f819488a0cc37de471eaa0f01b/src/Andastra/Game/Games/Eclipse/DragonAgeOrigins/Save/DragonAgeOriginsSaveSerializer.cs#L23-L180
     
     
     .. seealso::
-       Andastra — `EclipseSaveSerializer` string + metadata helpers - https://github.com/OldRepublicDevs/Andastra/blob/master/src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs#L35-L126
+       Andastra — `EclipseSaveSerializer` string + metadata helpers - https://github.com/OldRepublicDevs/Andastra/blob/9f49a4d88fc144f819488a0cc37de471eaa0f01b/src/Andastra/Game/Games/Eclipse/Save/EclipseSaveSerializer.cs#L35-L126
     
     
     .. seealso::
-       xoreos-docs — BioWare specs tree (DAO saves via Andastra; no DAS-specific PDF here) - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+       xoreos-docs — BioWare specs tree (DAO saves via Andastra; no DAS-specific PDF here) - https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(Das, self).__init__(_io)

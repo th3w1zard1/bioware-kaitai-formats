@@ -27,7 +27,7 @@ class BiowareSsfCommon(KaitaiStruct):
     
     
     .. seealso::
-       PyKotor — `io_ssf` binary reader/writer (28 StrRefs) - https://github.com/OpenKotOR/PyKotor/blob/628a69df1b71a4537ce8a410b1c2e3c3604bd7f8/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py#L112-L165
+       PyKotor — `io_ssf` binary reader/writer (28 StrRefs) - https://github.com/OpenKotOR/PyKotor/blob/e03ea2c077f1be1d6704d228d156748a9cc3d0eb/Libraries/PyKotor/src/pykotor/resource/formats/ssf/io_ssf.py#L112-L165
     
     
     .. seealso::

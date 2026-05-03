@@ -5,6 +5,7 @@ meta:
   endian: le
   file-extension: gff
   imports:
+    # Path must match formats/Common/*.ksy (case-sensitive on Linux)
     - ../Common/bioware_common
     - ../Common/bioware_gff_common
   xref:

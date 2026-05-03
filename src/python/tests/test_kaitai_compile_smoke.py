@@ -56,7 +56,16 @@ def test_every_ksy_compiles_to_python() -> None:
         tmp_path = Path(tmp)
         for ksy in ksy_files:
             proc = subprocess.run(
-                [KSC, "-t", "python", "-d", str(tmp_path), str(ksy)],
+                [
+                    KSC,
+                    "-t",
+                    "python",
+                    "--outdir",
+                    str(tmp_path),
+                    "-I",
+                    "formats",
+                    str(ksy),
+                ],
                 cwd=str(REPO_ROOT),
                 capture_output=True,
                 text=True,

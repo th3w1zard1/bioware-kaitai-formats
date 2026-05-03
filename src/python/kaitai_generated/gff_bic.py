@@ -17,7 +17,7 @@ class GffBic(KaitaiStruct):
     FileType / restype id **2015** — see `bioware_type_ids::xoreos_file_type_id` enum member `bic`.
     
     .. seealso::
-       xoreos — GFF3 header read - https://github.com/xoreos/xoreos/blob/master/src/aurora/gff3file.cpp#L50-L63
+       xoreos — GFF3 header read - https://github.com/xoreos/xoreos/blob/89c99d2a93c23f3ba2b1218759e38775e4f2bdf9/src/aurora/gff3file.cpp#L50-L63
     
     
     .. seealso::
@@ -25,15 +25,15 @@ class GffBic(KaitaiStruct):
     
     
     .. seealso::
-       xoreos-docs — GFF_Format.pdf (GFF3 wire) - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/GFF_Format.pdf
+       xoreos-docs — GFF_Format.pdf (GFF3 wire) - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/GFF_Format.pdf
     
     
     .. seealso::
-       xoreos-docs — CommonGFFStructs.pdf - https://github.com/xoreos/xoreos-docs/blob/master/specs/bioware/CommonGFFStructs.pdf
+       xoreos-docs — CommonGFFStructs.pdf - https://github.com/xoreos/xoreos-docs/blob/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware/CommonGFFStructs.pdf
     
     
     .. seealso::
-       xoreos-docs — BioWare specs PDF tree - https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware
+       xoreos-docs — BioWare specs PDF tree - https://github.com/xoreos/xoreos-docs/tree/4e1c197aa09b532ef466ff8ceccfd6221e80c3c9/specs/bioware
     """
     def __init__(self, _io, _parent=None, _root=None):
         super(GffBic, self).__init__(_io)
